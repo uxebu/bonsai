@@ -6,7 +6,11 @@ var code = '(' + function() {
 
   redBoxFromPlugin().addTo(stage);
 
-  stage.loadSubMovie('green.js', function(subMovie) {
+  new Movie('green.js', function(err, subMovie) {
+    if (err) {
+      console.log('Error: ' + err);
+      return;
+    }
     subMovie.attr({
       x: 100,
       y: 100,
@@ -19,20 +23,20 @@ var code = '(' + function() {
         repeat: Infinity
       })
     });
-    new Bitmap('redpanda.jpg', {
-
-      onload: function() {
-        this.addTo(stage).attr({
-          x: 50,
-          y: 50,
-          width: 100,
-          height: 100,
-          opacity: 0
-        }).animate('.5s', {
-          opacity: 1
-        });
+    new Bitmap('redpanda.jpg', function(err) {
+      if (err) {
+        console.log('Error: ' + err);
+        return;
       }
-
+      this.addTo(stage).attr({
+        x: 50,
+        y: 50,
+        width: 100,
+        height: 100,
+        opacity: 0
+      }).animate('.5s', {
+        opacity: 1
+      });
     });
   });
 
