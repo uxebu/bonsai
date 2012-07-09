@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+<head>
+<title>Profile</title>
+</head>
+<body>
+<div id="view"></div>
+<script src="https://www.google.com/jsapi"></script>
+<script src="util.js"></script>
+<script type="text/javascript">
+var blobUrl       = 'https://github.com/uxebu/bonsai/blob/',
+    host          = location.host,
+    hash          = location.hash.slice(1).split('/'),
+    key           = hash[0],
+    highlightFn   = hash[1],
+    highlightRows = [];
+
+google.load('visualization', '1', {packages:['table']});
+google.setOnLoadCallback(function() {
+  if (key)
+    getProfile(host, key, drawProfile);
+});
+
+function getProfile(host, key, callback) {
+  var inputs = [['profile', key]],
+      query  = [
+        { map: { language: 'javascript', source: mapFlatten.toString() }}
+      ];
+
+  mapred(host, inputs, query, function(result, xhr) {
+    var profile    = result[0].profile,
+        rev        = result[0].rev,
+        revBlobUrl = blobUrl + rev;
+
+    var functions = profile
+      .map(encodeId)
+      .reduce(groupBy('id'), [])
+      .filter(functionFilter(['(program)']))
+      .map(githubifier(revBlobUrl))
+      .map(function(fn, i) {
+        if (fn.functionName === highlightFn)
+          highlightRows.push(i);
+        return fn;
+      })
+      .map(function(fn) {
+        var name = fn.github ? '<a href="' + fn.github + '">' + fn.functionName + '</a>'
+                             : fn.functionName;
+        return [
+          name,
+          fn.selfTime,
+          fn.totalTime
+        ];
+      });
+    callback(functions);
+  });
+}
+
+function drawProfile(functions) {
+  var data = new google.visualization.DataTable();
+  data.addColumn('string', 'Function (click to view on GitHub)');
+  data.addColumn('number', 'Self time (approximated)');
+  data.addColumn('number', 'Total time (approximated)');
+  data.addRows(functions);
+
+  var table = new google.visualization.Table(document.getElementById('view'));
+
+  var msFormatter = new google.visualization.NumberFormat({suffix: 'ms'});
+  msFormatter.format(data, 1);
+  msFormatter.format(data, 2);
+
+  var barFormatter = new google.visualization.BarFormat({width: 200});
+  barFormatter.format(data, 1);
+
+  table.draw(data, {
+    allowHtml: true,
+    sortAscending: false,
+    sortColumn: 1,
+    showRowNumber: true
+  });
+
+  table.setSelection(highlightRows.map(function(row) {
+    return {row: row};
+  }))
+}
+</script>
+</body>
+</html>
+

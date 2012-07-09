@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Jasmine Spec Runner</title>
+
+  <link rel="stylesheet" type="text/css" href="../lib/jasmine-core/jasmine.css">
+
+  <!-- include spec files here... -->
+  <script type="text/javascript">
+    var require = {
+      paths: {
+        order: '../lib/requirejs/order',
+        bonsai: '../src'
+      },
+      urlArgs: +new Date
+    };
+  </script>
+  <script type="text/javascript" src="../lib/requirejs/require.js"></script>
+  <script>
+  require([
+    
+    // types
+    './uri-spec',
+
+    // other
+    './player-spec',
+    './renderer_controller-spec',
+
+    './event_emitter-spec',
+    './segment_helper-spec',
+    './tools-spec',
+    './color-spec.js',
+    './gradient-spec',
+    './display_object-spec',
+    './display_list-spec',
+    './dom_element-spec',
+    './font_family-spec',
+    './group-spec',
+    './timeline-spec',
+    './point-spec',
+    './shape-spec',
+    './stage-spec',
+    './curved_path-spec',
+    './animation/animation-spec',
+    './animation/keyframe_animation-spec',
+    './text-spec',
+    './filter/base_filter-spec',
+    './filter/builtin-spec',
+    './matrix-spec',
+    './movie-spec',
+    // TODO: fix execution of this file to not throw "self.blocks[self.index] is undefined" on the console
+    './asset-loading-spec',
+    './asset-request-spec',
+    './asset_handler-spec',
+    './asset-resource-spec',
+    './uri-spec',
+    './bitmap-spec',
+    './video-spec',
+    './ui_event-spec',
+
+    // svg renderer
+    './renderer/svg-spec',
+    './renderer/svg_filters-spec',
+    './renderer/svg_helper-spec',
+    './renderer/svg_renderer_svg-spec'
+  ]);
+  </script>
+</head>
+
+<body>
+</body>
+</html>

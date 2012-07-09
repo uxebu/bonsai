@@ -1,0 +1,24 @@
+#!/usr/bin/env node
+
+var profile  = require('../lib/profile');
+
+var argv = require('optimist')
+  .usage('Usage: $0 -d [duration] -o [outfile] -p [port] [url]')
+  .options('duration', {
+    alias: 'd',
+    default: 1e3,
+    describe: 'Profiling duration in miliseconds'
+  })
+  .options('port', {
+    alias: 'p',
+    default: 9222,
+    describe: 'Remote debugging port for chrome'
+  })
+  .demand(1)
+  .argv;
+
+argv.url = argv._[0];
+
+profile(argv, function(profile) {
+  console.log(JSON.stringify(profile));
+});

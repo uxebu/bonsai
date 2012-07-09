@@ -1,0 +1,113 @@
+require([
+  'bonsai/renderer/svg/svg',
+  'bonsai/renderer/svg/svg_helper',
+  './runner.js'
+], function(SvgRenderer, svgHelper) {
+
+  var svgInstance, aDomElement;
+
+  describe('Svg Submodule of SvgRenderer', function() {
+
+    describe('submodule', function() {
+      it('is a submodule of SvgRenderer', function() {
+        expect('Svg' in SvgRenderer).toBeTruthy();
+      });
+    });
+
+    describe('the constructor', function() {
+      it('creates a svg context and appends it to a given dom element', function() {
+        var el = document.createDocumentFragment();
+        var svg = new SvgRenderer.Svg(el);
+        expect(el.firstChild).toBeInstanceOf(SVGSVGElement);
+      });
+    });
+
+    beforeEach(function () {
+        svgInstance = new SvgRenderer.Svg(document.createDocumentFragment());
+        aDomElement = document.createElement('div');
+    });
+
+    afterEach(function () {
+        svgInstance = null;
+        aDomElement = null;
+    });
+
+    describe('has a `attr` method', function() {
+
+      describe('basicAttributeMap', function() {
+        it('sets an attribute that is contained in `basicAttributeMap` to the given dom element', function() {
+          // TODO: mock `basicAttributeMap`. It is private atm.
+          svgInstance.attr(aDomElement, {cursor:1});
+          expect(aDomElement.getAttribute('cursor')).toEqual('1');
+        });
+      });
+
+      describe('has some special handlers for certain attributes', function() {
+
+        describe('has a special handler for `lineWidth`', function() {
+
+          it('sets `stroke-width` attribute to given element when `lineWidth` > 0', function() {
+            svgInstance.attr(aDomElement, {lineWidth: 5});
+            expect(aDomElement.getAttribute('stroke-width')).toEqual('5');
+          });
+
+          it('sets `stroke-width` attribute to given element when `lineWidth` is equals 0', function() {
+            svgInstance.attr(aDomElement, {lineWidth: 0});
+            expect(aDomElement.getAttribute('stroke-width')).toEqual('0');
+          });
+
+          xit('sets `stroke-width` and `data-stroke` when `lineWidth` equals 0 and `stroke` was already set', function() {
+            svgInstance.attr(aDomElement, {lineColor: 'black', lineWidth:0});
+            expect(aDomElement.getAttribute('stroke-width')).toEqual('0');
+            expect(aDomElement.hasAttribute('data-stroke')).toBeTruthy();
+          });
+
+          xit('sets `stroke-width` and `stroke` when `stroke-width` > 0 and ' + 
+             '`data-stroke` was already set and `lineColor` is not passed as parameter', function() {
+            svgInstance.attr(aDomElement, {lineColor: 'aColor'});
+            svgInstance.attr(aDomElement, {lineWidth: 0});
+            svgInstance.attr(aDomElement, {lineWidth:10});
+            expect(aDomElement.getAttribute('stroke-width')).toEqual('10');
+            expect(aDomElement.hasAttribute('stroke')).toBeTruthy();
+          });
+
+        });
+
+        /*describe('has a special handler for `lineColor`', function() {
+
+          it('sets a `data-stroke` attribute to given element when `lineColor` is set ' +
+             'and `stroke-width` is not available', function() {
+            svgInstance.attr(aDomElement, {lineColor: 'fakeColor'});
+            expect(aDomElement.hasAttribute('data-stroke')).toBeTruthy();
+          });
+
+          it('sets a `data-stroke` attribute to given element when `lineWidth` was previously set to 0', function() {
+            svgInstance.attr(aDomElement, {lineWidth:0, lineColor: 'fakeColor'});
+            expect(aDomElement.hasAttribute('data-stroke')).toBeTruthy();
+          });
+
+          it('sets a `stroke` attribute to given element when `lineWidth` was previously set', function() {
+            svgInstance.attr(aDomElement, {lineWidth:2, lineColor: 'fakeColor'});
+            expect(aDomElement.hasAttribute('stroke')).toBeTruthy();
+          });
+
+          it('removes `stroke` from given element when `lineColor` equals null', function() {
+            svgInstance.attr(aDomElement, {lineColor: null});
+            expect(aDomElement.hasAttribute('stroke')).toBeFalsy();
+          });
+
+          it('removes `data-stroke` from given element when `ineColor` equals null', function() {
+            svgInstance.attr(aDomElement, {lineColor: null});
+            expect(aDomElement.hasAttribute('data-stroke')).toBeFalsy();
+          });
+
+        });
+        */
+
+      });
+
+    });
+
+  });
+
+});

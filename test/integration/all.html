@@ -1,0 +1,48 @@
+<!doctype html>
+
+<meta charset="utf-8" />
+<title>Integration - all tests</title>
+<link rel="stylesheet" href="assets/css.css" />
+
+<body>
+
+  <h1>Context dev/build integration tests</h1>
+
+  <p>
+    For the integration test we load four different squares (red, blue, yellow, green) into each environment.
+    We load/run these squares in four different ways:
+  </p>
+
+  <ul>
+    <li>Code        = Blue, plus initialisation/animation code</li>
+    <li>urls[0]     = Yellow</li>
+    <li>plugins[0]  = Red</li>
+    <li>subMovie    = Green</li>
+  </ul>
+
+  <p>We also load a bitmap, which should appear stationary in front of four rotating squares.</p>
+
+  <div id="iframe_container"></div>
+
+  <script>
+
+    // We load the iframes one at a time so that the bootstrapping time
+    // is accurate (each iframe times its own bootstrapping process)
+
+    var sources = ['iframe_dev', 'iframe_build', 'worker_dev', 'worker_build'];
+    var container = document.getElementById('iframe_container');
+
+    next(); // begin 
+
+    function next() {
+      if (!sources.length) return;
+      var iframe = document.createElement('iframe');
+      iframe.scrolling = 'no';
+      iframe.src = sources.shift() + '.html';
+      container.appendChild(iframe);
+    }
+
+    window.iframeDone = next; // will be called by iframes
+  </script>
+
+</body>

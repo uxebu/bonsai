@@ -1,0 +1,17 @@
+body {
+	font: .7em sans-serif;
+}
+
+h1 { font-size: 1.3em; }
+
+#iframe_container {
+	width: 624px;
+}
+
+iframe {
+	border: 1px solid black;
+	margin: 0 10px 10px 0;
+	width: 300px;
+    height: 320px;
+    float: left;
+}

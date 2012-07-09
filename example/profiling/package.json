@@ -1,0 +1,19 @@
+{
+  "author": "Stephan Seidt <evilhackerdude@gmail.com> (https://twitter.com/evilhackerdude)",
+  "name": "profiling",
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/uxebu/bonsai.git"
+  },
+  "engines": {
+    "node": "0.6"
+  },
+  "dependencies": {
+    "optimist": "0.3.1",
+    "riak-js": "0.4.1",
+    "webdriverjs": "0.5.8"
+  },
+  "devDependencies": {},
+  "private": true
+}

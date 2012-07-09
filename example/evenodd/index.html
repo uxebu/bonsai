@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<title>even-odd?</title>
+<style>
+  html {
+    font-family: 'Gill Sans', sans-serif;
+  }
+
+</style>
+<article>
+  <h1>Is <code>fillRule = 'evenodd'</code> supported?</h1>
+  <section>
+    <h2>Expected</h2>
+    <img src=evenodd.png>
+  </section>
+
+  <section>
+    <h2>Canvas</h2>
+    <canvas width=600 height=200></canvas>
+    <script>
+
+      // ring
+      var c = document.querySelector('canvas').getContext('2d');
+      c.arc(100, 100, 80, 0, 2 * Math.PI, true);
+      c.moveTo(130, 100);
+      c.arc(100, 100, 30, 0, 2 * Math.PI, true);
+
+      c.fillStyle = '#f09';
+      c.lineWidth = 2;
+      c.fillRule = c.mozFillRule = c.webkitFillRule = 'evenodd';
+      c.fill();
+      c.stroke();
+
+
+      // pentagram
+      function degToRad(deg) { return deg / 180 * Math.PI; }
+      function angleRatio(deg) {
+        var rad = degToRad(deg);
+        return {x: Math.cos(rad), y: Math.sin(rad)};
+      }
+
+      c.beginPath();
+      c.fillStyle = '#f800e0';
+      var x = 210, y = 70;
+      c.moveTo(x, y);
+      var len = 160, angles = [0, 144, 288, 72];
+      //, 18, 168, 312], len = 100;
+      angles.map(angleRatio).forEach(function(ratio) {
+        x += ratio.x * len;
+        y += ratio.y * len;
+
+        c.lineTo(x, y);
+      });
+
+      c.closePath();
+      c.fill();
+      c.stroke();
+
+
+      // circle + rect
+      c.fillStyle = '#ac00fa';
+      c.beginPath();
+      c.arc(450, 100, 50, 0, 2 * Math.PI, true);
+      c.rect(450, 30, 140, 140);
+      c.fill();
+      c.stroke();
+
+
+
+
+    </script>
+  </section>
+
+  <section>
+    <h2>Flash</h2>
+    <object
+      type=application/x-shockwave-flash
+      width=600
+      height=200
+      data=evenodd.swf>
+    </object>
+  </section>
+
+</article>

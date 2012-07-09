@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>arcTo &dash; Bonsai demo tests</title>
+    <link rel="stylesheet" href="example.css" media="screen">
+    <script>
+      var require = {
+        baseUrl: '../src/',
+        urlArgs: '?' + +(new Date)
+      };
+    </script>
+    <script type="text/javascript" src="../lib/requirejs/require.js"></script>
+  </head>
+  <body>
+
+    <h1>arcTo > rounded corners</h1>
+
+    <section id="bonsai-api">
+      <div class="stage"></div>
+      <div class="editor">
+        <code>
+        var arcto = new bs.Shape([
+          'M', rectX, ',', rectY,
+          'L', rectX + rectWidth - r, ',', lineTo.y
+        ].join(' '));
+        <br>arcto.canvasArcTo(rectX + rectWidth/*125*/, rectY/*50*/, rectX + rectWidth/*125*/, rectY + r/*75*/, r/*25*/);
+        <br>arcto.lineTo(rectX + rectWidth, rectY + rectHeight);
+        <br>arcto.attributes({stroke:'yellow', 'stroke-width':5});
+        <br>stage.addChild(arcto);</code>
+      </div>
+    </section>
+
+    <section id="canvas-api">
+      <canvas class="stage" width="150" height="150"></canvas>
+      <div class="editor">
+        <code>stage.beginPath();
+        <br>stage.moveTo(rectX, rectY);
+        <br>stage.lineTo(rectX + rectWidth - r /*100*/, lineTo.y/*50*/);
+        <br>stage.arcTo(rectX + rectWidth/*125*/, rectY/*50*/, rectX + rectWidth/*125*/,
+            rectY + r/*75*/, r/*25*/);
+        <br>stage.lineTo(rectX + rectWidth, rectY + rectHeight);
+        <br>stage.strokeStyle = 'red';
+        <br>stage.lineWidth = 5;
+        <br>stage.stroke();</code>
+      </div>
+    </section>
+
+    <section id="svg-api">
+      <div class="stage"></div>
+      <div class="editor">
+        <code>stage.innerHTML = '&lt;svg&gt;&lt;path d="'+[
+        'M',rectX,',',rectY,
+        'L',rectX+rectWidth-r,',',rectY,
+        'A',r,',',r,',',0,',',0,',',1,',',rectX+rectWidth,',',rectY+r,
+        'L',rectX + rectWidth, rectY + rectHeight
+      ].join(' ')+'" style="stroke:red; stroke-width:5px;" />&lt;/svg&gt;';</code>
+      </div>
+    </section>
+
+    <section id="raphael-api">
+      Raphael API:<br>
+      <div></div>
+    </section>
+
+    <section id="easeljs-api">
+      EaselJs API:<br>
+      <canvas width="150" height="150"></canvas>
+    </section>
+
+    <section id="paperjs-api">
+      PaperJs API:<br>
+      <canvas width="150" height="150"></canvas>
+    </section>
+
+    <script type="text/javascript">
+
+      var rectWidth = 100;
+      var rectHeight = 50;
+      var rectX = 25;
+      var rectY = 50;
+      var r = 45;
+
+      var lineTo = {
+        x : rectX + rectWidth - r, //100
+        y : rectY // 50
+      };
+
+      // **********************************************************************
+      // bonsai api
+
+      require(['bonsai'], function(bs){
+        console.log('Bonsai loaded:', bs);
+
+        // create stage
+        var stage = new bs.Stage(document.querySelector('#bonsai-api div'), 150, 150);
+
+        var arcto = new bs.Shape([
+          'M', rectX, ',', rectY,
+          'L', rectX + rectWidth - r, ',', lineTo.y
+        ].join(' ')).attributes({stroke:'yellow', 'stroke-width':5});
+        arcto.canvasArcTo(rectX + rectWidth/*125*/, rectY/*50*/, rectX + rectWidth/*125*/, rectY + r/*75*/, r/*25*/);
+        arcto.lineTo(rectX + rectWidth, rectY + rectHeight);
+        stage.addChild(arcto);
+      });
+
+      // **********************************************************************
+      // canvas api
+
+      // create stage
+      var stage = document.querySelector('#canvas-api canvas').getContext('2d');
+      stage.beginPath();
+      stage.moveTo(rectX, rectY);
+      stage.lineTo(rectX + rectWidth - r /*100*/, lineTo.y/*50*/);
+      stage.arcTo(rectX + rectWidth/*125*/, rectY/*50*/, rectX + rectWidth/*125*/,
+          rectY + r/*75*/, r/*25*/);
+      stage.lineTo(rectX + rectWidth, rectY + rectHeight);
+      stage.strokeStyle = 'red';
+      stage.lineWidth = 5;
+      stage.stroke();
+
+      // **********************************************************************
+      //
+      // svg api
+
+      var stage = document.querySelector('#svg-api div');
+      stage.innerHTML = '<svg><path d="'+[
+        'M',rectX,',',rectY,
+        'L',rectX+rectWidth-r,',',rectY,
+        'A',r,',',r,',',0,',',0,',',1,',',rectX+rectWidth,',',rectY+r,
+        'L',rectX + rectWidth, rectY + rectHeight
+      ].join(' ')+'" style="stroke:red; stroke-width:5px;" /></svg>';
+
+      // **********************************************************************
+      // raphaeljs api
+
+      // **********************************************************************
+      // easeljs api
+
+      // **********************************************************************
+      // paperjs api
+
+    </script>
+  </body>
+  </html>

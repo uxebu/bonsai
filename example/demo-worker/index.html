@@ -1,0 +1,15 @@
+<!doctype html>
+<title>bonsai test</title>
+<script>
+var require = {
+  baseUrl: '../../src',
+  urlArgs: +new Date
+};
+</script>
+<script src=../../lib/requirejs/require.js></script>
+<div id=bs></div>
+<script>
+require(['player'], function(bs) {
+  var movie = bs.load(document.getElementById('bs'), 'demo.js', {width: 300, height: 300});
+});
+</script>

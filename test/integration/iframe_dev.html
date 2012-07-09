@@ -1,0 +1,35 @@
+<!doctype html>
+
+<meta charset="utf-8" />
+<title>Iframe - dev</title>
+<link rel="stylesheet" href="assets/css.css" />
+
+<body>
+
+  <h1 id="heading">iframe_dev</h1>
+
+  <div id="player"></div>
+
+  <script>
+    var require = {
+      urlArgs: +new Date,
+      baseUrl: '../../src/',
+      paths: {
+        bonsai: '.'
+      }
+    };
+  </script>
+  <script src="../../lib/requirejs/require.js"></script>
+  <script src="assets/integration.js"></script>
+
+  <script>
+
+    require(['bonsai/bootstrapper/_dev/iframe'], function(player) {
+
+      playerInit(player, {});
+
+    });
+
+  </script>
+
+</body>

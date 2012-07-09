@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>Inline Profiler</title>
+<script>
+  var require = {
+    baseUrl: '../../src',
+    urlArgs: +new Date
+  };
+</script>
+<script src=../../lib/requirejs/require.js></script>
+<script src="prfl-0.0.0.js"></script>
+<script>
+var profiler = (function() {
+  var profiler = new prfl.Profiler();
+
+  define = (function(define) {
+    return function() {
+      var moduleName = arguments[0]; // prevents arguments -- parameter linkage
+      var lastIndex = arguments.length - 1;
+      if (typeof moduleName !== 'string') {
+        console.warn('Can\'t handle anonymous modules yet');
+        moduleName = 'anonymous';
+      }
+      var exports = arguments[lastIndex];
+      arguments[lastIndex] = typeof exports === 'function' ?
+        function() {
+          return profiler.wrapObject(moduleName, exports.apply(this, arguments));
+        } :
+        profiler.wrapObject(moduleName, exports);
+
+      // define references the original require.js define here
+      return define.apply(this, arguments);
+    };
+  }(define));
+
+  require(['../library/movies/movie_list.js', '../../dist/bonsai.iframe.js'], run);
+
+  return profiler;
+}());
+
+function run() {
+  var moviesList = document.querySelector('[name="movies"]');
+  var nextButton = document.querySelector('[name="next"]');
+  var postButton = document.querySelector('[name="post"]');
+
+  var selectedMovie = location.search.slice(1);
+
+  // build list of movies
+  var f = document.createDocumentFragment();
+  var movies = window.movieList;
+  Object.keys(movies).forEach(function(label) {
+    var optgroup = document.createElement('optgroup');
+    optgroup.label = label;
+    f.appendChild(optgroup);
+    movies[label].forEach(function(filename) {
+      var option = document.createElement('option');
+      option.value = option.textContent = filename;
+      if (filename === selectedMovie) {
+        option.selected = true;
+      }
+      optgroup.appendChild(option);
+    });
+  });
+  moviesList.appendChild(f);
+  moviesList.onchange = function() {
+    location.search = this.value;
+  };
+
+  // next button
+  nextButton.onclick = function() {
+    var nextIndex = moviesList.selectedIndex + 1;
+    moviesList.selectedIndex =
+      moviesList.options.length === nextIndex ? 1 : nextIndex;
+    location.search = moviesList.value;
+  };
+
+  // post profile button
+  postButton.onclick = function() {
+    var dataset = {
+      date: new Date().getTime(),
+      movie: selectedMovie,
+      userAgent: navigator.userAgent,
+      report: profiler.getReport()
+    };
+
+    var x = new XMLHttpRequest();
+    x.open('POST', 'profile.php');
+    x.send(JSON.stringify(dataset));
+  };
+
+  // enable all input elements
+  [
+    moviesList,
+//    nextButton,
+    postButton
+  ].forEach(function(input) {
+    input.disabled = false;
+  });
+
+  // run selected movie
+  if (selectedMovie) {
+    var node = document.querySelector('.player');
+    var player = window.player = bonsai.run(
+      node,
+      '../library/movies/' + selectedMovie,
+      {width: node.offsetWidth, height: node.offsetHeight}
+    );
+  }
+}
+</script>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    font: 14px/1.5 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+
+  .top {
+    border: solid #555;
+    border-width: 0 0 1px;
+    box-shadow: 0 0 10px 5px grey;
+    background: silver;
+    background: linear-gradient(top, silver, grey);
+    background: -moz-linear-gradient(top, silver, grey);
+    background: -webkit-linear-gradient(top, silver, grey);
+    color: white;
+    font-weight: bold;
+    margin: 0;
+    padding: .1em .5em;
+  }
+
+  .top:after {
+    content: '\00a0';
+    clear: both;
+    display: block;
+    height: 0;
+    overflow: hidden;
+  }
+
+  .top fieldset {
+    border: none;
+    margin: 0;
+    padding: 0;
+    float: left;
+  }
+
+  .top > :last-child {
+    float: right;
+  }
+
+  .player {
+    border: 1px solid #555;
+    box-shadow: 0 0 10px 5px grey;
+    height: 480px;
+    margin: 2em auto;
+    width: 480px;
+  }
+
+  .overlay {
+    top: 0;
+    right: 100%;
+    bottom: 100%;
+    left:0;
+    position: fixed;
+    overflow: auto;
+  }
+
+  .overlay.active {
+    right: 0;
+    bottom: 0;
+  }
+
+</style>
+<div class=top>
+  <fieldset class=movie-control>
+    <label>Movies: <select disabled name=movies>
+      <option disabled>Choose &#x2026;</option>
+    </select></label>
+    <button disabled name=next>next</button>
+  </fieldset>
+  <fieldset class=profile-control>
+    <button disabled name=post>post profile</button>
+  </fieldset>
+</div>
+<div class=player>
+
+</div>
+<div class=overlay></div>

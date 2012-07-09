@@ -1,0 +1,19 @@
+{
+  "author": "uxebu Inc. (http://uxebu.com/)",
+  "name": "bonsai",
+  "description": "Bonsai runtime and node server",
+  "main": "src/bootstrapper/_dev/node.js",
+  "version": "0.1.0",
+  "private": true,
+  "homepage": "https://github.com/uxebu/bonsai/",
+  "maintainers" : [],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:uxebu/bonsai.git"
+  },
+  "dependencies": {
+    "requirejs": "~2.0"
+  },
+  "devDependencies": {},
+  "engine": {}
+}

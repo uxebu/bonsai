@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+<head>
+<title>Profile history</title>
+<style>
+html, body {
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+#sidebar {
+  border-right: 1px solid gray;
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  height: 100%;
+  margin: 0;
+  overflow: auto;
+  padding: 1em;
+  width: 20%;
+}
+
+#testuids {
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  padding: 1em 2em;
+}
+
+#view {
+  height: 90%;
+  width: 80%;
+}
+
+body {
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  display: box;
+  box-orient: horizontal;
+}
+</style>
+</head>
+<body>
+<div id="sidebar">
+  <h2>Test Series</h2>
+  <p>
+    <small>
+      Test series are sets of comparable profiles.
+      Each one is unique to its branch, test id and test revision.
+      Tests are located in <code>test/profile</code>.
+      Create a new test by creating a bonsai movie file called
+      <code>test-something.js</code> in this directory.
+      Modifying an existing test yields a new series with
+      the same branch &amp; name but a different SHA.
+    </small>
+  </p>
+  <ul id="testuids"></ul>
+</div>
+<div id="view"></div>
+<script src="https://www.google.com/jsapi"></script>
+<script src="util.js"></script>
+<script src="history.js"></script>
+</body>
+</html>

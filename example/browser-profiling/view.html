@@ -1,0 +1,274 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>View browser profiles</title>
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font: 14px/1.4 sans-serif;
+}
+
+nav {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 13em;
+  padding: 1em;
+
+  background: #ddd;
+  border-right: 1px solid black;
+}
+
+#visualization {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  left: 15em;
+  margin-left: 1px;
+}
+
+fieldset {
+  margin: 1em 0;
+  padding: 0;
+  border: none;
+}
+
+.filter label {
+  display: block;
+}
+</style>
+<article>
+  <nav>
+    <form id="movie-select">
+      <select name=movie id=movies>
+        <option disabled>Choose a movie</option>
+      </select>
+      <fieldset class=filter id=filter-user-agents>
+        <legend>Filter by UA</legend>
+      </fieldset>
+      <button type=submit>Apply selection</button>
+    </form>
+  </nav>
+  <div id="visualization"></div>
+</article>
+<script src=platform.js></script>
+<script src="https://www.google.com/jsapi"></script>
+<script>
+google.load('visualization', '1', {packages:['corechart']});
+(function(query) {
+  function Set() {
+    this._items = [];
+    map(arguments, this.addItem, this);
+  }
+  Set.prototype = {
+    addItem: function(item) {
+      var items = this._items;
+      if (items.indexOf(item) == -1) {
+        items.push(item);
+      }
+    },
+
+    toArray: function() {
+      return this._items.slice();
+    }
+  };
+
+  function RequestQueryParser(queryString) {
+    queryString.charAt(0) == '?' && (queryString = queryString.slice(1));
+
+    var pairs = map(queryString.split('&'), function(pair) {
+      return map(pair.split('='), this.decodeQueryStringPart, this);
+    }, this);
+
+    this.params = reduce(pairs, function(pair, params) {
+      var key = pair[0];
+      if (params.hasOwnProperty(key)) {
+        params[key].push(pair[1]);
+      } else {
+        params[key] = [pair[1]];
+      }
+      return params;
+    }, {});
+  }
+  RequestQueryParser.prototype = {
+    decodeQueryStringPart: function(part) {
+      return decodeURIComponent(part.replace(/[+]/g, ' '));
+    },
+
+    getParam: function(paramName) {
+      if (!this.has(paramName)) {
+        return;
+      }
+      return this.params[paramName][0];
+    },
+
+    getParamList: function(paramName) {
+      return this.has(paramName) ? this.params[paramName] : [];
+    },
+
+    has: function(paramName) {
+      return this.params.hasOwnProperty(paramName);
+    }
+  };
+
+
+  function filter(iterable, callback, context) {
+    var item, filtered = [];
+    for (var i = 0, len = iterable.length; i < len; i++) {
+      item = iterable[i];
+      if (callback(item)) {
+        filtered.push(item);
+      }
+    }
+    return filtered;
+  }
+
+  function map(iterable, callback, context) {
+    var mapped = [];
+    for (var i = 0, len = iterable.length; i < len; i++) {
+      mapped[i] = callback.call(context, iterable[i]);
+    }
+    return mapped;
+  }
+
+  function reduce(iterable, callback, initial, context) {
+    for (var i = 0, len = iterable.length; i < len; i++) {
+      initial = callback.call(context, iterable[i], initial);
+    }
+    return initial;
+  }
+
+  var request = new XMLHttpRequest();
+  request.open('GET', 'profile.php?' + new Date().getTime());
+  request.onload = function() {
+    var data = JSON.parse(request.responseText);
+    buildUI.apply(null, (onData(data)));
+  };
+  request.send(null);
+
+  function onData(data) {
+    var movies = new Set(), userAgents = new Set();
+    map(data, function(profile) {
+      movies.addItem(profile.movie);
+
+      var userAgent = platform.parse(profile.userAgent);
+      var userAgentId = profile.userAgentId = filter([
+        userAgent.name,
+        userAgent.version,
+        userAgent.product
+      ], Boolean).join(' ');
+      userAgents.addItem(userAgentId);
+    });
+
+    return [data, movies, userAgents, new RequestQueryParser(query)];
+  }
+
+  function buildUI(data, movies, userAgents, options) {
+    var selectedMovie = options.getParam('movie');
+    var selectedUserAgents = options.getParamList('user-agent');
+    buildMovieSelector(movies, selectedMovie);
+    buildUAFilter(userAgents, selectedUserAgents);
+    if (selectedMovie) {
+      buildChart(data, selectedMovie, selectedUserAgents);
+    }
+  }
+
+  function buildMovieSelector(movies, selectedMovie) {
+    var select = document.getElementById('movies');
+    var templateOption = document.createElement('option');
+    select.options.length = 1;
+    map(movies.toArray(), function(movie) {
+      var option = templateOption.cloneNode(false);
+      option.textContent = movie;
+      option.selected = movie == selectedMovie;
+      select.appendChild(option);
+    });
+  }
+
+  function buildUAFilter(userAgents, selectedUserAgents) {
+    var container = document.getElementById('filter-user-agents');
+    function template(userAgent) {
+      var label = document.createElement('label');
+      var checkbox = label.appendChild(document.createElement('input'));
+      checkbox.type = 'checkbox';
+      checkbox.name = 'user-agent';
+      checkbox.value = userAgent;
+      checkbox.checked = selectedUserAgents.indexOf(userAgent) !== -1;
+      label.appendChild(document.createTextNode(userAgent));
+
+      return label;
+    }
+
+    map(userAgents.toArray(), function(userAgent) {
+      container.appendChild(template(userAgent));
+    });
+  }
+
+  function buildChart(data, selectedMovie, selectedUserAgents) {
+    if (!(google.visualization && google.visualization.DataTable)) {
+      return setTimeout(function() {
+        buildChart(data, selectedMovie, selectedUserAgents);
+      }, 500);
+    }
+
+    selectedUserAgents.length || (selectedUserAgents = null);
+    data = filter(data, function(datum) {
+      var hasMovie = datum.movie === selectedMovie;
+      var hasUserAgent = !selectedUserAgents ||
+        selectedUserAgents.indexOf(datum.userAgentId) !== -1;
+      return hasMovie && hasUserAgent;
+    });
+
+    data.sort(function(a, b) {
+      return a.date - b.date;
+    });
+
+    var functionNames = new Set();
+    var allFunctionNames = reduce(
+      map(data, function(datum) {
+        return Object.keys(datum.report);
+      }),
+      function(names, allNames) {
+        return allNames.concat(names);
+      },
+      []
+    );
+    map(allFunctionNames, functionNames.addItem, functionNames);
+
+    var i = 1;
+    var nameToRowMap = reduce(allFunctionNames, function(name, map) {
+      map[name] = i++;
+      return map;
+    }, {});
+
+    var times = map(data, function(d) { return d.date; });
+    times.sort(function(a, b) { return a - b; });
+
+    var dataTable = new google.visualization.DataTable();
+    dataTable.addColumn('number', 'date');
+    map(allFunctionNames, function(name) {
+      dataTable.addColumn('number', name);
+    });
+
+    map(data, function(datum) {
+      var report = datum.report, row = [{v: times.indexOf(datum.date), f: Date(datum.date)}];
+      var program = 0;
+      for (var key in report) {
+        program += row[nameToRowMap[key]] = report[key].selfTime.sum;
+      }
+      row.length = i;
+      dataTable.addRow(row
+        .map(function(time, i) {
+          return (i ? time / program : time);
+        })
+      );
+    });
+
+    var chart = new google.visualization.LineChart(document.getElementById('visualization'));
+    chart.draw(dataTable, {pointSize: 3, vAxis: {logScale: false}});
+  }
+}(location.search));
+</script>

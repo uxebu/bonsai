@@ -1,0 +1,77 @@
+<!doctype html>
+<meta name=viewport content=width=device-width,initial-scale=1>
+<head>
+  <title>Bonsai Movie Library</title>
+  <script src=../../dist/bonsai.iframe.js></script>
+  <!--<script src="http://localhost:8080/socket.io/socket.io.js"></script>-->
+  <script src="movies/movie_list.js"></script>
+  <style type="text/css">
+    body, html { margin: 0; font-family: sans-serif; font-size: 14px; }
+    #head {
+      background: -moz-linear-gradient(top, #ffffff 0%, #e5e5e5 100%);
+      background: -webkit-linear-gradient(top, #ffffff 0%,#e5e5e5 100%);
+      padding: 10px;
+      width:100%;
+      border-bottom: solid 1px #9E9E9E;
+      position:fixed;
+      left:0;
+      top:0;
+
+    }
+    #bs {
+      margin: 45px 0 0 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="head">
+    <span id="selectContainer"></span>
+    <!--Width <input id="width" value="700">-->
+    <!--Height <input id="height" value="600">-->
+    <button id="next">Next</button>
+  </div>
+  <div id="bs"></div>
+  <script>
+    var dropdown = '<select>' +
+      '<option disabled>Choose a movie &#x2026;</option>';
+    for (var groupName in movieList) {
+      var group = movieList[groupName];
+      dropdown += '<optgroup label="'+groupName+'">';
+      group.forEach(function(fileName){
+        dropdown += '<option>'+fileName+'</option>'
+      });
+      dropdown += '</optgroup>';
+    }
+    dropdown += '</select>';
+    document.getElementById('selectContainer').innerHTML = dropdown;
+
+    var selectNode = document.getElementsByTagName('select')[0];
+    selectNode.onchange = function() {
+      location.search = '?' + this.value;
+    };
+
+    var stageNode = document.getElementById('bs');
+    var nextNode = document.getElementById('next');
+    var script = location.search.length ? location.search.substr(1) : null;
+
+    nextNode.onclick = function() {
+      selectNode.selectedIndex = selectNode.selectedIndex + 1;
+      selectNode.onchange();
+    };
+
+    if (script) {
+      [].slice.call(selectNode).forEach(function(option, index) { if (option.value === script) selectNode.selectedIndex = index; })
+    } else {
+      script = 'animation-circles.js';
+    }
+
+    bonsai.setup({
+      noCache: true
+    }).run(stageNode, {
+      url: 'movies/' + script + '?' + new Date().getTime(),
+      width: document.width,
+      height: document.height - 50,
+      fpsLog: /animation/.test(script) // only show FPS log on animations
+    });
+  </script>
+</body>

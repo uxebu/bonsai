@@ -1,0 +1,34 @@
+<!doctype html>
+
+<meta charset="utf-8" />
+<title>Worker - dev</title>
+<link rel="stylesheet" href="assets/css.css" />
+
+<body>
+
+  <h1 id="heading">worker_dev</h1>
+
+  <div id="player"></div>
+
+  <script>
+    var require = {
+      baseUrl: '../../src/',
+      paths: {
+        bonsai: '.'
+      }
+    };
+  </script>
+  <script src="../../lib/requirejs/require.js"></script>
+  <script src="assets/integration.js"></script>
+
+  <script>
+
+    require(['bonsai/bootstrapper/_dev/worker'], function(player) {
+
+      playerInit(player, {});
+
+    });
+
+  </script>
+
+</body>

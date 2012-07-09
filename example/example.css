@@ -1,0 +1,45 @@
+body, h1 {
+  font-family:'Inconsolata-dz', 'Inconsolata', serif;
+  margin:0;
+  padding:0;
+}
+h1 {
+  line-height:2em;
+  background-color:#ddd;
+  border-bottom:1px solid #333;
+  font-size:1.5em;
+  padding:0 1em;
+}
+section {
+  margin:1em;
+  border:1px solid #ddd;
+  padding:0.5em;
+  overflow:hidden;
+}
+section .stage {
+  background-color:black;
+  min-width:150px;
+  height:150px;
+  float:left;
+}
+section .editor {
+  background-color:#ddd;
+  padding:0 1em;
+  width:85%;
+  height:150px;
+  float:right;
+  overflow:scroll;
+}
+section:before {
+  display:block;
+}
+#bonsai-api:before {
+  content:'Bonsai API';
+}
+#canvas-api:before {
+  content:'Canvas API';
+}
+
+#svg-api:before {
+  content:'SVG API';
+}

@@ -1,0 +1,157 @@
+'use strict';
+
+var fs = require('fs');
+var path = require('path');
+var requirejs = require('./requirejs');
+
+requirejs.requirejs([
+  'bonsai/event_emitter',
+  'bonsai/tools',
+  'bonsai/message_channel',
+  'bonsai/runner/stage',
+  'bonsai/bootstrapper/context/script_loader'
+], function(EventEmitter, tools, MessageChannel, Stage, makeScriptLoader) {
+  function NodeContext(vm, _, __, baseUrl) {
+    this.vm = vm;
+    this.baseUrl = baseUrl;
+    this.messageChannel = null;
+    this.vmContext = null;
+  }
+
+  NodeContext.prototype = tools.mixin({
+    MessageChannel: MessageChannel,
+
+    destroy: function() {
+      // freeze stage
+      this.notifyRunner({command: 'freeze'});
+
+      // destroy message channel
+      this.messageChannel.destroy();
+      delete this.messageChannel;
+
+      this.removeAllListeners();
+
+      delete this.vmContext;
+      delete this.vm;
+      delete this.scriptLoader;
+    },
+
+    init: function(options) {
+      var messageChannel = this.messageChannel =
+        new this.MessageChannel(tools.hitch(this, this.notify), function() {});
+      var vmContext = this.vmContext = this.vm.createContext();
+
+      var scriptLoader = this.scriptLoader =
+        makeScriptLoader(this._importScript.bind(null, this.vm, vmContext));
+      var stage = this.initVmContext(vmContext, messageChannel, scriptLoader);
+      this.initStage(stage);
+      this.startMovie(stage);
+    },
+
+    initStage: function(stage) {
+      var env = stage.env;
+      stage.loadSubMovie = function(movieUrl, doDone, doError, movieInstance) {
+        movieUrl = this.assetBaseUrl.resolveUri(movieUrl);
+
+        var subMovie = movieInstance || new env.Movie();
+        var subEnvironment = stage.getSubMovieEnvironment(subMovie, movieUrl);
+        var subEnvExports = subEnvironment.exports;
+        var functionArgNames = [];
+        var functionArgValues = [];
+
+        subMovie.root = this;
+
+        /*
+         We want to pass all subEnvExports so that they're directly accessible within
+         the scope of the subMovie script.
+         E.g. so a user can type Shape.rect() instead of bonsai.Shape.rect()
+         Essentially, we're constructing an argument list. If done manually
+         it would look like this:
+         Function('bonsai', 'Shape', 'gradient', ...)
+         .call(subMovie, subEnvExports.Shape, subEnvExports.gradient, ...)
+         */
+
+        for (var i in subEnvExports) {
+          functionArgNames.push(i);
+          functionArgValues.push(subEnvExports[i]);
+        }
+
+        this.loadUrl(movieUrl, function(code) {
+          functionArgNames.push(code); // Actual code to execute
+          Function.apply(null, functionArgNames).apply(subMovie, functionArgValues);
+          doDone && doDone.call(subMovie, subMovie);
+        });
+      }
+    },
+
+    initVmContext: function(context, messageChannel, scriptLoader) {
+      var stage = context.stage = new Stage(messageChannel, this._loadUrl);
+
+      // expose bonsain API in vm context
+      var env = stage.env.exports;
+      tools.mixin(context, env);
+      context.exports = {}; // for plugins
+
+      context.load = function(url, cb) { return scriptLoader.load(url, cb); };
+      context.wait = function() { return scriptLoader.wait(); };
+      context.done = function() { return scriptLoader.done(); };
+
+      // expose node's require and requirejs
+      context.nodeRequire = require;
+      context.require = requirejs.createForVmContext(context);
+
+      context.console = console;
+
+      return stage;
+    },
+
+    startMovie: function(stage) {
+      stage.unfreeze();
+      this.messageChannel.notifyRenderer({command: 'isReady'});
+    },
+
+    notify: function(message) {
+      this.emit('message', message);
+    },
+
+    notifyRunner: function(message) {
+      if (message.command == 'exposePluginExports') {
+        tools.mixin(this.vmContext, this.vmContext.exports);
+        tools.mixin(this.vmContext.bonsai, this.vmContext.exports);
+      }
+      this.messageChannel.notify(message);
+    },
+
+    notifyRunnerAsync: function(message) {
+      process.nextTick(this.notifyRunner.bind(this, message));
+    },
+
+    run: function(code) {
+      this.vm.runInContext(code, this.vmContext);
+    },
+
+    load: function(url) {
+      this.scriptLoader.load(url, this.emit.bind(this, 'scriptLoaded', url));
+    },
+
+    _loadUrl: function(url, successCallback, errorCallback) {
+      fs.readFile(url, 'utf-8', function(error, data) {
+        if (error) {
+          errorCallback();
+        } else {
+          successCallback(data);
+        }
+      });
+    },
+
+    _importScript: function(vm, vmContext, url, callback) {
+      fs.readFile(url, 'utf-8', function(error, script) {
+        if (error) { throw error; }
+        vm.runInContext(script, vmContext, url);
+        callback();
+      });
+    }
+  }, EventEmitter);
+
+  module.exports = NodeContext;
+});

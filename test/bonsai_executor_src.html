@@ -1,0 +1,42 @@
+<!--
+  used by the image comparison server.
+
+  Visit this URL, to play a bonsai movie file:
+
+    http://HOSTNAME/test/bonsai_executor.html?movie=../movie_folder/movie.js&width=120&height=120
+-->
+<div id="bs"></div>
+<style>
+body{margin:0;}
+</style>
+<script>
+var require = {
+  baseUrl: '../src',
+  paths: {
+    bonsai: '.'
+  },
+  urlArgs: +new Date
+};
+</script>
+<script src=../lib/requirejs/require.js></script>
+<script>
+var bsParams = {}, split;
+var getParams = window.location.href.substr(window.location.href.indexOf("?")+1).split(/&/);
+for (var i = 0; i < getParams.length; i++) {
+  split = getParams[i].split("=");
+  bsParams[split[0]] = (split[1]||'');
+}
+
+require(['bonsai/_dev/' + (bsParams.env || 'worker')], function(player) {
+  if (bsParams.backgroundColor) {
+    document.body.style.backgroundColor = bsParams.backgroundColor;
+  }
+  var stageNode = document.getElementById('bs');
+  player.run(stageNode, bsParams.movie, {
+    width: bsParams.width,
+    height: bsParams.height
+  });
+
+});
+</script>
+
