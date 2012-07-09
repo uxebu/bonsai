@@ -43,18 +43,19 @@ define([
    * @property {number} __supportedAttributes__.width The width of the bitmap.
    *
    */
-  function Bitmap(loader, source, options) {
-    options || (options = {});
+  function Bitmap(loader, source, callback) {
+
     this._loader = loader;
 
     DisplayObject.call(this);
 
-    if (options.onload) {
-      this.on('load', options.onload);
-    }
-    if (options.onerror) {
-      // TODO: choose diff evt name to avoid special 'error' treatment in eventemitter
-      this.on('error', options.onerror);
+    if (callback) {
+      this.on('load', function() {
+        callback.call(this, null);
+      });
+      this.on('error', function(errorData) {
+        callback.call(this, errorData);
+      });
     }
 
     this.type = 'Bitmap';
@@ -126,11 +127,15 @@ define([
         this._attributes._naturalHeight = data.height;
         this._mutatedAttributes.naturalWidth = true;
         this._mutatedAttributes.naturalHeight = true;
-        this.emit('load', this);
+        // We trigger the event asynchronously so as to ensure that any events
+        // bound after instantiation are still triggered:
+        this.asyncEmit('load', this);
         this.markUpdate();
         break;
       case 'error':
-        this.emit('error', Error(data.error), this);
+        // We trigger the event asynchronously so as to ensure that any events
+        // bound after instantiation are still triggered:
+        this.asyncEmit('error', Error(data.error), this);
         break;
     }
 

@@ -90,6 +90,21 @@ define([
     },
 
     /**
+     * Executes all registered listeners of the specified event type after
+     * the current execution block completes (i.e. asynchronously)
+     *
+     * @param {String} type The event type.
+     * @param {Mixed} [args1, ...] Any number of arguments to pass to the listener.
+     * @returns {Object} The host object.
+     */
+    asyncEmit: function(type) {
+      var me = this, args = arguments;
+      setTimeout(function() {
+        me.emit.apply(me, args);
+      }, 1);
+    },
+
+    /**
      * Executes all registered listeners of the specified event type.
      *
      * @param {String} type The event type.

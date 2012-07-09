@@ -39,18 +39,19 @@ define([
    * @property {number} __supportedAttributes__.width The width of the video.
    *
    */
-  function Video(loader, aRequest, options) {
+  function Video(loader, aRequest, callback, options) {
     options || (options = {});
     this._loader = loader;
 
     DisplayObject.call(this);
 
-    if (options.onload) {
-      this.on('load', options.onload);
-    }
-    if (options.onerror) {
-      // TODO: choose diff evt name to avoid special 'error' treatment in eventemitter
-      this.on('error', options.onerror);
+    if (callback) {
+      this.on('load', function() {
+        callback.call(this, null);
+      });
+      this.on('error', function(errorData) {
+        callback.call(this, errorData);
+      });
     }
 
     this.type = 'Video';
@@ -131,10 +132,14 @@ define([
         // TODO: videoWidth vs attr.width
         // TODO: send onload some infos about the target
         this.attr({width: data.width, height: data.height});
-        this.emit('load');
+        // We trigger the event asynchronously so as to ensure that any events
+        // bound after instantiation are still triggered:
+        this.asyncEmit('load', this);
         break;
       case 'error':
-        this.emit('error', new Error(data.error));
+        // We trigger the event asynchronously so as to ensure that any events
+        // bound after instantiation are still triggered:
+        this.asyncEmit('error', Error(data.error));
     }
 
     return this;
