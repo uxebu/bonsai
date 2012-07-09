@@ -37,14 +37,17 @@ requirejs.requirejs([
     },
 
     init: function(options) {
+
       var messageChannel = this.messageChannel =
         new this.MessageChannel(tools.hitch(this, this.notify), function() {});
+
       var vmContext = this.vmContext = this.vm.createContext();
 
-      var scriptLoader = this.scriptLoader = makeScriptLoader(function(url, cb) {
-        return this._importScript(this.vm, vmContext, url, cb);
-      });
+      var scriptLoader = this.scriptLoader = makeScriptLoader(
+        this._importScript.bind(null, this.vm, vmContext)
+      );
       var stage = this.initVmContext(vmContext, messageChannel, scriptLoader);
+
       this.initStage(stage);
       this.startMovie(stage);
     },
