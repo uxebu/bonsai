@@ -41,16 +41,18 @@ requirejs.requirejs([
         new this.MessageChannel(tools.hitch(this, this.notify), function() {});
       var vmContext = this.vmContext = this.vm.createContext();
 
-      var scriptLoader = this.scriptLoader =
-        makeScriptLoader(this._importScript.bind(null, this.vm, vmContext));
+      var scriptLoader = this.scriptLoader = makeScriptLoader(function(url, cb) {
+        return this._importScript(this.vm, vmContext, url, cb);
+      });
       var stage = this.initVmContext(vmContext, messageChannel, scriptLoader);
       this.initStage(stage);
       this.startMovie(stage);
     },
 
     initStage: function(stage) {
+      var context = this;
       var env = stage.env;
-      stage.loadSubMovie = function(movieUrl, doDone, doError, movieInstance) {
+      stage.loadSubMovie = function(movieUrl, callback, movieInstance) {
         movieUrl = this.assetBaseUrl.resolveUri(movieUrl);
 
         var subMovie = movieInstance || new env.Movie();
@@ -76,16 +78,20 @@ requirejs.requirejs([
           functionArgValues.push(subEnvExports[i]);
         }
 
-        this.loadUrl(movieUrl, function(code) {
-          functionArgNames.push(code); // Actual code to execute
-          Function.apply(null, functionArgNames).apply(subMovie, functionArgValues);
-          doDone && doDone.call(subMovie, subMovie);
+        context._loadUrl(movieUrl, function(err, code) {
+          if (err) {
+            callback.call(subMovie, err);
+          } else {
+            functionArgNames.push(code); // Actual code to execute
+            Function.apply(null, functionArgNames).apply(subMovie, functionArgValues);
+            callback.call(subMovie, null, subMovie);
+          }
         });
       }
     },
 
     initVmContext: function(context, messageChannel, scriptLoader) {
-      var stage = context.stage = new Stage(messageChannel, this._loadUrl);
+      var stage = context.stage = new Stage(messageChannel);
 
       // expose bonsain API in vm context
       var env = stage.env.exports;
@@ -134,21 +140,18 @@ requirejs.requirejs([
       this.scriptLoader.load(url, this.emit.bind(this, 'scriptLoaded', url));
     },
 
-    _loadUrl: function(url, successCallback, errorCallback) {
-      fs.readFile(url, 'utf-8', function(error, data) {
-        if (error) {
-          errorCallback();
-        } else {
-          successCallback(data);
-        }
-      });
+    _loadUrl: function(url, callback) {
+      fs.readFile(url, 'utf-8', callback);
     },
 
     _importScript: function(vm, vmContext, url, callback) {
       fs.readFile(url, 'utf-8', function(error, script) {
-        if (error) { throw error; }
-        vm.runInContext(script, vmContext, url);
-        callback();
+        if (error) {
+          callback(error);
+        } else {
+          vm.runInContext(script, vmContext, url);
+          callback(null);
+        }
       });
     }
   }, EventEmitter);

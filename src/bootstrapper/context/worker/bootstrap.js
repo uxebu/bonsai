@@ -9,10 +9,10 @@ define([
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url);
     xhr.onload = function() {
-      if (xhr.status >= 200 || xhr.status < 300 || xhr.status == 304) {
+      if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304) {
         successCallback(this.responseText);
       } else {
-        errorCallback();
+        errorCallback(xhr.status + ' (' + xhr.statusText + ')');
       }
     };
     xhr.onerror = errorCallback;
@@ -42,15 +42,19 @@ define([
     }
 
     var loader = makeScriptLoader(function(url, cb) {
-      importScripts(url);
-      cb();
+      try {
+        importScripts(url);
+        cb(null);
+      } catch(e) {
+        console.log('>>ERROR WORKER', e);
+      }
     });
 
     self.load = function(url, cb) { return loader.load(url, cb); };
     self.wait = function() { return loader.wait(); };
     self.done = function() { return loader.done(); };
 
-    var stage = new Stage(messageChannel, loadUrl);
+    var stage = new Stage(messageChannel);
     var env = stage.env.exports;
     // Expose bonsai API in iframe window
     tools.mixin(self, env);
@@ -78,7 +82,7 @@ define([
     });
 
     // As per the boostrap's contract, it must provide stage.loadSubMovie
-    stage.loadSubMovie = function(movieUrl, doDone, doError, movieInstance) {
+    stage.loadSubMovie = function(movieUrl, callback, movieInstance) {
 
       movieUrl = this.assetBaseUrl.resolveUri(movieUrl);
 
@@ -108,7 +112,9 @@ define([
       loadUrl(movieUrl, function(code) {
         functionArgNames.push(code); // Actual code to execute
         Function.apply(null, functionArgNames).apply(subMovie, functionArgValues);
-        doDone && doDone.call(subMovie, subMovie);
+        callback.call(subMovie, null, subMovie);
+      }, function(error) {
+        callback.call(subMovie, error + ':' + movieUrl);
       });
 
     };

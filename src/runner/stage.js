@@ -51,13 +51,11 @@ define([
    *
    * @constructor
    * @param {Object} messageChannel used to communicate with the renderer
-   * @param {Function} loadUrl A function that takes a bonsai movie url
-   *    (or path) and a callback that receives the source code of that movie.
    *
    * @mixes module:event_emitter.EventEmitter
    * @mixes module:timeline.Timeline
    */
-  function Stage(messageChannel, loadUrl) {
+  function Stage(messageChannel) {
     var registry = this.registry = new Registry();
 
     var assetLoader = this.assetLoader =
@@ -65,8 +63,6 @@ define([
         .on('request', hitch(this, this.loadAsset, null));
 
     this.env = new Environment(this, assetLoader);
-
-    this.loadUrl = loadUrl;
     this.stage = this.root = this;
     this._canRender = true;
 
@@ -151,28 +147,6 @@ define([
           this._canRender = true;
           this.postFrames();
           break;
-      }
-    },
-
-    /**
-     * Handles the 'run' command event.
-     *
-     * @private
-     * @param data {object} The data property of the message event
-     */
-    handleRunCommand: function(data, stage, environment, doDone, doError) {
-      if (data.code) {
-        this.run(data.code, stage, environment);
-        doDone && doDone.call(this);
-      } else if (data.url) {
-        this.loadUrl(
-          this.assetBaseUrl.resolveUri(data.url),
-          hitch(this, function(code) {
-            this.run(code, stage, environment);
-            doDone && doDone.call(this);
-          }),
-          doError ? hitch(this, doError) : function(){}
-        );
       }
     },
 
