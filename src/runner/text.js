@@ -89,7 +89,7 @@ define([
    *
    * @constructor
    *
-   * @extends module:display_object.Group
+   * @extends module:display_object.DisplayObject
    * @param {String} text The text content
    *
    * @property {__list__} __supportedAttributes__ List of supported attribute names.
