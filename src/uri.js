@@ -55,26 +55,27 @@ define(function() {
       var path = resolvePaths(this.path, uri.path);
 
       return new URI(scheme, authority, path, uri.query, uri.fragment);
-    },
-
-    toString: function() {
-      var uri = this.path;
-
-      if (this.authority) {
-        uri = '//' + this.authority + uri;
-      }
-      if (this.scheme) {
-        uri = this.scheme + ':' + uri;
-      }
-      if (this.query) {
-        uri += '?' + this.query;
-      }
-      if (this.fragment) {
-        uri += '#' + this.fragment;
-      }
-
-      return uri;
     }
+  };
+
+  // needs to be separate so that jsdoc does not complain
+  URI.prototype.toString = function() {
+    var uri = this.path;
+
+    if (this.authority) {
+      uri = '//' + this.authority + uri;
+    }
+    if (this.scheme) {
+      uri = this.scheme + ':' + uri;
+    }
+    if (this.query) {
+      uri += '?' + this.query;
+    }
+    if (this.fragment) {
+      uri += '#' + this.fragment;
+    }
+
+    return uri;
   };
 
   return URI;
