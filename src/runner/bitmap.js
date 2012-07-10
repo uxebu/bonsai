@@ -7,9 +7,10 @@
  */
 define([
   './display_object',
+  './asset_display_object',
   '../asset/asset_request',
   '../tools'
-], function(DisplayObject, AssetRequest, tools) {
+], function(DisplayObject, AssetDisplayObject, AssetRequest, tools) {
   'use strict';
 
   var data = tools.descriptorData, accessor = tools.descriptorAccessor;
@@ -50,12 +51,7 @@ define([
     DisplayObject.call(this);
 
     if (callback) {
-      this.on('load', function() {
-        callback.call(this, null);
-      });
-      this.on('error', function(errorData) {
-        callback.call(this, errorData);
-      });
+      this.bindAssetCallback(callback);
     }
 
     this.type = 'Bitmap';
@@ -78,7 +74,7 @@ define([
     this.attr('source', source);
   }
 
-  var proto = Bitmap.prototype = Object.create(DisplayObject.prototype);
+  var proto = Bitmap.prototype = tools.mixin(Object.create(DisplayObject.prototype), AssetDisplayObject);
 
   /**
    *

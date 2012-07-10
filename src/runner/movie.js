@@ -10,10 +10,11 @@
 // a timeline-controlled container.
 define([
   './display_object',
+  './asset_display_object',
   './display_list',
   './timeline',
   '../tools'
-], function(DisplayObject, DisplayList, Timeline, tools) {
+], function(DisplayObject, AssetDisplayObject, DisplayList, Timeline, tools) {
   'use strict';
 
   /**
@@ -30,12 +31,7 @@ define([
     DisplayObject.call(this);
 
     if (callback) {
-      this.on('load', function() {
-        callback.call(this, null, this);
-      });
-      this.on('error', function(errorData) {
-        callback.call(this, errorData, this);
-      });
+      this.bindAssetCallback(callback);
     }
 
     this.root = root;
@@ -54,7 +50,7 @@ define([
     }
   }
 
-  var proto = Movie.prototype = tools.mixin(Object.create(DisplayObject.prototype), Timeline, DisplayList);
+  var proto = Movie.prototype = tools.mixin(Object.create(DisplayObject.prototype), Timeline, DisplayList, AssetDisplayObject);
 
   proto.loadSubMovie = function() {
     return this.root.loadSubMovie.apply(this.root, arguments);

@@ -7,9 +7,10 @@
  */
 define([
   './display_object',
+  './asset_display_object',
   '../asset/asset_request',
   '../tools'
-], function(DisplayObject, AssetRequest, tools) {
+], function(DisplayObject, AssetDisplayObject, AssetRequest, tools) {
   'use strict';
 
   var data = tools.descriptorData;
@@ -46,12 +47,7 @@ define([
     DisplayObject.call(this);
 
     if (callback) {
-      this.on('load', function() {
-        callback.call(this, null);
-      });
-      this.on('error', function(errorData) {
-        callback.call(this, errorData);
-      });
+      this.bindAssetCallback(callback);
     }
 
     this.type = 'Video';
@@ -70,7 +66,7 @@ define([
     this.request(aRequest);
   }
 
-  var proto = Video.prototype = Object.create(DisplayObject.prototype);
+  var proto = Video.prototype = tools.mixin(Object.create(DisplayObject.prototype), AssetDisplayObject);
 
   /**
    *
