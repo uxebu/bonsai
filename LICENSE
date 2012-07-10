@@ -20,3 +20,10 @@ NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
 DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+External libraries (each with their own license):
+
+  - requirejs: https://github.com/jrburke/requirejs/blob/master/LICENSE
+  - jasmine: https://github.com/pivotal/jasmine/blob/master/MIT.LICENSE
+  - closure: http://code.google.com/p/closure-compiler/source/browse/trunk/COPYING
+  - qc.js: https://github.com/darrint/qc.js/blob/master/COPYING
