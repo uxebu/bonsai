@@ -46,9 +46,9 @@ define([
         // We trigger the event asynchronously so as to ensure that any events
         // bound after instantiation are still triggered:
         if (err) {
-          me.asyncEmit('error', err, me);
+          me.emitAsync('error', err, me);
         } else {
-          me.asyncEmit('load', me);
+          me.emitAsync('load', me);
         }
       }, this);
     }

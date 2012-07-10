@@ -134,12 +134,12 @@ define([
         this.attr({width: data.width, height: data.height});
         // We trigger the event asynchronously so as to ensure that any events
         // bound after instantiation are still triggered:
-        this.asyncEmit('load', this);
+        this.emitAsync('load', this);
         break;
       case 'error':
         // We trigger the event asynchronously so as to ensure that any events
         // bound after instantiation are still triggered:
-        this.asyncEmit('error', Error(data.error));
+        this.emitAsync('error', Error(data.error));
     }
 
     return this;

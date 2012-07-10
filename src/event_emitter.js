@@ -97,7 +97,7 @@ define([
      * @param {Mixed} [args1, ...] Any number of arguments to pass to the listener.
      * @returns {Object} The host object.
      */
-    asyncEmit: function(type) {
+    emitAsync: function(type) {
       var me = this, args = arguments;
       setTimeout(function() {
         me.emit.apply(me, args);
