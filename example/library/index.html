@@ -75,7 +75,6 @@
         noCache: true
       }).run(stageNode, {
         url: 'movies/' + script + '?' + new Date().getTime(),
-        plugins: ['../../../spareparts/src/text_field.js'],
         width: document.width,
         height: document.height - 50,
         fpsLog: /animation/.test(script) // only show FPS log on animations
