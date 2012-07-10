@@ -1,7 +1,6 @@
 /**
  * Contains the public bonsai API for HTML documents.
  *
- * @copyright 2011 uxebu Consulting Ltd. & Co. KG
  * @exports player
  */
 define([

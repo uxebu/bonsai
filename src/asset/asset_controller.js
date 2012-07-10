@@ -2,7 +2,6 @@
  * Contains the Asset controller
  *
  * @exports AssetController
- * @copyright 2011 uxebu Consulting Ltd. & Co. KG
  */
 define([
   '../tools',
@@ -15,7 +14,7 @@ define([
   './raw_handler'
 ],
 function(
-  tools, EventEmitter, extensions, AssetRequest, 
+  tools, EventEmitter, extensions, AssetRequest,
   FontHandler, VideoHandler, BitmapHandler, RawHandler
 ) {
   'use strict';
