@@ -287,7 +287,6 @@ function(tools, color, Matrix) {
   gradient.advancedRadial = function(stops, r, matrix, repeat, units, fx, fy) {
 
     units = units || gradient.DEFAULT_UNITS;
-    matrix = matrix || gradient.DEFAULT_RADIAL_MATRIX;
 
     fx = fx || 0;
     fy = fy || 0;
