@@ -120,6 +120,21 @@ require([
         expect(new Bitmap().getComputed('left')).toBe(0);
       });
 
+      it('Should calculate width from width/height ratio if not specified and vice-versa', function() {
+        var b = new Bitmap();
+        b._attributes._naturalWidth = 400;
+        b._attributes._naturalHeight = 200;
+        expect(b.getComputed('width')).toBe(400);
+        expect(b.getComputed('height')).toBe(200);
+        b.attr('width', 500);
+        expect(b.getComputed('width')).toBe(500);
+        expect(b.getComputed('height')).toBe(250); // <- calculated from ratio
+        b.attr('width', null);
+        b.attr('height', 10);
+        expect(b.getComputed('width')).toBe(20); // <- calculated from ratio
+        expect(b.getComputed('height')).toBe(10);
+      });
+
       it('should return an object with "top", "right", "bottom", "left", ' +
         '"width" and "height" properties of 0 when invoked with "size"', function() {
         var width = 123, height = 456;

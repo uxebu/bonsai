@@ -138,17 +138,41 @@ define([
     return this;
   };
 
+  /**
+   * Get computed dimensions of the bitmap
+   *
+   * @param {String} key any of 'size', 'width', 'height', 'top', 'right', 'left', 'bottom'
+   * @returns {Object|Number} For the key 'size' it'll return an object with all
+   *  properties, otherwise it'll return a single number for the key specified.
+   */
   proto.getComputed = function(key) {
-    var value, size = key === 'size' && {top: 0, right: 0, bottom: 0, left: 0};
+
+    var value,
+        size = key === 'size' && {top: 0, right: 0, bottom: 0, left: 0},
+        naturalWidth = this._attributes._naturalWidth,
+        naturalHeight = this._attributes._naturalHeight,
+        attrWidth = this.attr('width'),
+        attrHeight = this.attr('height'),
+        naturalRatio = naturalWidth / naturalHeight,
+
+        // If one dimensions is not specified, then we use the other dimension
+        // and the ratio to calculate its size:
+        width = attrWidth || (
+          attrHeight != null ? naturalRatio * attrHeight : naturalWidth
+        ) || 0,
+        height = attrHeight || (
+          attrWidth != null ? attrWidth / naturalRatio : naturalHeight
+        ) || 0;
+
     if (key === 'width' || key === 'right') {
-      value = this.attr('width') || 0;
+      value = width;
     } else if (size) {
-      size.right = size.width = this.attr('width') || 0;
+      size.right = size.width = width;
     }
     if (key === 'height' || key === 'bottom') {
-      value = this.attr('height') || 0;
+      value = height;
     } else if (size) {
-      size.bottom = size.height = this.attr('height') || 0;
+      size.bottom = size.height = height;
     }
     if (key === 'top' || key === 'left') {
       value = 0;
