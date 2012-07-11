@@ -7,9 +7,10 @@
  */
 define([
   './display_object',
+  './asset_display_object',
   '../asset/asset_request',
   '../tools'
-], function(DisplayObject, AssetRequest, tools) {
+], function(DisplayObject, AssetDisplayObject, AssetRequest, tools) {
   'use strict';
 
   var data = tools.descriptorData;
@@ -39,18 +40,14 @@ define([
    * @property {number} __supportedAttributes__.width The width of the video.
    *
    */
-  function Video(loader, aRequest, options) {
+  function Video(loader, aRequest, callback, options) {
     options || (options = {});
     this._loader = loader;
 
     DisplayObject.call(this);
 
-    if (options.onload) {
-      this.on('load', options.onload);
-    }
-    if (options.onerror) {
-      // TODO: choose diff evt name to avoid special 'error' treatment in eventemitter
-      this.on('error', options.onerror);
+    if (callback) {
+      this.bindAssetCallback(callback);
     }
 
     this.type = 'Video';
@@ -69,7 +66,7 @@ define([
     this.request(aRequest);
   }
 
-  var proto = Video.prototype = Object.create(DisplayObject.prototype);
+  var proto = Video.prototype = tools.mixin(Object.create(DisplayObject.prototype), AssetDisplayObject);
 
   /**
    *
@@ -131,10 +128,14 @@ define([
         // TODO: videoWidth vs attr.width
         // TODO: send onload some infos about the target
         this.attr({width: data.width, height: data.height});
-        this.emit('load');
+        // We trigger the event asynchronously so as to ensure that any events
+        // bound after instantiation are still triggered:
+        this.emitAsync('load', this);
         break;
       case 'error':
-        this.emit('error', new Error(data.error));
+        // We trigger the event asynchronously so as to ensure that any events
+        // bound after instantiation are still triggered:
+        this.emitAsync('error', Error(data.error));
     }
 
     return this;
