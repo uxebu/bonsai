@@ -30,14 +30,18 @@ define(function() {
 
           this.isLoading = true;
 
-          loadFn(url, function() {
+          loadFn(url, function(err) {
+            if (err) {
+              cb(err);
+              return;
+            }
             if (cb) {
               if (me.isWaiting) {
                 // If we're waiting then we shouldn't fire the cb until
                 // done() has been called.
                 waitingCallbacks.push(cb);
               } else {
-                cb();
+                cb(null);
               }
             }
             me.isLoading = false;
@@ -56,7 +60,7 @@ define(function() {
         if (!this.isWaiting) {
           // Call any queued callbacks:
           for (var i = 0, l = this.waitingCallbacks.length; i < l; ++i) {
-            this.waitingCallbacks[i]();
+            this.waitingCallbacks[i](null);
           }
         }
         if (this.queue.length) {

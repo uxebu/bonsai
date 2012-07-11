@@ -7,9 +7,10 @@
  */
 define([
   './display_object',
+  './asset_display_object',
   '../asset/asset_request',
   '../tools'
-], function(DisplayObject, AssetRequest, tools) {
+], function(DisplayObject, AssetDisplayObject, AssetRequest, tools) {
   'use strict';
 
   var data = tools.descriptorData, accessor = tools.descriptorAccessor;
@@ -43,18 +44,14 @@ define([
    * @property {number} __supportedAttributes__.width The width of the bitmap.
    *
    */
-  function Bitmap(loader, source, options) {
-    options || (options = {});
+  function Bitmap(loader, source, callback) {
+
     this._loader = loader;
 
     DisplayObject.call(this);
 
-    if (options.onload) {
-      this.on('load', options.onload);
-    }
-    if (options.onerror) {
-      // TODO: choose diff evt name to avoid special 'error' treatment in eventemitter
-      this.on('error', options.onerror);
+    if (callback) {
+      this.bindAssetCallback(callback);
     }
 
     this.type = 'Bitmap';
@@ -77,7 +74,7 @@ define([
     this.attr('source', source);
   }
 
-  var proto = Bitmap.prototype = Object.create(DisplayObject.prototype);
+  var proto = Bitmap.prototype = tools.mixin(Object.create(DisplayObject.prototype), AssetDisplayObject);
 
   /**
    *
@@ -126,11 +123,15 @@ define([
         this._attributes._naturalHeight = data.height;
         this._mutatedAttributes.naturalWidth = true;
         this._mutatedAttributes.naturalHeight = true;
-        this.emit('load', this);
+        // We trigger the event asynchronously so as to ensure that any events
+        // bound after instantiation are still triggered:
+        this.emitAsync('load', this);
         this.markUpdate();
         break;
       case 'error':
-        this.emit('error', Error(data.error), this);
+        // We trigger the event asynchronously so as to ensure that any events
+        // bound after instantiation are still triggered:
+        this.emitAsync('error', Error(data.error), this);
         break;
     }
 

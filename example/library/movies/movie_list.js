@@ -86,7 +86,7 @@ movieList = {
     'layering.js'
   ],
   'Logo': [
-    'bonsai-logo-full.js'
+    'bikeshed-logo-full.js'
   ],
   'Misc': [
     'stepping_feet.js',
