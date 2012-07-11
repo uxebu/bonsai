@@ -5,6 +5,23 @@ define([
 ], function(Stage, makeScriptLoader, tools) {
   'use strict';
 
+  function exposePlugins(isGlobal, target, mixin) {
+    for (var i in mixin) {
+      if (i === 'stage') {
+        continue; // don't allow stage to be overwritten
+      }
+      if (isGlobal) {
+        // Make sure any global assignment errors don't prevent other
+        // properties from being exposed. (e.g. trying to expose `Infinity`)
+        try {
+          target[i] = mixin[i];
+        } catch(e) {}
+      } else {
+        target[i] = mixin[i];
+      }
+    }
+  }
+
   return function(messageChannel, iframeWindow) {
 
     var doc = iframeWindow.document;
@@ -26,7 +43,7 @@ define([
 
     // Expose bonsai API in iframe window
     tools.mixin(iframeWindow, env);
-    iframeWindow.exports = {}; // for plugins
+    var globalExports = iframeWindow.exports = {}; // for plugins
 
     // As per the boostrap's contract, it must provide stage.loadSubMovie
     stage.loadSubMovie = function(movieUrl, callback, movieInstance) {
@@ -41,7 +58,13 @@ define([
       // (Opera would initiate a separate script context if we did it after)
       subWindow.document.open();
       subWindow.document.close();
+
+      // Expose bonsai on sub-movie:
       tools.mixin(subWindow, subEnvironment.exports);
+
+      // Expose top-level plugin exports on every sub-movie:
+      exposePlugins(false, subWindow.bonsai, globalExports);
+      exposePlugins(true, subWindow, globalExports);
 
       subWindow.stage = subMovie;
       subMovie.root = this;
@@ -75,18 +98,8 @@ define([
       } else if (message.command === 'runScript') {
         loader.load('data:text/javascript,' + encodeURIComponent(message.code));
       } else if (message.command === 'exposePluginExports') {
-        var exports = iframeWindow.exports;
-        for (var i in exports) {
-          if (i === 'stage') {
-            continue; // don't allow stage to be overwritten
-          }
-          // Make sure any global assignment errors don't prevent other
-          // properties from being exposed. (e.g. trying to expose `NaN`)
-          try {
-            iframeWindow[i] = exports[i];
-            env[i] = exports[i];
-          } catch(e) {}
-        }
+        exposePlugins(false, env, globalExports);
+        exposePlugins(true, iframeWindow, globalExports);
       }
     });
 
