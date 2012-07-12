@@ -10,10 +10,11 @@
 // a timeline-controlled container.
 define([
   './display_object',
+  './asset_display_object',
   './display_list',
   './timeline',
   '../tools'
-], function(DisplayObject, DisplayList, Timeline, tools) {
+], function(DisplayObject, AssetDisplayObject, DisplayList, Timeline, tools) {
   'use strict';
 
   /**
@@ -26,16 +27,30 @@ define([
    * @mixes module:timeline.Timeline
    * @mixes module:display_list.DisplayList
    */
-  function Movie(root, url, onLoad, onError) {
+  function Movie(root, url, callback) {
     DisplayObject.call(this);
+
+    if (callback) {
+      this.bindAssetCallback(callback);
+    }
+
     this.root = root;
     this._children = [];
+    var me = this;
     if (url) {
-      root.loadSubMovie(url, onLoad, onError, this);
+      root.loadSubMovie(url, function(err) {
+        // We trigger the event asynchronously so as to ensure that any events
+        // bound after instantiation are still triggered:
+        if (err) {
+          me.emitAsync('error', err, me);
+        } else {
+          me.emitAsync('load', me);
+        }
+      }, this);
     }
   }
 
-  var proto = Movie.prototype = tools.mixin(Object.create(DisplayObject.prototype), Timeline, DisplayList);
+  var proto = Movie.prototype = tools.mixin(Object.create(DisplayObject.prototype), Timeline, DisplayList, AssetDisplayObject);
 
   proto.loadSubMovie = function() {
     return this.root.loadSubMovie.apply(this.root, arguments);

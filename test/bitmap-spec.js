@@ -5,6 +5,64 @@ require([
   'use strict';
 
   describe('Bitmap', function() {
+    describe('Callbacks', function() {
+      it('Calls loader.request()', function() {
+        var loader = { request: jasmine.createSpy('request') };
+        new Bitmap(loader, 'img.png');
+        expect(loader.request).toHaveBeenCalled();
+      });
+      it('Calls load event [and callback] upon load success', function() {
+        var loader = {
+          request: function(bitmapInstance, request, type) {
+            bitmapInstance.notify('load', { width: 0, height: 0 });
+          }
+        };
+        var eventHandler = jasmine.createSpy('eventHandler');
+        var callbackCalled = false;
+        var callback = function(err) {
+          expect(err).toBe(null);
+          expect(this).toBe(bitmap);
+          callbackCalled = true;
+        };
+        var bitmap = new Bitmap(loader, 'img.jpg', callback).on('load', eventHandler);
+        // Events will be triggered async, even with a mock loader,
+        // This is forced by Bitmap, so as to make sure that post-instantiation events
+        // still get fired.
+        async(function(next) {
+          setTimeout(function() {
+            expect(eventHandler).toHaveBeenCalled();
+            expect(callbackCalled).toBe(true);
+            next();
+          }, 10);
+        });
+      });
+      it('Calls error event [and callback] upon load error', function() {
+        var loader = {
+          request: function(bitmapInstance, request, type) {
+            bitmapInstance.notify('error', { error: 'errorMessage123' });
+          }
+        };
+        var eventHandler = jasmine.createSpy('eventHandler');
+        var callbackCalled = false;
+        var callback = function(err) {
+          expect(err instanceof Error).toBe(true);
+          expect(err.message).toBe('errorMessage123');
+          expect(this).toBe(bitmap);
+          callbackCalled = true;
+        };
+        var bitmap = new Bitmap(loader, 'img.jpg', callback).on('error', eventHandler);
+        // Events will be triggered async, even with a mock loader,
+        // This is forced by Bitmap, so as to make sure that post-instantiation events
+        // still get fired.
+        async(function(next) {
+          setTimeout(function() {
+            expect(eventHandler).toHaveBeenCalled();
+            expect(callbackCalled).toBe(true);
+            next();
+          }, 10);
+        });
+      });
+    });
     describe('#getComputed()', function() {
       it('should return the bitmap width if invoked with "width"', function() {
         var width = 123;
@@ -60,6 +118,21 @@ require([
 
       it('should return 0 if invoked with "left"', function() {
         expect(new Bitmap().getComputed('left')).toBe(0);
+      });
+
+      it('Should calculate width from width/height ratio if not specified and vice-versa', function() {
+        var b = new Bitmap();
+        b._attributes._naturalWidth = 400;
+        b._attributes._naturalHeight = 200;
+        expect(b.getComputed('width')).toBe(400);
+        expect(b.getComputed('height')).toBe(200);
+        b.attr('width', 500);
+        expect(b.getComputed('width')).toBe(500);
+        expect(b.getComputed('height')).toBe(250); // <- calculated from ratio
+        b.attr('width', null);
+        b.attr('height', 10);
+        expect(b.getComputed('width')).toBe(20); // <- calculated from ratio
+        expect(b.getComputed('height')).toBe(10);
       });
 
       it('should return an object with "top", "right", "bottom", "left", ' +

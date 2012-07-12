@@ -7,9 +7,10 @@
  */
 define([
   './display_object',
+  './asset_display_object',
   '../asset/asset_request',
   '../tools'
-], function(DisplayObject, AssetRequest, tools) {
+], function(DisplayObject, AssetDisplayObject, AssetRequest, tools) {
   'use strict';
 
   var data = tools.descriptorData, accessor = tools.descriptorAccessor;
@@ -43,18 +44,14 @@ define([
    * @property {number} __supportedAttributes__.width The width of the bitmap.
    *
    */
-  function Bitmap(loader, source, options) {
-    options || (options = {});
+  function Bitmap(loader, source, callback) {
+
     this._loader = loader;
 
     DisplayObject.call(this);
 
-    if (options.onload) {
-      this.on('load', options.onload);
-    }
-    if (options.onerror) {
-      // TODO: choose diff evt name to avoid special 'error' treatment in eventemitter
-      this.on('error', options.onerror);
+    if (callback) {
+      this.bindAssetCallback(callback);
     }
 
     this.type = 'Bitmap';
@@ -77,7 +74,7 @@ define([
     this.attr('source', source);
   }
 
-  var proto = Bitmap.prototype = Object.create(DisplayObject.prototype);
+  var proto = Bitmap.prototype = tools.mixin(Object.create(DisplayObject.prototype), AssetDisplayObject);
 
   /**
    *
@@ -126,28 +123,56 @@ define([
         this._attributes._naturalHeight = data.height;
         this._mutatedAttributes.naturalWidth = true;
         this._mutatedAttributes.naturalHeight = true;
-        this.emit('load', this);
+        // We trigger the event asynchronously so as to ensure that any events
+        // bound after instantiation are still triggered:
+        this.emitAsync('load', this);
         this.markUpdate();
         break;
       case 'error':
-        this.emit('error', Error(data.error), this);
+        // We trigger the event asynchronously so as to ensure that any events
+        // bound after instantiation are still triggered:
+        this.emitAsync('error', Error(data.error), this);
         break;
     }
 
     return this;
   };
 
+  /**
+   * Get computed dimensions of the bitmap
+   *
+   * @param {String} key any of 'size', 'width', 'height', 'top', 'right', 'left', 'bottom'
+   * @returns {Object|Number} For the key 'size' it'll return an object with all
+   *  properties, otherwise it'll return a single number for the key specified.
+   */
   proto.getComputed = function(key) {
-    var value, size = key === 'size' && {top: 0, right: 0, bottom: 0, left: 0};
+
+    var value,
+        size = key === 'size' && {top: 0, right: 0, bottom: 0, left: 0},
+        naturalWidth = this._attributes._naturalWidth,
+        naturalHeight = this._attributes._naturalHeight,
+        attrWidth = this.attr('width'),
+        attrHeight = this.attr('height'),
+        naturalRatio = naturalWidth / naturalHeight,
+
+        // If one dimensions is not specified, then we use the other dimension
+        // and the ratio to calculate its size:
+        width = attrWidth || (
+          attrHeight != null ? naturalRatio * attrHeight : naturalWidth
+        ) || 0,
+        height = attrHeight || (
+          attrWidth != null ? attrWidth / naturalRatio : naturalHeight
+        ) || 0;
+
     if (key === 'width' || key === 'right') {
-      value = this.attr('width') || 0;
+      value = width;
     } else if (size) {
-      size.right = size.width = this.attr('width') || 0;
+      size.right = size.width = width;
     }
     if (key === 'height' || key === 'bottom') {
-      value = this.attr('height') || 0;
+      value = height;
     } else if (size) {
-      size.bottom = size.height = this.attr('height') || 0;
+      size.bottom = size.height = height;
     }
     if (key === 'top' || key === 'left') {
       value = 0;

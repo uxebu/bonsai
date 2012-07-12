@@ -2,7 +2,7 @@ require([
   'bonsai/runner/movie',
   './runner.js'
 ], function(Movie) {
-  
+
   describe('Movie', function(){
 
     it('Sets its root to first argument [usually bound by environment.js]', function() {
@@ -16,12 +16,11 @@ require([
         loadSubMovie: jasmine.createSpy('loadSubMovie')
       };
       var url = 'http://abc.def/pa/t/h.js';
-      var onSuccess = function() {};
-      var onError = function() {};
-      var m = new Movie(root, url, onSuccess, onError);
-      expect(root.loadSubMovie).toHaveBeenCalledWith(url, onSuccess, onError, m);
+      var callback = function() {};
+      var m = new Movie(root, url, callback);
+      expect(root.loadSubMovie).toHaveBeenCalled();
     });
 
   });
-  
+
 });

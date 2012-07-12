@@ -250,10 +250,10 @@ function(tools, colorMap) {
         break;
       default:
         // h,s,l,a
-        this.set(prop, range ? min(
+        this.set(prop, range ? max(0, min(
           1,
           (n * range) + current - range/2
-        ) : n);
+        )) : n);
     }
 
     return this;
