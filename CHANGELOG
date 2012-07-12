@@ -1,6 +1,7 @@
 v0.2.1 / 2012-07-12
 -------------------
-
+* Added an option to bonsai.run that allows browser events not to be preventDefault’ed:
+  `bonsai.run(node, {allowEventDefaults: true})`
 
 v0.2.0 / 2012-07-09
 -------------------
