@@ -188,6 +188,7 @@ define([
   function SvgRenderer(node, width, height, allowEventDefaults, fpsLog) {
     this.width = width;
     this.height = height;
+    this.allowEventDefaults = !!allowEventDefaults;
 
     var svg = this.svg = new Svg(node, width, height);
 

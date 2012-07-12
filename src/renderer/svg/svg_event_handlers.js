@@ -80,11 +80,6 @@ define([
           identifier,
           touch;
 
-      // Prevent automatic scrolling that occurs in UIWebView
-      if (type === 'touchmove') {
-        domEvent.preventDefault();
-      }
-
       if (allTouches && allTouches.length) {
         // Fire the non-multi event for the very first event in the touch-list
         allTouches[0].type = type;
@@ -124,8 +119,10 @@ define([
     handleEvent: function(domEvent) {
 
       var target = domEvent.target;
-      if (target.ownerSVGElement || target.nodeName === 'svg') {
-        // only prevent default for SVG elements, not for embedded html
+
+      // only prevent default for SVG elements, not for embedded html
+      if (!this.allowEventDefaults && (target.ownerSVGElement || target.nodeName === 'svg')) {
+        // event killing is needed to prevent native scrolling etc. within bonsai movies
         domEvent.preventDefault();
       }
 
@@ -210,7 +207,6 @@ define([
           event.diffY = clientY - start[1];
           event.deltaX = clientX - last[0];
           event.deltaY = clientY - last[1];
-          domEvent.preventDefault();
           break;
         case 'keypress':
           type = 'key';

@@ -5,6 +5,7 @@ require([
   describe('SvgRenderer', function() {
     function createFakeDomNode() {
       return {
+        ownerSVGElement: {},
         appendChild: function() {},
         setAttribute: function() {}
       };
@@ -12,6 +13,47 @@ require([
     function createSvgRenderer() {
       return new SvgRenderer(createFakeDomNode(), 1, 1);
     }
+
+    describe('allowEventDefaults', function() {
+      it('should assign the constructor value as property', function() {
+        expect(new SvgRenderer(createFakeDomNode(), 1, 1, true).allowEventDefaults).toBe(true);
+      });
+
+      it('should not call .preventDefault() on events when allowEventDefaults is set to true', function() {
+        var renderer = createSvgRenderer();
+        renderer.allowEventDefaults = true;
+
+        var event = {
+          target: createFakeDomNode(),
+          preventDefault: jasmine.createSpy('preventDefault')
+        };
+        renderer.handleEvent(event);
+        expect(event.preventDefault).not.toHaveBeenCalled();
+      });
+
+      it('should call .preventDefault() on events when allowEventDefaults is set to false', function() {
+        var renderer = createSvgRenderer();
+        renderer.allowEventDefaults = false;
+
+        var event = {
+          target: createFakeDomNode(),
+          preventDefault: jasmine.createSpy('preventDefault')
+        };
+        renderer.handleEvent(event);
+        expect(event.preventDefault).toHaveBeenCalled();
+      });
+
+      it('should call .preventDefault() on events when allowEventDefaults is not set', function() {
+        var renderer = createSvgRenderer();
+
+        var event = {
+          target: createFakeDomNode(),
+          preventDefault: jasmine.createSpy('preventDefault')
+        };
+        renderer.handleEvent(event);
+        expect(event.preventDefault).toHaveBeenCalled();
+      });
+    });
 
     describe('#render', function() {
       it('should emit a "canRender" event after rendering', function() {
