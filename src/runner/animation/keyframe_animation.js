@@ -1,14 +1,3 @@
-/**
- * This module conatins the KeyframeAnimation class
- *
- * @todo
- * - Clean up and comment
- *
- * @exports KeyframeAnimation
- * @requires module:animation
- * @requires module:tools
- * @requires module:event_emitter
- */
 define([
   './animation',
   './easing',
@@ -22,9 +11,11 @@ define([
       hasOwn = {}.hasOwnProperty;
 
   /**
-   * The KeyframeAnimation class stuff
+   * Creates a KeyframeAnimation instance
    *
    * @constructor
+   * @name KeyframeAnimation
+   * @memberOf module:animation
    * @param {EventEmitter} clock An object that emits a 'tick' event and
    *  has a `toFrameNumber` method.
    * @param {number|string} duration The duration, either as frames (number)
@@ -64,7 +55,8 @@ define([
     }
   }
 
-  KeyframeAnimation.prototype = {
+
+  KeyframeAnimation.prototype = /** @lends module:animation.KeyframeAnimation.prototype */ {
 
     /**
      * Starts or resumes an animation

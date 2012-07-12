@@ -1,6 +1,3 @@
-/**
- * This module contains the color module
- */
 define([
   './tools',
   './color_map'
@@ -8,26 +5,26 @@ define([
 function(tools, colorMap) {
   'use strict';
 
+  /**
+   * @module color
+   */
+
   var abs = Math.abs,
       max = Math.max,
       min = Math.min,
       rand = Math.random,
       round = Math.round;
 
-  var proto = RGBAColor.prototype;
-
   /**
-   * Parses a color value and returns an integer in 0x<rr><gg><bb><aa> format.
+   * Parses a color value and returns a color.RGBAColor instance.
    *
-   * Supported input formats:
-   *   - 0x<rr><gg><bb><aa>
-   *   - '#<rr><gg><bb>'
-   *   - 'rgb(<r>, <g>, <b>)'
-   *   - 'rgba(<r>, <g>, <b>, <a>)'
-   *   - 'hsl(<hue>, <saturation>, <lightness>)'
-   *   - 'hsla(<hue>, <saturation>, <lightness>, <alpha>)'
-   *
-   * @param c The color
+   * @name color
+   * @function
+   * @memberOf module:color
+   * @param {String|Number|RGBAColor} c The color to be parsed, a number of the
+   *  form `0x<rr><gg><bb><aa>`, a string (color name found in color_map) or
+   *  a any of `rgb`, `rgba`, `hsl`, `hsla`, or hex (`#RRGGBB`).
+   * @returns {null|RGBAColor} An RGBAColor instance or null for failed parsing
    */
   function color(c, fallback) {
     c = color.parse(c, fallback);
@@ -42,8 +39,11 @@ function(tools, colorMap) {
   color.RGBAColor = RGBAColor;
 
   /**
-   * Represents the R, G, B and A values of a color.
+   * Represents a color by its R, G, B and A values
    *
+   * @constructor
+   * @name RGBAColor
+   * @memberOf module:color
    * @param {Number} r Red (0..255)
    * @param {Number} g Green (0..255)
    * @param {Number} b Blue (0..255)
@@ -63,6 +63,9 @@ function(tools, colorMap) {
       l: hsl.l
     };
   }
+
+  /** @lends color.RGBAColor.prototype */
+  var proto = RGBAColor.prototype;
 
   proto.red         = proto.r = getSet('r');
   proto.green       = proto.g = getSet('g');
@@ -84,7 +87,7 @@ function(tools, colorMap) {
    * Set one of r, g, b, a, h, s, l
    * It allows the full forms too, since it only grabs charAt(0)
    * E.g. red, alpha, hue, lightness etc.
-
+   *
    * @param {String|Object} prop Property to change (e.g. hue, or h) or a
    * hash-map of properties andT values
    * @param {String} [val] Value to change if prop is the property and NOT a
@@ -166,7 +169,7 @@ function(tools, colorMap) {
   /**
    * Returns a lighter color
    *
-   * @returns {Number} [n] Increase by n lightness
+   * @param {Number} [n] Increase by n lightness
    */
   proto.lighter = function(n) {
     var clone = this.clone();
@@ -177,7 +180,7 @@ function(tools, colorMap) {
   /**
    * Returns a darker color
    *
-   * @returns {Number} [n] Decreased by n lightness
+   * @param {Number} [n] Decreased by n lightness
    */
   proto.darker = function(n) {
     var clone = this.clone();
@@ -188,7 +191,7 @@ function(tools, colorMap) {
   /**
    * Returns the midpoint color between this color and whatever is passed
    *
-   * @returns {RGBAColor} The midpoint color
+   * @param {RGBAColor|String|Number} c The midpoint color
    */
   proto.midpoint = function(c) {
     c = color(c);
@@ -208,25 +211,25 @@ function(tools, colorMap) {
    *
    * @returns {RGBAColor} The current RGBAColor instance
    */
-   proto.setColorMatrix = function(colorMatrix) {
-      var cm = [],
-          props = this._properties,
-          r = props.r,
-          g = props.g,
-          b = props.b,
-          a = props.a;
-      // cast to numbers
-      for(var i = colorMatrix.length; i--;) {
-        cm[i] = +colorMatrix[i];
-      }
-
-      this.set('r', range(r * cm[0]  + g * cm[1]  + b * cm[2]  + a * cm[3]  + 255 * cm[4],  0, 255));
-      this.set('g', range(r * cm[5]  + g * cm[6]  + b * cm[7]  + a * cm[8]  + 255 * cm[9],  0, 255));
-      this.set('b', range(r * cm[10] + g * cm[11] + b * cm[12] + a * cm[13] + 255 * cm[14], 0, 255));
-      this.set('a', range(r * cm[15] + g * cm[16] + b * cm[17] + a * cm[18] +       cm[19], 0,   1));
-
-      return this;
+  proto.setColorMatrix = function(colorMatrix) {
+    var cm = [],
+        props = this._properties,
+        r = props.r,
+        g = props.g,
+        b = props.b,
+        a = props.a;
+    // cast to numbers
+    for(var i = colorMatrix.length; i--;) {
+      cm[i] = +colorMatrix[i];
     }
+
+    this.set('r', range(r * cm[0]  + g * cm[1]  + b * cm[2]  + a * cm[3]  + 255 * cm[4],  0, 255));
+    this.set('g', range(r * cm[5]  + g * cm[6]  + b * cm[7]  + a * cm[8]  + 255 * cm[9],  0, 255));
+    this.set('b', range(r * cm[10] + g * cm[11] + b * cm[12] + a * cm[13] + 255 * cm[14], 0, 255));
+    this.set('a', range(r * cm[15] + g * cm[16] + b * cm[17] + a * cm[18] +       cm[19], 0,   1));
+
+    return this;
+  };
 
   proto._setPointAlongRange = function(prop, n, range) {
 
@@ -432,17 +435,10 @@ function(tools, colorMap) {
   }
 
   /**
-   * Parses a color value and returns an object with the properties:
-   * 'r', 'g', 'b' and 'a'
+   * Parses a color value and returns an RGBAColor instance
    *
-   * Supported input formats:
-   *   - 0x<rr><gg><bb><aa>
-   *   - '#<rr><gg><bb>'
-   *   - 'rgb(<r>, <g>, <b>)'
-   *   - 'rgba(<r>, <g>, <b>, <a>)'
-   *   - 'hsl(<hue>, <saturation>, <lightness>)'
-   *   - 'hsla(<hue>, <saturation>, <lightness>, <alpha>)'
-   *
+   * @name color.parse
+   * @memberOf module:color
    * @param value The value to parse as a color
    * @param fallback The value to fallback on if we can't parse `value`
    */

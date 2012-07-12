@@ -528,7 +528,6 @@ define([
      * @param {mixed} [value] If `attr` parameter is string: Sets the attribute
      *    to this value.
      * @returns {this|mixed} The instance if setting, else attribute value(s).
-     * @memberOf module:display_object.DisplayObject
      */
     attr: function(attr, value) {
       var copy,
