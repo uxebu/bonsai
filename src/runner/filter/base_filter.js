@@ -1,6 +1,7 @@
 define([], function() {
   'use strict';
 
+  /** @module filter */
   var filter = {
 
     /**
@@ -10,6 +11,8 @@ define([], function() {
      * but rather as a base class for filter implementations.
      *
      * @constructor
+     * @memberOf module:filter
+     * @name filter.BaseFilter
      *
      * @param {string} type The type of Filter.
      * @param {mixed} [value] Filter value.
@@ -33,6 +36,7 @@ define([], function() {
     /**
      * Method to create filter factory.
      *
+     * @memberOf module:filter
      * @param  {string} factoryName name of the to be created factory.
      * @param  {string} className name of the to be exposed class.
      *

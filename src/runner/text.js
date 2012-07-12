@@ -1,10 +1,3 @@
-/**
- * This module contains the Text class.
- *
- * @exports text
- * @requires module:display_object
- * @requires module:tools
- */
 define([
   './group',
   './text_span',
@@ -88,8 +81,8 @@ define([
    * The Text constructor
    *
    * @constructor
-   *
-   * @extends module:display_object.DisplayObject
+   * @name Text
+   * @extends DisplayObject
    * @param {String} text The text content
    *
    * @property {__list__} __supportedAttributes__ List of supported attribute names.

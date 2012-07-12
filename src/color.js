@@ -64,7 +64,7 @@ function(tools, colorMap) {
     };
   }
 
-  /** @lends color.RGBAColor.prototype */
+  /** @lends module:color.RGBAColor.prototype */
   var proto = RGBAColor.prototype;
 
   proto.red         = proto.r = getSet('r');

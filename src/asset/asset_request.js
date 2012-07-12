@@ -7,22 +7,15 @@ define([
   var isArray = tools.isArray;
 
   /**
-   * This module contains the AssetRequest class.
-   *
-   * @exports AssetRequest
-   */
-  var AssetRequest;
-
-  /**
    * The AssetRequest constructor
    *
    * @constructor
-   *
+   * @name AssetRequest
+   * @private
    * @param {String|Array|Object} request TODO
    * @returns {AssetRequest} The new AssetRequest Instance
-   * @memberOf module:assetrequest
    */
-  AssetRequest = function(request) {
+  function AssetRequest(request) {
 
     var i, len, source, loadLevel, resources, loadLevel;
 
@@ -60,7 +53,7 @@ define([
 
     // TODO: validate against supported load levels
     this.loadLevel = loadLevel || null;
-  };
+  }
 
   return AssetRequest;
 });

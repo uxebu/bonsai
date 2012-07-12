@@ -71,7 +71,7 @@ define([
    *    - Infinity: The animation is repeated endlessly
    * @returns {Animation} An Animation instance
    *
-   * @mixes module:event_emitter.EventEmitter
+   * @mixes EventEmitter
    */
   function Animation(clock, duration, properties, options) {
 

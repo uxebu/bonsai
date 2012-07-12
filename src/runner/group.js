@@ -1,11 +1,3 @@
-/**
- * Contains the Group class.
- * @exports group
- * @requires module:display_object
- * @requires module:display_list
- * @requires module:tools
- */
-// a simple container.
 define([
   './display_object',
   './display_list',
@@ -17,21 +9,18 @@ define([
    * The Group constructor
    *
    * @constructor
-   *
-   * @extends module:display_object.DisplayObject
-   * @mixes module:display_list.DisplayList
-   * @memberOf module:group
+   * @name Group
+   * @extends DisplayObject
+   * @mixes DisplayList
    */
   function Group() {
     DisplayObject.call(this);
   }
 
+  /** @lends Group.prototype */
   var proto = Group.prototype = Object.create(DisplayObject.prototype);
   tools.mixin(proto, DisplayList);
 
-  /**
-   * @see module:display_object.DisplayObject.type
-   */
   proto.type = 'Group';
 
   /**

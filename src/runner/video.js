@@ -1,10 +1,3 @@
-/**
- * Contains the Video class.
- *
- * @exports video
- * @requires module:display_object
- * @requires module:tools
- */
 define([
   './display_object',
   './asset_display_object',
@@ -21,8 +14,8 @@ define([
    * The Video constructor
    *
    * @constructor
-   *
-   * @extends module:display_object.DisplayObject
+   * @name Video
+   * @extends DisplayObject
    *
    * @param {AssetLoader} loader the asset loader to use
    * @param {String|Array} aRequest The request needs to accomplish the requirements of AssetRequest

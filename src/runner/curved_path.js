@@ -30,7 +30,6 @@ define([
    * The Curve Module/Contructor
    *
    * @constructor
-   * @extends module:display_object.DisplayObject
    *
    * @returns {Curve} A new Instance of Curve
    * @memberOf module:curve

@@ -1,11 +1,3 @@
- /**
- * This module contains the stage object.
- *
- * @requires module:tools
- * @requires module:timeline
- * @requires module:event_emitter
- * @exports stage
- */
 define([
   '../event_emitter',
   './display_list',

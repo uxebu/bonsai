@@ -1,13 +1,3 @@
-/**
- * Contains the Movie class.
- *
- * @exports movie
- * @requires module:display_object
- * @requires module:display_list
- * @requires module:timeline
- * @requires module:tools
- */
-// a timeline-controlled container.
 define([
   './display_object',
   './asset_display_object',
@@ -21,11 +11,12 @@ define([
    * The Movie constructor
    *
    * @constructor
+   * @name Movie
    * @param {Stage} root The root object this movie belongs to.
    *
-   * @extends module:display_object.DisplayObject
-   * @mixes module:timeline.Timeline
-   * @mixes module:display_list.DisplayList
+   * @extends DisplayObject
+   * @mixes Timeline
+   * @mixes DisplayList
    */
   function Movie(root, url, callback) {
     DisplayObject.call(this);
@@ -57,7 +48,7 @@ define([
   };
 
   /**
-   * @see module:display_object.DisplayObject.type
+   * @see DisplayObject.type
    */
   proto.type = 'Movie';
 

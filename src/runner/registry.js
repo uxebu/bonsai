@@ -21,6 +21,7 @@ define(function() {
 
   /**
    * @constructor
+   * @private
    */
   function Registry() {
     return {
@@ -31,6 +32,7 @@ define(function() {
        * in case of events, e.g. that need to be delegated to the according
        * DisplayObject instance.
        *
+       * @private
        * @type {object}
        */
       displayObjects: Object.create(null),
@@ -42,6 +44,7 @@ define(function() {
        * in case of asset-loading events. Only DisplayObjects waiting for items to
        * load will be found in this map.
        *
+       * @private
        * @type {object}
        */
       loadingDisplayObjects: Object.create(null),
@@ -52,6 +55,7 @@ define(function() {
        * This map is used to advance every (currently playing) timeline when a
        * frame is entered.
        *
+       * @private
        * @type {object}
        */
       movies: new MovieRegistry(),
@@ -59,6 +63,7 @@ define(function() {
       /**
        * Global Registry for display objects that need to be updated by renderer
        *
+       * @private
        * @type {object}
        */
       needsDraw: Object.create(null),
@@ -66,6 +71,7 @@ define(function() {
       /**
        * Registry for objects that have been inserted or moved.
        *
+       * @private
        * @type {Object}
        */
       needsInsertion: Object.create(null),
@@ -73,16 +79,10 @@ define(function() {
       /**
        * Registry for pending assets (added/removed via AssetLoader)
        *
+       * @private
        * @type {Object}
        */
-      pendingAssets: Object.create(null),
-
-      /**
-       * Registry for wrapped plugins
-       *
-       * @type {Object}
-       */
-      plugins: []
+      pendingAssets: Object.create(null)
     };
   }
 

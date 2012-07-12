@@ -1,10 +1,3 @@
-/**
- * Contains the Bitmap class.
- *
- * @exports bitmap
- * @requires module:display_object
- * @requires module:tools
- */
 define([
   './display_object',
   './asset_display_object',
@@ -26,7 +19,7 @@ define([
    *
    * @constructor
    *
-   * @extends module:display_object.DisplayObject
+   * @extends DisplayObject
    *
    * @param {AssetLoader} loader The asset loader to use;
    * @param {string} source The source url of the bitmap

@@ -17,7 +17,7 @@ function(tools, EventEmitter, URI) {
    * Encapsulates Renderer [resides in same script context as Bootstrapper]
    *
    * @class
-   * @mixes module:event_emitter.EventEmitter
+   * @mixes EventEmitter
    * @param {Renderer} renderer The renderer to use.
    * @param {AssetController} assetController The RunnerContext controller to use.
    * @param {RunnerContext} runnerContext The runner-context to use.

@@ -30,7 +30,7 @@ define([
    *    get and set properties on the subjects.
    * @returns {KeyframeAnimation} An KeyframeAnimation instance
    *
-   * @mixes module:event_emitter.EventEmitter
+   * @mixes EventEmitter
    */
   function KeyframeAnimation(clock, duration, keyframes, options) {
     options || (options = {});

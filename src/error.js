@@ -6,6 +6,7 @@ define(function() {
    * to parse segments.
    *
    * @constructor
+   * @private
    * @param {Array} args The error args. Must at least provide a message.
    * @returns {Error} The error instance.
    * @memberOf module:error

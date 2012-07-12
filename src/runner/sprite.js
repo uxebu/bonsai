@@ -1,11 +1,3 @@
-/**
- * Contains the Sprite class.
- *
- * @exports movie
- * @requires module:group
- * @requires module:bitmap
- * @requires module:tools
- */
 define([
   './bitmap',
   './group',
@@ -19,8 +11,8 @@ define([
    * The Sprite constructor
    *
    * @constructor
-   *
-   * @extends module:group.Group
+   * @name Sprite
+   * @extends Group
    */
   function Sprite(loader, sources, options) {
 
