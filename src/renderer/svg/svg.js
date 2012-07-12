@@ -87,6 +87,7 @@ define([
     if (height) {
       root.setAttribute('height', height);
     }
+    svgHelper.cssClasses.add(root, 'nonSelectable');
 
     this.viewBox(width, height);
 
@@ -540,10 +541,10 @@ define([
 
     tspan.setAttributeNS(xlink, 'text-anchor', 'start');
     tspan.setAttribute('alignment-baseline', 'inherit');
-    if (attributes.selectable === false) {
-      cssClasses.add(tspan, 'nonSelectable');
+    if (attributes.selectable !== false) {
+      cssClasses.add(tspan, 'selectable');
     } else {
-      cssClasses.remove(tspan, 'nonSelectable');
+      cssClasses.remove(tspan, 'selectable');
     }
 
     if (attributes.glyphx) {
@@ -574,10 +575,10 @@ define([
         fontSize = attributes.fontSize,
         fontFamily = attributes.fontFamily;
 
-    if (attributes.selectable === false) {
-      cssClasses.add(text, 'nonSelectable');
+    if (attributes.selectable !== false) {
+      cssClasses.add(text, 'selectable');
     } else {
-      cssClasses.remove(text, 'nonSelectable');
+      cssClasses.remove(text, 'selectable');
     }
 
     text.setAttributeNS(xlink, 'text-anchor', 'start');
