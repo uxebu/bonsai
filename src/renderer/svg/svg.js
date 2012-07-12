@@ -179,11 +179,13 @@ define([
    *    Falsy means 'no width applied'.
    * @param {number} height The height to apply to the svg root node.
    *    Falsy means 'no height applied'.
+   * @param {boolean} [allowEventDefaults=false] Whether not to preventDefault()
+   *    browser events;
    * @param {Function|boolean} [fpsLog=false] Whether to log the frame rate.
    *    true displays the frame rate in the rendering, a function will be called
    *    with the framerate.
    */
-  function SvgRenderer(node, width, height, fpsLog) {
+  function SvgRenderer(node, width, height, allowEventDefaults, fpsLog) {
     this.width = width;
     this.height = height;
 
