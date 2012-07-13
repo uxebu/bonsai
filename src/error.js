@@ -22,10 +22,6 @@ define(function() {
   ParserError.prototype = new Error();
   ParserError.prototype.constructor = ParserError;
 
-  /**
-    Custom Error classes.
-    @exports error
-  */
   var error = {
     ParserError: ParserError
   };

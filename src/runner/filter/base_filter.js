@@ -1,7 +1,11 @@
 define([], function() {
   'use strict';
 
-  /** @module filter */
+  /**
+   * The filter module contains classes and factories for the various filters
+   * supported by Bonsai.
+   * @module filter
+   */
   var filter = {
 
     /**

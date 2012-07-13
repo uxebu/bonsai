@@ -1,5 +1,6 @@
 /**
- * This module contains the gradient module
+ * A module for creating linear and radial gradients
+ * @module gradient
  */
 define([
   '../tools',
@@ -12,17 +13,15 @@ function(tools, color, Matrix) {
   var hasOwn = {}.hasOwnProperty;
 
   /**
-   * Parses a gradient spec
+   * Parses a gradient linear-gradient (CSS) string
    *
    * Supported input formats:
-   *   - linear-gradient
-   *        linear-gradient(
-   *          [ [ <angle> | to <side-or-corner> ] ,]?
-   *          <color-stop>[, <color-stop>]+
-   *        )
+   *  + linear-gradient `linear-gradient( [ [ <angle> | to <side-or-corner> ] ,]? <color-stop>[, <color-stop>]+ )
    *
-   *   - radial-gradient
-   *
+   * @name gradient
+   * @private
+   * @function
+   * @memberOf module:gradient
    * @param grad The unparsed gradient
    */
   function gradient(g) {
@@ -39,6 +38,18 @@ function(tools, color, Matrix) {
 
   gradient.DEFAULT_UNITS = 'boundingBox';
 
+  /**
+   * Constructs a LinearGradient instance
+   *
+   * @name LinearGradient
+   * @memberOf module:gradient
+   * @constructor
+   * @param {Number} direction The direction of the gradient in degrees
+   * @param {Array} stops An array of arrays, each sub-array in the form:
+   *  `[color, percentageOffset]`
+   * @param {Matrix} matrix The transformation matrix for the gradient.
+   * @param {String} units Either "boundingBox" or "userSpace"
+   */
   gradient.LinearGradient = function LinearGradient(direction, stops, matrix, units) {
     this.type = 'linear-gradient';
     this.stops = stops;
@@ -47,6 +58,14 @@ function(tools, color, Matrix) {
     this.units = units;
   };
 
+  /**
+   * Clones the instance, returning a new one
+   *
+   * @name clone
+   * @function
+   * @memberOf module:gradient.LinearGradient.prototype
+   * @returns {LinearGradient} The clone
+   */
   gradient.LinearGradient.prototype.clone = function() {
     var stops = [];
     this.stops.forEach(function(stop) {
@@ -60,6 +79,21 @@ function(tools, color, Matrix) {
     );
   };
 
+  /**
+   * Constructs a RadialGradient instance
+   *
+   * @name RadialGradient
+   * @memberOf module:gradient
+   * @constructor
+   * @param {Array} stops Color stops in the form: `['red','yellow',...]` or
+   *                      `[['red', 0], ['green', 50], ['#FFF', 100]]`
+   *                      i.e. Sub-array [0] is color and [1] is percentage
+   * @param {number} radius Radius in percentage
+   * @param {Matrix} matrix Matrix transform for gradient
+   * @param {String} units Either 'userSpace' or 'boundingBox'.
+   * @param {Number} fx Focal x coordinate
+   * @param {Number} fy Focal y coordinate
+   **/
   gradient.RadialGradient = function RadialGradient(stops, radius, matrix, units, fx, fy) {
     this.type = 'radial-gradient';
     this.stops = stops;
@@ -70,6 +104,15 @@ function(tools, color, Matrix) {
     this.fy = fy;
   };
 
+
+  /**
+   * Clones the instance, returning a new one
+   *
+   * @name clone
+   * @function
+   * @memberOf module:gradient.RadialGradient.prototype
+   * @returns {RadialGradient} The clone
+   */
   gradient.RadialGradient.prototype.clone = function() {
     var stops = [];
     this.stops.forEach(function(stop) {
@@ -170,15 +213,19 @@ function(tools, color, Matrix) {
 
   /**
    * Creates a linear gradient
-   * @param {array|object} stops Color stops in the form: `['red','yellow',...]`
+   *
+   * @name linear
+   * @function
+   * @memberOf module:gradient
+   * @param {Array|Object} stops Color stops in the form: `['red','yellow',...]`
    *  or `[['red', 0], ['green', 50], ['#FFF', 100]]`
    *  i.e. Sub-array [0] is color and [1] is percentage
    *  As an object: { 0: 'yellow', 50: 'red', 100: 'green' }
    *
-   * @param {number|string} direction Direction in degrees or a string, one of:
+   * @param {Number|String} direction Direction in degrees or a string, one of:
    *                        `top`, `left`, `right`, `bottom`, `top left`,
    *                        `top right`, `bottom left`, `bottom right`
-   * @param {number} repeat Number of times to repeat gradient stops
+   * @param {Number} repeat Number of times to repeat gradient stops
    * @returns {LinearGradient} A LinearGradient instance
    */
   gradient.linear = function(direction, stops, repeat) {
@@ -192,13 +239,17 @@ function(tools, color, Matrix) {
 
   /**
    * Creates a radial gradient
-   * @param {array} stops Color stops in the form: `['red','yellow',...]` or
+   *
+   * @name radial
+   * @function
+   * @memberOf module:gradient
+   * @param {Array} stops Color stops in the form: `['red','yellow',...]` or
    *                      `[['red', 0], ['green', 50], ['#FFF', 100]]`
    *                      i.e. Sub-array [0] is color and [1] is percentage
-   * @param {number} r Radius in percentage
-   * @param {number} cx X coordinate of center of gradient in percentage
-   * @param {number} cy Y coordinate of center of gradient in percentage
-   * @param {number} repeat Number of times to repeat gradient stops
+   * @param {Number} r Radius in percentage
+   * @param {Number} cx X coordinate of center of gradient in percentage
+   * @param {Number} cy Y coordinate of center of gradient in percentage
+   * @param {Number} repeat Number of times to repeat gradient stops
    * @returns {RadialGradient} A RadialGradient instance
    **/
   gradient.radial = function(stops, radius, cx, cy, repeat) {
@@ -216,12 +267,16 @@ function(tools, color, Matrix) {
 
   /**
    * Creates a linear gradient
-   * @param {array|object} stops Color stops in the form: `['red','yellow',...]`
+   *
+   * @name advancedLinear
+   * @function
+   * @memberOf module:gradient
+   * @param {Array|Object} stops Color stops in the form: `['red','yellow',...]`
    *  or `[['red', 0], ['green', 50], ['#FFF', 100]]`
    *  i.e. Sub-array [0] is color and [1] is percentage
    *  As an object: { 0: 'yellow', 50: 'red', 100: 'green' }
    *
-   * @param {number|string} direction Direction in degrees or a string, one of:
+   * @param {Number|String} direction Direction in degrees or a string, one of:
    *                        `top`, `left`, `right`, `bottom`, `top left`,
    *                        `top right`, `bottom left`, `bottom right`
    * @param {Matrix} [matrix] Matrix transform for gradient
@@ -273,12 +328,16 @@ function(tools, color, Matrix) {
 
   /**
    * Creates a radial gradient
-   * @param {array} stops Color stops in the form: `['red','yellow',...]` or
+   *
+   * @name advancedRadial
+   * @function
+   * @memberOf module:gradient
+   * @param {Array} stops Color stops in the form: `['red','yellow',...]` or
    *                      `[['red', 0], ['green', 50], ['#FFF', 100]]`
    *                      i.e. Sub-array [0] is color and [1] is percentage
-   * @param {number} [r] Radius in percentage (default: 50)
-   * @param {number} [cx] X coordinate of center of gradient in percentage (default: 50)
-   * @param {number} [cy] Y coordinate of center of gradient in percentage (default: 50)
+   * @param {Number} [r] Radius in percentage (default: 50)
+   * @param {Number} [cx] X coordinate of center of gradient in percentage (default: 50)
+   * @param {Number} [cy] Y coordinate of center of gradient in percentage (default: 50)
    * @param {Matrix} [matrix] Matrix transform for gradient
    * @param {String} [repeat] How many times to repeat the gradient
    * @param {String} [units] Either 'userSpace' or 'boundingBox'.

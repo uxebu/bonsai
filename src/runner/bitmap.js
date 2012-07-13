@@ -18,14 +18,16 @@ define([
    * The Bitmap constructor
    *
    * @constructor
-   *
+   * @name Bitmap
    * @extends DisplayObject
+   * @mixes AssetDisplayObject
    *
    * @param {AssetLoader} loader The asset loader to use;
-   * @param {string} source The source url of the bitmap
-   * @param {Object} [options]
-   * @param {Function} [options.onload] A handler for the 'load' event.
-   * @param {Function} [options.onerror] A handler for the 'error' event.
+   * @param {String} [source] The URL location of the movie to load.
+   * @param {Function} [callback] A callback to be called when your movie has
+   *  loaded (only called if you passed a `url`). The callback will be called
+   *  with it's first argument signifying an error. So, if the first argument
+   *  is `null` you can assume the movie was loaded successfully.
    *
    * @property {__list__} __supportedAttributes__ List of supported attribute names.
    *    In addition to the property names listed for DisplayObject,

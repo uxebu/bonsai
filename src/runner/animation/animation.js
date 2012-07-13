@@ -50,8 +50,9 @@ define([
    * @memberOf module:animation
    * @param {EventEmitter} clock An object that emits a 'tick' event and
    *  has a `toFrameNumber` method.
-   * @param {number|string} duration The duration, either as frames (number)
-   *  or as seconds (e.g. '1s')
+   * @param {Number|String} duration The duration, either as frames (number),
+   *  seconds (e.g. '1s'), milliseconds (e.g. '100ms') or as a percentage
+   *  of the clock's total frames (e.g. '23%')
    * @param {Object} [properties] The properties/values to animate
    * @param {Object} [options] Additional options
    * @param {String|Function} [options.easing] Easing function. Either the name

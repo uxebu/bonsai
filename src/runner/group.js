@@ -6,8 +6,9 @@ define([
   'use strict';
 
   /**
-   * The Group constructor
+   * Creates an empty Group instance
    *
+   * @classdesc A group is a DisplayObject that can contain other DisplayObjects.
    * @constructor
    * @name Group
    * @extends DisplayObject

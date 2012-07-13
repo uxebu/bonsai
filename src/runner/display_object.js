@@ -725,7 +725,10 @@ define([
     /**
      * Animates object by specified properties
      *
-     * @param {Object} [properties] The properties/values to animate
+     * @param {Number|String} duration The duration, either as frames (number),
+     *  seconds (e.g. '1s'), milliseconds (e.g. '100ms') or as a percentage
+     *  of the clock's total frames (e.g. '23%')
+     * @param {Object} properties The properties/values to animate
      * @param {Object} [options] Additional options
      * @param {String} [options.easing] Easing function
      * @param {Number} [options.delay] Delay before animation begins, in ms

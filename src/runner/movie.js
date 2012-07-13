@@ -8,15 +8,20 @@ define([
   'use strict';
 
   /**
-   * The Movie constructor
+   * Constructs a Movie instance
    *
    * @constructor
    * @name Movie
-   * @param {Stage} root The root object this movie belongs to.
+   * @param {String} [url] The URL location of the movie to load.
+   * @param {Function} [callback] A callback to be called when your movie has
+   *  loaded (only called if you passed a `url`). The callback will be called
+   *  with it's first argument signifying an error. So, if the first argument
+   *  is `null` you can assume the movie was loaded successfully.
    *
    * @extends DisplayObject
    * @mixes Timeline
    * @mixes DisplayList
+   * @mixes AssetDisplayObject
    */
   function Movie(root, url, callback) {
     DisplayObject.call(this);

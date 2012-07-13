@@ -6,6 +6,7 @@ function(tools, colorMap) {
   'use strict';
 
   /**
+   * The color module provides APIs to use and mutate colors.
    * @module color
    */
 
@@ -16,7 +17,7 @@ function(tools, colorMap) {
       round = Math.round;
 
   /**
-   * Parses a color value and returns a color.RGBAColor instance.
+   * Parses a color value and returns a `color.RGBAColor` instance.
    *
    * @name color
    * @function
@@ -39,8 +40,12 @@ function(tools, colorMap) {
   color.RGBAColor = RGBAColor;
 
   /**
-   * Represents a color by its R, G, B and A values
+   * Constructs a new RGBAColor instance with specified `r`, `g`, `b`, and `a`
+   * values.
    *
+   * @classdesc This class is used internally by the color module. It can be used
+   *  to represent a color consisting of Red, Green, Blue and Alpha values. It also
+   *  provides methods to mutate the color and methods to spawn new colors.
    * @constructor
    * @name RGBAColor
    * @memberOf module:color
@@ -435,7 +440,8 @@ function(tools, colorMap) {
   }
 
   /**
-   * Parses a color value and returns an RGBAColor instance
+   * Parses a color value and returns a 32-bit integer representing the color.
+   * The number is in the form `0x<rr><gg><bb><aa>`.
    *
    * @name color.parse
    * @memberOf module:color
