@@ -671,7 +671,7 @@ define([
     for (var i in attributes) {
       if (/^dom_/.test(i)) {
         if (i === 'dom_innerHTML') {
-          element.innerHTML = attributes[i].replace(/\{\{prefix\}\}/g, fontPrefix);
+          element.innerHTML = (attributes[i] || '').replace(/\{\{prefix\}\}/g, fontPrefix);
         } else {
           element.setAttribute(i.slice(4), attributes[i]);
         }
