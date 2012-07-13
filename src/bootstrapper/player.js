@@ -59,7 +59,7 @@ function(RendererController, AssetController, tools, URI, version) {
 
       var doc = typeof document === 'undefined' ? null : document;
       var context = new this.RunnerContext(this.runnerUrl, doc, options.baseUrl);
-      var renderer = new this.Renderer(node, width, height, options.fpsLog);
+      var renderer = new this.Renderer(node, width, height, options.allowEventDefaults, options.fpsLog);
       var assetController = new this.AssetController();
 
       return new this.RendererController(renderer, assetController, context, options);

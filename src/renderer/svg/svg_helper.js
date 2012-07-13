@@ -70,9 +70,17 @@ define([
                             '-webkit-user-select: none;' +
                             '-khtml-user-select: none;' +
                             '-moz-user-select: none;' +
+                            '-moz-user-select: -moz-none;' +
                             '-ms-user-select: none;' +
                             '-o-user-select: none;' +
-                            'user-select: none;'
+                            'user-select: none;',
+            selectable: '-webkit-touch-callout: default;' +
+              '-webkit-user-select: text;' +
+              '-khtml-user-select: text;' +
+              '-moz-user-select: text;' +
+              '-ms-user-select: text;' +
+              '-o-user-select: text;' +
+              'user-select: text;'
           },
           classNameMap = {},
           classNameUID = 0,

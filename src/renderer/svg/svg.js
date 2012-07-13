@@ -87,6 +87,7 @@ define([
     if (height) {
       root.setAttribute('height', height);
     }
+    svgHelper.cssClasses.add(root, 'nonSelectable');
 
     this.viewBox(width, height);
 
@@ -179,13 +180,16 @@ define([
    *    Falsy means 'no width applied'.
    * @param {number} height The height to apply to the svg root node.
    *    Falsy means 'no height applied'.
+   * @param {boolean} [allowEventDefaults=false] Whether not to preventDefault()
+   *    browser events;
    * @param {Function|boolean} [fpsLog=false] Whether to log the frame rate.
    *    true displays the frame rate in the rendering, a function will be called
    *    with the framerate.
    */
-  function SvgRenderer(node, width, height, fpsLog) {
+  function SvgRenderer(node, width, height, allowEventDefaults, fpsLog) {
     this.width = width;
     this.height = height;
+    this.allowEventDefaults = !!allowEventDefaults;
 
     var svg = this.svg = new Svg(node, width, height);
 
@@ -537,10 +541,10 @@ define([
 
     tspan.setAttributeNS(xlink, 'text-anchor', 'start');
     tspan.setAttribute('alignment-baseline', 'inherit');
-    if (attributes.selectable === false) {
-      cssClasses.add(tspan, 'nonSelectable');
+    if (attributes.selectable !== false) {
+      cssClasses.add(tspan, 'selectable');
     } else {
-      cssClasses.remove(tspan, 'nonSelectable');
+      cssClasses.remove(tspan, 'selectable');
     }
 
     if (attributes.glyphx) {
@@ -571,10 +575,10 @@ define([
         fontSize = attributes.fontSize,
         fontFamily = attributes.fontFamily;
 
-    if (attributes.selectable === false) {
-      cssClasses.add(text, 'nonSelectable');
+    if (attributes.selectable !== false) {
+      cssClasses.add(text, 'selectable');
     } else {
-      cssClasses.remove(text, 'nonSelectable');
+      cssClasses.remove(text, 'selectable');
     }
 
     text.setAttributeNS(xlink, 'text-anchor', 'start');
