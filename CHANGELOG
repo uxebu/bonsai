@@ -2,6 +2,9 @@ v0.2.1 / 2012-07-12
 -------------------
 
 * Aligned callback usage to use node-style single-callbacks. See https://github.com/uxebu/bonsai/pull/1
+* Added an option to bonsai.run that allows browser events not to be preventDefault’ed:
+  `bonsai.run(node, {allowEventDefaults: true})`
+  see: https://github.com/uxebu/bonsai/pull/4
 
 v0.2.0 / 2012-07-09
 -------------------
