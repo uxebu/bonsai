@@ -13,9 +13,10 @@ define([
       if (isGlobal) {
         // Make sure any global assignment errors don't prevent other
         // properties from being exposed. (e.g. trying to expose `Infinity`)
-        try {
+        var descriptor = Object.getOwnPropertyDescriptor(target, i);
+        if (!descriptor || descriptor.writable) {
           target[i] = mixin[i];
-        } catch(e) {}
+        }
       } else {
         target[i] = mixin[i];
       }
