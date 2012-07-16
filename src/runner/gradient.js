@@ -217,14 +217,14 @@ function(tools, color, Matrix) {
    * @name linear
    * @function
    * @memberOf module:gradient
-   * @param {Array|Object} stops Color stops in the form: `['red','yellow',...]`
-   *  or `[['red', 0], ['green', 50], ['#FFF', 100]]`
-   *  i.e. Sub-array [0] is color and [1] is percentage
-   *  As an object: { 0: 'yellow', 50: 'red', 100: 'green' }
    *
    * @param {Number|String} direction Direction in degrees or a string, one of:
    *                        `top`, `left`, `right`, `bottom`, `top left`,
    *                        `top right`, `bottom left`, `bottom right`
+   * @param {Array|Object} stops Color stops in the form: `['red','yellow',...]`
+   *  or `[['red', 0], ['green', 50], ['#FFF', 100]]`
+   *  i.e. Sub-array [0] is color and [1] is percentage
+   *  As an object: { 0: 'yellow', 50: 'red', 100: 'green' }
    * @param {Number} repeat Number of times to repeat gradient stops
    * @returns {LinearGradient} A LinearGradient instance
    */
@@ -246,10 +246,10 @@ function(tools, color, Matrix) {
    * @param {Array} stops Color stops in the form: `['red','yellow',...]` or
    *                      `[['red', 0], ['green', 50], ['#FFF', 100]]`
    *                      i.e. Sub-array [0] is color and [1] is percentage
-   * @param {Number} r Radius in percentage
-   * @param {Number} cx X coordinate of center of gradient in percentage
-   * @param {Number} cy Y coordinate of center of gradient in percentage
-   * @param {Number} repeat Number of times to repeat gradient stops
+   * @param {Number} [radius] Radius in percentage
+   * @param {Number} [cx] X coordinate of center of gradient in percentage
+   * @param {Number} [cy] Y coordinate of center of gradient in percentage
+   * @param {Number} [repeat] Number of times to repeat gradient stops
    * @returns {RadialGradient} A RadialGradient instance
    **/
   gradient.radial = function(stops, radius, cx, cy, repeat) {
