@@ -5,24 +5,6 @@ define([
 ], function(Stage, makeScriptLoader, tools) {
   'use strict';
 
-  function exposePlugins(isGlobal, target, mixin) {
-    for (var i in mixin) {
-      if (i === 'stage') {
-        continue; // don't allow stage to be overwritten
-      }
-      if (isGlobal) {
-        // Make sure any global assignment errors don't prevent other
-        // properties from being exposed. (e.g. trying to expose `Infinity`)
-        var descriptor = Object.getOwnPropertyDescriptor(target, i);
-        if (!descriptor || descriptor.writable) {
-          target[i] = mixin[i];
-        }
-      } else {
-        target[i] = mixin[i];
-      }
-    }
-  }
-
   return function(messageChannel, iframeWindow) {
 
     var doc = iframeWindow.document;
@@ -64,8 +46,9 @@ define([
       tools.mixin(subWindow, subEnvironment.exports);
 
       // Expose top-level plugin exports on every sub-movie:
-      exposePlugins(false, subWindow.bonsai, globalExports);
-      exposePlugins(true, subWindow, globalExports);
+      delete globalExports.stage; // don't allow anything to overwrite the bonsai stage
+      tools.mixin(subWindow.bonsai, globalExports);
+      tools.mixin(subWindow, globalExports);
 
       subWindow.stage = subMovie;
       subMovie.root = this;
@@ -99,8 +82,10 @@ define([
       } else if (message.command === 'runScript') {
         loader.load('data:text/javascript,' + encodeURIComponent(message.code));
       } else if (message.command === 'exposePluginExports') {
-        exposePlugins(false, env, globalExports);
-        exposePlugins(true, iframeWindow, globalExports);
+        // don't allow anything to overwrite the bonsai stage
+        delete globalExports.stage;
+        tools.mixin(env, globalExports);
+        tools.mixin(iframeWindow, globalExports);
       }
     });
 
