@@ -43,6 +43,7 @@ define([
 
   /**
    * Animation translations for filter arrays
+   * @ignore
    */
   return {
     filters: {

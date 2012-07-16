@@ -1,11 +1,3 @@
- /**
- * This module contains the stage object.
- *
- * @requires module:tools
- * @requires module:timeline
- * @requires module:event_emitter
- * @exports stage
- */
 define([
   '../event_emitter',
   './display_list',
@@ -47,13 +39,17 @@ define([
   }
 
   /**
-   * Constructor for movie root stages
+   * Constructs the movie root, i.e. the global `stage`.
    *
+   * @classdesc A Stage instance is the root of your movie. There should never
+   *  be a need to instantiate a new Stage from within a movie.
+   * @name Stage
    * @constructor
-   * @param {Object} messageChannel used to communicate with the renderer
+   * @param {Object} messageChannel The messageChannel object used to
+   *  communicate with the renderer
    *
-   * @mixes module:event_emitter.EventEmitter
-   * @mixes module:timeline.Timeline
+   * @mixes EventEmitter
+   * @mixes Timeline
    */
   function Stage(messageChannel) {
     var registry = this.registry = new Registry();
@@ -78,7 +74,7 @@ define([
 
   }
 
-  Stage.prototype = {
+  Stage.prototype = /** @lends Stage.prototype */ {
     _isFrozen: true,
 
     assetBaseUrl: new URI(null, null, ''),
@@ -95,6 +91,9 @@ define([
       return this;
     },
 
+    /**
+     * Freeze/destroy the loop
+     */
     freeze: function() {
       clearInterval(this._interval);
       this._isFrozen = true;
@@ -175,6 +174,10 @@ define([
      * (should be provided by RunnerContext bootstrap)
      *
      * @param movieUrl URL of sub-movie (will use the dirname of the submovie as asset path)
+     * @param {Function} callback A callback to be called when your movie has
+     *  loaded. The callback will be called with it's first argument signifying
+     *  an error. So, if the first argument is `null` you can assume the movie
+     *  was loaded successfully.
      */
     loadSubMovie: function() {},
 
@@ -182,6 +185,7 @@ define([
      * Returns a new Environment for a sub-movie. This is used by loadSubMovie,
      * which is provided by the context's bootstrap code
      *
+     * @private
      * @returns {Environment} The Submovie Environment
      */
     getSubMovieEnvironment: function(subMovie, subMovieUrl) {
@@ -195,7 +199,8 @@ define([
     },
 
     /**
-     * The main loop.
+     * Processes DisplayObjects in registry and prepares the message to send
+     * to the renderer.
      *
      * When this method is called, it starts another 'tick-cycle'.
      * @private
@@ -399,7 +404,7 @@ define([
     },
 
     /**
-     * Unfreeze/initiate loop
+     * Unfreeze/initiate the loop
      */
     unfreeze: function() {
       if (this._isFrozen) {

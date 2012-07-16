@@ -1,17 +1,8 @@
-/**
- * This module contains the Curve class.
- *
- * @exports curve
- */
 define([
   '../point',
   '../tools'
 ], function(Point, tools) {
   'use strict';
-
-  var propertiesFromAbsoluteArc;
-  var fromAbsoluteQuadraticCurve;
-  var splitAbsoluteCubicBezier;
 
   var abs = Math.abs;
   var atan2 = Math.atan2;
@@ -27,13 +18,11 @@ define([
   var tan = Math.tan;
 
   /**
-   * The Curve Module/Contructor
+   * Construct a CurvedPath instance
    *
    * @constructor
-   * @extends module:display_object.DisplayObject
-   *
+   * @name CurvedPath
    * @returns {Curve} A new Instance of Curve
-   * @memberOf module:curve
    */
   function CurvedPath() {
     this._segments = [];
@@ -42,7 +31,8 @@ define([
     this.lastMoveTo = new Point(0, 0);
   };
 
-  var proto = CurvedPath.prototype = {};
+  /** @lends CurvedPath */
+  var proto = CurvedPath.prototype;
 
   proto.clear = function() {
     this._segments.length = 0;
@@ -297,7 +287,8 @@ define([
 
   /** CLASS STATIC METHODS **/
 
-  propertiesFromAbsoluteArc = CurvedPath.propertiesFromAbsoluteArc = function(x1, y1, rx, ry, angleInDegrees, large, sweep, x2, y2) {
+  CurvedPath.propertiesFromAbsoluteArc = propertiesFromAbsoluteArc;
+  function propertiesFromAbsoluteArc(x1, y1, rx, ry, angleInDegrees, large, sweep, x2, y2) {
 
     // based on http://www.w3.org/TR/SVG/implnote.html#ArcImplementationNotes
     // and http://fridrich.blogspot.com/2011/06/bounding-box-of-svg-elliptical-arc.html
@@ -390,7 +381,8 @@ define([
     };
   };
 
-  splitAbsoluteCubicBezier = CurvedPath.splitAbsoluteCubicBezier = function(startPoint, controlPoint1, controlPoint2, endPoint, t) {
+  CurvedPath.splitAbsoluteCubicBezier = splitAbsoluteCubicBezier;
+  function splitAbsoluteCubicBezier(startPoint, controlPoint1, controlPoint2, endPoint, t) {
     // based on http://en.wikipedia.org/wiki/De_Casteljau%27s_algorithm
 
     if (t == 0) {

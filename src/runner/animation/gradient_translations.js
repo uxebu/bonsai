@@ -5,6 +5,7 @@ define(['../../color'], function(color) {
    * Animation translations for gradients
    * Can only animate the cx, cy, radius and color stops of a gradient
    * `this` is mutable data object, `values` is actual values passed to animation
+   * @ignore
    */
 
   function translation(prop) {

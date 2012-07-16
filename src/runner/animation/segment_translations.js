@@ -3,6 +3,7 @@ define(['../../color'], function(color) {
 
   /**
    * Animation translations for shape segments
+   * @ignore
    */
 
   return {

@@ -1,20 +1,4 @@
-/**
- * This module conatins the animation class.
- *
- * @todo
- * - unregister all animations when removing an object from the stage (recursively)
- * - Find a way to obtain the object's parent timeline
- * - decide on how much validation of input we want to do
- * - do we need the event emitter?
- *
- * @exports animation
- * @require module:easing
- * @requires module:tools
- * @requires module:timeline
- * @requires module:event_emitter
- * @requires module:color
- */
-
+/** @module animation */
 define([
   './easing',
   '../timeline',
@@ -62,10 +46,13 @@ define([
    * The animation class stuff
    *
    * @constructor
+   * @name Animation
+   * @memberOf module:animation
    * @param {EventEmitter} clock An object that emits a 'tick' event and
    *  has a `toFrameNumber` method.
-   * @param {number|string} duration The duration, either as frames (number)
-   *  or as seconds (e.g. '1s')
+   * @param {Number|String} duration The duration, either as frames (number),
+   *  seconds (e.g. '1s'), milliseconds (e.g. '100ms') or as a percentage
+   *  of the clock's total frames (e.g. '23%')
    * @param {Object} [properties] The properties/values to animate
    * @param {Object} [options] Additional options
    * @param {String|Function} [options.easing] Easing function. Either the name
@@ -85,7 +72,7 @@ define([
    *    - Infinity: The animation is repeated endlessly
    * @returns {Animation} An Animation instance
    *
-   * @mixes module:event_emitter.EventEmitter
+   * @mixes EventEmitter
    */
   function Animation(clock, duration, properties, options) {
 
@@ -131,11 +118,13 @@ define([
     this._bind();
   }
 
-  Animation.prototype = {
+  Animation.prototype = /** @lends module:animation.Animation.prototype */ {
 
     /**
-     * Clean properties by removing any that are NaN && falsey, or any
+     * Cleans properties by removing any that are NaN && falsey, or any
      * NaN values that don't have appropriate translations available:
+     *
+     * @private
      */
     _cleanProperties: function() {
       var properties = this.properties;
@@ -326,6 +315,8 @@ define([
     /**
      * Parses and connects event listeners
      * passed via the options object.
+     *
+     * @private
      */
     _parseEventProps: function(options) {
       var propName, evtName;
