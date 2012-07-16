@@ -1,42 +1,31 @@
-/**
- * Contains the Sprite class.
- *
- * @exports movie
- * @requires module:group
- * @requires module:bitmap
- * @requires module:tools
- */
 define([
   './bitmap',
   './group',
+  './asset_display_object',
   '../tools'
-], function(Bitmap, Group, tools) {
+], function(Bitmap, Group, AssetDisplayObject, tools) {
   'use strict';
 
   var data = tools.descriptorData;
 
   /**
-   * The Sprite constructor
+   * Constructs a Sprite instance [ignored since incomplete]
    *
    * @constructor
-   *
+   * @name Sprite
+   * @ignore
    * @extends module:group.Group
    */
-  function Sprite(loader, sources, options) {
+  function Sprite(loader, sources, callback) {
 
     Group.call(this);
 
     this._loader = loader;
-    this.options = options;
     this.sources = sources;
     this.currentBitmapIndex = 0;
 
-    if (options.onload) {
-      this.on('load', options.onload);
-    }
-    if (options.onerror) {
-      // TODO: choose diff evt name to avoid special 'error' treatment in eventemitter
-      this.on('error', options.onerror);
+    if (callback) {
+      this.bindAssetCallback(callback);
     }
 
     Object.defineProperties(this._attributes, {
@@ -47,15 +36,20 @@ define([
     this._load();
   }
 
-  var proto = Sprite.prototype = Object.create(Group.prototype);
+  var proto = Sprite.prototype = tools.mixin(Object.create(Group.prototype), AssetDisplayObject);
 
   proto._load = function() {
 
-    var sources = this.sources;
+    var me = this,
+        sources = this.sources;
 
     for (var i = 0, l = sources.length; i < l; ++i) {
-      new Bitmap(this._loader, sources[i], {
-        onload: tools.hitch(this, '_bitmapLoaded')
+      new Bitmap(this._loader, sources[i], function(err, data) {
+        if (err) {
+          me.emit('error', data);
+        } else {
+          me._bitmapLoaded(this);
+        }
       });
     }
   };
@@ -85,8 +79,8 @@ define([
 
       message.attributes = this.attr();
       message.attributes.source = bitmap.attr('source');
-      message.attributes.height = bitmap.attr('height');
-      message.attributes.width = bitmap.attr('width');
+      message.attributes.height = bitmap.getComputed('height');
+      message.attributes.width = bitmap.getComputed('width');
       message.type = 'Bitmap';
       message.id = bitmap.id;
 
