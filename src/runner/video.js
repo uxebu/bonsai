@@ -1,10 +1,3 @@
-/**
- * Contains the Video class.
- *
- * @exports video
- * @requires module:display_object
- * @requires module:tools
- */
 define([
   './display_object',
   './asset_display_object',
@@ -21,14 +14,19 @@ define([
    * The Video constructor
    *
    * @constructor
+   * @name Video
+   * @extends DisplayObject
+   * @mixes AssetDisplayObject
    *
-   * @extends module:display_object.DisplayObject
-   *
-   * @param {AssetLoader} loader the asset loader to use
    * @param {String|Array} aRequest The request needs to accomplish the requirements of AssetRequest
+   * @param {Function} [callback] A callback to be called when your movie has
+   *  loaded (only called if you passed a `aRequest`). The callback will be called
+   *  with it's first argument signifying an error. So, if the first argument
+   *  is `null` you can assume the movie was loaded successfully.
    * @param {Object} [options]
-   * @param {Function} [options.onload] A handler for the 'load' event.
-   * @param {Function} [options.onerror] A handler for the 'error' event.
+   * @param {Number} [options.width] Width of the video
+   * @param {Number} [options.height] Height of the video
+   * @param {Boolean} [options.autoplay] Whether the video should auto-play
    *
    * @property {__list__} __supportedAttributes__ List of supported attribute names.
    *    In addition to the property names listed for DisplayObject,

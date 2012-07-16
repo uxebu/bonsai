@@ -1,12 +1,3 @@
-/**
- * This module contains the Shape class.
- *
- * @exports shape
- * @requires module:point
- * @requires module:curve
- * @requires module:segment_helper
- * @requires module:display_object
- */
 define([
   '../point',
   './curved_path',
@@ -38,8 +29,6 @@ define([
       PI2 = PI * 2, // full circle
       sin = Math.sin,
       sqrt = Math.sqrt;
-
-  var toAbsolute;
 
   // attributes section needs documentation
 
@@ -173,12 +162,9 @@ define([
    * The Shape Module/Contructor
    *
    * @constructor
-   * @extends module:display_object.DisplayObject
-   *
-   * @see module:shape.Shape.add
-   *
+   * @name Shape
+   * @extends DisplayObject
    * @returns {Shape} A new Instance of Shape
-   * @memberOf module:shape
    *
    * @property {__list__} __supportedAttributes__ List of supported attribute names.
    *    In addition to the property names listed for DisplayObject,
@@ -292,9 +278,11 @@ define([
       throw TypeError('Expected array of segments or points, ' +
         'or SVG path string. Got "' + param + ' instead.');
     }
-   }
+  }
 
   var superObject = DisplayObject.prototype;
+
+  /** @lends Shape.prototype */
   var proto = Shape.prototype = Object.create(superObject);
 
   proto._activate = function(stage) {
@@ -352,12 +340,8 @@ define([
    * myShape.segments(['moveTo', 0, 0]);
    * myShape.segments([ ['moveTo', 0, 0], ['lineTo', 10, 10] ]);
    *
-   * @method
-   * @this {Shape}
    * @param {Array} commands The commands
    * @returns {Array|Shape} An Array of segments or the current Shape instance.
-   * @memberOf module:shape.Shape
-   * @name segments
    */
   proto.segments = function(segments) {
     if (arguments.length === 0) {
@@ -392,12 +376,8 @@ define([
    * myShape.points([x,y]);
    * myShape.points(x, y, x, y, x, y);
    *
-   * @method
-   * @this {Shape}
    * @param {Array|Number} param An array of points or a list of points
    * @returns {Array|Shape} An array of points or the current Shape instance
-   * @memberOf module:shape.Shape
-   * @name points
    */
   proto.points = function(param) {
     if (typeof param == 'undefined') {
@@ -425,12 +405,8 @@ define([
    * Sets the segments of the Shape and returns the current Shape instance.
    * Or returns a path representation of all the contained segments of the Shape when no parameter is given.
    *
-   * @method
-   * @this {Shape}
    * @param {String} path A SVG Path (http://www.w3.org/TR/SVG/paths.html)
    * @returns {String|Shape} A path or the current Shape instance
-   * @memberOf module:shape.Shape
-   * @name path
    */
   proto.path = function(path) {
     var segments = this._segments;
@@ -447,13 +423,9 @@ define([
   /**
    * Appends a segment at the end of the list of segments and creates a new subpath.
    *
-   * @method
-   * @this {Shape}
    * @param {Number} x absolute x-value
    * @param {Number} y absolute y-value
    * @returns {Shape} The current Shape instance
-   * @memberOf module:shape.Shape
-   * @name moveTo
    */
   proto.moveTo = function(x, y) {
     if (!isFinite(x) || !isFinite(y)) {
@@ -470,13 +442,9 @@ define([
   /**
    * Appends a segment at the end of the list of segments and creates a new subpath.
    *
-   * @method
-   * @this {Shape}
    * @param {Number} x relative x-value
    * @param {Number} y relative y-value
    * @returns {Shape} The current Shape instance
-   * @memberOf module:shape.Shape
-   * @name moveBy
    */
   proto.moveBy = function(x, y) {
       if (!isFinite(x) || !isFinite(y)) {
@@ -494,12 +462,7 @@ define([
    * Appends a segment at the end of the list of segments, which describes a
    * close path.
    *
-   * @method
-   * @this {Shape}
-   * @param void
    * @returns {Shape} The current Shape instance
-   * @memberOf module:shape.Shape
-   * @name closePath
    */
   proto.closePath = function() {
     this._segments.push(['closePath']);
@@ -511,13 +474,9 @@ define([
    * Appends a segment at the end of the list of segments, which describes a
    * straight line from the last Point to the given absolute Point.
    *
-   * @method
-   * @this {Shape}
    * @param {Number} x absolute x-value
    * @param {Number} y absolute y-value
    * @returns {Shape} The current Shape instance
-   * @memberOf module:shape.Shape
-   * @name lineTo
    */
   proto.lineTo = function(x, y) {
     if (!isFinite(x) || !isFinite(y)) {
@@ -533,13 +492,9 @@ define([
    * Appends a segment at the end of the list of segments, which describes a
    * straight line from the last Point to the given relative Point.
    *
-   * @method
-   * @this {Shape}
    * @param {Number} x relative x-value
    * @param {Number} y relative y-value
    * @returns {Shape} The current Shape instance
-   * @memberOf module:shape.Shape
-   * @name lineBy
    */
   proto.lineBy = function(x, y) {
     if (!isFinite(x) || !isFinite(y)) {
@@ -555,12 +510,8 @@ define([
    * Appends a segment at the end of the list of segments, which describes a
    * straight line from the last Point to the given absolute Point.
    *
-   * @method
-   * @this {Shape}
    * @param {Number} y absolute y-value
    * @returns {Shape} The current Shape instance
-   * @memberOf module:shape.Shape
-   * @name verticalLineTo
    */
   proto.verticalLineTo = function(y) {
     var p = this.lastPoint();
@@ -571,12 +522,8 @@ define([
    * Appends a segment at the end of the list of segments, which describes a
    * straight line from the last Point to the given relative Point.
    *
-   * @method
-   * @this {Shape}
    * @param {Number} y relative y-value
    * @returns {Shape} The current Shape instance
-   * @memberOf module:shape.Shape
-   * @name verticalLineBy
    */
   proto.verticalLineBy = function(y) {
     return this.lineBy(0, y); // lineBy takes care about validation
@@ -586,12 +533,8 @@ define([
    * Appends a segment at the end of the list of segments, which describes a
    * straight line from the last Point to the given absolute Point.
    *
-   * @method
-   * @this {Shape}
    * @param {Number} x absolute x-value
    * @returns {Shape} The current Shape instance
-   * @memberOf module:shape.Shape
-   * @name horizontalLineTo
    */
   proto.horizontalLineTo = function(x) {
     var p = this.lastPoint();
@@ -602,12 +545,8 @@ define([
    * Appends a segment at the end of the list of segments, which describes a
    * straight line from the last Point to the given relative Point.
    *
-   * @method
-   * @this {Shape}
    * @param {Number} x relative x-value
    * @returns {Shape} The current Shape instance
-   * @memberOf module:shape.Shape
-   * @name horizontalLineBy
    */
   proto.horizontalLineBy = function(x) {
     return this.lineBy(x, 0); // lineBy takes cate about validation
@@ -616,9 +555,7 @@ define([
   /**
    * Appends an bezier-curve segment. Appends a segment at the end of the list of contained segments.
    *
-   * @method
    * @see http://www.w3.org/TR/SVG/paths.html#InterfaceSVGPathSegCurvetoCubicAbs
-   * @this {Shape}
    * @param {Number} cp1x first control point x
    * @param {Number} cp1y first control point y
    * @param {Number} cp2x second control point x
@@ -626,8 +563,6 @@ define([
    * @param {Number} x x-value of the point
    * @param {Number} y y-value of the point
    * @returns {Shape} The current Shape instance
-   * @memberOf module:shape.Shape
-   * @name curveTo
    */
   proto.curveTo = function(cp1x, cp1y, cp2x, cp2y, x, y) {
     if (arguments.length < 6) {
@@ -646,11 +581,7 @@ define([
   /**
    * Appends an bezier-curve segment. Appends a segment at the end of the list of contained segments.
    *
-   * @method
-   * @this {Shape}
-   * @see module:shape.Shape.curveBy
-   * @memberOf module:shape.Shape
-   * @name curveBy
+   * @see Shape.curveBy
    */
   proto.curveBy = function(cp1x, cp1y, cp2x, cp2y, x, y) {
     if (arguments.length < 6) {
@@ -717,8 +648,6 @@ define([
    * Adds an arc to the list of contained segments.
    * It provides the same API like SVG does.
    *
-   * @method
-   * @this {Shape}
    * @param {Number} rx description
    * @param {Number} ry description
    * @param {Number} xAxisRotation description
@@ -727,8 +656,6 @@ define([
    * @param {Number} x description
    * @param {Number} y description
    * @returns {Shape} The current Shape instance
-   * @memberOf module:shape.Shape
-   * @name arcTo
    */
   proto.arcTo = function(rx, ry, xAxisRotation, largeArcFlag, sweepFlag, x, y) {
     this._segments.push(['arcTo', rx, ry /*Point*/, xAxisRotation, largeArcFlag, sweepFlag, x, y /*Point*/]);
@@ -741,8 +668,6 @@ define([
    * Adds an arc segment to the list of contained segments.
    * It provides the same API like SVG does.
    *
-   * @method
-   * @this {Shape}
    * @param {Number} rx description
    * @param {Number} ry description
    * @param {Number} xAxisRotation description
@@ -751,8 +676,6 @@ define([
    * @param {Number} x description
    * @param {Number} y description
    * @returns {Shape} The current Shape instance
-   * @memberOf module:Shape
-   * @name arcBy
    */
   proto.arcBy = function(rx, ry, xAxisRotation, largeArcFlag, sweepFlag, x, y) {
     this._segments.push(['arcBy', rx, ry /*Point*/, xAxisRotation, largeArcFlag, sweepFlag, x, y /*Point*/]);
@@ -763,8 +686,6 @@ define([
   /**
    * Adds an arc segment to the list of contained segments.
    *
-   * @method
-   * @this {Shape}
    * @param {Number} x description
    * @param {Number} y description
    * @param {Number} r2adius description
@@ -772,10 +693,7 @@ define([
    * @param {deg|rad} aEndAngle description (TODO deg)
    * @param {Boolean} [anticlockwise] description
    * @returns {Shape} The current Shape instance
-   * @memberOf module:shape.Shape
-   * @name arc
    */
-  //TODO convert to bezier
   proto.arc = function(x, y, radius, aStartAngle, aEndAngle, anticlockwise) {
     anticlockwise = !!anticlockwise;
 
@@ -801,10 +719,6 @@ define([
   /**
    * Returns a new Shape instance with an rect.
    *
-   * @example
-   * myShape.rect(0, 0, 150, 150, 5);
-   *
-   * @method
    * @param {Number} x The x position of the rect
    * @param {Number} y The y position of the rect
    * @param {Number} width The width of the rect
@@ -812,8 +726,6 @@ define([
    * @param {Number|Array} radius rounded corner radius or an array of radiuses
    *  for each corner, in the order top-left, top-right, bottom-right, bottom-left
    * @returns {Shape} The current Shape instance
-   * @memberOf module:shape.Shape
-   * @name rect
    */
   proto.rect = function(x, y, width, height, radius) {
 
@@ -852,11 +764,8 @@ define([
   /**
    * Returns the bounding box of that {Shape}.
    *
-   * @method
-   * @param void
    * @returns {Object} bb An object with x, y, width, height
-   * @memberOf module:shape.Shape
-   * @name boundingBox
+   * @ignore
    */
   proto.boundingBox = function() {
     throw 'Not implemented';
@@ -865,12 +774,9 @@ define([
   /**
    * Returns a point at a certain length
    *
-   * @method
    * @see pathLength
    * @param {Number} length
    * @returns {Array} The x and y position
-   * @memberOf module:shape.Shape
-   * @name pointAtLength
    */
   proto.pointAtLength = function(length) {
     throw 'Not implemented';
@@ -880,7 +786,6 @@ define([
   /**
    * Clears all segments.
    *
-   * @param void
    * @returns {Shape} The current Shape instance
    */
   proto.clear = function() {
@@ -895,11 +800,7 @@ define([
    * Returns the last element of the segments array or throws a warning if the
    * segments array is empty.
    *
-   * @method
-   * @param void
    * @returns {Array} The last segment of the segments array.
-   * @memberOf module:Shape
-   * @name lastSegment
    */
   proto.lastSegment = function() {
     var seg = this._segments.slice(-1);
@@ -915,11 +816,7 @@ define([
    * Returns the last point of the segments array or throws a warning if the
    * segments array is empty.
    *
-   * @method
-   * @param void
    * @returns {Point} The last point of the segments array.
-   * @memberOf module:Shape
-   * @name lastPoint
    */
   proto.lastPoint = function() {
 
@@ -963,8 +860,6 @@ define([
 
   /**
    * The type of the given instance.
-   *
-   * @memberOf module:Shape
    */
   proto.type = 'Shape';
 
@@ -975,7 +870,6 @@ define([
    *
    * @private
    * @return {void|Array} The additional data for the renderer.
-   * @memberOf module:Shape
    */
   proto._getRenderData = function() {
     if (!this._isShapeDataMutated) {
@@ -1000,6 +894,7 @@ define([
 
   /**
    * Converts segments to absolute bezier curve instructions (curveTo)
+   *
    * @param {Number} [requiredCurves] Number of curves required
    */
   proto.toCurves = function(requiredCurves) {
@@ -1008,6 +903,7 @@ define([
 
   /**
    * Morphs segments to that of another shapes, along with other attrs
+   *
    * @param {Shape} that The Shape to morph to (all morphable attributes
    *  will morph)
    * @param {Number} duration The duration of the morph animation. Available
@@ -1058,6 +954,7 @@ define([
 
   /**
    * Morphs segments to that of another shapes
+   *
    * @param {Shape} that The Shape to morph to (only segments will morph)
    * @param {Number} duration The duration of the morph animation. Available
    *  formats are _s (seconds), _ms (milliseconds), _ (frames - no unit)
@@ -1083,7 +980,14 @@ define([
     }, animOptions);
   };
 
-  toAbsolute = Shape.toAbsolute = function(segments) {
+  /**
+   * Transforms segments to absolute segments. i.e. lineBy->lineTo etc.
+   *
+   * @memberOf Shape
+   * @param {Array} Segments array
+   * @returns {Array} New absolute segments array
+   */
+   Shape.toAbsolute = function(segments) {
     var segmentsLength = segments && segments.length;
 
     if (!segmentsLength) {
@@ -1173,20 +1077,18 @@ define([
   };
 
 
-  //******************************** ABSTRACTIONS ******************************
+  /************************* Factories & Abstractions *************************/
 
   /**
    * Returns a new Shape instance with an arc.
    *
    * @example
-   * bs.Shape.arc(75, 75, 75, 0, 2*Math.PI); // circle
-   * bs.Shape.arc(75, 75, 75, 0, 360); // circle TODO
+   * Shape.arc(75, 75, 75, 0, 2*Math.PI); // circle
+   * Shape.arc(75, 75, 75, 0, 360); // circle TODO
    *
-   * @class_method
    * @see proto.arc
+   * @memberOf Shape
    * @returns {Shape} A new Shape instance
-   * @memberOf module:shape.Shape
-   * @name arc
    */
   Shape.arc = function(x, y, radius, aStartAngle, aEndAngle, anticlockwise) {
     return new Shape().arc(x, y, radius, aStartAngle, aEndAngle, anticlockwise);
@@ -1195,17 +1097,11 @@ define([
   /**
    * Returns a new Shape instance with a circle.
    *
-   * @example
-   * bs.Shape.arc(75, 75, 75);
-   *
-   * @class_method
-   * @see proto.arc
+   * @memberOf Shape
    * @param {Number} x description
    * @param {Number} y description
    * @param {Number} radius description
    * @returns {Shape} A new Shape instance
-   * @memberOf module:shape.Shape
-   * @name arc
    */
   Shape.circle = function(x, y, radius) {
     return Shape.ellipse(x, y, radius, radius);
@@ -1225,16 +1121,13 @@ define([
    * @example
    * bs.Shape.rect(0, 0, 150, 150);
    *
-   * @method
-   * @see proto.rect
+   * @memberOf Shape
    * @param {Number} x The x position of the rect
    * @param {Number} y The y position of the rect
    * @param {Number} width The width of the rect
    * @param {Number} height The height of the rect
    * @param {Number} radius rounded corners
    * @returns {Shape} A new Shape instance
-   * @memberOf module:shape.Shape
-   * @name rect
    */
   Shape.rect = function(x, y, width, height, radius) {
     return new Shape()
@@ -1245,6 +1138,7 @@ define([
   /**
    * Returns a Shape instance containing a regular polygon.
    *
+   * @memberOf Shape
    * @param {number} x The horizontal offset/translation of the polygon center.
    * @param {number} y The vertical offset/translation of the polygon center.
    * @param {number} radius The radius of the polygon
@@ -1273,6 +1167,7 @@ define([
   /**
    * Returns a Shape instance containing a star.
    *
+   * @memberOf Shape
    * @param {number} x The horizontal offset/translation of the star center.
    * @param {number} y The vertical offset/translation of the star center.
    * @param {number} radius The radius of the star
@@ -1333,6 +1228,14 @@ define([
     return shape.segments(starSegments);
   };
 
+  /**
+   * Returns dimensions/location of the shape
+   *
+   * @param {String} key "size" for the full dimensions object or one of "top",
+   *  "bottom", "left", "right", "width", "height"
+   * @returns {Object|Number} If you passed "size" as the key then an object
+   *  will be returned, otherwise a number
+   */
   proto.getComputed = function(key) {
     /*
       TODO: this is an extremely simplified algorithm that might yield incorrect

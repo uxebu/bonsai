@@ -1,32 +1,20 @@
-  /**
-   * This module contains the Timeline mixin.
-   *
-   * @requires module:event_emitter
-   * @require module:tools
-   * @exports timeline
-   */
 define([
   '../event_emitter',
   '../tools'
 ], function (EventEmitter, tools) {
   'use strict';
 
-/*
-  // could be inlined by closure compiler
-  function round(num) {
-    return (num + 0.5) - ((num + 0.5) % 1);
-  }
-*/
   var round = Math.round;
 
   /**
    * The Timeline mixin. It contains timeline functionality (controls a series
    * of frames).
    *
+   * @name Timeline
    * @mixin
    * @mixes event_emitter
    */
-  var Timeline = {
+  var Timeline = /** @lends Timeline */ {
     /**
      * The number of the current frame. Zero-indexed.
      *

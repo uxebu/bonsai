@@ -7,6 +7,7 @@ define([
   /**
    * This module contains utilities for working with and parsing segments.
    *
+   * @private
    * @exports segment_helper
    * @requires module:point
    * @requires module:error

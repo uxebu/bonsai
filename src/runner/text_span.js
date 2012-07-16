@@ -1,10 +1,3 @@
-/**
- * This module contains the TextSpan class.
- *
- * @exports text
- * @requires module:display_object
- * @requires module:tools
- */
 define([
   './display_object',
   '../color',
@@ -76,8 +69,8 @@ define([
    * The TextSpan constructor
    *
    * @constructor
-   *
-   * @extends module:display_object.DisplayObject
+   * @name TextSpan
+   * @extends DisplayObject
    * @param {String} text The text content
    *
    * @property {__list__} __supportedAttributes__ List of supported attribute names.

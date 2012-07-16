@@ -13,8 +13,7 @@ define([
    *
    * @constructor
    * @name Sprite
-   * @ignore
-   * @extends module:group.Group
+   * @extends Group
    */
   function Sprite(loader, sources, callback) {
 

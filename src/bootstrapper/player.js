@@ -1,8 +1,3 @@
-/**
- * Contains the public bonsai API for HTML documents.
- *
- * @exports player
- */
 define([
   '../renderer/renderer_controller',
   '../asset/asset_controller',
@@ -68,7 +63,6 @@ function(RendererController, AssetController, tools, URI, version) {
     /**
      * Loads a bonsai movie and embeds it into a HTML document.
      *
-     * @memberof module:player
      * @param {HTMLElement} node The html element to replace with the movie
      * @param {string} url The URL to the bonsai script to load
      * @param {Number} [options.width] The width of the movie
@@ -77,7 +71,7 @@ function(RendererController, AssetController, tools, URI, version) {
      * @param {Array} [options.plugins] Array of plugins URLs
      * @param {Array} [options.urls] Array of movie URLs (runs after plugins)
      * @param {Array} [options.code] Movie code (runs after URLs)
-     * @returns {module:movie.Movie}
+     * @returns {Movie}
      */
     run: function(node, url, options) {
 

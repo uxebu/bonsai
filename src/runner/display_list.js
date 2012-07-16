@@ -8,20 +8,13 @@ define([
   var removeValueFromArray = tools.removeValueFromArray;
 
   /**
-   * This module contains the DisplayList mixin.
-   *
-   * @exports display_list
-   */
-  var DisplayList;
-
-  /**
    * The DisplayList mixin, a mixin for display objects that may contain
    *  other display objects.
    *
+   * @name DisplayList
    * @mixin
-   * @memberOf module:display_list
    */
-  DisplayList = {
+  var DisplayList = /** @lends DisplayList */{
     /**
      * Adds a child at the end list of contained display objects.
      *

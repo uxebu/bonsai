@@ -31,14 +31,13 @@ define([
    * This module contains mixin methods for handling events.
    *
    * @mixin
-   * @memberOf module:event_emitter
-   * @exports EventEmitter
+   * @name EventEmitter
    * @example
    *
    * // assign `EventEmitter` methods to `MyClass.prototype`
    * tools.mixin(MyClass.prototype, EventEmitter);
    */
-  var EventEmitter = {
+  var EventEmitter = /** @lends EventEmitter */ {
 
     /**
      * Registers a single listener for the specified event type(s).
@@ -283,7 +282,9 @@ define([
   /**
    * An alias for `addListener`.
    *
+   * @name on
    * @memberOf EventEmitter
+   * @method
    * @param {String} type The event type.
    * @param {Function} listener The function called when the event occurs.
    * @returns {Object} The host object.

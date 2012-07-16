@@ -31,7 +31,7 @@ function(
   * Loads assets and returns an `assetLoaded` event.
   *
   * @class
-  * @mixes module:event_emitter.EventEmitter
+  * @mixes EventEmitter
   */
   function AssetController() {
 

@@ -4,22 +4,15 @@ define([
   'use strict';
 
   /**
-   * This module contains the AssetResource class.
-   *
-   * @exports AssetResource
-   */
-  var AssetResource;
-
-  /**
    * The AssetResource constructor
    *
    * @constructor
-   *
+   * @name AssetResource
+   * @private
    * @param {String|Array} resource TODO
    * @returns {AssetResource} The new AssetResource Instance
-   * @memberOf module:assetrequest
    */
-  AssetResource = function(param) {
+  function AssetResource(param) {
 
     var i, src, type;
 

@@ -1,13 +1,3 @@
-/**
- * Contains the Movie class.
- *
- * @exports movie
- * @requires module:display_object
- * @requires module:display_list
- * @requires module:timeline
- * @requires module:tools
- */
-// a timeline-controlled container.
 define([
   './display_object',
   './asset_display_object',
@@ -18,14 +8,20 @@ define([
   'use strict';
 
   /**
-   * The Movie constructor
+   * Constructs a Movie instance
    *
    * @constructor
-   * @param {Stage} root The root object this movie belongs to.
+   * @name Movie
+   * @param {String} [url] The URL location of the movie to load.
+   * @param {Function} [callback] A callback to be called when your movie has
+   *  loaded (only called if you passed a `url`). The callback will be called
+   *  with it's first argument signifying an error. So, if the first argument
+   *  is `null` you can assume the movie was loaded successfully.
    *
-   * @extends module:display_object.DisplayObject
-   * @mixes module:timeline.Timeline
-   * @mixes module:display_list.DisplayList
+   * @extends DisplayObject
+   * @mixes Timeline
+   * @mixes DisplayList
+   * @mixes AssetDisplayObject
    */
   function Movie(root, url, callback) {
     DisplayObject.call(this);
@@ -57,7 +53,7 @@ define([
   };
 
   /**
-   * @see module:display_object.DisplayObject.type
+   * @see DisplayObject.type
    */
   proto.type = 'Movie';
 

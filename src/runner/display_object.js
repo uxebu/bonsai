@@ -1,11 +1,3 @@
-/**
- * This module contains the DisplayObject class.
- *
- * @exports display_object
- * @requires module:event_emitter
- * @requires module:tools
- * @requires module:matrix
- */
 define([
   '../event_emitter',
   '../tools',
@@ -263,11 +255,11 @@ define([
   /**
    * The DisplayObject constructor. It's the base class for everything
    * that's displayable.
-   * @constructor
    *
-   * @mixes module:event_emitter.EventEmitter
+   * @constructor
+   * @name DisplayObject
+   * @mixes EventEmitter
    * @property {number} id The unique id of the DisplayObject instance.
-   * @memberOf module:display_object
    *
    * @property {__list__} __supportedAttributes__ List of supported attribute names.
    *    These are the attribute names you can pass to the attr() method. Note
@@ -427,13 +419,12 @@ define([
     }
   };
 
-  var proto = DisplayObject.prototype = {
+  var proto = DisplayObject.prototype = /** @lends DisplayObject */ {
 
     /**
      * The display list this display object is part of.
      *
      * @type {DisplayList|null}
-     * @memberOf module:display_object.DisplayObject
      */
     parent: null,
 
@@ -528,7 +519,6 @@ define([
      * @param {mixed} [value] If `attr` parameter is string: Sets the attribute
      *    to this value.
      * @returns {this|mixed} The instance if setting, else attribute value(s).
-     * @memberOf module:display_object.DisplayObject
      */
     attr: function(attr, value) {
       var copy,
@@ -596,7 +586,6 @@ define([
      * @param {DisplayObject|null} [mask] The mask to apply to the instance
      * @returns {this|DisplayObject|null} the instance if called with
      *    parameter, else the mask in use.
-     * @memberOf module:display_object.DisplayObject
      */
     mask: function(mask) {
 
@@ -614,7 +603,6 @@ define([
      * @param {String|null} [blendMode] The blendMode to apply to the instance
      * @returns {this|DisplayObject|null} the instance if called with
      *    parameter, else the blendMode in use.
-     * @memberOf module:display_object.DisplayObject
      */
     blendMode: function(blendMode) {
 
@@ -623,7 +611,6 @@ define([
     /**
      * Marks the current instance for an update
      *
-     * @memberOf module:display_object.DisplayObject
      */
     markUpdate: function() {
       var stage = this.stage;
@@ -738,12 +725,14 @@ define([
     /**
      * Animates object by specified properties
      *
-     * @param {Object} [properties] The properties/values to animate
+     * @param {Number|String} duration The duration, either as frames (number),
+     *  seconds (e.g. '1s'), milliseconds (e.g. '100ms') or as a percentage
+     *  of the clock's total frames (e.g. '23%')
+     * @param {Object} properties The properties/values to animate
      * @param {Object} [options] Additional options
      * @param {String} [options.easing] Easing function
      * @param {Number} [options.delay] Delay before animation begins, in ms
      * @returns {this} the instance
-     * @memberOf module:display_object.DisplayObject
      */
     animate: function(duration, properties, options) {
       var animation = duration;

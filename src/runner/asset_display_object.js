@@ -1,17 +1,13 @@
-/**
- * Contains the AssetDisplayObject class.
- * @exports AssetDisplayObject
- * @requires module:display_object
- */
 define(['../tools'], function(tools) {
   'use strict';
 
   /**
    * The AssetDisplayObject mixin
    *
+   * @name AssetDisplayObject
    * @mixin
    */
-  var AssetDisplayObject = {
+  var AssetDisplayObject = /** @lends AssetDisplayObject */ {
     /**
      * Registers events for a callback function which'll be triggered for both
      * `error` and `load` events (i.e. node-style callback, `function(err, data) {}`)

@@ -1,6 +1,3 @@
-/**
- * This module contains generic utility functions.
- */
 define([], function() {
   'use strict';
 
@@ -11,13 +8,11 @@ define([], function() {
       slice = [].slice,
       toString = {}.toString;
 
-  /*--------------------------------------------------------------------------*/
-
   /**
    *
-   * This module contains generic utility functions.
+   * This module contains generic utility functions which are used heavily
+   * internally.
    *
-   * @requires module:color_map
    * @exports tools
    */
   var tools = {
@@ -198,8 +193,9 @@ define([], function() {
     },
 
     /**
-     * Checks if a value has an internal [[Class]] of Array.
+     * Checks if a value has an internal `[[Class]]` of Array.
      *
+     * @function
      * @param {Mixed} value The value to check.
      * @returns {Boolean} Returns `true` if the value has an internal [[Class]]
      *  of Array, else `false`.
@@ -212,6 +208,7 @@ define([], function() {
     /**
      * Returns an array of all own enumerable property names.
      *
+     * @function
      * @param {Object} object The object to iterate over.
      * @returns {Array} An array of property names.
      */
