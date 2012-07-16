@@ -9,7 +9,7 @@ define([
   './bitmap'
 ], function(
   Point, CurvedPath, SegmentHelper, DisplayObject, tools,
-  color, parseGradient, Bitmap
+  color, gradient, Bitmap
 ) {
   'use strict';
 
@@ -44,7 +44,7 @@ define([
   }
   function setFillGradient(grad) {
     if (grad) {
-      this._fillGradient = parseGradient(grad);
+      this._fillGradient = gradient(grad);
     } else {
       this._fillGradient = null;
     }
@@ -106,7 +106,7 @@ define([
   }
   function setLineGradient(grad) {
     if (grad) {
-      this._lineGradient = parseGradient(grad);
+      this._lineGradient = gradient(grad);
     } else {
       this._lineGradient = null;
     }
@@ -792,6 +792,43 @@ define([
     this._segments.length = 0;
     this._curve.clear();
     return this;
+  };
+
+  /**
+   * Applies a fillColor, fillImage or fillGradient to the shape
+   *
+   * @param {String|Number|LinearGradient|RadialGradient|Bitmap|color.RGBAColor}
+   *  fill The fillColor (see `color.parse`), fillImage or fillGradient
+   * @returns {Shape} The current Shape instance
+   */
+  proto.fill = function(fill) {
+    if (typeof fill === 'string' || typeof fill === 'number' || fill instanceof color.RGBAColor) {
+      return this.attr('fillColor', fill);
+    } else if (fill instanceof gradient.LinearGradient || fill instanceof gradient.RadialGradient) {
+      return this.attr('fillGradient', fill);
+    } else if (fill instanceof Bitmap) {
+      return this.attr('fillImage', fill);
+    }
+    throw Error('A fill of "' + fill + '" is not supported');
+  };
+
+  /**
+   * Applies a lineColor or lineGradient to the shape
+   *
+   * @param {String|Number|LinearGradient|RadialGradient|Bitmap|color.RGBAColor}
+   *  fill The fillColor (see `color.parse`), fillImage or fillGradient
+   * @returns {Shape} The current Shape instance
+   */
+  proto.line = function(line, lineWidth) {
+    if (lineWidth) {
+      this.attr('lineWidth', lineWidth);
+    }
+    if (typeof line === 'string' || typeof line === 'number' || line instanceof color.RGBAColor) {
+      return this.attr('lineColor', line);
+    } else if (line instanceof gradient.LinearGradient || line instanceof gradient.RadialGradient) {
+      return this.attr('lineGradient', line);
+    }
+    throw Error('A fill of "' + fill + '" is not supported');
   };
 
   //******************************** HELPER ************************************
