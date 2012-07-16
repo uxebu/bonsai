@@ -305,7 +305,8 @@ define([
       _maskId: data(null, true),
       cursor: accessor(getCursor, setCursor, true),
       _cursor: data(null, true),
-      fillRule: data('inherit', true)
+      fillRule: data('inherit', true),
+      visible: data(true, true)
     });
 
     this._isOffStage = false;
@@ -317,7 +318,8 @@ define([
       clipId: '_clipId',
       maskId: '_maskId',
       cursor: '_cursor',
-      fillRule: 'fillRule'
+      fillRule: 'fillRule',
+      visible: 'visible'
     };
 
     /*
