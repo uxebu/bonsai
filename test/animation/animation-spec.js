@@ -167,6 +167,24 @@ require([
       });
     });
 
+    it('should transform one value to another over time after a specified delay', function() {
+      var subject = {foo:0};
+      var anim = new createAnimation('50ms', {
+        foo: 1000
+      }, {
+        delay: '60ms'
+      });
+      expect(anim.delay).toBe(2);
+      anim.setSubjects(subject, 'prop');
+      anim.play();
+      async(function(next) {
+        anim.on('end', function() {
+          expect(subject.foo).toBe(1000);
+          next();
+        });
+      });
+    });
+
     it('should animate multiple properties over time', function() {
       var subject = {foo:0, bar:0, far:100};
       var anim = createAnimation('50ms', {

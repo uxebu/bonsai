@@ -64,12 +64,9 @@ define([
    *    the animation
    * @param {string|Object} [options.strategy='attr'] The strategy to use to
    *    get and set properties on the subject.
-   * @param {Number|String} [options.delay] Delay before animation begins, in
-   *  frames or seconds // TODO: implement
+   * @param {Number|String} [options.delay=0] Delay before animation begins, in
+   *  frames or seconds
    * @param {Number} [options.repeat=0] The number of repetitions.
-   *    - 0: The animation is played once
-   *    - 1: The animation is played two times (one repetition)
-   *    - Infinity: The animation is repeated endlessly
    * @returns {Animation} An Animation instance
    *
    * @mixes EventEmitter
@@ -101,7 +98,7 @@ define([
     this.duration = Math.floor(+duration || clock.toFrameNumber(duration));
     this.repeat = (options.repeat || 0) - (options.repeat % 1 || 0);
 
-    this.delay = options.delay || 0;
+    this.delay = options.delay && clock.toFrameNumber(options.delay) || 0;
     this.properties = properties = tools.mixin({}, properties);
     this._cleanProperties();
     this.propertyNames = Object.keys(properties);
@@ -145,6 +142,7 @@ define([
     _bind: function() {
 
       var anim = this,
+          delay = this.delay,
           options = this.options;
 
       this.frame = 0;
@@ -152,6 +150,10 @@ define([
       var lastFrame;
 
       this.onStep = function onStep(_, frameNumber, timelineIsFinished) {
+
+        if (delay > 0 && delay--) {
+          return;
+        }
 
         // lastFrame defaults to the current frame
         // (this'll be at the start of an animation)
@@ -170,6 +172,7 @@ define([
           frame === duration
         ) {
           lastFrame = 0;
+          delay = anim.delay;
           anim.reset();
           if (anim.repeat-- > 0) {
             anim.play();

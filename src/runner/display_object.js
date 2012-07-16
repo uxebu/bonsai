@@ -730,8 +730,11 @@ define([
      *  of the clock's total frames (e.g. '23%')
      * @param {Object} properties The properties/values to animate
      * @param {Object} [options] Additional options
-     * @param {String} [options.easing] Easing function
-     * @param {Number} [options.delay] Delay before animation begins, in ms
+     * @param {String|Function} [options.easing] Easing function. Either the name
+     *  of a predefined or a custom function
+     * @param {Number|String} [options.delay=0] Delay before animation begins, in
+     *  frames or seconds
+     * @param {Number} [options.repeat=0] The number of repetitions.
      * @returns {this} the instance
      */
     animate: function(duration, properties, options) {
