@@ -460,6 +460,10 @@ define([
       this.removeMask(element);
     }
 
+    if (attr.visible != null) {
+      element.style.visibility = attr.visible ? '' : 'hidden';
+    }
+
     if (type === 'Shape' || type === 'Text' || type === 'TextSpan') {
       // Apply fill style(s)
       if (

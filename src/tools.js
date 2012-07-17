@@ -1,5 +1,5 @@
 define([], function() {
-  'use strict';
+  //'use strict'; //TODO: add back in as soon as our plugins are fixed
 
   var hasOwnProperty = {}.hasOwnProperty,
       indexOf = [].indexOf,
