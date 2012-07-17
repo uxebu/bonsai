@@ -57,10 +57,10 @@ define([
    * @param {Object} [options] Additional options
    * @param {String|Function} [options.easing] Easing function. Either the name
    *  of a predefined or a custom function
-   * @param {Boolean} [options.timelineBound] Boolean indicating whether this
+   * @param {Boolean} [options.isTimelineBound] Boolean indicating whether this
    *  animation should be bound to the timeline, and respond to isPlaying state,
    *  or play regardless of timeline's progress.
-   * @param {Object} [options.subject] The subject (e.g. a DisplayObject) of
+   * @param {Array|Object} [options.subjects] The subject(s) (DisplayObjects) of
    *    the animation
    * @param {string|Object} [options.strategy='attr'] The strategy to use to
    *    get and set properties on the subject.

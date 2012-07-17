@@ -16,15 +16,13 @@ define([
    * @constructor
    * @name KeyframeAnimation
    * @memberOf module:animation
-   * @param {EventEmitter} clock An object that emits a 'tick' event and
-   *  has a `toFrameNumber` method.
    * @param {number|string} duration The duration, either as frames (number)
    *  or as seconds (e.g. '1s')
    * @param {Object} [properties] The keyframes to animate through
    * @param {Object} [options] Additional options
-   * @param {String} [options.easing] Easing function
+   * @param {String|Function} [options.easing] Easing function for each sub-animation
    * @param {Number} [options.delay] Delay before animation begins, in ms
-   *  @param {Object} [options.subjects] The subjects (e.g. DisplayObjects) of
+   *  @param {Array|Object} [options.subjects] The subject(s) (e.g. DisplayObjects) of
    *    the keyframe-animation
    *  @param {string|Object} [options.strategy='attr'] The strategy to use to
    *    get and set properties on the subjects.
@@ -44,6 +42,7 @@ define([
     this.currentAnimation = -1;
 
     this.repeat = options.repeat || 0;
+    this.easing = options.easing;
 
     this.keyframes = this._convertKeysToFrames(keyframes);
     // Get numerical keys (frame-numbers) and sort
