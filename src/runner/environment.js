@@ -66,7 +66,13 @@ define([
       easing: easing,
       filter: filter,
       stage: stage,
-      version: version
+      version: version,
+      arc: Shape.arc,
+      circle: Shape.circle,
+      ellipse: Shape.ellipse,
+      rect: Shape.rect,
+      polygon: Shape.polygon,
+      star: Shape.star
     };
 
     this.assetLoader = assetLoader;

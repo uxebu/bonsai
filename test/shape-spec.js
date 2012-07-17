@@ -1,8 +1,9 @@
 require([
   'bonsai/runner/shape',
   'bonsai/runner/gradient',
+  'bonsai/runner/bitmap',
   './runner.js'
-], function(Shape, gradient) {
+], function(Shape, gradient, Bitmap) {
 
   var precision = new Number(12);
   precision.PRECISION = +precision;
@@ -551,6 +552,39 @@ require([
       expect(s.attr('lineGradient')).toBe(g);
       s.attr('lineGradient', null);
       expect(s.attr('lineGradient')).toBe(null);
+    });
+  });
+
+  describe('fill', function() {
+    it('Can set fillGradient, fillColor and fillImage', function() {
+      var s = new Shape,
+          grad = gradient.linear(0, ['red', 'purple']),
+          bitmap = new Bitmap('data:image/png,');
+      s.fill('red');
+      expect(s.attr('fillColor')).toBe(+color('red'));
+      s.fill('blue');
+      expect(s.attr('fillColor')).toBe(+color('blue'));
+      s.fill(grad);
+      expect(s.attr('fillColor')).toBe(+color('blue'));
+      expect(s.attr('fillGradient')).toBe(grad);
+      s.fill(bitmap);
+      expect(s.attr('fillColor')).toBe(+color('blue'));
+      expect(s.attr('fillGradient')).toBe(grad);
+      expect(s.attr('fillImage')).toBe(bitmap);
+    });
+  });
+
+  describe('line', function() {
+    it('Can set lineGradient and lineColor', function() {
+      var s = new Shape,
+          grad = gradient.linear(0, ['red', 'purple']);
+      s.line('red');
+      expect(s.attr('lineColor')).toBe(+color('red'));
+      s.line('blue');
+      expect(s.attr('lineColor')).toBe(+color('blue'));
+      s.line(grad);
+      expect(s.attr('lineColor')).toBe(+color('blue'));
+      expect(s.attr('lineGradient')).toBe(grad);
     });
   });
 
