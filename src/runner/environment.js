@@ -3,7 +3,7 @@ define([
   '../event_emitter',
   './movie',
   '../point',
-  './shape',
+  './path/path',
   './bitmap',
   './display_object',
   './group',
@@ -23,7 +23,7 @@ define([
   '../version'
 ], function(
   tools, EventEmitter,
-  Movie, Point, Shape, Bitmap, DisplayObject, Group,
+  Movie, Point, Path, Bitmap, DisplayObject, Group,
   Animation, KeyframeAnimation, easing, FontFamily, Matrix,
   Sprite, color, gradient, Text, TextSpan, Video, filter,
   DOMElement, version
@@ -57,7 +57,7 @@ define([
       Group: Group,
       Matrix: Matrix,
       Point: Point,
-      Shape: Shape,
+      Path: Path,
       Text: Text,
       TextSpan: TextSpan,
       color: color,
