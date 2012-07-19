@@ -8,11 +8,12 @@ define([
   './color_translations',
   './gradient_translations',
   './filter_translations',
-  './segment_translations'
+  './segment_translations',
+  './matrix_translations'
 ], function(
   easing, Timeline, tools, EventEmitter, color,
   colorTranslations, gradientTranslations, filterTranslations,
-  segmentTranslations
+  segmentTranslations, matrixTranslations
 ) {
   'use strict';
 
@@ -41,6 +42,7 @@ define([
   mixin(propertyTranslations, gradientTranslations);
   mixin(propertyTranslations, filterTranslations);
   mixin(propertyTranslations, segmentTranslations);
+  mixin(propertyTranslations, matrixTranslations);
 
   /**
    * The animation class stuff
@@ -539,8 +541,7 @@ define([
         if (strategy === 'attr') {
           subject.attr(values);
         } else if (strategy === 'prop') {
-          for (p = 0; p < pl; ++p) {
-            key = propertyNames[p];
+          for (var key in values) {
             subject[key] = values[key];
           }
         } else {

@@ -6,8 +6,9 @@ require([
   'bonsai/runner/animation/easing',
   'bonsai/runner/shape',
   'bonsai/color',
+  'bonsai/runner/matrix',
   './runner.js'
-], function(Animation, DisplayObject, Timeline, tools, easing, Shape, color) {
+], function(Animation, DisplayObject, Timeline, tools, easing, Shape, color, Matrix) {
 
   var clock = tools.mixin({}, Timeline, {
     framerate: 30,
@@ -224,6 +225,26 @@ require([
         });
       });
     });
+
+    it('Should be able to animate a matrix', function() {
+      var subject = {matrix:new Matrix(1,0,0,1,0,0)};
+      var anim = new createAnimation('50ms', {
+        matrix: new Matrix(2,1,-1,1,150,200)
+      });
+      anim.setSubjects(subject, 'prop');
+      anim.play();
+      async(function(next) {
+        anim.on('end', function() {
+          expect(subject.matrix.a).toBe(2);
+          expect(subject.matrix.b).toBe(1);
+          expect(subject.matrix.c).toBe(-1);
+          expect(subject.matrix.d).toBe(1);
+          expect(subject.matrix.tx).toBe(150);
+          expect(subject.matrix.ty).toBe(200);
+          next();
+        });
+      });
+    })
   });
 
   describe('Shape - morphing', function() {
