@@ -152,13 +152,14 @@ define([
    * @constructor
    * @memberOf module:filter
    *
-   * @param {mixed} shadowArgs, array, consists of:
-   *    offsetX, offsetY, blurRadius, color. If omitted,
-   *    defaultValue is [0, 0, 0, 0x000000FF].
+   * @param {Number} offsetX The X offset of the shadow (pixels)
+   * @param {Number} offsetY The Y offset of the shadow (pixels)
+   * @param {Number} blur The amount of blur in pixels
+   * @param {String|Number|color.RGBAColor} blurColor Blur color
    *
    * @example
    *    var f = new filter.DropShadow();
-   *    var f = new filter.DropShadow([0, 0, 0, 0x000000FF]);
+   *    var f = new filter.DropShadow(1, 1, 2, 0x000000FF);
    *
    */
   filter.DropShadow = function(offsetX, offsetY, blur, blurColor) {
