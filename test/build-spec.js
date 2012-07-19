@@ -7,7 +7,7 @@ require([
     it('should generate a shape which looks like a reference image', function() {
       var bsVariant = {
         content: function() {
-          stage.addChild(Shape.rect(0.5, 0.5, 100, 100).attr({fillColor:'red'}));
+          stage.addChild(Path.rect(0.5, 0.5, 100, 100).attr({fillColor:'red'}));
         },
         delay: 2000
       };

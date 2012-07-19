@@ -1,6 +1,6 @@
 var code = '(' + function() {
 
-  Shape.rect(100, 0, 100, 100).addTo(stage).attr({
+  Path.rect(100, 0, 100, 100).addTo(stage).attr({
     fillColor: 'blue'
   });
 
