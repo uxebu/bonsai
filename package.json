@@ -3,10 +3,10 @@
   "name": "bonsai",
   "description": "Bonsai runtime and node server",
   "main": "src/bootstrapper/_dev/node.js",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "homepage": "https://github.com/uxebu/bonsai/",
-  "maintainers" : [],
+  "maintainers": [],
   "repository": {
     "type": "git",
     "url": "git@github.com:uxebu/bonsai.git"
