@@ -52,7 +52,7 @@ var breakout = {
             var row = ~~(i / colCount);
             var x = col * (blockWidth + blockPadding);
             var y = row * (blockHeight + blockPadding);
-            var block = bonsai.Shape.rect(0,0,blockWidth,blockHeight)
+            var block = bonsai.Path.rect(0,0,blockWidth,blockHeight)
                 .attr({fillColor: 'green'});
             block.attr({x:x, y:y});
             stage.addChild(block);
@@ -61,14 +61,14 @@ var breakout = {
     },
 
     createPaddle: function() {
-        this.paddle = bonsai.Shape.rect(0,0,150,10).attr({fillColor: 'black'});
+        this.paddle = bonsai.Path.rect(0,0,150,10).attr({fillColor: 'black'});
         this.paddle.attr({x: this.paddlePosition, y: 400 });
         stage.addChild(this.paddle);
         this.connectPaddle();
     },
 
     createBall: function() {
-        this.ball = bonsai.Shape.circle(0,0,5).attr({fillColor: 'red'});
+        this.ball = bonsai.Path.circle(0,0,5).attr({fillColor: 'red'});
         stage.addChild(this.ball);
     },
 

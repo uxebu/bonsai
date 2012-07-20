@@ -6,7 +6,7 @@ var height = 500;
 //*
 
 
-var Shape = bonsai.Shape;
+var Path = bonsai.Path;
 var stars = (function(star) {
   var stars = [];
   for (var i = 0; i < numStars; i++) {
@@ -19,7 +19,7 @@ var stars = (function(star) {
   }
 
   return stars;
-}(Shape.star(width/2, height/2, 1, 5)));
+}(Path.star(width/2, height/2, 1, 5)));
 stage.length(14);
 
 var i = 0;

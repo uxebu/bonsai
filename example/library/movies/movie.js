@@ -1,10 +1,10 @@
 /* create rect and add it to the stage immediately */
-var rect1 = bonsai.Shape.rect(0,0,100,100).attr({ fillColor: 'red' });
+var rect1 = bonsai.Path.rect(0,0,100,100).attr({ fillColor: 'red' });
 stage.addChild(rect1);
 
 /* create rect and add it to movie immediately, but do not add movie for now */
 var movie = new bonsai.Movie();
-var rect2 = bonsai.Shape.rect(0,0,100,100).attr({ fillColor: 'green', x: 10, y: 10 });
+var rect2 = bonsai.Path.rect(0,0,100,100).attr({ fillColor: 'green', x: 10, y: 10 });
 movie.addChild(rect2);
 
 /* frames() execution only starts after movie is added to stage */

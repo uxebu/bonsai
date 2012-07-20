@@ -11,7 +11,7 @@ new bonsai.Bitmap('assets/redpanda.jpg', {
 });
 
 // shape
-stage.addChild(bonsai.Shape.rect(30,30,50,50).attr({
+stage.addChild(bonsai.Path.rect(30,30,50,50).attr({
   fillColor:'red',
   filters: new filter.Blur(2)
 }));

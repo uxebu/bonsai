@@ -14,10 +14,10 @@ var logo = 'M173.173,23.565 c5.034,0,8.475,1.461,11.424,5.027c4.299,5.281,4.546,
   +'c2.949,3.438,6.51,5.034,11.791,5.034c2.337,0,4.669-0.735,6.513-1.843c1.597-0.856,3.314-2.577,'
   +'4.42-4.053v4.913h12.405V24.538';
 
-Shape.rect(10,10,500,300).addTo(g)
+Path.rect(10,10,500,300).addTo(g)
   .attr({fillColor:'black'})
 
-new Shape(logo).addTo(g)
+new Path(logo).addTo(g)
   .attr({lineColor: 'white', lineWidth:4, x:200, y:70, scale:.4});
 
 new Text('Wolfram Kriesing, CTO').addTo(g)
@@ -42,9 +42,9 @@ new Text('@wolframkriesing').addTo(g)
 
 // back side
 
-Shape.rect(10,320,500,300).addTo(g)
+Path.rect(10,320,500,300).addTo(g)
   .attr({fillColor:'black'})
-Shape.rect(30,410,460,190).addTo(g)
+Path.rect(30,410,460,190).addTo(g)
   .attr({fillColor:'white'})
 
 new Text('Bonsai – the Flash alternative in pure HTML5').addTo(g)

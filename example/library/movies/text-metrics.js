@@ -7,7 +7,7 @@ function drawText(x, y, origin, text) {
     fontFamily: 'Arial',
     textOrigin: origin
   });
-  new Shape()
+  new Path()
     .moveTo(0, y)
     .lineTo(1000, y)
     .moveTo(1000, y+12)
@@ -17,7 +17,7 @@ function drawText(x, y, origin, text) {
       lineColor: 'red'
     })
     .addTo(stage);
-  new Shape()
+  new Path()
     .moveTo(0, y-12)
     .lineTo(1000, y-12)
     .attr({

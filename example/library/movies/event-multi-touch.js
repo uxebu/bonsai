@@ -1,5 +1,5 @@
 stage.on('multi:pointerdown', function(e) {
-  var s = Shape.circle(e.stageX, e.stageY, Math.random() * 50 + 50)
+  var s = Path.circle(e.stageX, e.stageY, Math.random() * 50 + 50)
     .attr({
       fillColor: 'random'
     })

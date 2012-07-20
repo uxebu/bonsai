@@ -19,7 +19,7 @@
       <div class="stage"></div>
       <div class="editor">
         <code>
-        var arcto = new bs.Shape([
+        var arcto = new bs.Path([
           'M', rectX, ',', rectY,
           'L', rectX + rectWidth - r, ',', lineTo.y
         ].join(' '));
@@ -94,7 +94,7 @@
         // create stage
         var stage = new bs.Stage(document.querySelector('#bonsai-api div'), 150, 150);
 
-        var arcto = new bs.Shape([
+        var arcto = new bs.Path([
           'M', rectX, ',', rectY,
           'L', rectX + rectWidth - r, ',', lineTo.y
         ].join(' ')).attributes({stroke:'yellow', 'stroke-width':5});

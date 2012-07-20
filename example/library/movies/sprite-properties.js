@@ -8,19 +8,19 @@ var stageWidth = 700;
 var stageHeight = 600;
 var gridDist = 100;
 
-// Move the entire movie a bit down and right, so it is easier to read 
+// Move the entire movie a bit down and right, so it is easier to read
 stage = new Group().addTo(stage);
 stage.attr({x:20, y:20});
 
 // Draw a grid.
 for (var i=0; i<stageWidth; i+=10){
-  new Shape().addTo(stage)
+  new Path().addTo(stage)
     .attr({lineWidth:1, lineColor:'black', opacity:i%gridDist==0 ? 0.5 : 0.2})
     .moveTo(0, i)
     .lineTo(stageHeight, i);
 }
 for (var i=0; i<stageHeight; i+=10){
-  new Shape().addTo(stage)
+  new Path().addTo(stage)
     .attr({lineWidth:1, lineColor:'black', opacity:i%gridDist==0 ? 0.5 : 0.2})
     .moveTo(i, 0)
     .lineTo(i, stageWidth);
@@ -38,7 +38,7 @@ var colors = [0x0000FF, 0x00FF00, 0xFF0000, 0xFF00FF, 0xFFFF00, 0x00F0F0];
 var colorIndex = 0;
 function renderAndApplyProperty(props){
 	var color = colors[colorIndex++ % colors.length] * 256 + 0xFF;
-	var sprite = drawExampleShape(color);
+	var sprite = drawExamplePath(color);
 	var position = -10;
 	var posOffset = 15;
 	for (var i=0; i<props.length; i++) {
@@ -68,9 +68,9 @@ function renderAndApplyProperty(props){
 function fixPropertyForBonsai(sprite, name, value){
   var convertedProp = {name:name, value:value};
   var cantDo = [
-    'rotationX', 'rotationY', 'blendMode', 
+    'rotationX', 'rotationY', 'blendMode',
     'opaqueBackground', 'z', 'scaleZ'
-  ]; 
+  ];
   if (cantDo.indexOf(name)!=-1){
     convertedProp.value = 'CANT DO';
   } else
@@ -91,23 +91,23 @@ function fixPropertyForBonsai(sprite, name, value){
 }
 
 
-function drawExampleShape(color){
+function drawExamplePath(color){
 	var sprite = new Movie()
     .attr({x:_x, y:_y})
     .addTo(stage)
     .addChild(
-      new Shape().rect(0, 0, 50, 50)
+      new Path().rect(0, 0, 50, 50)
         .attr({fillColor:color, lineWidth:2, lineColor:'black'})
     );
 	return sprite;
 }
 
-function writeCantDo(textString, x, y){  
+function writeCantDo(textString, x, y){
   var text = new Text(textString)
     .attr({textFillColor:'red', fontWeight:'bold', x:x, y:y, opacity:0.7})
     .addTo(stage);
 }
-function writeInfo(textString, x, y){	
+function writeInfo(textString, x, y){
   var text = new Text(textString)
     .attr({textFillColor:'black', x:x, y:y, opacity:0.7})
     .addTo(stage);
@@ -121,7 +121,7 @@ function writeInfo(textString, x, y){
 
 
 
-var square = Shape.rect(0, 0, 10, 10).attr({fillColor:'0x0000FF'});
+var square = Path.rect(0, 0, 10, 10).attr({fillColor:'0x0000FF'});
 
 [
   			[['blendMode', 'flash.display.BlendMode.SUBTRACT']],

@@ -46,7 +46,7 @@ new bonsai.Bitmap('assets/redpanda.jpg', {
   }
 });
 
-Shape.rect(200,200,100,100)
+Path.rect(200,200,100,100)
   .addTo(stage)
   .attr({fillColor:'green',
     filters:[

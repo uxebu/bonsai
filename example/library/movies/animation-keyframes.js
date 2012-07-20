@@ -1,7 +1,7 @@
 /**
  * Animated attributes
  */
-var shape = bonsai.Shape.rect(0, 0, 100, 100).attr({fillColor: 'red'});
+var shape = bonsai.Path.rect(0, 0, 100, 100).attr({fillColor: 'red'});
 
 var animation = new bonsai.KeyframeAnimation('4s', {
     '0s': {x: 0, y: 0},
@@ -23,7 +23,7 @@ var animation = new bonsai.KeyframeAnimation('4s', {
     '3s': {x: 400, y: 400, fillColor: 'red',   lineColor:'yellow'},
     to:   {x: 400, y: 0,   fillColor: 'black', lineColor:'blue'}
 }, {repeat:Infinity});
-Shape.rect(0, 0, 100, 100)
+Path.rect(0, 0, 100, 100)
   .addTo(stage)
   .attr({lineWidth:15})
   .animate(animation);

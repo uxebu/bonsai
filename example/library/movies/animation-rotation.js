@@ -1,7 +1,7 @@
 /**
  * Animated attributes
  */
-var rectShape = bonsai.Shape.rect(0, 0, 150, 150).attr({
+var rectPath = bonsai.Path.rect(0, 0, 150, 150).attr({
   fillColor: 'red',
   lineColor: 'green',
   lineWidth: 5,
@@ -9,6 +9,6 @@ var rectShape = bonsai.Shape.rect(0, 0, 150, 150).attr({
   y: 150
 });
 
-stage.addChild(rectShape);
+stage.addChild(rectPath);
 
-rectShape.animate('2s', {rotation: Math.PI*2}, {easing: 'elasticInOut'});
+rectPath.animate('2s', {rotation: Math.PI*2}, {easing: 'elasticInOut'});

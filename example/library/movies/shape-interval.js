@@ -1,6 +1,6 @@
-// bs.Shape.rect returns a {DisplayObject}
-var rectShape = bonsai.Shape.rect(0, 0, 150, 150).attr({x:150,y:150});
-rectShape.attr({fillColor:'red', lineWidth:1});
+// bs.Path.rect returns a {DisplayObject}
+var rectPath = bonsai.Path.rect(0, 0, 150, 150).attr({x:150,y:150});
+rectPath.attr({fillColor:'red', lineWidth:1});
 
 var counter = 1;
 
@@ -8,15 +8,15 @@ var counter = 1;
 
 var interval = setInterval(function() {
 
-  rectShape.lineBy(15,5).attr({x:counter*5,rotation:counter/3});
+  rectPath.lineBy(15,5).attr({x:counter*5,rotation:counter/3});
   counter++;
 
   if (counter === 60) {
-    rectShape.remove();
+    rectPath.remove();
     clearInterval(interval);
     interval = null;
   }
 
 }, 100);
 
-stage.addChild(rectShape);
+stage.addChild(rectPath);

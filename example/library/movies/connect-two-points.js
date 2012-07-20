@@ -6,35 +6,35 @@
 
 // css
 var pointStyle = {
-  fillColor:'#ccc', 
+  fillColor:'#ccc',
   lineColor:'#aaa',
   lineWidth:1,
   filters:filter.DropShadow(1,1,2, '#ccc')
 };
 var lineStyle = {
-  lineWidth:1, 
+  lineWidth:1,
   lineColor: '#aaa'
 };
 
 function drawPointAtOrigin(x, y) {
-  
+
   var connectedPoints = [];
-  
+
   var group = new Group().addTo(stage).attr({
     x: x || 0,
     y: y || 0
   });
-  
-  var line = new Shape().attr(lineStyle).addTo(group);
 
-  var circle = Shape.circle(50, 50, 7).attr(pointStyle).attr({
+  var line = new Path().attr(lineStyle).addTo(group);
+
+  var circle = Path.circle(50, 50, 7).attr(pointStyle).attr({
     x:0,
     y:0
   }).on('drag', function(data) {
     group.attr({x: data.x, y:data.y});
     group.updateConnections();
   }).addTo(group);
-  
+
   group.updateConnections = function() {
     var thisAttr = this.attr(); //circle
     connectedPoints.forEach(function(aPoint) {
@@ -50,8 +50,8 @@ function drawPointAtOrigin(x, y) {
     connectedPoints.push(anotherPoint);
     anotherPoint.delegates.push(this);
     this.updateConnections();
-  }; 
-  
+  };
+
   return group;
 }
 

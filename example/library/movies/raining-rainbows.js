@@ -4,7 +4,7 @@ function draw() {
 
   var color = bs.color('red').randomize('hue');
 
-  var circle = bs.Shape.circle(
+  var circle = bs.Path.circle(
     0,
     0,
     Math.random() * 20 + 20
@@ -30,7 +30,7 @@ function draw() {
        opacity: 0
     }
   });
-  
+
   k.on('end', function(){
     circle.destroy();
     draw();

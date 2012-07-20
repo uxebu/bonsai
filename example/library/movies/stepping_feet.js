@@ -1,7 +1,7 @@
 var bs = bonsai,
-    lines = new bs.Shape(),
-    darkFoot = new bs.Shape(),
-    lightFoot = new bs.Shape(),
+    lines = new bs.Path(),
+    darkFoot = new bs.Path(),
+    lightFoot = new bs.Path(),
     feet = new bs.Group(),
     i;
 
