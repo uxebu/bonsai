@@ -9,11 +9,12 @@ define([
   './gradient_translations',
   './filter_translations',
   './segment_translations',
-  './matrix_translations'
+  './matrix_translations',
+  './corner_radius_translations'
 ], function(
   easing, Timeline, tools, EventEmitter, color,
   colorTranslations, gradientTranslations, filterTranslations,
-  segmentTranslations, matrixTranslations
+  segmentTranslations, matrixTranslations, cornerRadiusTranslations
 ) {
   'use strict';
 
@@ -43,6 +44,7 @@ define([
   mixin(propertyTranslations, filterTranslations);
   mixin(propertyTranslations, segmentTranslations);
   mixin(propertyTranslations, matrixTranslations);
+  mixin(propertyTranslations, cornerRadiusTranslations);
 
   /**
    * The animation class stuff
