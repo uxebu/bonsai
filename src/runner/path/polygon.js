@@ -1,5 +1,16 @@
-define(['./special_path', '../../tools'], function(SpecialPath, tools) {
+define([
+  './path',
+  './special_path',
+  '../../tools'
+], function(Path, SpecialPath, tools) {
   'use strict';
+
+  Path.polygon = function(x, y, radius, sides) {
+    return new Path(new Polygon(x, y, radius, sides).segments()).attr({
+      x: x,
+      y: y
+    });
+  };
 
   var PI2 = Math.PI*2;
   var sin = Math.sin;

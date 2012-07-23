@@ -1,5 +1,16 @@
-define(['./special_path', '../../tools'], function(SpecialPath, tools) {
+define([
+  './path',
+  './special_path',
+  '../../tools'
+], function(Path, SpecialPath, tools) {
   'use strict';
+
+  Path.ellipse = function(x, y, radiusX, radiusY) {
+    return new Path(new Ellipse(x, y, radiusX, radiusY).segments()).attr({
+      x: x,
+      y: y
+    });
+  };
 
   /**
    * Creates an ellipse

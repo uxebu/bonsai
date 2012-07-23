@@ -1,5 +1,20 @@
-define(['./special_path', '../../tools'], function(SpecialPath, tools) {
+define([
+  './path',
+  './special_path',
+  '../../tools'
+], function(Path, SpecialPath, tools) {
   'use strict';
+
+  Path.arc = function(x, y, radius, startAngle, endAngle, antiClockwise) {
+    return new Path(
+      new Arc(
+        x, y, radius, startAngle, endAngle, antiClockwise
+      ).segments()
+    ).attr({
+      x: x,
+      y: y
+    });
+  };
 
   var PI = Math.PI;
   var PI2 = PI*2;
@@ -53,8 +68,6 @@ define(['./special_path', '../../tools'], function(SpecialPath, tools) {
   proto._make = function() {
 
     var attr = this._attributes,
-        x = attr.x,
-        y = attr.y,
         radius = attr.radius,
         _startAngle = attr.startAngle,
         _endAngle = attr.endAngle,
@@ -67,11 +80,11 @@ define(['./special_path', '../../tools'], function(SpecialPath, tools) {
     var endAngle = (antiClockwise) ? PI2 - _startAngle : _endAngle;
     var diffAngle = abs(endAngle - startAngle);
 
-    startX = x + radius * cos(startAngle);
-    startY = y + radius * sin(startAngle);
+    startX = radius * cos(startAngle);
+    startY = radius * sin(startAngle);
     if (diffAngle < PI2) {
-      endX = x + radius * cos(endAngle);
-      endY = y + radius * sin(endAngle);
+      endX = radius * cos(endAngle);
+      endY = radius * sin(endAngle);
     } else { // angles differ by more than 2*PI: draw a full circle
       endX = startX;
       endY = startY - .0001;

@@ -1,5 +1,16 @@
-define(['./special_path', '../../tools'], function(SpecialPath, tools) {
+define([
+  './path',
+  './special_path',
+  '../../tools'
+], function(Path, SpecialPath, tools) {
   'use strict';
+
+  Path.rect = function(x, y, width, height, cornerRadius) {
+    return new Path(new Rect(x, y, width, height, cornerRadius).segments()).attr({
+      x: x,
+      y: y
+    });
+  };
 
   /**
    * Creates a Rectangle shape

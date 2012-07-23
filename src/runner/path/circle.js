@@ -1,5 +1,16 @@
-define(['./special_path', '../../tools'], function(SpecialPath, tools) {
+define([
+  './path',
+  './special_path',
+  '../../tools'
+], function(Path, SpecialPath, tools) {
   'use strict';
+
+  Path.circle = function(x, y, radius) {
+    return new Path(new Circle(x, y, radius).segments()).attr({
+      x: x,
+      y: y
+    });
+  };
 
   /**
    * Creates an Circle

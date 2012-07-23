@@ -1,5 +1,17 @@
-define(['./special_path', './polygon', '../../tools'], function(SpecialPath, Polygon, tools) {
+define([
+  './path',
+  './special_path',
+  './polygon',
+  '../../tools'
+], function(Path, SpecialPath, Polygon, tools) {
   'use strict';
+
+  Path.star = function(x, y, radius, rays, factor) {
+    return new Path(new Star(x, y, radius, rays, factor).segments()).attr({
+      x: x,
+      y: y
+    });
+  };
 
   /**
    * Creates a star
