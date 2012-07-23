@@ -493,7 +493,7 @@ define([
           fromValues,
           key,
           to,
-          attrStrategy = strategy === 'attr',
+          isAttrStrategy,
           hasTranslations = !!this.translations.length,
           easingFunc = this.easing,
           endValues = this.properties,
@@ -512,8 +512,10 @@ define([
         fromValues = subjects[s].values;
         subject = subjects[s].subject;
         strategy = subjects[s].strategy;
+        isAttrStrategy = strategy === 'attr'
 
         var subjectAttributes = subject._attributes;
+        var subjectMutatedAttributes = subject._mutatedAttributes;
 
         // loop through all properties and calculate the value
         for (var p = 0; p < pl; ++p) {
@@ -522,15 +524,16 @@ define([
           from = fromValues[key];
           to = endValues[key];
 
-          if (!hasTranslations && attrStrategy) {
+          if (!hasTranslations && isAttrStrategy) {
             // Optimal method (no translations):
             subjectAttributes[key] = from + (to - from) * progress;
+            subjectMutatedAttributes[key] = true;
           } else {
             values[key] = from + (to - from) * progress;
           }
         }
 
-        if (!hasTranslations && attrStrategy) {
+        if (!hasTranslations && isAttrStrategy) {
           // We've already set them the optimal way. Continue:
           subject.markUpdate();
           continue;
