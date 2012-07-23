@@ -456,8 +456,8 @@ define([
         key = keys[i];
         frame =
           key == +key ? key : // numerical comparision: frame number
-          key == 'from' ? 0 : // 'from' keyword --> 0
-          key == 'to' ? duration :
+          /^(?:from|start)$/.test(key) ? 0 : // 'from' keyword --> 0
+          /^(?:to|end)$/.test(key) ? duration :
           /^\d+%$/.test(key) ? duration * parseFloat(key) / 100 :
           clock.toFrameNumber(key); // everything else
         keyframesClean[frame] = keyframes[key];
