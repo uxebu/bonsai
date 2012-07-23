@@ -1,9 +1,10 @@
 require([
   'bonsai/runner/path/path',
+  'bonsai/runner/path/rect',
   'bonsai/runner/gradient',
   'bonsai/runner/bitmap',
   './runner.js'
-], function(Path, gradient, Bitmap) {
+], function(Path, Rect, gradient, Bitmap) {
 
   var precision = new Number(12);
   precision.PRECISION = +precision;
@@ -458,47 +459,6 @@ require([
 
     });
 
-    describe('rect', function() {
-      it('Creates a regular rectangle with specified width/height', function() {
-        var s = Path.rect(0, 0, 100, 200); // 100x200
-        expect(s.segments()).toEqual([
-          ['moveTo', 0, 0],
-          ['lineBy', 100, 0],
-          ['lineBy', 0, 200],
-          ['lineBy', -100, 0],
-          ['closePath']
-        ]);
-      });
-      it('Creates a regular rectangle with a radius', function() {
-        var s = Path.rect(0, 0, 100, 200, 5); // 100x200
-        expect(s.segments()).toEqual([
-          ['moveTo', 0, 5],
-          ['arcBy', 5, 5, 0, 0, 1, 5, -5],
-          ['lineBy', 90, 0],
-          ['arcBy', 5, 5, 0, 0, 1, 5, 5],
-          ['lineBy', 0, 190],
-          ['arcBy', 5, 5, 0, 0, 1, -5, 5],
-          ['lineBy', -90, 0],
-          ['arcBy', 5, 5, 0, 0, 1, -5, -5],
-          ['closePath']
-        ]);
-      });
-      it('Creates a regular rectangle with per-corner radius', function() {
-        var s = Path.rect(0, 0, 100, 200, [1,11,12,13]); // 100x200
-        expect(s.segments()).toEqual([
-          ['moveTo', 0, 1],
-          ['arcBy', 1, 1, 0, 0, 1, 1, -1],
-          ['lineBy', 88, 0],
-          ['arcBy', 11, 11, 0, 0, 1, 11, 11],
-          ['lineBy', 0, 177],
-          ['arcBy', 12, 12, 0, 0, 1, -12, 12],
-          ['lineBy', -75, 0],
-          ['arcBy', 13, 13, 0, 0, 1, -13, -13],
-          ['closePath']
-        ]);
-      });
-    });
-
   });
 
   describe('#getComputed()', function() {
@@ -509,7 +469,7 @@ require([
       var height = 50;
       var expectedRight = left + width;
       var expectedBottom = top + height;
-      var shape = Path.rect(left, top, width, height);
+      var shape = new Rect(left, top, width, height);
 
       it('computes the "top" value', function() {
         expect(shape.getComputed('top')).toBe(top);
@@ -535,7 +495,7 @@ require([
 
   describe('fillGradient', function() {
     it('Can be set/get', function() {
-      var s = Path.rect(0, 0, 10, 10);
+      var s = new Rect(0, 0, 10, 10);
       var g = gradient.linear(0, ['red', 'yellow']);
       s.attr('fillGradient', g);
       expect(s.attr('fillGradient')).toBe(g);
@@ -546,7 +506,7 @@ require([
 
   describe('lineGradient', function() {
     it('Can be set/get', function() {
-      var s = Path.rect(0, 0, 10, 10);
+      var s = new Rect(0, 0, 10, 10);
       var g = gradient.linear(0, ['red', 'yellow']);
       s.attr('lineGradient', g);
       expect(s.attr('lineGradient')).toBe(g);
