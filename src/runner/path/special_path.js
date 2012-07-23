@@ -76,6 +76,20 @@ define(['./path', '../../tools'], function(Path, tools) {
   };
 
   /**
+   * You cannot morph a SpecialPath.
+   * Doing so would mean transforming e.g. A Star instance to a Rect instance.
+   * The transformation of properties (e.g. radius, rays, width, height) is not
+   * easily defined so it's better to avoid the matter completely.
+   * If a user wants to morph then they must utilise Path directly and draw
+   * their shapes manually.
+   *
+   * @ignore
+   */
+  proto.morphTo = function() {
+    throw Error('SpecialPath\'s are not morphable');
+  }
+
+  /**
    * Generates shape as per SpecialPath's properties in _attributes
    * (is meant to be overriden)
    *
