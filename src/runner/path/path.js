@@ -13,6 +13,8 @@ define([
 ) {
   'use strict';
 
+  /** @module path */
+
   var accessor = tools.descriptorAccessor,
       data = tools.descriptorData,
       getter = tools.getter,
@@ -163,6 +165,7 @@ define([
    *
    * @constructor
    * @name Path
+   * @memberOf module:path
    * @extends DisplayObject
    * @returns {Path} A new Instance of Path
    *
@@ -282,7 +285,7 @@ define([
 
   var superObject = DisplayObject.prototype;
 
-  /** @lends Path.prototype */
+  /** @lends module:path.Path.prototype */
   var proto = Path.prototype = Object.create(superObject);
 
   proto._activate = function(stage) {
@@ -717,51 +720,6 @@ define([
   };
 
   /**
-   * Returns a new Path instance with an rect.
-   *
-   * @param {Number} x The x position of the rect
-   * @param {Number} y The y position of the rect
-   * @param {Number} width The width of the rect
-   * @param {Number} height The height of the rect
-   * @param {Number|Array} radius rounded corner radius or an array of radiuses
-   *  for each corner, in the order top-left, top-right, bottom-right, bottom-left
-   * @returns {Path} The current Path instance
-   */
-  proto.rect = function(x, y, width, height, radius) {
-
-    var bottomLeftRadius,
-        bottomRightRadius,
-        topLeftRadius,
-        topRightRadius;
-
-    if (radius) {
-
-      topLeftRadius = radius[0] || radius;
-      topRightRadius = radius[1] || radius;
-      bottomRightRadius = radius[2] || radius;
-      bottomLeftRadius = radius[3] || radius;
-
-      this
-        .moveTo(x, y + topLeftRadius)
-        .arcBy(topLeftRadius, topLeftRadius, 0, 0, 1, topLeftRadius, -topLeftRadius)
-        .lineBy(width - topLeftRadius - topRightRadius, 0)
-        .arcBy(topRightRadius, topRightRadius, 0, 0, 1, topRightRadius, topRightRadius)
-        .lineBy(0, height - topRightRadius - bottomRightRadius)
-        .arcBy(bottomRightRadius, bottomRightRadius, 0, 0, 1, -bottomRightRadius, bottomRightRadius)
-        .lineBy(-(width - bottomLeftRadius - bottomRightRadius), 0)
-        .arcBy(bottomLeftRadius, bottomLeftRadius, 0, 0, 1, -bottomLeftRadius, -bottomLeftRadius);
-    } else {
-      this
-        .moveTo(x, y)
-        .lineBy(width, 0)
-        .lineBy(0, height)
-        .lineBy(-width, 0);
-    }
-
-    return this.closePath();
-  };
-
-  /**
    * Returns the bounding box of that {Path}.
    *
    * @returns {Object} bb An object with x, y, width, height
@@ -1115,155 +1073,6 @@ define([
 
 
   /************************* Factories & Abstractions *************************/
-
-  /**
-   * Returns a new Path instance with an arc.
-   *
-   * @example
-   * Path.arc(75, 75, 75, 0, 2*Math.PI); // circle
-   * Path.arc(75, 75, 75, 0, 360); // circle TODO
-   *
-   * @see proto.arc
-   * @memberOf Path
-   * @returns {Path} A new Path instance
-   */
-  Path.arc = function(x, y, radius, aStartAngle, aEndAngle, anticlockwise) {
-    return new Path().arc(x, y, radius, aStartAngle, aEndAngle, anticlockwise);
-  };
-
-  /**
-   * Returns a new Path instance with a circle.
-   *
-   * @memberOf Path
-   * @param {Number} x description
-   * @param {Number} y description
-   * @param {Number} radius description
-   * @returns {Path} A new Path instance
-   */
-  Path.circle = function(x, y, radius) {
-    return Path.ellipse(x, y, radius, radius);
-  };
-
-  Path.ellipse = function(centerX, centerY, radiusX, radiusY) {
-      return new Path()
-        .moveTo(radiusX, 0)
-        .arcTo(radiusX, radiusY, 0, 0, 0, -radiusX, 0)
-        .arcTo(radiusX, radiusY, 0, 0, 0, radiusX, 0)
-        .attr({x: centerX, y: centerY});
-  };
-
-  /**
-   * Returns a new Path instance with an rect.
-   *
-   * @example
-   * bs.Path.rect(0, 0, 150, 150);
-   *
-   * @memberOf Path
-   * @param {Number} x The x position of the rect
-   * @param {Number} y The y position of the rect
-   * @param {Number} width The width of the rect
-   * @param {Number} height The height of the rect
-   * @param {Number} radius rounded corners
-   * @returns {Path} A new Path instance
-   */
-  Path.rect = function(x, y, width, height, radius) {
-    return new Path()
-      .attr({origin: {x: width / 2, y: height / 2}, x: x, y: y})
-      .rect(0, 0, width, height, radius);
-  };
-
-  /**
-   * Returns a Path instance containing a regular polygon.
-   *
-   * @memberOf Path
-   * @param {number} x The horizontal offset/translation of the polygon center.
-   * @param {number} y The vertical offset/translation of the polygon center.
-   * @param {number} radius The radius of the polygon
-   * @param {number} sides The number of sides of the polygon. Must be > 3
-   * @returns {Path} A shape instance
-   */
-  Path.polygon = function(x, y, radius, sides) {
-    if (!(sides >= 3)) { // >= catches NaN, null, etc.
-      throw RangeError('A polygon needs at least 3 sides.');
-    }
-
-    sides >>>= 0; // floor number of sides, max number of sides is 4294967295
-    var shape = new Path().attr({x: x, y: y});
-
-    // start at 12 o'clock, continue clockwise
-    shape.moveTo(0, -radius);
-    for (var i = 1, current; i < sides; i++) {
-      current = PI2 * i / sides;
-      shape.lineTo(sin(current) * radius, -cos(current) * radius);
-    }
-    shape.closePath();
-
-    return shape;
-  };
-
-  /**
-   * Returns a Path instance containing a star.
-   *
-   * @memberOf Path
-   * @param {number} x The horizontal offset/translation of the star center.
-   * @param {number} y The vertical offset/translation of the star center.
-   * @param {number} radius The radius of the star
-   * @param {number} rays The number of rays of the star. Must be > 3
-   * @param {number} [factor] determines the star "pointiness".
-   *    0: all rays start at (0, 0)
-   *    1: the star looks like a regular polygon: 3 vertices are on a line.
-   *    If omitted, a regular star is created
-   * @returns {Path} A shape instance
-   */
-  Path.star = function(x, y, radius, rays, factor) {
-    if (!(rays >= 3)) { // >= catches NaN, null, etc.
-      throw RangeError('A star needs at least 3 rays.');
-    }
-
-    // use a shape as starting point
-    var shape = Path.polygon(x, y, radius, rays);
-
-    // make a star from it by inserting points
-    var segments = shape.segments();
-    var from = segments[0], to;
-    var starSegments = [from.slice()];
-
-    /*
-      If factor is not given, we default to a regular star.
-
-      We create a regular star by connecting every `floor((rays - 1) / 2)` ray
-      end point verteces.
-    */
-    if (!(factor >= 0 || factor < 0)) { // catches NaN, undefined etc.
-      var b = segments[rays / 2 - .5 | 0];
-      var ax = 0, ay = from[2], bx = b[1], by = b[2];
-      to = segments[1];
-      var qx = (ax + to[1]) / 2, qy = (ay + to[2]) / 2;
-
-      //     y = x * (by - ay) / bx - radius
-      //  && y = x * qy / qx
-      //  => x * qy / qx = x * (by - ay) / bx + radius
-      // <=> x = (qx * bx * -radius) / (qy * bx - qx * by + qx * ay)
-      var ix = (qx * bx * -radius) / (qy * bx - qx * by + qx * ay);
-      factor = ix / qx;
-    }
-
-    for (var i = 0; i < rays; i++) {
-      to = segments[(i + 1) % rays];
-      var fromX = from[1], fromY = from[2], toX = to[1], toY = to[2];
-      starSegments.push(
-        ['lineTo', (fromX + toX) / 2 * factor, (fromY + toY) / 2 * factor],
-        to
-      );
-
-      from = to;
-    }
-
-    to[0] = 'closePath';
-    to.length = 1;
-
-    return shape.segments(starSegments);
-  };
 
   /**
    * Returns dimensions/location of the shape
