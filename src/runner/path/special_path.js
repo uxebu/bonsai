@@ -1,0 +1,88 @@
+define(['./path', '../../tools'], function(Path, tools) {
+
+  function makeAccessor(attrName, defaultValue) {
+    var value = defaultValue;
+    function set(newValue) {
+      value = newValue;
+      if (!this._owner._isProcessingPathAttribute) {
+        this._owner._isProcessingPathAttribute = true;
+        this._owner.clear();
+        this._owner._make();
+        this._owner._isProcessingPathAttribute = false;
+      }
+    }
+    function get() {
+      return value;
+    }
+    return tools.descriptorAccessor(get, set, true);
+  }
+
+  /**
+   * Creates a SpecialPath
+   *
+   * @constructor
+   * @classdesc SpecialPath directly subclasses Path and provides a convenience
+   *  argument for adding special attributes for unique shape types. Intended to
+   *  be inherited from for custom path classes. E.g. Star, Rect etc.
+   * @name SpecialPath
+   * @memberOf module:path
+   * @extends module:path.Path
+   * @param {Object} specialAttributes A map of attributes with their default
+   *  values. Setters/getters will automatically be set-up, and path-redrawing
+   *  will happen automatically.
+   */
+  function SpecialPath(specialAttributes) {
+
+    Path.call(this);
+
+    this._isProcessingPathAttribute = false;
+
+    for (var attrName in specialAttributes) {
+      Object.defineProperty(
+        this._attributes,
+        attrName,
+        makeAccessor(attrName, specialAttributes[attrName])
+      );
+    }
+
+  }
+
+  /** @lends module:path.SpecialPath.prototype **/
+  var proto = SpecialPath.prototype = Object.create(Path.prototype);
+
+  var attrMethod = Path.prototype.attr;
+
+  /**
+   * SpecialPath overrides Path#attr so it can manage the re-making of the path
+   * on each bulk attr call. (i.e. calling `clear()` and `_make()`).
+   *
+   * @ignore
+   */
+  proto.attr = function(attr, val) {
+
+    var argLength = arguments.length;
+
+    if (!this._isProcessingPathAttribute && argLength === 1 && typeof attr !== 'string') {
+      // Prevent path from being redrawn until we've finished
+      // going through the entire map of attributes:
+      this._isProcessingPathAttribute = true;
+      attrMethod.call(this, attr);
+      this.clear();
+      this._make();
+      this._isProcessingPathAttribute = false;
+      return this;
+    }
+    return attrMethod.apply(this, arguments);
+  };
+
+  /**
+   * Generates shape as per SpecialPath's properties in _attributes
+   * (is meant to be overriden)
+   *
+   * @private
+   */
+  proto._make = function() {};
+
+  return SpecialPath;
+
+});
