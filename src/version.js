@@ -1,3 +1,3 @@
 define(function() {
-  return '0.1.0-alpha';
+  return '0.3.0';
 });
