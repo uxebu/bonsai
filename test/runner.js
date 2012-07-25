@@ -16,6 +16,19 @@ define([
     compareServer: 'http://jenkins.ux:33334'
   });
 
+  this.roundPathSegments = function(segments) {
+    // Rounds segment args to 3 decimal places
+    // (avoid JS floating-point issues when testing)
+    return segments.map(function(seg) {
+      return seg.map(function(p) {
+        if (typeof p == 'number') {
+          return Math.round(p * 1000) / 1000;
+        }
+        return p;
+      });
+    });
+  }
+
   var trivialReporter = new jasmine.TrivialReporter();
 
   jasmineEnv.addReporter(trivialReporter);
