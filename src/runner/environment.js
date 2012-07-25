@@ -4,7 +4,7 @@ define([
   './movie',
   '../point',
   './path/path',
-  './path/special_path',
+  './path/special_attr_path',
   './path/rect',
   './path/polygon',
   './path/star',
@@ -30,7 +30,7 @@ define([
   '../version'
 ], function(
   tools, EventEmitter, Movie, Point,
-  Path, SpecialPath, Rect, Polygon, Star, Ellipse, Circle, Arc,
+  Path, SpecialAttrPath, Rect, Polygon, Star, Ellipse, Circle, Arc,
   Bitmap, DisplayObject, Group,
   Animation, KeyframeAnimation, easing, FontFamily, Matrix,
   Sprite, color, gradient, Text, TextSpan, Video, filter,
@@ -68,7 +68,7 @@ define([
 
       // Path Classes
       Path: Path,
-      SpecialPath: SpecialPath,
+      SpecialAttrPath: SpecialAttrPath,
       Rect: Rect,
       Polygon: Polygon,
       Star: Star,

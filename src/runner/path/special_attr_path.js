@@ -18,20 +18,20 @@ define(['./path', '../../tools'], function(Path, tools) {
   }
 
   /**
-   * Creates a SpecialPath
+   * Creates a SpecialAttrPath
    *
    * @constructor
-   * @classdesc SpecialPath directly subclasses Path and provides a convenience
+   * @classdesc SpecialAttrPath directly subclasses Path and provides a convenience
    *  argument for adding special attributes for unique shape types. Intended to
    *  be inherited from for custom path classes. E.g. Star, Rect etc.
-   * @name SpecialPath
+   * @name SpecialAttrPath
    * @memberOf module:path
    * @extends module:path.Path
    * @param {Object} specialAttributes A map of attributes with their default
    *  values. Setters/getters will automatically be set-up, and path-redrawing
    *  will happen automatically.
    */
-  function SpecialPath(specialAttributes) {
+  function SpecialAttrPath(specialAttributes) {
 
     Path.call(this);
 
@@ -47,13 +47,13 @@ define(['./path', '../../tools'], function(Path, tools) {
 
   }
 
-  /** @lends module:path.SpecialPath.prototype **/
-  var proto = SpecialPath.prototype = Object.create(Path.prototype);
+  /** @lends module:path.SpecialAttrPath.prototype **/
+  var proto = SpecialAttrPath.prototype = Object.create(Path.prototype);
 
   var attrMethod = Path.prototype.attr;
 
   /**
-   * SpecialPath overrides Path#attr so it can manage the re-making of the path
+   * SpecialAttrPath overrides Path#attr so it can manage the re-making of the path
    * on each bulk attr call. (i.e. calling `clear()` and `_make()`).
    *
    * @ignore
@@ -76,7 +76,7 @@ define(['./path', '../../tools'], function(Path, tools) {
   };
 
   /**
-   * You cannot morph a SpecialPath.
+   * You cannot morph a SpecialAttrPath.
    * Doing so would mean transforming e.g. A Star instance to a Rect instance.
    * The transformation of properties (e.g. radius, rays, width, height) is not
    * easily defined so it's better to avoid the matter completely.
@@ -86,17 +86,17 @@ define(['./path', '../../tools'], function(Path, tools) {
    * @ignore
    */
   proto.morphTo = function() {
-    throw Error('SpecialPath\'s are not morphable');
+    throw Error('SpecialAttrPath\'s are not morphable');
   }
 
   /**
-   * Generates shape as per SpecialPath's properties in _attributes
+   * Generates shape as per SpecialAttrPath's properties in _attributes
    * (is meant to be overriden)
    *
    * @private
    */
   proto._make = function() {};
 
-  return SpecialPath;
+  return SpecialAttrPath;
 
 });

@@ -1,8 +1,8 @@
 define([
   './path',
-  './special_path',
+  './special_attr_path',
   '../../tools'
-], function(Path, SpecialPath, tools) {
+], function(Path, SpecialAttrPath, tools) {
   'use strict';
 
   Path.polygon = function(x, y, radius, sides) {
@@ -22,7 +22,7 @@ define([
    * @constructor
    * @name Polygon
    * @memberOf module:path
-   * @extends module:path.SpecialPath
+   * @extends module:path.SpecialAttrPath
    * @param {Number} x The horizontal offset/translation of the polygon center.
    * @param {Number} y The vertical offset/translation of the polygon center.
    * @param {Number} radius The radius of the polygon
@@ -30,7 +30,7 @@ define([
    */
   function Polygon(x, y, radius, sides) {
 
-    SpecialPath.call(this, {
+    SpecialAttrPath.call(this, {
       radius: 0,
       sides: 3
     });
@@ -45,7 +45,7 @@ define([
   }
 
   /** @lends module:path.Polygon.prototype **/
-  var proto = Polygon.prototype = Object.create(SpecialPath.prototype);
+  var proto = Polygon.prototype = Object.create(SpecialAttrPath.prototype);
 
   /**
    * Generates shape as per Polygon's properties in _attributes

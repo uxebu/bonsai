@@ -1,8 +1,8 @@
 define([
   './path',
-  './special_path',
+  './special_attr_path',
   '../../tools'
-], function(Path, SpecialPath, tools) {
+], function(Path, SpecialAttrPath, tools) {
   'use strict';
 
   Path.rect = function(x, y, width, height, cornerRadius) {
@@ -18,7 +18,7 @@ define([
    * @constructor
    * @name Rect
    * @memberOf module:path
-   * @extends module:path.SpecialPath
+   * @extends module:path.SpecialAttrPath
    * @param {Number} x The x position of the rect
    * @param {Number} y The y position of the rect
    * @param {Number} width The width of the rect
@@ -28,7 +28,7 @@ define([
    */
   function Rect(x, y, width, height, cornerRadius) {
 
-    SpecialPath.call(this, {
+    SpecialAttrPath.call(this, {
       height: 0,
       width: 0,
       cornerRadius: 0
@@ -49,7 +49,7 @@ define([
   }
 
   /** @lends module:path.Rect.prototype **/
-  var proto = Rect.prototype = Object.create(SpecialPath.prototype);
+  var proto = Rect.prototype = Object.create(SpecialAttrPath.prototype);
 
   /**
    * Generates shape as per Rect's properties in _attributes

@@ -1,8 +1,8 @@
 define([
   './path',
-  './special_path',
+  './special_attr_path',
   '../../tools'
-], function(Path, SpecialPath, tools) {
+], function(Path, SpecialAttrPath, tools) {
   'use strict';
 
   Path.arc = function(x, y, radius, startAngle, endAngle, antiClockwise) {
@@ -28,7 +28,7 @@ define([
    * @constructor
    * @name Arc
    * @memberOf module:path
-   * @extends module:path.SpecialPath
+   * @extends module:path.SpecialAttrPath
    * @param {Number} x The x coordinate of the center of the circle
    * @param {Number} y The y coordinate of the center of the circle
    * @param {Number} radius The arc's circle's radius
@@ -39,7 +39,7 @@ define([
    */
   function Arc(x, y, radius, startAngle, endAngle, antiClockwise) {
 
-    SpecialPath.call(this, {
+    SpecialAttrPath.call(this, {
       radius: 0,
       startAngle: 0,
       endAngle: 0,
@@ -58,7 +58,7 @@ define([
   }
 
   /** @lends module:path.Arc.prototype **/
-  var proto = Arc.prototype = Object.create(SpecialPath.prototype);
+  var proto = Arc.prototype = Object.create(SpecialAttrPath.prototype);
 
   /**
    * Generates shape as per Arc's properties in _attributes

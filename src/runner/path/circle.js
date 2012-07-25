@@ -1,8 +1,8 @@
 define([
   './path',
-  './special_path',
+  './special_attr_path',
   '../../tools'
-], function(Path, SpecialPath, tools) {
+], function(Path, SpecialAttrPath, tools) {
   'use strict';
 
   Path.circle = function(x, y, radius) {
@@ -18,14 +18,14 @@ define([
    * @constructor
    * @name Circle
    * @memberOf module:path
-   * @extends module:path.SpecialPath
+   * @extends module:path.SpecialAttrPath
    * @param {Number} x The x coordinate of the center of the circle
    * @param {Number} y The y coordinate of the center of the circle
    * @param {Number} radius The circle's radius
    */
   function Circle(x, y, radius) {
 
-    SpecialPath.call(this, {
+    SpecialAttrPath.call(this, {
       radius: 0
     });
 
@@ -38,7 +38,7 @@ define([
   }
 
   /** @lends module:path.Circle.prototype **/
-  var proto = Circle.prototype = Object.create(SpecialPath.prototype);
+  var proto = Circle.prototype = Object.create(SpecialAttrPath.prototype);
 
   /**
    * Generates shape as per Circle's properties in _attributes

@@ -1,9 +1,9 @@
 define([
   './path',
-  './special_path',
+  './special_attr_path',
   './polygon',
   '../../tools'
-], function(Path, SpecialPath, Polygon, tools) {
+], function(Path, SpecialAttrPath, Polygon, tools) {
   'use strict';
 
   Path.star = function(x, y, radius, rays, factor) {
@@ -19,7 +19,7 @@ define([
    * @constructor
    * @name Star
    * @memberOf module:path
-   * @extends module:path.SpecialPath
+   * @extends module:path.SpecialAttrPath
    * @param {Number} x The horizontal offset/translation of the star center.
    * @param {Number} y The vertical offset/translation of the star center.
    * @param {Number} radius The radius of the star
@@ -31,7 +31,7 @@ define([
    */
   function Star(x, y, radius, rays, factor) {
 
-    SpecialPath.call(this, {
+    SpecialAttrPath.call(this, {
       radius: 0,
       rays: 0,
       factor: 0
@@ -48,7 +48,7 @@ define([
   }
 
   /** @lends module:path.Star.prototype **/
-  var proto = Star.prototype = Object.create(SpecialPath.prototype);
+  var proto = Star.prototype = Object.create(SpecialAttrPath.prototype);
 
   /**
    * Generates shape as per Star's properties in _attributes

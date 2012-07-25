@@ -1,8 +1,8 @@
 define([
   './path',
-  './special_path',
+  './special_attr_path',
   '../../tools'
-], function(Path, SpecialPath, tools) {
+], function(Path, SpecialAttrPath, tools) {
   'use strict';
 
   Path.ellipse = function(x, y, radiusX, radiusY) {
@@ -18,7 +18,7 @@ define([
    * @constructor
    * @name Ellipse
    * @memberOf module:path
-   * @extends module:path.SpecialPath
+   * @extends module:path.SpecialAttrPath
    * @param {Number} x The x coordinate of the center of the ellipse
    * @param {Number} y The y coordinate of the center of the ellipse
    * @param {Number} radiusX The x (horizonal) radius
@@ -26,7 +26,7 @@ define([
    */
   function Ellipse(x, y, radiusX, radiusY) {
 
-    SpecialPath.call(this, {
+    SpecialAttrPath.call(this, {
       radiusX: 0,
       radiusY: 0
     });
@@ -41,7 +41,7 @@ define([
   }
 
   /** @lends module:path.Ellipse.prototype **/
-  var proto = Ellipse.prototype = Object.create(SpecialPath.prototype);
+  var proto = Ellipse.prototype = Object.create(SpecialAttrPath.prototype);
 
   /**
    * Generates shape as per Ellipse's properties in _attributes
