@@ -14,15 +14,15 @@ function getPointAtLength(percent, points) {
 }
 
 var path = ['M',20,20, 'C',140,1110, 490,310, 180,480].join(' ');
-var bezier = new bonsai.Shape(path).attr('lineColor','#000').addTo(stage);
-var circle = bonsai.Shape.circle(20,20,5).attr('fillColor', '#000').addTo(stage);
+var bezier = new bonsai.Path(path).attr('lineColor','#000').addTo(stage);
+var circle = bonsai.Path.circle(20,20,5).attr('fillColor', '#000').addTo(stage);
 
 var points = bezier.segments().join().split(",").filter(function(e){
  return !isNaN(+e);
 });
 
 var i = 0;
-(function loop(){ 
+(function loop(){
   setTimeout(loop, 116);
   var point = getPointAtLength(i, points);
   circle.attr('x', point.x);

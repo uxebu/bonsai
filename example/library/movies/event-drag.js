@@ -1,5 +1,5 @@
 /**
- * Shapes w/ drag events.
+ * Paths w/ drag events.
  */
 
 for (var a = 0; a < 3; ++a) {
@@ -9,7 +9,7 @@ for (var a = 0; a < 3; ++a) {
       var x, y,
           fill = bonsai.color('red').darker(.1).randomize('hue');
 
-      bonsai.Shape.rect(
+      bonsai.Path.rect(
         a * 150 + 50, b * 150 + 50, 100, 100
       ).attr({
         fillColor: fill

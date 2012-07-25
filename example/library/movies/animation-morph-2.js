@@ -9,8 +9,8 @@ that don't do anything, but can be animated by the Animation class
 
 */
 
-var a = Shape.rect(10, 10, 400, 150).attr('fillColor', 'red');
-var b = Shape.star(100, 100, 100, 5).attr('fillColor', 'blue');
+var a = Path.rect(10, 10, 400, 150).attr('fillColor', 'red');
+var b = Path.star(100, 100, 100, 5).attr('fillColor', 'blue');
 
 var numberOfCurves = Math.max(
   a.attr('segments').length,

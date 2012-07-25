@@ -1,4 +1,4 @@
-var rect = new bonsai.Shape().rect(-50, -50, 100, 100).attr({
+var rect = new bonsai.Path().rect(-50, -50, 100, 100).attr({
   fillColor: 'red',
   x: 200,
   y: 200
@@ -12,7 +12,7 @@ rect.animate('5s', {
 
 
 /*stage.addChild(
-  bonsai.Shape.rect(200, 200, 100, 100).
+  bonsai.Path.rect(200, 200, 100, 100).
     attr({fillColor:'red'}).
     animate('5s', {rotation: 10 * Math.PI * 2}, {easing: 'cubicIn', repeat: Infinity})
 );*/

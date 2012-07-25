@@ -13,14 +13,14 @@ function centerFromArc(x1, y1, rx, ry, angle, large, sweep, x2, y2) {
   // Any nonzero value for either of the flags large or sweep is taken to mean the value 1
   large = !!large;
   sweep = !!sweep;
-  
+
   // degrees to rad
   angle = max((angle * PI) / 180, 0.0001);
- 
+
   function step2Helper(rxPow, ryPow, x1_Pow, y1_Pow) {
     return sqrt((rxPow * ryPow - rxPow * y1_Pow - ryPow * x1_Pow) / (rxPow * y1_Pow + ryPow * x1_Pow));
-  } 
- 
+  }
+
   // step 1: compute (x1′, y1′)
   var x1_ = cos(angle) * sin(angle) * ((x1 - x2) / 2);
   var y1_ = -sin(angle) * cos(angle) * ((y1 - y2) / 2);
@@ -38,8 +38,8 @@ function centerFromArc(x1, y1, rx, ry, angle, large, sweep, x2, y2) {
   var cx = (cos(angle) * -sin(angle)) * cx_ + ((x1 + x2) / 2);
   var cy = (sin(angle) * cos(angle)) * cy_ + ((y1 + y2) / 2);
 
-  return { 
-    x: cx, 
+  return {
+    x: cx,
     y: cy
   };
 }
@@ -57,16 +57,16 @@ exampleArcs = [
   ];
 
 for (var i = 0; i < exampleArcs.length; i++) {
-  var shape = new Shape(exampleArcs[i]).
+  var shape = new Path(exampleArcs[i]).
   attr('lineColor', 'black').attr('lineWidth', 1).addTo(stage);
 
   // convert segments to absolute and strip of the numbers
-  var a = (bonsai.Shape.toAbsolute(shape.segments()).join(",").split(",")).filter(function(e) {
-   return !isNaN(+e); 
+  var a = (bonsai.Path.toAbsolute(shape.segments()).join(",").split(",")).filter(function(e) {
+   return !isNaN(+e);
   });
 
 // calc center of an arc
   var c = centerFromArc(+a[0], +a[1], +a[2], +a[3], +a[4], +a[5], +a[6], +a[7], +a[8]);
   // draw center of an arc
-  Shape.circle(c.x, c.y, 5).attr('fillColor', 'red').addTo(stage);
+  Path.circle(c.x, c.y, 5).attr('fillColor', 'red').addTo(stage);
 }

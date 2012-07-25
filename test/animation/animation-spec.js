@@ -4,11 +4,11 @@ require([
   'bonsai/runner/timeline',
   'bonsai/tools',
   'bonsai/runner/animation/easing',
-  'bonsai/runner/shape',
+  'bonsai/runner/path/path',
   'bonsai/color',
   'bonsai/runner/matrix',
   './runner.js'
-], function(Animation, DisplayObject, Timeline, tools, easing, Shape, color, Matrix) {
+], function(Animation, DisplayObject, Timeline, tools, easing, Path, color, Matrix) {
 
   var clock = tools.mixin({}, Timeline, {
     framerate: 30,
@@ -247,7 +247,7 @@ require([
     })
   });
 
-  describe('Shape - morphing', function() {
+  describe('Path - morphing', function() {
 
     function sensibleCopyOfSegments(segments) {
       return segments.map(function(seg){
@@ -259,9 +259,9 @@ require([
 
     describe('morphTo', function() {
 
-      var source = new Shape().moveTo(01, 01).lineTo(100, 50).arcTo(10, 10, 0, 0, 0, 20, 20),
+      var source = new Path().moveTo(01, 01).lineTo(100, 50).arcTo(10, 10, 0, 0, 0, 20, 20),
           sourceClone = source.clone(),
-          target = new Shape().moveTo(20, 20).lineTo(200, 11).arcTo(22, 33, 0, 0, 0, 30, 30);
+          target = new Path().moveTo(20, 20).lineTo(200, 11).arcTo(22, 33, 0, 0, 0, 30, 30);
 
       source.attr({lineColor: 'red', opacity: .5});
       target.attr({lineColor: 'blue', opacity: .5});

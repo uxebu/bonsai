@@ -15,7 +15,7 @@ for (var i = 0; i < circles; ++i) {
         y = centerY + distance * -Math.cos(f*2*Math.PI),
         radius = random() * radiusVar + radiusMin;
 
-    circle = bonsai.Shape.
+    circle = bonsai.Path.
       circle(x, y, radius).
 //      attr({fillColor: 'hsl(' + (i / circles * 360) + ', 100%, 50%)'});
       attr({fillColor: 'random', fillGradient: bonsai.gradient.radial(['#FFFFFF88', '#FFFFFF00'])});

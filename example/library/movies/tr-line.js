@@ -4,8 +4,8 @@ stage.addChild(movie);
 
 var dict = [
 
-function shape_1() { // DefineShape4
-  var s = new bonsai.Shape().moveTo(81, 79).attr({
+function shape_1() { // DefinePath4
+  var s = new bonsai.Path().moveTo(81, 79).attr({
     lineWidth: 1,
     lineColor: 0x000000ff,
     cap: 'round',

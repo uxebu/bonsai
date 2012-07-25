@@ -1,7 +1,7 @@
 /**
- * Shape w/ events.
+ * Path w/ events.
  */
-var rectShape = bonsai.Shape.rect(150, 150, 150, 150).attr({fillColor: 'red'});
+var rectPath = bonsai.Path.rect(150, 150, 150, 150).attr({fillColor: 'red'});
 var colors = [
   'green',
   'blue',
@@ -10,9 +10,9 @@ var colors = [
 ];
 var index = 0;
 
-stage.addChild(rectShape);
+stage.addChild(rectPath);
 
-rectShape.on('click', function(data){
+rectPath.on('click', function(data){
   if (++index == colors.length) index = 0;
-  rectShape.attr({fillColor: colors[index]});
+  rectPath.attr({fillColor: colors[index]});
 });

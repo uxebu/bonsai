@@ -1,6 +1,6 @@
 var code = '(' + function() {
 
-  Shape.rect(100, 0, 100, 100).addTo(stage).attr({
+  new Rect(100, 0, 100, 100).addTo(stage).attr({
     fillColor: 'blue'
   });
 
@@ -60,8 +60,8 @@ function playerInit(player, config) {
     baseUrl: '../../src/',
 
     code: code,
-    plugins: ['../test/integration/assets/plugins/red_box_plugin.js'],
-    urls: ['../../test/integration/assets/yellow.js'],
+    plugins: ['../test/integration/assets/plugins/red_box_plugin.js?' + +new Date],
+    urls: ['../../test/integration/assets/yellow.js?' + +new Date],
     noCache: true,
     assets: []
   };

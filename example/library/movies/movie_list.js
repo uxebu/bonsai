@@ -113,7 +113,7 @@ movieList = {
     'nested-movies-length-stop.js',
     'nested-movies-clear.js'
   ],
-  'Shape and Attributes': [
+  'Path and Attributes': [
     'shape-square.js',
     'shape-simple.js',
     'shape-attributes.js',

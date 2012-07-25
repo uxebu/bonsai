@@ -1,8 +1,8 @@
-var a = Shape.star(100, 100, 100, 5).attr({
+var a = Path.star(100, 100, 100, 5).attr({
   fillColor: 'red',
   opacity: .5
 });
-var b = Shape.star(250, 250, 200, 10).attr({
+var b = Path.star(250, 250, 200, 10).attr({
   fillColor: 'blue'
 });
 

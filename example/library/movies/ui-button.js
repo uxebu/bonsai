@@ -1,6 +1,6 @@
 var button = new bonsai.Group().addTo(stage);
 
-button.bg = bonsai.Shape.rect(50, 50, 100, 40, 5).attr({
+button.bg = bonsai.Path.rect(50, 50, 100, 40, 5).attr({
 	fillGradient: bonsai.gradient.radial(['#19D600', '#0F8000'], 100, 50, -20),
 	lineColor: '#CCC',
 	lineWidth: 0

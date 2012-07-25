@@ -1,4 +1,4 @@
-var player = new bonsai.Shape()
+var player = new bonsai.Path()
     .moveTo(0,-20)
     .lineBy(10,30)
     .lineBy(-20,0)
@@ -21,9 +21,9 @@ var bulletId = 0;
 function move(object, speed, direction) {
     var x = object.attr('x');
     var y = object.attr('y');
-    
+
     var rad = Math.PI * direction / 180;
-    
+
     x += Math.cos(rad) * speed;
     y += Math.sin(rad) * speed;
     object.attr({
@@ -35,7 +35,7 @@ function move(object, speed, direction) {
 
 function fireBullet () {
     var rotation = Math.PI * direction / 180 + Math.PI / 2;
-    var bulletShape = new bonsai.Shape()
+    var bulletPath = new bonsai.Path()
         .moveTo(0,0)
         .lineTo(0,10)
         .attr({
@@ -47,10 +47,10 @@ function fireBullet () {
         });
     var bullet = {
         direction: direction,
-        shape: bulletShape,
+        shape: bulletPath,
         id: bulletId++
     };
-    stage.addChild(bulletShape);
+    stage.addChild(bulletPath);
     bullets.push(bullet);
     setTimeout(function(){
         bullets = bullets.filter(function(_b){

@@ -18,7 +18,7 @@ function renderButton(buttonObj, idx){
   var bgColor = buttonObj.bgColor;
   var fgColor = buttonObj.color;
   var x = 10;
-  var shape1 = new bonsai.Shape.rect(x, y, 120, 35);
+  var shape1 = new bonsai.Path.rect(x, y, 120, 35);
   shape1.attr({fillColor: bgColor, filters:new filter.DropShadow([2,2,2,'black']),
     lineColor:bs.color(bgColor).darker(0.1), lineWidth: 5
   });
@@ -61,7 +61,7 @@ var background = {};
     }
   });
   stage.addChild(bg);
-  bs.Shape.rect(0, 0, stageWidth, stageHeight)
+  bs.Path.rect(0, 0, stageWidth, stageHeight)
     .attr({lineColor:'black', lineWidth: 1})
     .addTo(bg);
   var counterText = new bs.Text(buttons.length)
@@ -70,7 +70,7 @@ var background = {};
     .addTo(bg);
   // Copied from http://openclipart.org/detail/21625/man-by-ericlemerdy
   // License not checked yet!!!
-  var man = new bs.Shape('M 425.90625,598.78125 L 425.90625,804.0625 L 364.40625,804.0625 L 364.40625,599.53125 L 349.90625,599.53125 L 349.90625,804.0625 L 288.40625,804.0625 L 288.40625,598.78125 L 288.40625,423 L 272.34375,423 L 272.34375,574.0625 L 230.84375,574.0625 L 230.84375,421.78125 C 230.84375,396.84672 251.40922,369.5 276.34375,369.5 L 437.9375,369.5 C 463.34245,369.5 483.4375,398.3763 483.4375,423.78125 L 483.4375,574.0625 L 441.9375,574.0625 L 441.9375,423 L 425.90625,423 L 425.90625,598.78125 z M 357.3125,234.5 C 320.4665,234.5 290.56251,264.40399 290.5625,301.25 C 290.5625,338.096 320.46651,368 357.3125,368 C 394.1585,368 424.06249,338.096 424.0625,301.25 C 424.0625,264.404 394.15852,234.50001 357.3125,234.5 z');
+  var man = new bs.Path('M 425.90625,598.78125 L 425.90625,804.0625 L 364.40625,804.0625 L 364.40625,599.53125 L 349.90625,599.53125 L 349.90625,804.0625 L 288.40625,804.0625 L 288.40625,598.78125 L 288.40625,423 L 272.34375,423 L 272.34375,574.0625 L 230.84375,574.0625 L 230.84375,421.78125 C 230.84375,396.84672 251.40922,369.5 276.34375,369.5 L 437.9375,369.5 C 463.34245,369.5 483.4375,398.3763 483.4375,423.78125 L 483.4375,574.0625 L 441.9375,574.0625 L 441.9375,423 L 425.90625,423 L 425.90625,598.78125 z M 357.3125,234.5 C 320.4665,234.5 290.56251,264.40399 290.5625,301.25 C 290.5625,338.096 320.46651,368 357.3125,368 C 394.1585,368 424.06249,338.096 424.0625,301.25 C 424.0625,264.404 394.15852,234.50001 357.3125,234.5 z');
   man.attr({scale:0.2, opacity: 0.5});
 
   background.update = function(buttonObj){
@@ -109,7 +109,7 @@ var timeGraph = {};
     var group = buttonObj.graphics.timeGraph;
     var attrs = {fillColor: buttonObj.bgColor};
     var text = buttonObj.text;
-    var line = bs.Shape.rect(group.__lastDraw, 110, counter-group.__lastDraw, -results[text]);
+    var line = bs.Path.rect(group.__lastDraw, 110, counter-group.__lastDraw, -results[text]);
     line.attr(attrs);
     group.addChild(line);
     group.__lastDraw = counter;
@@ -123,7 +123,7 @@ var pieChart = {};
   var group = new bs.Group();
   pieChart.init = function(){
     // Add a circle with a drop shadow behind the pie chart, so it looks like the pie chart has a dropshadow
-    bonsai.Shape.circle(pos.x, pos.y, 59)
+    bonsai.Path.circle(pos.x, pos.y, 59)
       .attr({fillColor:'black', lineWidth:1, lineColor: 'white',
              filters: new filter.DropShadow([5,5,5,'grey'])})
       .addTo(group);
@@ -139,7 +139,7 @@ var pieChart = {};
       var count = results[b.text];
       if (!count) return;
       var endAngle = startAngle+count/sum * Math.PI*2;
-      arcs.push(bs.Shape.arc(pos.x, pos.y, 30, startAngle, endAngle)
+      arcs.push(bs.Path.arc(pos.x, pos.y, 30, startAngle, endAngle)
         .attr({lineWidth:60, lineColor:b.bgColor})
         .addTo(group)
       );
@@ -154,7 +154,7 @@ var barChart = {};
   function bar3d(color, x, y, width, height){
     var darker = bs.color(color).darker(0.1);
     var group = new Group();
-    bs.Shape.rect(x, y, width, height)
+    bs.Path.rect(x, y, width, height)
       .attr({fillColor: color,
         fillGradient: bs.gradient.linear('right', [
           [darker.darker(0.05), 0],
@@ -165,11 +165,11 @@ var barChart = {};
         ])
       })
       .addTo(group);
-    bs.Shape.rect(x + width*0.2, y, width*0.1, height)
+    bs.Path.rect(x + width*0.2, y, width*0.1, height)
       .attr({fillColor: 'white', opacity: 0.6,
         filters: new filter.Blur(2)})
       .addTo(group);
-    bs.Shape.arc(x + width*0.5, y, width/2, 0, Math.PI)
+    bs.Path.arc(x + width*0.5, y, width/2, 0, Math.PI)
       .attr({fillColor: 'white', opacity: 0.3, scaleY: 0.2, origin: {x:0, y:y}})
       .addTo(group);
     return group;
@@ -197,9 +197,9 @@ var barChart = {};
 (function(){
   var maxWidth = stageWidth;
   var group = new Group()
-    .attr({x:0, y:0, clip:Shape.rect(0, 0, maxWidth, 50)})
+    .attr({x:0, y:0, clip:Path.rect(0, 0, maxWidth, 50)})
     .addTo(stage);
-  var line = new Shape().moveTo(0, 50)
+  var line = new Path().moveTo(0, 50)
     .addTo(group)
     .attr({lineColor:'black', lineWidth:3});
   var count = 1;

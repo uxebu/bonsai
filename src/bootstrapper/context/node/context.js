@@ -72,7 +72,7 @@ requirejs.requirejs([
          E.g. so a user can type Shape.rect() instead of bonsai.Shape.rect()
          Essentially, we're constructing an argument list. If done manually
          it would look like this:
-         Function('bonsai', 'Shape', 'gradient', ...)
+         Function('bonsai', 'Path', 'gradient', ...)
          .call(subMovie, subEnvExports.Shape, subEnvExports.gradient, ...)
          */
 

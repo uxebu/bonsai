@@ -1,4 +1,4 @@
-var shape = new bonsai.Shape();
+var shape = new bonsai.Path();
 shape.moveTo(469.95, 196.45);
 shape.quadraticCurveBy(94.45, 220.10, 5.10, 184.80);
 shape.quadraticCurveBy(-89.40, -35.30, -131.65, -5.10);
@@ -16,9 +16,9 @@ shape.attr({
 });
 stage.addChild(shape);
 
-var targetShape = Shape.star(400,400,300,5,1);
+var targetPath = Path.star(400,400,300,5,1);
 //  .addTo(stage);
-targetShape.attr({
+targetPath.attr({
   lineWidth: 444 / 20,
   lineColor: 0x000000FF,
   fillColor: 'pink',
@@ -26,5 +26,5 @@ targetShape.attr({
   join: 'round'
 });
 
-shape.morphTo(targetShape, '3s');
+shape.morphTo(targetPath, '3s');
 //*/

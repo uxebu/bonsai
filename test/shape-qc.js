@@ -1,7 +1,7 @@
 define([
-  'bonsai/runner/shape'
-], function(Shape) {
-  qc.setTestGroupName('shape');
+  'bonsai/runner/path/path'
+], function(Path) {
+  qc.setTestGroupName('path');
 
   var gen = qc.generator;
   var numGen = qc.generator.number;
@@ -31,7 +31,7 @@ define([
       for (var i=0, l=attr.length; i<l; i++) {
         var attrName = attr[i][0];
         var attrValue = attr[i][1];
-        var s = new Shape();
+        var s = new Path();
         s.attr(attrName, attrValue);
         if (attrName.toLowerCase().indexOf('opacity')!=-1) {
           opactiyAssert(testCase, attrValue, s.attr(attrName));
@@ -44,7 +44,7 @@ define([
 
   qc.declare('get+set opacity', [opacityValueGenerator],
     function(testCase, value) {
-      var s = new Shape();
+      var s = new Path();
       s.attr('opacity', value);
       opactiyAssert(testCase, value, s.attr('opacity'));
     }

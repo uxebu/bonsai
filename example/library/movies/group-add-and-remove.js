@@ -9,7 +9,7 @@
 
 var group = new bonsai.Group();
 
-var shape1 = new bonsai.Shape.rect(10,10,100,100).attr({fillColor: 'red'});
+var shape1 = new bonsai.Path.rect(10,10,100,100).attr({fillColor: 'red'});
 group.addChild(shape1);
 
 setTimeout(function(){
@@ -17,7 +17,7 @@ setTimeout(function(){
 }, 1000);
 
 setTimeout(function(){
-  var shape2 = new bonsai.Shape.rect(50,50,100,100).attr({fillColor: 'blue'});
+  var shape2 = new bonsai.Path.rect(50,50,100,100).attr({fillColor: 'blue'});
   group.addChild(shape2);
 }, 2000);
 

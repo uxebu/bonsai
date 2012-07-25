@@ -6,8 +6,8 @@ that don't do anything, but can be animated by the Animation class
 (via the segments translations)
 */
 
-var a = Shape.rect(10, 10, 600, 450).attr('fillColor', 'red');
-var b = Shape.star(250, 250, 250, 5).attr('fillColor', 'blue');
+var a = Path.rect(10, 10, 600, 450).attr('fillColor', 'red');
+var b = Path.star(250, 250, 250, 5).attr('fillColor', 'blue');
 // Create a bg image of which we animate the opacity to visible.
 var img = new Bitmap('assets/redpanda.jpg')
   .attr({width: 100, height: 100, opacity:0});

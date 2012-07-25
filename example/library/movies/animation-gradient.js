@@ -1,7 +1,7 @@
 /**
  * Animated Color
  */
-var rect = bonsai.Shape.rect(10, 10, 500, 500).attr({
+var rect = bonsai.Path.rect(10, 10, 500, 500).attr({
   fillGradient: bonsai.gradient.linear('45', [
     'green', 'yellow'
   ]),
@@ -9,7 +9,7 @@ var rect = bonsai.Shape.rect(10, 10, 500, 500).attr({
   lineGradient: gradient.linear(0, ['red', 'yellow', 'orange', 'red'], 2)
 });
 
-var rectOverlay = bonsai.Shape.rect(20, 20, 500, 500).attr({
+var rectOverlay = bonsai.Path.rect(20, 20, 500, 500).attr({
   fillGradient: bonsai.gradient.radial([
     'rgba(255,255,255,0.6)', 'rgba(255,255,255,0)'
   ], 10, 100, 0)

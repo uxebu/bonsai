@@ -1,4 +1,4 @@
-var star = Shape.star(240, 240, 10,5).attr({
+var star = Path.star(240, 240, 10,5).attr({
   fillColor:'blue'
 }).addTo(stage);
 

@@ -2,12 +2,12 @@ var bs = bonsai;
 var buttons = [
   {text: 'JavaScript', bgColor:'blue', color: 'white', graphics:{}},
   {text: 'CSS', bgColor:'red', color: 'white', graphics:{}},
-  {text: 'HTML5', bgColor:'green', color: 'white', graphics:{}},  
-  {text: 'SVG', bgColor:'yellow', color: 'white', graphics:{}},  
+  {text: 'HTML5', bgColor:'green', color: 'white', graphics:{}},
+  {text: 'SVG', bgColor:'yellow', color: 'white', graphics:{}},
 ];
 var stageWidth = 750; // Should be: stage.attr('width');
 var stageHeight = 600; // Should be: stage.attr('height');
-bs.Shape.rect(0, 0, stageWidth, stageHeight)
+bs.Path.rect(0, 0, stageWidth, stageHeight)
   .attr({lineColor:'black', lineWidth: 1})
   .addTo(stage);
 
@@ -17,8 +17,8 @@ function renderButton(buttonObj, idx){
   var bgColor = buttonObj.bgColor;
   var fgColor = buttonObj.color;
   var x = 300;
-  var shape1 = new bonsai.Shape.rect(x, y, 120, 35, 5);
-  shape1.attr({fillColor: bgColor, filters:filter.dropShadow(2,2,2,'black'), 
+  var shape1 = new bonsai.Path.rect(x, y, 120, 35, 5);
+  shape1.attr({fillColor: bgColor, filters:filter.dropShadow(2,2,2,'black'),
     lineColor:bs.color(bgColor).lighter(.2), lineWidth: 2
   });
   var text = new bonsai.Text(text).attr({
@@ -53,7 +53,7 @@ var background = {};
   var height = 20;
   var gap = 1;
   background.update = function(buttonObj){
-    var bg = new bonsai.Shape.rect(lastX, lastY, 1, height).attr({fillColor: buttonObj.bgColor, opacity: 0.2});
+    var bg = new bonsai.Path.rect(lastX, lastY, 1, height).attr({fillColor: buttonObj.bgColor, opacity: 0.2});
     stage.addChild(bg, 0);
     // should be: bg.animate('0.2s', {width: width-1});
     bg.animate('0.2s', {scaleX: width-gap, x: lastX+gap});
@@ -71,7 +71,7 @@ var barChart = {};
   var numCharts = 0;
   var oneHeight = 10;
   barChart.init = function(buttonObj){
-    var bar = bs.Shape.rect(110 * numCharts, stageHeight-10, 100, oneHeight);
+    var bar = bs.Path.rect(110 * numCharts, stageHeight-10, 100, oneHeight);
     var gradient = bs.gradient.linear('left', [buttonObj.bgColor, buttonObj.color, buttonObj.bgColor]);
     bar.attr({fillGradient: gradient, opacity: 0.7});
     var text = new bs.Text(buttonObj.text);
@@ -85,18 +85,18 @@ var barChart = {};
     buttonObj.graphics.barChartGroup = group;
     numCharts++;
   };
-  
+
   barChart.update = function(buttonObj){
     var scale = results[buttonObj.text];
     var chart = buttonObj.graphics.barChartGroup.children()[1];
     // should be: chart.animate('1s', {height: results[text]*oneHeight});
     chart.animate('1s', {scaleY: scale, y: stageHeight-10 - (scale-1)*oneHeight});
     // Animate text if bar is high enough
-    var textShape = buttonObj.graphics.barChartGroup.children()[0];
+    var textPath = buttonObj.graphics.barChartGroup.children()[0];
     // Should be chart.attr('height')>200
-    if (scale*oneHeight > 200 && !textShape.__animated){
-      textShape.animate('2s', {x: textShape.attr('x')+20, rotation: -Math.PI/2, fontSize: 30});
-      textShape.__animated++;
+    if (scale*oneHeight > 200 && !textPath.__animated){
+      textPath.animate('2s', {x: textPath.attr('x')+20, rotation: -Math.PI/2, fontSize: 30});
+      textPath.__animated++;
     }
   };
 })();
@@ -110,13 +110,13 @@ var pieChart = {};
   var group = new bs.Group();
   pieChart.init = function(buttonObj){
     // Add a circle with a drop shadow behind the pie chart, so it looks like the pie chart has a dropshadow
-    bonsai.Shape.circle(pos.x, pos.y, 119)
-      .attr({fillColor:'black', lineWidth:1, lineColor: 'white', 
+    bonsai.Path.circle(pos.x, pos.y, 119)
+      .attr({fillColor:'black', lineWidth:1, lineColor: 'white',
              filters: filter.dropShadow(5,5,5,'grey')})
       .addTo(group);
     stage.addChild(group);
   };
-  
+
   var arcs = [];
   pieChart.update = function(){
     var sum = 0;
@@ -127,7 +127,7 @@ var pieChart = {};
       var count = results[b.text];
       if (!count) return;
       var endAngle = startAngle+count/sum * Math.PI*2;
-      arcs.push(bs.Shape.arc(pos.x, pos.y, 60, startAngle, endAngle)
+      arcs.push(bs.Path.arc(pos.x, pos.y, 60, startAngle, endAngle)
         .attr({lineWidth:120, lineColor:b.bgColor})
         .addTo(group)
       );
@@ -142,10 +142,10 @@ buttons.forEach(renderButton); // Buttons are on top.
 
 // Generate clicks
 var interval = setInterval(function(){
-  buttons.forEach(function(b){ 
+  buttons.forEach(function(b){
     if (Math.random()>.7) return;
-    storeResult(b.graphics.buttonGroup, b);   
-    storeResult(b.graphics.buttonGroup, b);   
+    storeResult(b.graphics.buttonGroup, b);
+    storeResult(b.graphics.buttonGroup, b);
   });
 }, 10);
 setTimeout(function(){ clearInterval(interval)  }, 300);

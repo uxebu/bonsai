@@ -9,15 +9,15 @@
 
 var group = new bonsai.Group();
 
-var shape1 = new bonsai.Shape.rect(10,10,100,100).attr({fillColor: 'red'});
+var shape1 = new bonsai.Path.rect(10,10,100,100).attr({fillColor: 'red'});
 group.addChild(shape1);
 
 
 var group2 = new bonsai.Group();
 [
-  bonsai.Shape.rect(20,20,100,100).attr({fillColor:'green'}),
-  bonsai.Shape.rect(30,30,100,100).attr({fillColor:'yellow'}),
-  bonsai.Shape.rect(40,40,100,100).attr({fillColor:'gray'})
+  bonsai.Path.rect(20,20,100,100).attr({fillColor:'green'}),
+  bonsai.Path.rect(30,30,100,100).attr({fillColor:'yellow'}),
+  bonsai.Path.rect(40,40,100,100).attr({fillColor:'gray'})
 ].forEach(function(obj){
   group2.addChild(obj);
 });
@@ -29,7 +29,7 @@ setTimeout(function(){
 }, 1000);
 
 setTimeout(function(){
-  var shape2 = new bonsai.Shape.rect(50,50,100,100).attr({fillColor: 'blue'});
+  var shape2 = new bonsai.Path.rect(50,50,100,100).attr({fillColor: 'blue'});
   group.addChild(shape2);
 }, 2000);
 

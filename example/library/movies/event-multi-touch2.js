@@ -4,7 +4,7 @@ stage.on('multi:pointerdown', function(e) {
       removed = false,
       fadedIn = false;
 
-  var s = Shape.circle(e.stageX, e.stageY, Math.random() * 50 + 50).attr({
+  var s = Path.circle(e.stageX, e.stageY, Math.random() * 50 + 50).attr({
     scale: 0,
     opacity: 0
   });
@@ -29,7 +29,7 @@ stage.on('multi:pointerdown', function(e) {
       y: e.stageY
     });
   });
-  
+
   stage.on('multi:pointerup', function(e) {
     if (e.touchId === id && !removed) {
 

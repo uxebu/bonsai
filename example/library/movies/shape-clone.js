@@ -1,12 +1,12 @@
-bonsai.Shape.prototype.clone = function() {
-  return new bonsai.Shape().
+bonsai.Path.prototype.clone = function() {
+  return new bonsai.Path().
       segments(this.segments()).
       attr(this.attr());
 };
 
 var animation = new bonsai.Animation('5s', {x: 200});
 
-var rect = bonsai.Shape.rect(0, 0, 150, 150)
+var rect = bonsai.Path.rect(0, 0, 150, 150)
       .attr({
             fillColor:'red',
             rotation: Math.PI/180*35,

@@ -219,7 +219,7 @@ define([
     Bitmap: 'image',
     Group: 'g',
     Movie: 'g',
-    Shape: 'path',
+    Path: 'path',
     Text: 'text',
     TextSpan: 'tspan',
     Video: 'foreignObject',
@@ -464,7 +464,7 @@ define([
       element.style.visibility = attr.visible ? '' : 'hidden';
     }
 
-    if (type === 'Shape' || type === 'Text' || type === 'TextSpan') {
+    if (type === 'Path' || type === 'Text' || type === 'TextSpan') {
       // Apply fill style(s)
       if (
         attr.fillImageId ||
@@ -498,7 +498,7 @@ define([
     }
   };
 
-  proto.drawShape = function(path, message) {
+  proto.drawPath = function(path, message) {
     var shapeData = message.data;
     if (shapeData) {
       path.setAttribute('d', exportToPath(shapeData, true));

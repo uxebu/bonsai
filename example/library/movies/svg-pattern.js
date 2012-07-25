@@ -1,11 +1,11 @@
 /*
- * fillImage 
+ * fillImage
  */
 var imagePattern = new Bitmap('assets/redpanda.jpg').attr({
   width: 100,
   height: 100
 });
-Shape.rect(0, 0, 100, 100).attr({
+Path.rect(0, 0, 100, 100).attr({
   fillImage: imagePattern
 }).addTo(stage);
 
@@ -16,7 +16,7 @@ var imagePatternRepeat = new Bitmap('assets/redpanda.jpg').attr({
   width: 100,
   height: 100
 });
-Shape.rect(120, 0, 100, 100).attr({
+Path.rect(120, 0, 100, 100).attr({
   fillImage: imagePatternRepeat,
   fillRepeat:4
 }).addTo(stage);
@@ -24,14 +24,14 @@ Shape.rect(120, 0, 100, 100).attr({
 /*
  * fillGradient
  */
-Shape.rect(240, 0, 100, 100).attr({
+Path.rect(240, 0, 100, 100).attr({
   fillGradient: 'linear-gradient(-45deg, blue, yellow)'
 }).addTo(stage);
 
 /*
  * fillGradient (repeat)
  */
-Shape.rect(360, 0, 100, 100).attr({
+Path.rect(360, 0, 100, 100).attr({
   fillGradient: 'linear-gradient(-45deg, blue, yellow)',
   fillRepeat:4
 }).addTo(stage);
