@@ -1,8 +1,8 @@
 /**
  * Animated attributes
  */
-var rectShape = bonsai.Shape.rect(150, 150, 150, 150).attr({fillColor: 'red',lineColor: 'green', lineWidth: 5,});
+var rectPath = bonsai.Path.rect(150, 150, 150, 150).attr({fillColor: 'red',lineColor: 'green', lineWidth: 5,});
 
-stage.addChild(rectShape);
+stage.addChild(rectPath);
 
-rectShape.animate('1s', { x: 300 });
+rectPath.animate('1s', { x: 300 });

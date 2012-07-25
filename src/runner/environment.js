@@ -3,7 +3,14 @@ define([
   '../event_emitter',
   './movie',
   '../point',
-  './shape',
+  './path/path',
+  './path/special_attr_path',
+  './path/rect',
+  './path/polygon',
+  './path/star',
+  './path/ellipse',
+  './path/circle',
+  './path/arc',
   './bitmap',
   './display_object',
   './group',
@@ -22,8 +29,9 @@ define([
   './dom_element',
   '../version'
 ], function(
-  tools, EventEmitter,
-  Movie, Point, Shape, Bitmap, DisplayObject, Group,
+  tools, EventEmitter, Movie, Point,
+  Path, SpecialAttrPath, Rect, Polygon, Star, Ellipse, Circle, Arc,
+  Bitmap, DisplayObject, Group,
   Animation, KeyframeAnimation, easing, FontFamily, Matrix,
   Sprite, color, gradient, Text, TextSpan, Video, filter,
   DOMElement, version
@@ -57,7 +65,17 @@ define([
       Group: Group,
       Matrix: Matrix,
       Point: Point,
-      Shape: Shape,
+
+      // Path Classes
+      Path: Path,
+      SpecialAttrPath: SpecialAttrPath,
+      Rect: Rect,
+      Polygon: Polygon,
+      Star: Star,
+      Ellipse: Ellipse,
+      Circle: Circle,
+      Arc: Arc,
+
       Text: Text,
       TextSpan: TextSpan,
       color: color,

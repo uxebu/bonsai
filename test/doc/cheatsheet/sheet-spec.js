@@ -53,9 +53,9 @@ require([
         expect(actual).toEqual('shape.<mark>attr</mark>()');
       });
 
-      it('should hightlight "Shape" case-insensitive', function () {
-        var actual = sheet.markSearchString('Shape.rect(1,2,3,4)', 'shape');
-        expect(actual).toEqual('<mark>Shape</mark>.rect(1,2,3,4)');
+      it('should hightlight "Path" case-insensitive', function () {
+        var actual = sheet.markSearchString('Path.rect(1,2,3,4)', 'shape');
+        expect(actual).toEqual('<mark>Path</mark>.rect(1,2,3,4)');
       });
 
       it('should hightlight and escape "scr" in "<script>"', function () {

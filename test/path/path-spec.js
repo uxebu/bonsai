@@ -1,9 +1,10 @@
 require([
-  'bonsai/runner/shape',
+  'bonsai/runner/path/path',
+  'bonsai/runner/path/rect',
   'bonsai/runner/gradient',
   'bonsai/runner/bitmap',
   './runner.js'
-], function(Shape, gradient, Bitmap) {
+], function(Path, Rect, gradient, Bitmap) {
 
   var precision = new Number(12);
   precision.PRECISION = +precision;
@@ -36,12 +37,12 @@ require([
     }
   ];
 
-  describe('Shape', function() {
+  describe('Path', function() {
 
     describe('Segments', function() {
 
       it('Gets default values', function() {
-        var s = new Shape();
+        var s = new Path();
         expect(s.segments()).toBeArray();
         expect(s.segments()).toHaveLength(0);
       });
@@ -60,18 +61,18 @@ require([
         ];
 
         it('Sets via constructor and gets via path()', function() {
-          var s = new Shape(path);
+          var s = new Path(path);
           expect(s.path()).toBe(expectedPath);
         });
 
         it('Sets via path() and gets via path()', function() {
-          var s = new Shape();
+          var s = new Path();
           s.path(path);
           expect(s.path()).toBe(expectedPath);
         });
 
         it('Sets via path() and gets via segments()', function() {
-          var s = new Shape();
+          var s = new Path();
           s.path(path);
           expect(s.segments()).toEqual(expectedSegments);
         });
@@ -82,22 +83,22 @@ require([
         var segmentsArray = [['moveTo', 20, 20], ['lineTo', 10, 10]];
 
         it('Sets multidim array of commands via constructor and gets via segments()', function() {
-          var s = new Shape(segmentsArray);
+          var s = new Path(segmentsArray);
           expect(s.segments()).toEqual(segmentsArray);
         });
 
         it('Sets array of commands via constructor then uses lineTo and gets via segments()', function() {
-          var s = new Shape(['moveTo', 20, 20]).lineTo(10, 10);
+          var s = new Path(['moveTo', 20, 20]).lineTo(10, 10);
           expect(s.segments()).toEqual(segmentsArray);
         });
 
         it('Sets list of commands via constructor and gets via segments()', function() {
-          var s = new Shape('moveTo', 20, 20, 'lineTo', 10, 10);
+          var s = new Path('moveTo', 20, 20, 'lineTo', 10, 10);
           expect(s.segments()).toEqual(segmentsArray);
         });
 
         it('Sets list of commands via constructor then uses lineTo and gets via segments()', function() {
-          var s = new Shape('moveTo', 20, 20).lineTo(10, 10);
+          var s = new Path('moveTo', 20, 20).lineTo(10, 10);
           expect(s.segments()).toEqual(segmentsArray);
         });
       });
@@ -112,40 +113,40 @@ require([
         ];
 
         it('Sets array of points via constructor and gets via points()', function() {
-          var s = new Shape(input);
+          var s = new Path(input);
           expect(s.points()).toEqual(expectedPoints);
         });
 
         it('Sets array of points via constructor and gets via segments()', function() {
-          var s = new Shape(input);
+          var s = new Path(input);
           expect(s.segments()).toEqual(expectedSegments);
         });
 
         it('Sets array of points via points() and gets via points()', function() {
-          var s = new Shape();
+          var s = new Path();
           s.points(input);
           expect(s.points()).toEqual(expectedPoints);
         });
 
         it('Sets list of points via constructor and gets via points()', function() {
-          var s = new Shape(20,20,40,40);
+          var s = new Path(20,20,40,40);
           expect(s.points()).toEqual(expectedPoints);
         });
 
         it('Sets list of points via constructor then overwrite via points() and gets via points()', function() {
-          var s = new Shape(input);
+          var s = new Path(input);
           s.points(input); // should clear then set
           expect(s.points()).toEqual(expectedPoints);
         });
 
         it('Sets list of points via constructor then append a lineTo and gets via segments()', function() {
-          var s = new Shape(20, 20);
+          var s = new Path(20, 20);
           s.lineTo(40,40);
           expect(s.segments()).toEqual(expectedSegments);
         });
 
         it('Sets a path via constructor and gets via points()', function() {
-          var s = new Shape('M20,20C20,20,30,30,40,40');
+          var s = new Path('M20,20C20,20,30,30,40,40');
           expect(s.points()).toEqual(expectedPoints);
         });
       });
@@ -153,22 +154,22 @@ require([
       describe('lastPoint', function() {
 
         it('when the last segment is a moveTo', function() {
-          var s = new Shape().moveTo(20, 30);
+          var s = new Path().moveTo(20, 30);
           expect(s.lastPoint()).toEqual([20,30]);
         });
 
         it('when the last segment is a closePath', function() {
-          var s = new Shape().moveTo(20, 30).lineTo(40,40).closePath();
+          var s = new Path().moveTo(20, 30).lineTo(40,40).closePath();
           expect(s.lastPoint()).toEqual( [ 20, 30 ]);
         });
 
         it('when we\'re using relative segments', function() {
-          var s = new Shape().moveTo(20, 30).lineTo(40,40).lineBy(40,40);
+          var s = new Path().moveTo(20, 30).lineTo(40,40).lineBy(40,40);
           expect(s.lastPoint()).toEqual([80, 80]);
         });
 
         it('when we\'re using relative segments and a closePath', function() {
-          var s = new Shape('M 20 30 l 40 40 L 140 40 Z l 140 40');
+          var s = new Path('M 20 30 l 40 40 L 140 40 Z l 140 40');
           expect(s.lastPoint()).toEqual([160, 70]);
         });
 
@@ -177,22 +178,22 @@ require([
       describe('moveTo', function() {
 
         it('Sets a path via constructor and gets via points()', function() {
-          var s = new Shape('M20,30');
+          var s = new Path('M20,30');
           expect(s.points()).toEqual([[20,30]]);
         });
 
         it('Sets via moveTo and gets via points()', function() {
-          var s = new Shape().moveTo(20, 30);
+          var s = new Path().moveTo(20, 30);
           expect(s.points()).toEqual([[20,30]]);
         });
 
         it('Sets via moveTo and gets via segments()', function() {
-          var s = new Shape().moveTo(20, 30);
+          var s = new Path().moveTo(20, 30);
           expect(s.segments()).toEqual([['moveTo',20,30]]);
         });
 
         it('Sets via moveTo and gets via path()', function() {
-          var s = new Shape().moveTo(20, 30);
+          var s = new Path().moveTo(20, 30);
           expect(s.path()).toBe('M 20 30');
         });
       });
@@ -200,17 +201,17 @@ require([
       describe('lineTo', function() {
 
         it('Sets via lineTo and gets via points()', function() {
-          var s = new Shape(0,0).lineTo(20, 30);
+          var s = new Path(0,0).lineTo(20, 30);
           expect(s.points()).toEqual([ [ 20, 30 ] ]);
         });
 
         it('Sets via lineTo and gets via segments()', function() {
-          var s = new Shape(0,0).lineTo(20, 30);
+          var s = new Path(0,0).lineTo(20, 30);
           expect(s.segments()).toEqual( [ [ 'lineTo', 20, 30 ] ]);
         });
 
         it('Sets via lineTo and gets via path()', function() {
-          var s = new Shape(0,0).lineTo(20, 30);
+          var s = new Path(0,0).lineTo(20, 30);
           expect(s.path()).toBe('L 20 30');
         });
       });
@@ -218,17 +219,17 @@ require([
       describe('curveTo', function() {
 
         it('Sets via curveTo and gets via points()', function() {
-          var s = new Shape(0,0).curveTo(10,10,90,10,90,100);
+          var s = new Path(0,0).curveTo(10,10,90,10,90,100);
           expect(s.points()).toEqual([ [ 90, 100 ] ]);
         });
 
         it('Sets via curveTo and gets via segments()', function() {
-          var s = new Shape(0,0).curveTo(10,10,90,10,90,100);
+          var s = new Path(0,0).curveTo(10,10,90,10,90,100);
           expect(s.segments()).toEqual([ [ 'curveTo', 10, 10, 90, 10, 90, 100 ] ]);
         });
 
         it('Sets via path() and gets via segments()', function() {
-          var s = new Shape('M0,0C10,10,90,10,90,100');
+          var s = new Path('M0,0C10,10,90,10,90,100');
           expect(s.segments()).toEqual([ ['moveTo', 0, 0], [ 'curveTo', 10, 10, 90, 10, 90, 100 ] ]);
         });
       });
@@ -236,39 +237,39 @@ require([
       describe('Convert to absolute segments', function() {
 
         it('using lineTo', function() {
-          var s = new Shape(0,0).lineTo(10,10);
-          expect(Shape.toAbsolute(s.segments())).toEqual( [
+          var s = new Path(0,0).lineTo(10,10);
+          expect(Path.toAbsolute(s.segments())).toEqual( [
             [ 'lineTo', 10, 10 ]
           ]);
         });
 
         it('using lineTo & lineBy', function() {
-          var s = new Shape(0,0).lineTo(10,10).lineBy(5,5);
-          expect(Shape.toAbsolute(s.segments())).toEqual( [
+          var s = new Path(0,0).lineTo(10,10).lineBy(5,5);
+          expect(Path.toAbsolute(s.segments())).toEqual( [
             [ 'lineTo', 10, 10 ],
             [ 'lineTo', 15, 15 ]
           ]);
         });
 
         it('using lineTo & horizontalLineBy', function() {
-          var s = new Shape(0,0).lineTo(10,10).horizontalLineBy(5);
-          expect(Shape.toAbsolute(s.segments())).toEqual( [
+          var s = new Path(0,0).lineTo(10,10).horizontalLineBy(5);
+          expect(Path.toAbsolute(s.segments())).toEqual( [
             [ 'lineTo', 10, 10 ],
             [ 'lineTo', 15, 10 ]
           ]);
         });
 
         it('using lineTo & verticalLineBy', function() {
-          var s = new Shape(0,0).lineTo(10,10).verticalLineBy(5);
-          expect(Shape.toAbsolute(s.segments())).toEqual( [
+          var s = new Path(0,0).lineTo(10,10).verticalLineBy(5);
+          expect(Path.toAbsolute(s.segments())).toEqual( [
             [ 'lineTo', 10, 10 ],
             [ 'lineTo', 10, 15 ]
           ]);
         });
 
         it('using path', function() {
-          var s = new Shape('M25.221,1.417H6.11c-0.865,0-1.566,0.702-1.566,1.566');
-          expect(Shape.toAbsolute(s.segments())).toEqual( [
+          var s = new Path('M25.221,1.417H6.11c-0.865,0-1.566,0.702-1.566,1.566');
+          expect(Path.toAbsolute(s.segments())).toEqual( [
             [ 'moveTo', 25.221, 1.417 ],
             [ 'horizontalLineTo', 6.11 ],
             [ 'curveTo', 5.245, 1.417, 4.5440000000000005, 2.1189999999999998, 4.5440000000000005, 2.983 ]
@@ -276,8 +277,8 @@ require([
         });
 
         it('using path and sets segments()', function() {
-          var s = new Shape('M25.221,1.417H6.11c-0.865,0-1.566,0.702-1.566,1.566');
-          s.segments(Shape.toAbsolute(s.segments()));
+          var s = new Path('M25.221,1.417H6.11c-0.865,0-1.566,0.702-1.566,1.566');
+          s.segments(Path.toAbsolute(s.segments()));
           expect(s.segments()).toEqual( [
             [ 'moveTo', 25.221, 1.417 ],
             [ 'horizontalLineTo', 6.11 ],
@@ -292,7 +293,7 @@ require([
     describe('attr', function(){
 
       it('Gets default values', function(){
-        var s = new Shape();
+        var s = new Path();
         expect(s.attr('cap')).toBe('butt');
         expect(s.attr('lineColor')).toBe(0x000000ff);
         expect(s.attr('fillColor')).toBe(0x00000000);
@@ -300,7 +301,7 @@ require([
       });
 
       it('Sets & Gets cap', function(){
-        var s = new Shape();
+        var s = new Path();
         expect(s.attr('cap')).toBe('butt');
         s.attr('cap', 'xxx');
         expect(s.attr('cap')).toBe('butt');
@@ -313,7 +314,7 @@ require([
       });
 
       it('Sets & Gets lineColor', function(){
-        var s = new Shape();
+        var s = new Path();
         expect(s.attr('lineColor')).toBe(0x000000ff);
         s.attr('lineColor', 0xff00ffff);
         expect(s.attr('lineColor')).toBe(0xff00ffff);
@@ -322,7 +323,7 @@ require([
       });
 
       it('Sets & Gets opacity', function(){
-        var s = new Shape();
+        var s = new Path();
         expect(s.attr('opacity')).toBe(1);
         s.attr('opacity', .75);
         expect(s.attr('opacity')).toBe(.75);
@@ -333,7 +334,7 @@ require([
       });
 
       it('Sets & Gets join', function(){
-        var s = new Shape();
+        var s = new Path();
         expect(s.attr('join')).toBe('miter');
         s.attr('join', 'xxx');
         expect(s.attr('join')).toBe('miter');
@@ -346,7 +347,7 @@ require([
       });
 
       it('Sets & Gets miterLimit', function(){
-        var s = new Shape();
+        var s = new Path();
         expect(s.attr('miterLimit')).toBe(4);
         s.attr('miterLimit', 1.5);
         expect(s.attr('miterLimit')).toBe(1.5);
@@ -355,7 +356,7 @@ require([
       });
 
       it('Sets & Gets lineWidth', function(){
-        var s = new Shape();
+        var s = new Path();
         expect(s.attr('lineWidth')).toBe(0);
         s.attr('lineWidth', 2);
         expect(s.attr('lineWidth')).toBe(2);
@@ -368,7 +369,7 @@ require([
 
       describe('basically', function() {
         it('it is a function', function() {
-          expect(toString.call(Shape.toAbsolute)).toEqual('[object Function]');
+          expect(toString.call(Path.toAbsolute)).toEqual('[object Function]');
         });
       });
 
@@ -376,7 +377,7 @@ require([
 
         invalidParametersMap.forEach(function(currentTest) {
           it('it returns ["moveTo", 0, 0] when the first parameter is ' + currentTest.descr, function() {
-            expect(Shape.toAbsolute(currentTest.input)).toEqual([['moveTo', 0, 0]]);
+            expect(Path.toAbsolute(currentTest.input)).toEqual([['moveTo', 0, 0]]);
           });
         });
 
@@ -451,52 +452,11 @@ require([
 
         tests.forEach(function(currentTest) {
           it('will return ' + currentTest.expect + ' when the input is ' + currentTest.input, function() {
-            expect(Shape.toAbsolute(currentTest.input)).toEqual(currentTest.expect);
+            expect(Path.toAbsolute(currentTest.input)).toEqual(currentTest.expect);
           });
         });
       });
 
-    });
-
-    describe('rect', function() {
-      it('Creates a regular rectangle with specified width/height', function() {
-        var s = Shape.rect(0, 0, 100, 200); // 100x200
-        expect(s.segments()).toEqual([
-          ['moveTo', 0, 0],
-          ['lineBy', 100, 0],
-          ['lineBy', 0, 200],
-          ['lineBy', -100, 0],
-          ['closePath']
-        ]);
-      });
-      it('Creates a regular rectangle with a radius', function() {
-        var s = Shape.rect(0, 0, 100, 200, 5); // 100x200
-        expect(s.segments()).toEqual([
-          ['moveTo', 0, 5],
-          ['arcBy', 5, 5, 0, 0, 1, 5, -5],
-          ['lineBy', 90, 0],
-          ['arcBy', 5, 5, 0, 0, 1, 5, 5],
-          ['lineBy', 0, 190],
-          ['arcBy', 5, 5, 0, 0, 1, -5, 5],
-          ['lineBy', -90, 0],
-          ['arcBy', 5, 5, 0, 0, 1, -5, -5],
-          ['closePath']
-        ]);
-      });
-      it('Creates a regular rectangle with per-corner radius', function() {
-        var s = Shape.rect(0, 0, 100, 200, [1,11,12,13]); // 100x200
-        expect(s.segments()).toEqual([
-          ['moveTo', 0, 1],
-          ['arcBy', 1, 1, 0, 0, 1, 1, -1],
-          ['lineBy', 88, 0],
-          ['arcBy', 11, 11, 0, 0, 1, 11, 11],
-          ['lineBy', 0, 177],
-          ['arcBy', 12, 12, 0, 0, 1, -12, 12],
-          ['lineBy', -75, 0],
-          ['arcBy', 13, 13, 0, 0, 1, -13, -13],
-          ['closePath']
-        ]);
-      });
     });
 
   });
@@ -509,7 +469,7 @@ require([
       var height = 50;
       var expectedRight = left + width;
       var expectedBottom = top + height;
-      var shape = Shape.rect(left, top, width, height);
+      var shape = new Rect(left, top, width, height);
 
       it('computes the "top" value', function() {
         expect(shape.getComputed('top')).toBe(top);
@@ -535,7 +495,7 @@ require([
 
   describe('fillGradient', function() {
     it('Can be set/get', function() {
-      var s = Shape.rect(0, 0, 10, 10);
+      var s = new Rect(0, 0, 10, 10);
       var g = gradient.linear(0, ['red', 'yellow']);
       s.attr('fillGradient', g);
       expect(s.attr('fillGradient')).toBe(g);
@@ -546,7 +506,7 @@ require([
 
   describe('lineGradient', function() {
     it('Can be set/get', function() {
-      var s = Shape.rect(0, 0, 10, 10);
+      var s = new Rect(0, 0, 10, 10);
       var g = gradient.linear(0, ['red', 'yellow']);
       s.attr('lineGradient', g);
       expect(s.attr('lineGradient')).toBe(g);
@@ -557,7 +517,7 @@ require([
 
   describe('fill', function() {
     it('Can set fillGradient, fillColor and fillImage', function() {
-      var s = new Shape,
+      var s = new Path,
           grad = gradient.linear(0, ['red', 'purple']),
           bitmap = new Bitmap('data:image/png,');
       s.fill('red');
@@ -576,7 +536,7 @@ require([
 
   describe('line', function() {
     it('Can set lineGradient and lineColor', function() {
-      var s = new Shape,
+      var s = new Path,
           grad = gradient.linear(0, ['red', 'purple']);
       s.line('red');
       expect(s.attr('lineColor')).toBe(+color('red'));

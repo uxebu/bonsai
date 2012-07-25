@@ -3,9 +3,9 @@ var lion = [{"fill":"#ffffff","stroke":"#000000","path":"M-122.304,84.285C-122.3
 
 var group = new Group().attr({x:220, y:200}).addTo(stage);
 lion.forEach(function(el) {
-  new Shape(el.path).attr({
+  new Path(el.path).attr({
     fillColor: el.fill,
     lineColor: el.stroke,
     lineWidth: el.stroke === 'none' ? 0 : 1
   }).addTo(group);
-}); 
+});

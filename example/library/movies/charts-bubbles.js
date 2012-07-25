@@ -3,10 +3,10 @@ var bs = bonsai;
 
 function bubble(color, x, y, size){
   var group = new bs.Group();
-  bs.Shape.circle(x, y, size)
+  bs.Path.circle(x, y, size)
     .attr({fillColor: color, scaleY: 0.3})
     .addTo(group);
-  bs.Shape.arc(x, y, size/2, Math.PI, Math.PI*2)
+  bs.Path.arc(x, y, size/2, Math.PI, Math.PI*2)
     .attr({lineWidth: size, lineColor: color, opacity:0.5})
     .addTo(group);
   stage.addChild(group);

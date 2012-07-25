@@ -1,17 +1,19 @@
 define([
-  '../point',
+  '../../point',
   './curved_path',
-  '../segment_helper',
-  './display_object',
-  '../tools',
-  '../color',
-  './gradient',
-  './bitmap'
+  '../../segment_helper',
+  '../display_object',
+  '../../tools',
+  '../../color',
+  '../gradient',
+  '../bitmap'
 ], function(
   Point, CurvedPath, SegmentHelper, DisplayObject, tools,
   color, gradient, Bitmap
 ) {
   'use strict';
+
+  /** @module path */
 
   var accessor = tools.descriptorAccessor,
       data = tools.descriptorData,
@@ -159,12 +161,13 @@ define([
   */
 
   /**
-   * The Shape Module/Contructor
+   * The Path Module/Contructor
    *
    * @constructor
-   * @name Shape
+   * @name Path
+   * @memberOf module:path
    * @extends DisplayObject
-   * @returns {Shape} A new Instance of Shape
+   * @returns {Path} A new Instance of Path
    *
    * @property {__list__} __supportedAttributes__ List of supported attribute names.
    *    In addition to the property names listed for DisplayObject,
@@ -181,7 +184,7 @@ define([
    * @property {number} __supportedAttributes__.miterLimit The miter limit of the stroke. Default: 4
    *
    */
-   function Shape(param) {
+   function Path(param) {
     // calling parent constructor
     DisplayObject.call(this);
     // define default properties
@@ -282,8 +285,8 @@ define([
 
   var superObject = DisplayObject.prototype;
 
-  /** @lends Shape.prototype */
-  var proto = Shape.prototype = Object.create(superObject);
+  /** @lends module:path.Path.prototype */
+  var proto = Path.prototype = Object.create(superObject);
 
   proto._activate = function(stage) {
     var returnValue = superObject._activate.apply(this, arguments);
@@ -301,7 +304,7 @@ define([
 
   proto.markUpdate = function(updateSubject) {
     if (updateSubject === 'shapeData') {
-      this._isShapeDataMutated = true;
+      this._isPathDataMutated = true;
     }
     return superObject.markUpdate.call(this);
   };
@@ -312,36 +315,36 @@ define([
    * @param {Object} [cloneOptions]
    * @param {boolean} [cloneOptions.attributes] Whether to clone attributes,
    *    not just segments.
-   * @returns {Shape} A shape with identical segments to the instance.
+   * @returns {Path} A shape with identical segments to the instance.
    */
   proto.clone = function(cloneOptions) {
     var index = -1,
         segments = this._segments,
         length = segments.length,
         newSegments = new Array(length),
-        newShape = new Shape;
+        newPath = new Path;
 
     while (++index < length) {
       newSegments[index] = segments[index].slice();
     }
     if (cloneOptions && cloneOptions.attributes) {
-      newShape.attr(this.attr());
+      newPath.attr(this.attr());
     }
-    return newShape.segments(newSegments);
+    return newPath.segments(newSegments);
   };
 
   /**
-   * Sets the segments of the Shape and returns the current Shape instance.
-   * Or returns a copy of all the contained segments of the Shape when no parameter is given.
+   * Sets the segments of the Path and returns the current Path instance.
+   * Or returns a copy of all the contained segments of the Path when no parameter is given.
    *
    * @example
-   * myShape.segments();
-   * myShape.segments('moveTo', 0, 0);
-   * myShape.segments(['moveTo', 0, 0]);
-   * myShape.segments([ ['moveTo', 0, 0], ['lineTo', 10, 10] ]);
+   * myPath.segments();
+   * myPath.segments('moveTo', 0, 0);
+   * myPath.segments(['moveTo', 0, 0]);
+   * myPath.segments([ ['moveTo', 0, 0], ['lineTo', 10, 10] ]);
    *
    * @param {Array} commands The commands
-   * @returns {Array|Shape} An Array of segments or the current Shape instance.
+   * @returns {Array|Path} An Array of segments or the current Path instance.
    */
   proto.segments = function(segments) {
     if (arguments.length === 0) {
@@ -367,17 +370,17 @@ define([
   };
 
   /**
-   * Sets the segments of the Shape and returns the current Shape instance.
-   * Or returns a copy of all the contained segments of the Shape when no parameter is given.
+   * Sets the segments of the Path and returns the current Path instance.
+   * Or returns a copy of all the contained segments of the Path when no parameter is given.
    *
    * @example
-   * myShape.points();
-   * myShape.points(x,y);
-   * myShape.points([x,y]);
-   * myShape.points(x, y, x, y, x, y);
+   * myPath.points();
+   * myPath.points(x,y);
+   * myPath.points([x,y]);
+   * myPath.points(x, y, x, y, x, y);
    *
    * @param {Array|Number} param An array of points or a list of points
-   * @returns {Array|Shape} An array of points or the current Shape instance
+   * @returns {Array|Path} An array of points or the current Path instance
    */
   proto.points = function(param) {
     if (typeof param == 'undefined') {
@@ -402,11 +405,11 @@ define([
   };
 
   /**
-   * Sets the segments of the Shape and returns the current Shape instance.
-   * Or returns a path representation of all the contained segments of the Shape when no parameter is given.
+   * Sets the segments of the Path and returns the current Path instance.
+   * Or returns a path representation of all the contained segments of the Path when no parameter is given.
    *
    * @param {String} path A SVG Path (http://www.w3.org/TR/SVG/paths.html)
-   * @returns {String|Shape} A path or the current Shape instance
+   * @returns {String|Path} A path or the current Path instance
    */
   proto.path = function(path) {
     var segments = this._segments;
@@ -425,7 +428,7 @@ define([
    *
    * @param {Number} x absolute x-value
    * @param {Number} y absolute y-value
-   * @returns {Shape} The current Shape instance
+   * @returns {Path} The current Path instance
    */
   proto.moveTo = function(x, y) {
     if (!isFinite(x) || !isFinite(y)) {
@@ -444,7 +447,7 @@ define([
    *
    * @param {Number} x relative x-value
    * @param {Number} y relative y-value
-   * @returns {Shape} The current Shape instance
+   * @returns {Path} The current Path instance
    */
   proto.moveBy = function(x, y) {
       if (!isFinite(x) || !isFinite(y)) {
@@ -462,7 +465,7 @@ define([
    * Appends a segment at the end of the list of segments, which describes a
    * close path.
    *
-   * @returns {Shape} The current Shape instance
+   * @returns {Path} The current Path instance
    */
   proto.closePath = function() {
     this._segments.push(['closePath']);
@@ -476,7 +479,7 @@ define([
    *
    * @param {Number} x absolute x-value
    * @param {Number} y absolute y-value
-   * @returns {Shape} The current Shape instance
+   * @returns {Path} The current Path instance
    */
   proto.lineTo = function(x, y) {
     if (!isFinite(x) || !isFinite(y)) {
@@ -494,7 +497,7 @@ define([
    *
    * @param {Number} x relative x-value
    * @param {Number} y relative y-value
-   * @returns {Shape} The current Shape instance
+   * @returns {Path} The current Path instance
    */
   proto.lineBy = function(x, y) {
     if (!isFinite(x) || !isFinite(y)) {
@@ -511,7 +514,7 @@ define([
    * straight line from the last Point to the given absolute Point.
    *
    * @param {Number} y absolute y-value
-   * @returns {Shape} The current Shape instance
+   * @returns {Path} The current Path instance
    */
   proto.verticalLineTo = function(y) {
     var p = this.lastPoint();
@@ -523,7 +526,7 @@ define([
    * straight line from the last Point to the given relative Point.
    *
    * @param {Number} y relative y-value
-   * @returns {Shape} The current Shape instance
+   * @returns {Path} The current Path instance
    */
   proto.verticalLineBy = function(y) {
     return this.lineBy(0, y); // lineBy takes care about validation
@@ -534,7 +537,7 @@ define([
    * straight line from the last Point to the given absolute Point.
    *
    * @param {Number} x absolute x-value
-   * @returns {Shape} The current Shape instance
+   * @returns {Path} The current Path instance
    */
   proto.horizontalLineTo = function(x) {
     var p = this.lastPoint();
@@ -546,7 +549,7 @@ define([
    * straight line from the last Point to the given relative Point.
    *
    * @param {Number} x relative x-value
-   * @returns {Shape} The current Shape instance
+   * @returns {Path} The current Path instance
    */
   proto.horizontalLineBy = function(x) {
     return this.lineBy(x, 0); // lineBy takes cate about validation
@@ -562,7 +565,7 @@ define([
    * @param {Number} cp2y second control point y
    * @param {Number} x x-value of the point
    * @param {Number} y y-value of the point
-   * @returns {Shape} The current Shape instance
+   * @returns {Path} The current Path instance
    */
   proto.curveTo = function(cp1x, cp1y, cp2x, cp2y, x, y) {
     if (arguments.length < 6) {
@@ -581,7 +584,7 @@ define([
   /**
    * Appends an bezier-curve segment. Appends a segment at the end of the list of contained segments.
    *
-   * @see Shape.curveBy
+   * @see Path.curveBy
    */
   proto.curveBy = function(cp1x, cp1y, cp2x, cp2y, x, y) {
     if (arguments.length < 6) {
@@ -655,7 +658,7 @@ define([
    * @param {Boolean} sweepFlag description
    * @param {Number} x description
    * @param {Number} y description
-   * @returns {Shape} The current Shape instance
+   * @returns {Path} The current Path instance
    */
   proto.arcTo = function(rx, ry, xAxisRotation, largeArcFlag, sweepFlag, x, y) {
     this._segments.push(['arcTo', rx, ry /*Point*/, xAxisRotation, largeArcFlag, sweepFlag, x, y /*Point*/]);
@@ -675,7 +678,7 @@ define([
    * @param {Boolean} sweepFlag description
    * @param {Number} x description
    * @param {Number} y description
-   * @returns {Shape} The current Shape instance
+   * @returns {Path} The current Path instance
    */
   proto.arcBy = function(rx, ry, xAxisRotation, largeArcFlag, sweepFlag, x, y) {
     this._segments.push(['arcBy', rx, ry /*Point*/, xAxisRotation, largeArcFlag, sweepFlag, x, y /*Point*/]);
@@ -692,7 +695,7 @@ define([
    * @param {deg|rad} aStartAngle description (TODO deg)
    * @param {deg|rad} aEndAngle description (TODO deg)
    * @param {Boolean} [anticlockwise] description
-   * @returns {Shape} The current Shape instance
+   * @returns {Path} The current Path instance
    */
   proto.arc = function(x, y, radius, aStartAngle, aEndAngle, anticlockwise) {
     anticlockwise = !!anticlockwise;
@@ -717,52 +720,7 @@ define([
   };
 
   /**
-   * Returns a new Shape instance with an rect.
-   *
-   * @param {Number} x The x position of the rect
-   * @param {Number} y The y position of the rect
-   * @param {Number} width The width of the rect
-   * @param {Number} height The height of the rect
-   * @param {Number|Array} radius rounded corner radius or an array of radiuses
-   *  for each corner, in the order top-left, top-right, bottom-right, bottom-left
-   * @returns {Shape} The current Shape instance
-   */
-  proto.rect = function(x, y, width, height, radius) {
-
-    var bottomLeftRadius,
-        bottomRightRadius,
-        topLeftRadius,
-        topRightRadius;
-
-    if (radius) {
-
-      topLeftRadius = radius[0] || radius;
-      topRightRadius = radius[1] || radius;
-      bottomRightRadius = radius[2] || radius;
-      bottomLeftRadius = radius[3] || radius;
-
-      this
-        .moveTo(x, y + topLeftRadius)
-        .arcBy(topLeftRadius, topLeftRadius, 0, 0, 1, topLeftRadius, -topLeftRadius)
-        .lineBy(width - topLeftRadius - topRightRadius, 0)
-        .arcBy(topRightRadius, topRightRadius, 0, 0, 1, topRightRadius, topRightRadius)
-        .lineBy(0, height - topRightRadius - bottomRightRadius)
-        .arcBy(bottomRightRadius, bottomRightRadius, 0, 0, 1, -bottomRightRadius, bottomRightRadius)
-        .lineBy(-(width - bottomLeftRadius - bottomRightRadius), 0)
-        .arcBy(bottomLeftRadius, bottomLeftRadius, 0, 0, 1, -bottomLeftRadius, -bottomLeftRadius);
-    } else {
-      this
-        .moveTo(x, y)
-        .lineBy(width, 0)
-        .lineBy(0, height)
-        .lineBy(-width, 0);
-    }
-
-    return this.closePath();
-  };
-
-  /**
-   * Returns the bounding box of that {Shape}.
+   * Returns the bounding box of that {Path}.
    *
    * @returns {Object} bb An object with x, y, width, height
    * @ignore
@@ -786,7 +744,7 @@ define([
   /**
    * Clears all segments.
    *
-   * @returns {Shape} The current Shape instance
+   * @returns {Path} The current Path instance
    */
   proto.clear = function() {
     this._segments.length = 0;
@@ -799,7 +757,7 @@ define([
    *
    * @param {String|Number|LinearGradient|RadialGradient|Bitmap|color.RGBAColor}
    *  fill The fillColor (see `color.parse`), fillImage or fillGradient
-   * @returns {Shape} The current Shape instance
+   * @returns {Path} The current Path instance
    */
   proto.fill = function(fill) {
     if (typeof fill === 'string' || typeof fill === 'number' || fill instanceof color.RGBAColor) {
@@ -817,7 +775,7 @@ define([
    *
    * @param {String|Number|LinearGradient|RadialGradient|Bitmap|color.RGBAColor}
    *  fill The fillColor (see `color.parse`), fillImage or fillGradient
-   * @returns {Shape} The current Shape instance
+   * @returns {Path} The current Path instance
    */
   proto.line = function(line, lineWidth) {
     if (lineWidth) {
@@ -898,18 +856,18 @@ define([
   /**
    * The type of the given instance.
    */
-  proto.type = 'Shape';
+  proto.type = 'Path';
 
   /**
    * Collects and returns specific data for the renderer.
    *
-   * For the Shape class, this is the segments information.
+   * For the Path class, this is the segments information.
    *
    * @private
    * @return {void|Array} The additional data for the renderer.
    */
   proto._getRenderData = function() {
-    if (!this._isShapeDataMutated) {
+    if (!this._isPathDataMutated) {
       return;
     }
 
@@ -924,7 +882,7 @@ define([
       }
       data.push(serialized);
     }
-    this._isShapeDataMutated = false;
+    this._isPathDataMutated = false;
 
     return data;
   };
@@ -941,7 +899,7 @@ define([
   /**
    * Morphs segments to that of another shapes, along with other attrs
    *
-   * @param {Shape} that The Shape to morph to (all morphable attributes
+   * @param {Path} that The Path to morph to (all morphable attributes
    *  will morph)
    * @param {Number} duration The duration of the morph animation. Available
    *  formats are _s (seconds), _ms (milliseconds), _ (frames - no unit)
@@ -992,7 +950,7 @@ define([
   /**
    * Morphs segments to that of another shapes
    *
-   * @param {Shape} that The Shape to morph to (only segments will morph)
+   * @param {Path} that The Path to morph to (only segments will morph)
    * @param {Number} duration The duration of the morph animation. Available
    *  formats are _s (seconds), _ms (milliseconds), _ (frames - no unit)
    * @param {Object} [animOptions] Additional options to pass to the animation,
@@ -1020,11 +978,11 @@ define([
   /**
    * Transforms segments to absolute segments. i.e. lineBy->lineTo etc.
    *
-   * @memberOf Shape
+   * @memberOf Path
    * @param {Array} Segments array
    * @returns {Array} New absolute segments array
    */
-   Shape.toAbsolute = function(segments) {
+   Path.toAbsolute = function(segments) {
     var segmentsLength = segments && segments.length;
 
     if (!segmentsLength) {
@@ -1117,155 +1075,6 @@ define([
   /************************* Factories & Abstractions *************************/
 
   /**
-   * Returns a new Shape instance with an arc.
-   *
-   * @example
-   * Shape.arc(75, 75, 75, 0, 2*Math.PI); // circle
-   * Shape.arc(75, 75, 75, 0, 360); // circle TODO
-   *
-   * @see proto.arc
-   * @memberOf Shape
-   * @returns {Shape} A new Shape instance
-   */
-  Shape.arc = function(x, y, radius, aStartAngle, aEndAngle, anticlockwise) {
-    return new Shape().arc(x, y, radius, aStartAngle, aEndAngle, anticlockwise);
-  };
-
-  /**
-   * Returns a new Shape instance with a circle.
-   *
-   * @memberOf Shape
-   * @param {Number} x description
-   * @param {Number} y description
-   * @param {Number} radius description
-   * @returns {Shape} A new Shape instance
-   */
-  Shape.circle = function(x, y, radius) {
-    return Shape.ellipse(x, y, radius, radius);
-  };
-
-  Shape.ellipse = function(centerX, centerY, radiusX, radiusY) {
-      return new Shape()
-        .moveTo(radiusX, 0)
-        .arcTo(radiusX, radiusY, 0, 0, 0, -radiusX, 0)
-        .arcTo(radiusX, radiusY, 0, 0, 0, radiusX, 0)
-        .attr({x: centerX, y: centerY});
-  };
-
-  /**
-   * Returns a new Shape instance with an rect.
-   *
-   * @example
-   * bs.Shape.rect(0, 0, 150, 150);
-   *
-   * @memberOf Shape
-   * @param {Number} x The x position of the rect
-   * @param {Number} y The y position of the rect
-   * @param {Number} width The width of the rect
-   * @param {Number} height The height of the rect
-   * @param {Number} radius rounded corners
-   * @returns {Shape} A new Shape instance
-   */
-  Shape.rect = function(x, y, width, height, radius) {
-    return new Shape()
-      .attr({origin: {x: width / 2, y: height / 2}, x: x, y: y})
-      .rect(0, 0, width, height, radius);
-  };
-
-  /**
-   * Returns a Shape instance containing a regular polygon.
-   *
-   * @memberOf Shape
-   * @param {number} x The horizontal offset/translation of the polygon center.
-   * @param {number} y The vertical offset/translation of the polygon center.
-   * @param {number} radius The radius of the polygon
-   * @param {number} sides The number of sides of the polygon. Must be > 3
-   * @returns {Shape} A shape instance
-   */
-  Shape.polygon = function(x, y, radius, sides) {
-    if (!(sides >= 3)) { // >= catches NaN, null, etc.
-      throw RangeError('A polygon needs at least 3 sides.');
-    }
-
-    sides >>>= 0; // floor number of sides, max number of sides is 4294967295
-    var shape = new Shape().attr({x: x, y: y});
-
-    // start at 12 o'clock, continue clockwise
-    shape.moveTo(0, -radius);
-    for (var i = 1, current; i < sides; i++) {
-      current = PI2 * i / sides;
-      shape.lineTo(sin(current) * radius, -cos(current) * radius);
-    }
-    shape.closePath();
-
-    return shape;
-  };
-
-  /**
-   * Returns a Shape instance containing a star.
-   *
-   * @memberOf Shape
-   * @param {number} x The horizontal offset/translation of the star center.
-   * @param {number} y The vertical offset/translation of the star center.
-   * @param {number} radius The radius of the star
-   * @param {number} rays The number of rays of the star. Must be > 3
-   * @param {number} [factor] determines the star "pointiness".
-   *    0: all rays start at (0, 0)
-   *    1: the star looks like a regular polygon: 3 vertices are on a line.
-   *    If omitted, a regular star is created
-   * @returns {Shape} A shape instance
-   */
-  Shape.star = function(x, y, radius, rays, factor) {
-    if (!(rays >= 3)) { // >= catches NaN, null, etc.
-      throw RangeError('A star needs at least 3 rays.');
-    }
-
-    // use a shape as starting point
-    var shape = Shape.polygon(x, y, radius, rays);
-
-    // make a star from it by inserting points
-    var segments = shape.segments();
-    var from = segments[0], to;
-    var starSegments = [from.slice()];
-
-    /*
-      If factor is not given, we default to a regular star.
-
-      We create a regular star by connecting every `floor((rays - 1) / 2)` ray
-      end point verteces.
-    */
-    if (!(factor >= 0 || factor < 0)) { // catches NaN, undefined etc.
-      var b = segments[rays / 2 - .5 | 0];
-      var ax = 0, ay = from[2], bx = b[1], by = b[2];
-      to = segments[1];
-      var qx = (ax + to[1]) / 2, qy = (ay + to[2]) / 2;
-
-      //     y = x * (by - ay) / bx - radius
-      //  && y = x * qy / qx
-      //  => x * qy / qx = x * (by - ay) / bx + radius
-      // <=> x = (qx * bx * -radius) / (qy * bx - qx * by + qx * ay)
-      var ix = (qx * bx * -radius) / (qy * bx - qx * by + qx * ay);
-      factor = ix / qx;
-    }
-
-    for (var i = 0; i < rays; i++) {
-      to = segments[(i + 1) % rays];
-      var fromX = from[1], fromY = from[2], toX = to[1], toY = to[2];
-      starSegments.push(
-        ['lineTo', (fromX + toX) / 2 * factor, (fromY + toY) / 2 * factor],
-        to
-      );
-
-      from = to;
-    }
-
-    to[0] = 'closePath';
-    to.length = 1;
-
-    return shape.segments(starSegments);
-  };
-
-  /**
    * Returns dimensions/location of the shape
    *
    * @param {String} key "size" for the full dimensions object or one of "top",
@@ -1323,5 +1132,5 @@ define([
     return key === 'size' ? size : size[key];
   };
 
-  return Shape;
+  return Path;
 });

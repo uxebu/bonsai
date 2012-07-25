@@ -1,9 +1,9 @@
 /**
  * Cloned animations. Note how the cloned animation does not pause along with the original one.
  */
-var shape1 = bonsai.Shape.rect(0, 50, 100, 100).attr({fillColor: 'red'});
-var shape2 = bonsai.Shape.rect(0, 200, 100, 100).attr({fillColor: 'green'});
-var shape3 = bonsai.Shape.rect(0, 350, 100, 100).attr({fillColor: 'blue'});
+var shape1 = bonsai.Path.rect(0, 50, 100, 100).attr({fillColor: 'red'});
+var shape2 = bonsai.Path.rect(0, 200, 100, 100).attr({fillColor: 'green'});
+var shape3 = bonsai.Path.rect(0, 350, 100, 100).attr({fillColor: 'blue'});
 
 stage.children([shape1,shape2,shape3]);
 

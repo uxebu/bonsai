@@ -1,11 +1,11 @@
-var rainbow = Shape.rect(0, 0, 480, 480).attr({
+var rainbow = Path.rect(0, 0, 480, 480).attr({
   lineWidth: 1,
   fillGradient: gradient.linear(90,
     ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
   )
 }).addTo(stage);
 
-var clip = Shape.circle(0, 0, 100);
+var clip = Path.circle(0, 0, 100);
 
 stage.on('mouseover pointerdown', function() {
   rainbow.attr('clip', clip);

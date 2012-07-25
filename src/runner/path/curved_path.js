@@ -1,6 +1,6 @@
 define([
-  '../point',
-  '../tools'
+  '../../point',
+  '../../tools'
 ], function(Point, tools) {
   'use strict';
 
@@ -22,6 +22,7 @@ define([
    *
    * @constructor
    * @name CurvedPath
+   * @memberOf module:path
    * @returns {Curve} A new Instance of Curve
    */
   function CurvedPath() {

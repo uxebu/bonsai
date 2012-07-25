@@ -1,4 +1,4 @@
-var rainbow = Shape.rect(0, 0, 480, 480).attr({
+var rainbow = Path.rect(0, 0, 480, 480).attr({
   lineWidth: 1,
   fillGradient: gradient.linear(90,
     ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
@@ -7,10 +7,10 @@ var rainbow = Shape.rect(0, 0, 480, 480).attr({
 
 var mask = new Group();
 
-Shape.circle(-50, -50, 50).addTo(mask);
-Shape.circle(50, -50, 50).addTo(mask);
-Shape.circle(-50, 50, 50).addTo(mask);
-Shape.circle(50, 50, 50).addTo(mask);
+Path.circle(-50, -50, 50).addTo(mask);
+Path.circle(50, -50, 50).addTo(mask);
+Path.circle(-50, 50, 50).addTo(mask);
+Path.circle(50, 50, 50).addTo(mask);
 
 stage.on('mouseover pointerdown', function() {
   rainbow.attr('clip', mask);

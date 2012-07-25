@@ -1,6 +1,6 @@
 // Used in the bonsai slides (initially for BBDEvCon)
 
-Shape.rect(50, 50, 350, 350)
+Path.rect(50, 50, 350, 350)
   .addTo(stage)
   .attr({lineColor: 'black', lineWidth: 4})
   .attr({fillGradient: gradient.linear('bottom', ['red', 'yellow'])})
