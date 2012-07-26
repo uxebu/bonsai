@@ -98,19 +98,19 @@ define([
     }
   }
 
-  var getLineColor = getter('_lineColor');
-  function setLineColor(color) {
-    this._lineColor = parseColor(color, this._lineColor);
+  var getStrokeColor = getter('_strokeColor');
+  function setStrokeColor(color) {
+    this._strokeColor = parseColor(color, this._strokeColor);
   }
 
-  function getLineGradient() {
-    return this._lineGradient;
+  function getStrokeGradient() {
+    return this._strokeGradient;
   }
-  function setLineGradient(grad) {
+  function setStrokeGradient(grad) {
     if (grad) {
-      this._lineGradient = gradient(grad);
+      this._strokeGradient = gradient(grad);
     } else {
-      this._lineGradient = null;
+      this._strokeGradient = null;
     }
   }
 
@@ -180,7 +180,7 @@ define([
    * @property {string} __supportedAttributes__.fillGradient The fill gradient. Defaults: nothing
    * @property {string} __supportedAttributes__.join The shape to be used at the corners of paths. Can be one of 'miter', 'round', 'bevel'. Default: 'miter'
    * @property {string} __supportedAttributes__.line The line color. Default: transparent
-   * @property {number} __supportedAttributes__.lineWidth The line width. Default: 0
+   * @property {number} __supportedAttributes__.strokeWidth The line width. Default: 0
    * @property {number} __supportedAttributes__.miterLimit The miter limit of the stroke. Default: 4
    *
    */
@@ -206,11 +206,11 @@ define([
 
       _join: data('miter', true),
       join: accessor(getJoin, setJoin, true),
-      _lineColor: data(0x000000ff, true), // black by default
-      lineColor: accessor(getLineColor, setLineColor, true),
-      _lineGradient: data(undefined, true),
-      lineGradient: accessor(getLineGradient, setLineGradient, true),
-      lineWidth: data(0, true, true),
+      _strokeColor: data(0x000000ff, true), // black by default
+      strokeColor: accessor(getStrokeColor, setStrokeColor, true),
+      _strokeGradient: data(undefined, true),
+      strokeGradient: accessor(getStrokeGradient, setStrokeGradient, true),
+      strokeWidth: data(0, true, true),
       _miterLimit: data(4, true),
       miterLimit: accessor(getMiterLimit, setMiterLimit, true),
 
@@ -220,15 +220,15 @@ define([
     var rendererAttributes = this._renderAttributes;
     rendererAttributes.cap = '_cap';
     rendererAttributes.fillColor = '_fillColor';
-    rendererAttributes.lineColor = '_lineColor';
-    rendererAttributes.lineGradient = '_lineGradient';
+    rendererAttributes.strokeColor = '_strokeColor';
+    rendererAttributes.strokeGradient = '_strokeGradient';
     rendererAttributes.fillGradient = '_fillGradient';
     rendererAttributes.fillImageId = '_fillImageId';
     rendererAttributes.fillRepeat = '_fillRepeat';
     rendererAttributes.fillOpacity = 'fillOpacity';
     rendererAttributes.lineOpacity = 'lineOpacity';
     rendererAttributes.join = '_join';
-    rendererAttributes.lineWidth = 'lineWidth';
+    rendererAttributes.strokeWidth = 'strokeWidth';
     rendererAttributes.miterLimit = '_miterLimit';
 
     this.morphableAttributes = {
@@ -236,8 +236,8 @@ define([
       y: 1,
       segments: 1,
       fillColor: 1,
-      lineColor: 1,
-      lineWidth: 1,
+      strokeColor: 1,
+      strokeWidth: 1,
       fillOpacity: 1,
       lineOpacity: 1,
       opacity: 1,
@@ -771,20 +771,20 @@ define([
   };
 
   /**
-   * Applies a lineColor or lineGradient to the shape
+   * Applies a strokeColor or strokeGradient to the shape
    *
    * @param {String|Number|LinearGradient|RadialGradient|Bitmap|color.RGBAColor}
    *  fill The fillColor (see `color.parse`), fillImage or fillGradient
    * @returns {Path} The current Path instance
    */
-  proto.line = function(line, lineWidth) {
-    if (lineWidth) {
-      this.attr('lineWidth', lineWidth);
+  proto.stroke = function(stroke, strokeWidth) {
+    if (strokeWidth) {
+      this.attr('strokeWidth', strokeWidth);
     }
-    if (typeof line === 'string' || typeof line === 'number' || line instanceof color.RGBAColor) {
-      return this.attr('lineColor', line);
-    } else if (line instanceof gradient.LinearGradient || line instanceof gradient.RadialGradient) {
-      return this.attr('lineGradient', line);
+    if (typeof stroke === 'string' || typeof stroke === 'number' || stroke instanceof color.RGBAColor) {
+      return this.attr('strokeColor', stroke);
+    } else if (stroke instanceof gradient.LinearGradient || stroke instanceof gradient.RadialGradient) {
+      return this.attr('strokeGradient', stroke);
     }
     throw Error('A fill of "' + fill + '" is not supported');
   };

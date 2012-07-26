@@ -38,7 +38,7 @@ var app = {
     bonsai.Path.rect(0,0,400,35).attr({
       fillColor: 'rgba(0,0,0,0.2)',
       filters: 'blur',
-      lineWidth: 1
+      strokeWidth: 1
     }).addTo(controlLayer);
 
     new bonsai.Text('Penguins:').attr({

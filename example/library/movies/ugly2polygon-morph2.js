@@ -11,16 +11,16 @@ shape.quadraticCurveBy(15.70, -66.10, 110.15, 154.00);
 shape.closePath();
 shape.attr({
   fillColor: 0x33FF00FF,
-  lineWidth: 20,
-  lineColor: 'black'
+  strokeWidth: 20,
+  strokeColor: 'black'
 });
 stage.addChild(shape);
 
 var targetPath = Path.star(400,400,300,5,1);
 //  .addTo(stage);
 targetPath.attr({
-  lineWidth: 444 / 20,
-  lineColor: 0x000000FF,
+  strokeWidth: 444 / 20,
+  strokeColor: 0x000000FF,
   fillColor: 'pink',
   cap: 'round',
   join: 'round'

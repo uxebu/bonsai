@@ -263,8 +263,8 @@ require([
           sourceClone = source.clone(),
           target = new Path().moveTo(20, 20).lineTo(200, 11).arcTo(22, 33, 0, 0, 0, 30, 30);
 
-      source.attr({lineColor: 'red', opacity: .5});
-      target.attr({lineColor: 'blue', opacity: .5});
+      source.attr({strokeColor: 'red', opacity: .5});
+      target.attr({strokeColor: 'blue', opacity: .5});
 
       it('Should morph a source to the target segments', function() {
 
@@ -281,7 +281,7 @@ require([
               ).toEqual(
                 sensibleCopyOfSegments(target._segments)
               );
-              expect(+source.attr('lineColor')).toBe(+color('blue'));
+              expect(+source.attr('strokeColor')).toBe(+color('blue'));
               expect(source.attr('opacity')).toBe(.5);
               next();
             }

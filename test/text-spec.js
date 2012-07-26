@@ -71,12 +71,12 @@ require([
       });
     });
 
-    describe('provides a property to change `textLineColor`', function() {
+    describe('provides a property to change `textStrokeColor`', function() {
       it('is set to `black` by default', function() {
-        expect(new Text('').attr('textLineColor')).toBe(255);
+        expect(new Text('').attr('textStrokeColor')).toBe(255);
       });
       it('returns `red` when set to `red`.', function() {
-        expect(new Text('').attr('textLineColor', 'red').attr('textLineColor')).toBe(4278190335);
+        expect(new Text('').attr('textStrokeColor', 'red').attr('textStrokeColor')).toBe(4278190335);
       });
     });
 
@@ -93,12 +93,12 @@ require([
       */
     });
 
-    describe('provides a property to change `textLineWidth`', function() {
+    describe('provides a property to change `textStrokeWidth`', function() {
       it('is set to `0` by default', function() {
-        expect(new Text('').attr('textLineWidth')).toBe(0);
+        expect(new Text('').attr('textStrokeWidth')).toBe(0);
       });
       it('returns `5` when set to `5`.', function() {
-        expect(new Text('').attr('textLineWidth', 5).attr('textLineWidth')).toBe(5);
+        expect(new Text('').attr('textStrokeWidth', 5).attr('textStrokeWidth')).toBe(5);
       });
     });
 

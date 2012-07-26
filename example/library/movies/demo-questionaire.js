@@ -8,7 +8,7 @@ var buttons = [
 var stageWidth = 750; // Should be: stage.attr('width');
 var stageHeight = 600; // Should be: stage.attr('height');
 bs.Path.rect(0, 0, stageWidth, stageHeight)
-  .attr({lineColor:'black', lineWidth: 1})
+  .attr({strokeColor:'black', strokeWidth: 1})
   .addTo(stage);
 
 function renderButton(buttonObj, idx){
@@ -19,7 +19,7 @@ function renderButton(buttonObj, idx){
   var x = 300;
   var shape1 = new bonsai.Path.rect(x, y, 120, 35, 5);
   shape1.attr({fillColor: bgColor, filters:filter.dropShadow(2,2,2,'black'),
-    lineColor:bs.color(bgColor).lighter(.2), lineWidth: 2
+    strokeColor:bs.color(bgColor).lighter(.2), strokeWidth: 2
   });
   var text = new bonsai.Text(text).attr({
     x: x+10, y: y+10, fontFamily: 'Arial', fontSize: '20px', textFillColor: fgColor
@@ -111,7 +111,7 @@ var pieChart = {};
   pieChart.init = function(buttonObj){
     // Add a circle with a drop shadow behind the pie chart, so it looks like the pie chart has a dropshadow
     bonsai.Path.circle(pos.x, pos.y, 119)
-      .attr({fillColor:'black', lineWidth:1, lineColor: 'white',
+      .attr({fillColor:'black', strokeWidth:1, strokeColor: 'white',
              filters: filter.dropShadow(5,5,5,'grey')})
       .addTo(group);
     stage.addChild(group);
@@ -128,7 +128,7 @@ var pieChart = {};
       if (!count) return;
       var endAngle = startAngle+count/sum * Math.PI*2;
       arcs.push(bs.Path.arc(pos.x, pos.y, 60, startAngle, endAngle)
-        .attr({lineWidth:120, lineColor:b.bgColor})
+        .attr({strokeWidth:120, strokeColor:b.bgColor})
         .addTo(group)
       );
       startAngle = endAngle;

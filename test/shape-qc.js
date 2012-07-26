@@ -11,7 +11,7 @@ define([
 
   var attributeGenerator = gen.chooseGenerators(
     gen.arraysOfSize([gen.chooseValue('opacity'), opacityValueGenerator]),
-    gen.arraysOfSize([gen.chooseValue('lineWidth'), numGen.positiveIntegers()])
+    gen.arraysOfSize([gen.chooseValue('strokeWidth'), numGen.positiveIntegers()])
   );
 
   function opactiyAssert(testCase, expectedValue, actualValue, precision) {

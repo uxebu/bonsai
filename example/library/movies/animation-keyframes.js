@@ -14,16 +14,16 @@ var animation = new bonsai.KeyframeAnimation('4s', {
 stage.addChild(shape);
 shape.animate(animation);
 
-// Animate the fillColor, lineColor and position.
+// Animate the fillColor, strokeColor and position.
 
 var animation = new bonsai.KeyframeAnimation('4s', {
-    from: {x: 400, y: 0,   fillColor: 'blue',  lineColor:'black'},
-    '1s': {x: 0,   y: 0,   fillColor: 'yellow',lineColor:'red'},
-    '2s': {x: 0,   y: 400, fillColor: 'green', lineColor:'green'},
-    '3s': {x: 400, y: 400, fillColor: 'red',   lineColor:'yellow'},
-    to:   {x: 400, y: 0,   fillColor: 'black', lineColor:'blue'}
+    from: {x: 400, y: 0,   fillColor: 'blue',  strokeColor:'black'},
+    '1s': {x: 0,   y: 0,   fillColor: 'yellow',strokeColor:'red'},
+    '2s': {x: 0,   y: 400, fillColor: 'green', strokeColor:'green'},
+    '3s': {x: 400, y: 400, fillColor: 'red',   strokeColor:'yellow'},
+    to:   {x: 400, y: 0,   fillColor: 'black', strokeColor:'blue'}
 }, {repeat:Infinity});
 Path.rect(0, 0, 100, 100)
   .addTo(stage)
-  .attr({lineWidth:15})
+  .attr({strokeWidth:15})
   .animate(animation);

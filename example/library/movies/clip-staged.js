@@ -8,4 +8,4 @@ Path.rect(50, 50, 300, 300).attr({fillColor: 'blue'}).addTo(stage)
   .attr('clip', clippingObject);
 
 // debug border
-Path.rect(50, 50, 300, 300).attr({lineColor:'gray', lineWidth:1}).addTo(stage);
+Path.rect(50, 50, 300, 300).attr({strokeColor:'gray', strokeWidth:1}).addTo(stage);
