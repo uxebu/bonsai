@@ -18,3 +18,35 @@ Bonsai's main features include:
  * Keyframe and regular animation (easing functions too)
  * Shape/path morphing
  * *and much more*...
+
+### An example
+
+Draw a `100x200` rectangle to the stage at `{0,0}`:
+
+```js
+var r = new Rect(0, 0, 100, 200).addTo(stage);
+```
+
+Fill it:
+
+```js
+r.fill('red');
+```
+
+Change your mind... make it darker:
+
+```js
+r.fill( color('red').darker() );
+```
+
+Animate it:
+
+```js
+r.animate('400ms', {
+  x: 50,
+  y: 50,
+  width: 200
+});
+```
+
+See more here: [Bonsai Documentation/Overviews](http://docs.bonsaijs.org).
