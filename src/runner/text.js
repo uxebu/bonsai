@@ -145,7 +145,7 @@ define([
     rendererAttributes.strokeColor = '_textStrokeColor';
     rendererAttributes.fillGradient = '_textFillGradient';
     rendererAttributes.fillOpacity = 'textFillOpacity';
-    rendererAttributes.lineOpacity = 'textLineOpacity';
+    rendererAttributes.strokeOpacity = 'textLineOpacity';
     rendererAttributes.join = '_join';
     rendererAttributes.strokeWidth = 'textStrokeWidth';
     rendererAttributes.miterLimit = '_miterLimit';

@@ -135,7 +135,7 @@ define([
       filters: '_filters',
       glyphx: '_glyphx',
       glyphy: '_glyphy',
-      lineOpacity: 'textLineOpacity',
+      strokeOpacity: 'textLineOpacity',
       strokeColor: '_textStrokeColor',
       strokeWidth: 'textStrokeWidth',
       opacity: '_opacity',

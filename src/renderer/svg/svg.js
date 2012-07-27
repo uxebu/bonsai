@@ -40,7 +40,7 @@ define([
     miterLimit: 'stroke-miterlimit',
     opacity: 'opacity',
     fillOpacity: 'fill-opacity',
-    lineOpacity: 'stroke-opacity',
+    strokeOpacity: 'stroke-opacity',
     fontSize: 'font-size',
     fontWeight: 'font-weight',
     fontStyle: 'font-style',

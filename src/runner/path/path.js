@@ -202,7 +202,7 @@ define([
       _fillRepeat: data([1,1], true),
       fillRepeat: accessor(getFillRepeat, setFillRepeat, true),
       fillOpacity: data(1, true, true),
-      lineOpacity: data(1, true, true),
+      strokeOpacity: data(1, true, true),
 
       _join: data('miter', true),
       join: accessor(getJoin, setJoin, true),
@@ -226,7 +226,7 @@ define([
     rendererAttributes.fillImageId = '_fillImageId';
     rendererAttributes.fillRepeat = '_fillRepeat';
     rendererAttributes.fillOpacity = 'fillOpacity';
-    rendererAttributes.lineOpacity = 'lineOpacity';
+    rendererAttributes.strokeOpacity = 'strokeOpacity';
     rendererAttributes.join = '_join';
     rendererAttributes.strokeWidth = 'strokeWidth';
     rendererAttributes.miterLimit = '_miterLimit';
@@ -239,7 +239,7 @@ define([
       strokeColor: 1,
       strokeWidth: 1,
       fillOpacity: 1,
-      lineOpacity: 1,
+      strokeOpacity: 1,
       opacity: 1,
       fillGradient: 1,
       scale: 1,
