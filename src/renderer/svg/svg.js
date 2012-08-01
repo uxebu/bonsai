@@ -121,6 +121,13 @@ define([
         }
 
         switch (i) {
+          case 'data':
+            if (value !== null) {
+              el.setAttribute('data-extended-id', value);
+            } else {
+              el.removeAttribute('data-extended-id');
+            }
+            break;
           case 'fontFamily':
             value = fontIDs[value] || value;
             if (value != null) {
@@ -322,6 +329,7 @@ define([
             if (!filterSignature) {
               return;
             }
+
             var child = el.firstChild || {};
             do {
               if (child instanceof SVGGElement) {

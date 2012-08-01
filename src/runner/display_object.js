@@ -306,7 +306,8 @@ define([
       cursor: accessor(getCursor, setCursor, true),
       _cursor: data(null, true),
       fillRule: data('inherit', true),
-      visible: data(true, true)
+      visible: data(true, true),
+      data: data(null, true)
     });
 
     this._isOffStage = false;
@@ -319,7 +320,8 @@ define([
       maskId: '_maskId',
       cursor: '_cursor',
       fillRule: 'fillRule',
-      visible: 'visible'
+      visible: 'visible',
+      data: 'data'
     };
 
     /*
