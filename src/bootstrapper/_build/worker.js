@@ -15,18 +15,12 @@ define([
     // init worker bootstrap
     var messageChannel;
 
-    function notifyRenderer(message) {
-      postMessage(message);
-    }
-
-    function onMessage(message) {
-      messageChannel.notify(message.data);
-    }
-
-    function disconnect() {
+    var notifyRenderer = function(message) {postMessage(message);};
+    var onMessage = function(message) {messageChannel.notify(message.data);};
+    var disconnect = function() {
       removeEventListener('message', onMessage);
       messageChannel = null;
-    }
+    };
 
     messageChannel = new MessageChannel(notifyRenderer, disconnect);
     addEventListener('message', onMessage);
