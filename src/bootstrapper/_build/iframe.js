@@ -6,8 +6,9 @@ define([
   '../context/iframe/bootstrap',
   '../context/iframe/context',
   '../../renderer/svg/svg',
-  '../../tools'
-], function(player, bootstrapIframe, IframeRunnerContext, SvgRenderer, tools) {
+  '../../tools',
+  '../util'
+], function(player, bootstrapIframe, IframeRunnerContext, SvgRenderer, tools, bootstrapUtil) {
   'use strict';
 
   if(typeof window != 'undefined' && window.messageChannel) {
@@ -23,19 +24,15 @@ define([
   } else {
     window['bonsai'] = player;
 
-    var envUrl = 'bonsai.js';
-    var scripts = document.getElementsByTagName('script');
-    for (var i=0, m = scripts.length; i < m; i++) {
-      if(/bonsai[.](?:iframe[.])?(?:min[.])?js(?:$|\?|#)/.test(scripts[i].src)) {
-        envUrl = scripts[i].src;
-      }
-    }
+    var scripts = tools.map(document.getElementsByTagName('script'), function(script) {
+      return script.src;
+    });
 
     player.Renderer = SvgRenderer;
     player.setup({
       baseUrl: tools.baseUri(document),
       runnerContext: IframeRunnerContext,
-      runnerUrl: envUrl
+      runnerUrl: bootstrapUtil.chooseRunnerUrl(scripts, /iframe/) || 'bonsai.js'
     });
   }
 });
