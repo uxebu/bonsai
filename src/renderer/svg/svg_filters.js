@@ -1,5 +1,7 @@
 /**
  * This module contains filters used by svg renderers.
+ * Implementation details can be found here
+ * https://dvcs.w3.org/hg/FXTF/raw-file/916184271e55/filters/master/SVGFilter.html
  *
  * @exports svg_filters
  */
@@ -8,7 +10,17 @@ define([
 ], function(color) {
   'use strict';
 
+  // Array prototype caching
+  var unshift = [].unshift;
+  var push = [].push;
+  var concat = [].concat;
+
   var isFEColorMatrixEnabled = typeof window !== 'undefined' && 'SVGFEColorMatrixElement' in window;
+  var isFEDropShadowEnabled = typeof window !== 'undefined' && 'SVGFEDropShadowElement' in window;
+  var isFEMergeEnabled = typeof window !== 'undefined' && 'SVGFEMergeElement' in window;
+  var isFEBlendEnabled = typeof window !== 'undefined' && 'SVGFEBlendElement' in window;
+  var isFECompositeEnabled = typeof window !== 'undefined' && 'SVGFECompositeElement' in window;
+  var isCSSDropShadowEnabled = typeof window !== 'undefined' && 'webkitSvgShadow' in window.document.body.style;
 
   function range(value, min, max) {
     return Math.min(max, Math.max(min, value));
@@ -80,50 +92,69 @@ define([
       ]);
     },
 
-    /**
-     *
-     * @TODO: Use feDropShadow instead? Where is it implemented?
-     */
     dropShadowByOffset: function(values) {
       var offsetX = values[0];
       var offsetY = values[1];
       var blurRadius = values[2];
       var bsColor = color(values[3]);
-      var filter = [];
+      var isBlack = bsColor.int32() === 255;
+      var filters = [];
+
+      // use `feDropShadow` filter primitive in case it's supported.
+      // The expectation is that user agents can optimize the handling
+      // by not having to do all the steps separately.
+      if (isFEDropShadowEnabled) {
+        return createElement('feDropShadow', {
+          stdDeviation: blurRadius,
+          dx: offsetX,
+          dy: offsetY,
+          'flood-color': bsColor.rgb(),
+          'flood-opacity': bsColor.alpha()
+        });
+      }
 
       var blur = createElement('feGaussianBlur', {
-        stdDeviation: blurRadius
+        'stdDeviation': blurRadius,
+        'in': 'SourceAlpha',
+        'result': 'blur'
       });
-      filter.push(blur);
+      filters.push(blur);
+
+      // optimize performance by dropping a flood-color of rgba(0,0,0,1)
+      if (!isBlack) {
+        var flood = createElement('feFlood', {
+          'flood-color': bsColor.rgb(),
+          'flood-opacity': bsColor.alpha(),
+          'in': 'blur',
+          'result': 'flood'
+        });
+        filters.push(flood);
+      }
+
+      var composite1 = createElement('feComposite', {
+        'in': isBlack ? 'blur' : 'flood',
+        'in2': 'blur',
+        'operator': 'in',
+        'result': 'composite1'
+      });
+      filters.push(composite1);
 
       var offset = createElement('feOffset', {
         dx: offsetX,
         dy: offsetY,
-        result: 'offsetblur'
+        result: 'offset'
       });
-      filter.push(offset);
+      filters.push(offset);
 
-      var flood = createElement('feFlood', {
-        'flood-color': bsColor.rgb(),
-        'flood-opacity': bsColor.alpha(),
-        result: 'flood'
+      var composite2 = createElement('feComposite', {
+        'in': 'SourceGraphic',
+        'in2': 'offset',
+        'operator': 'over',
+        'result': 'composite2'
       });
-      filter.push(flood);
+      filters.push(composite2);
 
-      var comp = createElement('feComposite', {
-        in2: 'offsetblur',
-        operator: 'in'
-      });
-      filter.push(comp);
-
-      var merge = createElement('feMerge');
-      createElement('feMergeNode', null, merge);
-      createElement('feMergeNode', {
-        'in': 'SourceGraphic'
-      }, merge);
-      filter.push(merge);
-
-      return filter;
+      return filters;
     },
 
     grayscale: function(value) {
@@ -202,6 +233,53 @@ define([
 
   };
 
+  /*
+   * Checks whether a filterList contains a flatten filter.
+   */
+  function containsFlattenFilter(filters) {
+    filters = filters || [];
+    for (var filter, i = 0, len = filters.length; i < len; i += 1) {
+      filter = filters[i];
+      if (isFEMergeEnabled && filter instanceof window.SVGFEMergeElement) {
+        return true;
+      }
+      if (isFEBlendEnabled && filter instanceof window.SVGFEBlendElement) {
+        return true;
+      }
+      if (isFECompositeEnabled && filter instanceof window.SVGFECompositeElement) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Creates an array of SVG Filters (filterList)
+   *
+   * @param {Array} list A list of instructions
+   * @returns {Array} The SVG Filters
+   */
+  function filterElementsFromList(list) {
+    list = list || [];
+    var item, filters, filterList = [];
+    for (var i = 0, len = list.length; i < len; i += 1) {
+      item = list[i];
+      if (typeof filterDefs[item.type] !== 'function') {
+        continue;
+      }
+      // force `filters` to be of type `array`
+      filters = concat.call([], filterDefs[item.type](item.value));
+      // Check for flatten filters and put them at the start of the filterList.
+      // Otherwise other filters would be "eaten" by "SourceGraphic".
+      if (containsFlattenFilter(filters) && i > 0) {
+        unshift.apply(filterList, filters);
+      } else {
+        push.apply(filterList, filters);
+      }
+    }
+    return filterList;
+  }
+
   var svgFilters = {
     /**
      * Creates a filter
@@ -214,7 +292,8 @@ define([
     create: function(name, value) {
       return filterDefs[name](value);
     },
-
+    containsFlattenFilter: containsFlattenFilter,
+    filterElementsFromList: filterElementsFromList,
     isFEColorMatrixEnabled: isFEColorMatrixEnabled
   };
 
