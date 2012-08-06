@@ -7,26 +7,21 @@ define([
   '../context/worker/bootstrap',
   '../context/worker/context',
   '../../renderer/svg/svg',
-  '../../tools'
-], function(player, MessageChannel, bootstrapWorker, WorkerRunnerContext, SvgRenderer, tools) {
+  '../../tools',
+  '../util'
+], function(player, MessageChannel, bootstrapWorker, WorkerRunnerContext, SvgRenderer, tools, bootstrapUtil) {
   'use strict';
 
   if(typeof importScripts != 'undefined') {
     // init worker bootstrap
     var messageChannel;
 
-    function notifyRenderer(message) {
-      postMessage(message);
-    }
-
-    function onMessage(message) {
-      messageChannel.notify(message.data);
-    }
-
-    function disconnect() {
+    var notifyRenderer = function(message) {postMessage(message);};
+    var onMessage = function(message) {messageChannel.notify(message.data);};
+    var disconnect = function() {
       removeEventListener('message', onMessage);
       messageChannel = null;
-    }
+    };
 
     messageChannel = new MessageChannel(notifyRenderer, disconnect);
     addEventListener('message', onMessage);
@@ -34,19 +29,15 @@ define([
   } else {
     window['bonsai'] = player;
 
-    var workerLocation = 'bonsai.js';
-    var scripts = document.getElementsByTagName('script');
-    for (var i = 0, m = scripts.length; i < m; i++) {
-      if(/bonsai[.](?:min[.])?js(?:$|\?|#)/.test(scripts[i].src)) {
-        workerLocation = scripts[i].src;
-      }
-    }
+    var scripts = tools.map(document.getElementsByTagName('script'), function(script) {
+      return script.src;
+    });
 
     player.Renderer = SvgRenderer;
     player.setup({
       baseUrl: tools.baseUri(document),
       runnerContext: WorkerRunnerContext,
-      runnerUrl: workerLocation
+      runnerUrl: bootstrapUtil.chooseRunnerUrl(scripts) || 'bonsai.js'
     });
   }
 });
