@@ -1316,6 +1316,13 @@ define([
 
     filterContainer.id = this._genDefUID();
 
+    // create a filter region that is big enough to make filters visible
+    // that overflow the original bounding box.
+    filterContainer.setAttribute('width', 10);
+    filterContainer.setAttribute('height', 10);
+    filterContainer.setAttribute('x', -5);
+    filterContainer.setAttribute('y', -5);
+
     // handle filter specific stuff and get an array of <filter> elements back
     var filterElements = filterElementsFromList(list);
     for (var i = 0, len = filterElements.length; i < len; i += 1) {
