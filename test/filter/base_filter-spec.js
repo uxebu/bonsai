@@ -17,7 +17,7 @@ require([
       expect(new filter.BaseFilter('typeValue')).toHaveOwnProperties('type');
     });
 
-    it('should have undefined type property if no type is passed', function(){
+    it('should have undefined type property if no type is passed', function() {
       expect(new filter.BaseFilter().type).toBe(undefined);
     });
 
