@@ -10,17 +10,20 @@ define([
 ], function(color) {
   'use strict';
 
-  // Array prototype caching
+  // prototype caching
   var unshift = [].unshift;
   var push = [].push;
   var concat = [].concat;
 
-  var isFEColorMatrixEnabled = typeof window !== 'undefined' && 'SVGFEColorMatrixElement' in window;
-  var isFEDropShadowEnabled = typeof window !== 'undefined' && 'SVGFEDropShadowElement' in window;
-  var isFEMergeEnabled = typeof window !== 'undefined' && 'SVGFEMergeElement' in window;
-  var isFEBlendEnabled = typeof window !== 'undefined' && 'SVGFEBlendElement' in window;
-  var isFECompositeEnabled = typeof window !== 'undefined' && 'SVGFECompositeElement' in window;
-  var isCSSDropShadowEnabled = typeof window !== 'undefined' && 'webkitSvgShadow' in window.document.body.style;
+  var isWindowEnv = typeof window !== 'undefined';
+
+  // check availability of Filters in current environment
+  var isFEColorMatrixEnabled = isWindowEnv && 'SVGFEColorMatrixElement' in window;
+  var isFEDropShadowEnabled = isWindowEnv && 'SVGFEDropShadowElement' in window;
+  var isFEMergeEnabled = isWindowEnv && 'SVGFEMergeElement' in window;
+  var isFEBlendEnabled = isWindowEnv && 'SVGFEBlendElement' in window;
+  var isFECompositeEnabled = isWindowEnv && 'SVGFECompositeElement' in window;
+  var isCSSDropShadowEnabled = isWindowEnv && 'webkitSvgShadow' in window.document.body.style;
 
   function range(value, min, max) {
     return Math.min(max, Math.max(min, value));
@@ -81,13 +84,92 @@ define([
       return filter;
     },
 
+    innerShadowByAngle: function(values) {
+      var rad = values[0],
+          dist = values[1];
+      return this.innerShadowByOffset([
+        // offsetX
+        dist * Math.cos(rad),
+        // offsetY
+        dist * Math.sin(rad),
+        // blurRadius
+        values[2],
+        // color
+        values[3]
+      ]);
+    },
+
+    innerShadowByOffset: function(values) {
+      var offsetX = values[0];
+      var offsetY = values[1];
+      var blurRadius = values[2];
+      var bsColor = color(values[3]);
+      var filters = [];
+
+      var offset = createElement('feOffset', {
+        dx: offsetX,
+        dy: offsetY,
+        result: 'offset'
+      });
+      filters.push(offset);
+
+      var blur = createElement('feGaussianBlur', {
+        'stdDeviation': blurRadius,
+        'in': 'offset',
+        'result': 'blur'
+      });
+      filters.push(blur);
+
+      // invert the drop shadow
+      var composite1 = createElement('feComposite', {
+        'in': 'SourceGraphic',
+        'in2': 'blur',
+        'operator': 'out',
+        'result': 'composite1'
+      });
+      filters.push(composite1);
+
+      // apply color
+      var flood = createElement('feFlood', {
+        'flood-color': bsColor.rgb(),
+        'flood-opacity': bsColor.alpha(),
+        'in': 'composite1',
+        'result': 'flood'
+      });
+      filters.push(flood);
+
+      // clip color inside shadow
+      var composite2 = createElement('feComposite', {
+        'in': 'flood',
+        'in2': 'composite1',
+        'operator': 'in',
+        'result': 'composite2'
+      });
+      filters.push(composite2);
+
+      // merge shadow and source-graphic
+      var composite3 = createElement('feComposite', {
+        'in': 'composite2',
+        'in2': 'SourceGraphic',
+        'operator': 'over',
+        'result': 'composite3'
+      });
+      filters.push(composite3);
+
+      return filters;
+    },
+
     dropShadowByAngle: function(values) {
       var rad = values[0],
           dist = values[1];
       return this.dropShadowByOffset([
+        // offsetX
         dist * Math.cos(rad),
+        // offsetY
         dist * Math.sin(rad),
+        // blurRadius
         values[2],
+        // color
         values[3]
       ]);
     },
