@@ -54,11 +54,9 @@ var background = {};
   var width = 13;
   var height = 25;
   var bg = new bs.Group();
-  new bonsai.Bitmap('assets/paperbg.png', {
-    onload: function() {
-      this.attr({y: 0, x: 0, scaleX:1.7, scaleY:2, opacity: 0.5});
-      bg.addChild(this, 0);
-    }
+  new bonsai.Bitmap('assets/paperbg.png', function() {
+    this.attr({y: 0, x: 0, scaleX:1.7, scaleY:2, opacity: 0.5});
+    bg.addChild(this, 0);
   });
   stage.addChild(bg);
   bs.Path.rect(0, 0, stageWidth, stageHeight)
