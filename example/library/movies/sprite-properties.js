@@ -96,8 +96,8 @@ function drawExamplePath(color){
     .attr({x:_x, y:_y})
     .addTo(stage)
     .addChild(
-      new Path().rect(0, 0, 50, 50)
-        .attr({fillColor:color, strokeWidth:2, strokeColor:'black'})
+      new Rect(0, 0, 50, 50)
+        .attr({fillColor:color, lineWidth:2, lineColor:'black'})
     );
 	return sprite;
 }

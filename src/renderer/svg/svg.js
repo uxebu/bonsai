@@ -28,7 +28,8 @@ define([
 
   // svgFilters
   var isFEColorMatrixEnabled = svgFilters.isFEColorMatrixEnabled,
-      colorApplyColorMatrix = svgFilters.colorApplyColorMatrix;
+      colorApplyColorMatrix = svgFilters.colorApplyColorMatrix,
+      filterElementsFromList = svgFilters.filterElementsFromList;
 
   // AssetController
   var fontIDs = AssetController.handlers.Font.fontIDs,
@@ -1277,10 +1278,12 @@ define([
     var filterDef;
     var signature = 'filter:';
 
+    // create signature
     signature += list.map(function(filter) {
       return filterToSignature(filter);
     }).join();
 
+    // compare signature with existing signatures
     if (signature in this.definitions) {
       // We already have an identical filter -- use it:
       filterDef = this.definitions[signature];
@@ -1313,25 +1316,18 @@ define([
 
     filterContainer.id = this._genDefUID();
 
+    // Create a filter-region that is big enough to make filters visible
+    // that overflow the original bounding box.
+    filterContainer.setAttribute('x', '-100%');
+    filterContainer.setAttribute('y', '-100%');
+    filterContainer.setAttribute('width', '300%');
+    filterContainer.setAttribute('height', '300%');
+
     // handle filter specific stuff and get an array of <filter> elements back
-    list.forEach(function(item) {
-
-      // TODO: Have a attr on DisplayObjects to determine filter region
-      // For now, we provide a region *3 of the bounding box
-      filterContainer.setAttribute('height', 10);
-      filterContainer.setAttribute('width', 10);
-      filterContainer.setAttribute('x', -5);
-      filterContainer.setAttribute('y', -5);
-
-      var filter = svgFilters.create(item.type, item.value);
-      if (tools.isArray(filter)) {
-        for (var i = 0, m = filter.length; i < m; i++) {
-          filterContainer.appendChild(filter[i]);
-        }
-      } else {
-        filterContainer.appendChild(filter);
-      }
-    });
+    var filterElements = filterElementsFromList(list);
+    for (var i = 0, len = filterElements.length; i < len; i += 1) {
+      filterContainer.appendChild(filterElements[i]);
+    }
 
     this.svg.defs.appendChild(filterContainer);
     element.setAttribute('filter', 'url(#' + filterContainer.id + ')');

@@ -3,7 +3,7 @@
   "name": "bonsai",
   "description": "Bonsai runtime and node server",
   "main": "src/bootstrapper/_dev/node.js",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "private": true,
   "homepage": "https://github.com/uxebu/bonsai/",
   "maintainers": [],

@@ -1,4 +1,4 @@
-var rect = new bonsai.Path().rect(-50, -50, 100, 100).attr({
+var rect = new Rect(-50, -50, 100, 100).attr({
   fillColor: 'red',
   x: 200,
   y: 200

@@ -191,10 +191,11 @@ define([
     getSubMovieEnvironment: function(subMovie, subMovieUrl) {
       subMovieUrl = this.assetBaseUrl.resolveUri(subMovieUrl);
       subMovie.url = subMovieUrl.toString();
+      var assetBase = subMovieUrl.scheme === 'data' ? null : subMovieUrl;
       return new Environment(
         subMovie,
         new AssetLoader(this.registry.pendingAssets)
-          .on('request', hitch(this, this.loadAsset, subMovieUrl))
+          .on('request', hitch(this, this.loadAsset, assetBase))
       );
     },
 
