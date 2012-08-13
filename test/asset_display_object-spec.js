@@ -8,8 +8,7 @@ require([
   describe('AssetDisplayObject', function() {
 
     it('Provides bindAssetCallback method which binds a single callback to load and error events', function() {
-      var d = new DisplayObject;
-      tools.mixin(d, AssetDisplayObject);
+      var d = new AssetDisplayObject(null, '', null);
       var callback = jasmine.createSpy('callback');
       d.bindAssetCallback(callback);
       d.emit('load');

@@ -1,9 +1,8 @@
 define([
-  './display_object',
   './asset_display_object',
   '../asset/asset_request',
   '../tools'
-], function(DisplayObject, AssetDisplayObject, AssetRequest, tools) {
+], function(AssetDisplayObject, AssetRequest, tools) {
   'use strict';
 
   var data = tools.descriptorData;
@@ -15,8 +14,7 @@ define([
    *
    * @constructor
    * @name Video
-   * @extends DisplayObject
-   * @mixes AssetDisplayObject
+   * @extends AssetDisplayObject
    *
    * @param {String|Array} aRequest The request needs to accomplish the requirements of AssetRequest
    * @param {Function} [callback] A callback to be called when your movie has
@@ -40,13 +38,8 @@ define([
    */
   function Video(loader, aRequest, callback, options) {
     options || (options = {});
-    this._loader = loader;
-
-    DisplayObject.call(this);
-
-    if (callback) {
-      this.bindAssetCallback(callback);
-    }
+    
+    AssetDisplayObject.call(this, loader, aRequest, callback);
 
     this.type = 'Video';
 
@@ -64,7 +57,8 @@ define([
     this.request(aRequest);
   }
 
-  var proto = Video.prototype = tools.mixin(Object.create(DisplayObject.prototype), AssetDisplayObject);
+  /** @lends Video.prototype */
+  var proto = Video.prototype = Object.create(AssetDisplayObject.prototype);
 
   /**
    *
