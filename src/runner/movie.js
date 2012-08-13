@@ -1,10 +1,9 @@
 define([
-  './display_object',
   './asset_display_object',
   './display_list',
   './timeline',
   '../tools'
-], function(DisplayObject, AssetDisplayObject, DisplayList, Timeline, tools) {
+], function(AssetDisplayObject, DisplayList, Timeline, tools) {
   'use strict';
 
   /**
@@ -18,17 +17,12 @@ define([
    *  with it's first argument signifying an error. So, if the first argument
    *  is `null` you can assume the movie was loaded successfully.
    *
-   * @extends DisplayObject
+   * @extends AssetDisplayObject
    * @mixes Timeline
    * @mixes DisplayList
-   * @mixes AssetDisplayObject
    */
   function Movie(root, url, callback) {
-    DisplayObject.call(this);
-
-    if (callback) {
-      this.bindAssetCallback(callback);
-    }
+    AssetDisplayObject.call(this, null, url, callback);
 
     this.root = root;
     this._children = [];
@@ -46,7 +40,7 @@ define([
     }
   }
 
-  var proto = Movie.prototype = tools.mixin(Object.create(DisplayObject.prototype), Timeline, DisplayList, AssetDisplayObject);
+  var proto = Movie.prototype = tools.mixin(Object.create(AssetDisplayObject.prototype), Timeline, DisplayList);
 
   proto.loadSubMovie = function() {
     return this.root.loadSubMovie.apply(this.root, arguments);
