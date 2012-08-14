@@ -23,7 +23,7 @@ define([
   var isFEMergeEnabled = isWindowEnv && 'SVGFEMergeElement' in window;
   var isFEBlendEnabled = isWindowEnv && 'SVGFEBlendElement' in window;
   var isFECompositeEnabled = isWindowEnv && 'SVGFECompositeElement' in window;
-  var isCSSDropShadowEnabled = isWindowEnv && 'webkitSvgShadow' in window.document.body.style;
+  var isCSSDropShadowEnabled = isWindowEnv && 'webkitSvgShadow' in window.document.documentElement.style;
 
   function range(value, min, max) {
     return Math.min(max, Math.max(min, value));
