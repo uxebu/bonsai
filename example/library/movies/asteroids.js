@@ -5,8 +5,8 @@ var player = new bonsai.Path()
     .closePath()
     .attr({
         fillColor: 'transparent',
-        lineColor: 'blue',
-        lineWidth: 1,
+        strokeColor: 'blue',
+        strokeWidth: 1,
         x: 100,
         y:500
     });
@@ -39,8 +39,8 @@ function fireBullet () {
         .moveTo(0,0)
         .lineTo(0,10)
         .attr({
-            lineWidth: 1,
-            lineColor: 'black',
+            strokeWidth: 1,
+            strokeColor: 'black',
             rotation: rotation,
             x: player.attr('x'),
             y: player.attr('y')

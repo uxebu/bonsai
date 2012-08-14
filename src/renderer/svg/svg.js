@@ -41,7 +41,7 @@ define([
     miterLimit: 'stroke-miterlimit',
     opacity: 'opacity',
     fillOpacity: 'fill-opacity',
-    lineOpacity: 'stroke-opacity',
+    strokeOpacity: 'stroke-opacity',
     fontSize: 'font-size',
     fontWeight: 'font-weight',
     fontStyle: 'font-style',
@@ -130,7 +130,7 @@ define([
               el.removeAttribute('font-family');
             }
             break;
-          case 'lineWidth':
+          case 'strokeWidth':
 
             el.setAttribute('stroke-width', value);
             if (value <= 0) {
@@ -146,12 +146,12 @@ define([
                */
               var stroke = el.getAttribute('stroke');
               stroke && el.setAttribute('data-stroke', stroke);
-            } else if (!('lineColor' in attributes)) {
+            } else if (!('strokeColor' in attributes)) {
               /*
                AFFECTS: Chrome 14
 
                We need to re-apply any previously set stroke color. It might
-                have been removed if lineWidth has been set to 0.
+                have been removed if strokeWidth has been set to 0.
                */
               var dataStroke = el.getAttribute('data-stroke');
               dataStroke && el.setAttribute('stroke', dataStroke);
@@ -489,12 +489,12 @@ define([
       }
 
       // Apply stroke style(s)
-      if ('lineColor' in attr) {
-        this.applyStrokeColor(element, attr.lineColor, '', attr.lineWidth);
+      if ('strokeColor' in attr) {
+        this.applyStrokeColor(element, attr.strokeColor, '', attr.strokeWidth);
       }
 
-      if ('lineGradient' in attr) {
-        this.applyStrokeGradient(element, attr.lineGradient, '', attr.lineWidth);
+      if ('strokeGradient' in attr) {
+        this.applyStrokeGradient(element, attr.strokeGradient, '', attr.strokeWidth);
       }
     }
   };

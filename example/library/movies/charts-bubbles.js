@@ -7,7 +7,7 @@ function bubble(color, x, y, size){
     .attr({fillColor: color, scaleY: 0.3})
     .addTo(group);
   bs.Path.arc(x, y, size/2, Math.PI, Math.PI*2)
-    .attr({lineWidth: size, lineColor: color, opacity:0.5})
+    .attr({strokeWidth: size, strokeColor: color, opacity:0.5})
     .addTo(group);
   stage.addChild(group);
   return group;

@@ -58,7 +58,7 @@ exampleArcs = [
 
 for (var i = 0; i < exampleArcs.length; i++) {
   var shape = new Path(exampleArcs[i]).
-  attr('lineColor', 'black').attr('lineWidth', 1).addTo(stage);
+  attr('strokeColor', 'black').attr('strokeWidth', 1).addTo(stage);
 
   // convert segments to absolute and strip of the numbers
   var a = (bonsai.Path.toAbsolute(shape.segments()).join(",").split(",")).filter(function(e) {

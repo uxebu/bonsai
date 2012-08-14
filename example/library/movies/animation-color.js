@@ -1,8 +1,8 @@
 /**
  * Animated Color
  */
-var rect = bonsai.Path.rect(150, 150, 150, 150).attr({fillColor: 'red', lineColor: 'green'});
+var rect = bonsai.Path.rect(150, 150, 150, 150).attr({fillColor: 'red', strokeColor: 'green'});
 
 stage.addChild(rect);
 
-rect.animate('3s', {fillColor: 'blue', lineColor: 'yellow', lineWidth: 70});
+rect.animate('3s', {fillColor: 'blue', strokeColor: 'yellow', strokeWidth: 70});
