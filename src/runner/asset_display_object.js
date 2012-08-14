@@ -58,7 +58,7 @@ define([
     return this;
   };
 
-  var destroyMethod = DisplayObject.prototype.destroy;
+  var protoDestroy = DisplayObject.prototype.destroy;
   /** 
    * Destroys the DisplayObject and removes any references to the
    * asset, including data held by the renderer's assetController about the
@@ -67,7 +67,7 @@ define([
    * @returns {this}
    */
   proto.destroy = function() {
-    destroyMethod.call(this);
+    protoDestroy.call(this);
     if (this._loader) {
       this._loader.destroyAsset(this);
     }
