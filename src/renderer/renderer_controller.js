@@ -197,6 +197,9 @@ function(tools, EventEmitter, URI) {
         case 'loadAsset':
           this.assetController.load(messageData);
           break;
+        case 'destroyAsset':
+          this.assetController.destroy(messageData.id);
+          break;
         case 'message':
           this.emit('message', messageData);
           break;
