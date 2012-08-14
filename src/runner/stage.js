@@ -56,7 +56,8 @@ define([
 
     var assetLoader = this.assetLoader =
       new AssetLoader(registry.pendingAssets)
-        .on('request', hitch(this, this.loadAsset, null));
+        .on('request', hitch(this, this.loadAsset, null))
+        .on('destroy', hitch(this, this.destroyAsset));
 
     this.env = new Environment(this, assetLoader);
     this.stage = this.root = this;
@@ -149,6 +150,9 @@ define([
       }
     },
 
+    /** 
+     * Sends a `loadAsset` message to the renderer
+     */
     loadAsset: function(baseUrl, id, request, type) {
       // Make asset urls absolute here
       baseUrl || (baseUrl = this.assetBaseUrl);
@@ -166,6 +170,16 @@ define([
           type: type,
           request: request
         }
+      });
+    },
+
+    /** 
+     * Sends a `destroyAsset` message to the renderer
+     */
+    destroyAsset: function(id) {
+      this.post({
+        command: 'destroyAsset',
+        data: { id: id }
       });
     },
 

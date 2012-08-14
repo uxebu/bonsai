@@ -10,7 +10,6 @@ define([
    *
    * @name AssetDisplayObject
    * @constructor
-   * @private
    */
   function AssetDisplayObject(loader, source, callback) {
 
@@ -56,6 +55,21 @@ define([
 
     this.on('load', loadHandler);
     this.on('error', errorHandler);
+    return this;
+  };
+
+  /** 
+   * Removes the DisplayObject from the stage and destroys any references to the
+   * asset, including data held by the renderer's assetController about the
+   * source of the asset
+   *
+   * @returns {this}
+   */
+  proto.destroy = function() {
+    this.remove();
+    if (this._loader) {
+      this._loader.destroyAsset(this);
+    }
     return this;
   };
 
