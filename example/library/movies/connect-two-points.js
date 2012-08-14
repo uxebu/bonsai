@@ -7,13 +7,13 @@
 // css
 var pointStyle = {
   fillColor:'#ccc',
-  lineColor:'#aaa',
-  lineWidth:1,
+  strokeColor:'#aaa',
+  strokeWidth:1,
   filters:filter.DropShadow(1,1,2, '#ccc')
 };
 var lineStyle = {
-  lineWidth:1,
-  lineColor: '#aaa'
+  strokeWidth:1,
+  strokeColor: '#aaa'
 };
 
 function drawPointAtOrigin(x, y) {

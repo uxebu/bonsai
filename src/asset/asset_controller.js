@@ -67,6 +67,14 @@ function(
   AssetController.prototype = {
 
     /**
+     * Destroys our reference to the asset's corresponding data/element.
+     * (<img> or <video> etc.)
+     */
+    destroy: function(assetId) {
+      delete AssetController.assets[assetId];
+    },
+
+    /**
      * Loads asset
      *
      * @param {object} data Asset data

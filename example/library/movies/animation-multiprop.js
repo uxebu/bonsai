@@ -1,7 +1,7 @@
 /**
  * Animated attributes
  */
-var rectPath = bonsai.Path.rect(50, 50, 100, 100).attr({fillColor: 'red', lineColor: 'green', lineWidth: 5});
+var rectPath = bonsai.Path.rect(50, 50, 100, 100).attr({fillColor: 'red', strokeColor: 'green', strokeWidth: 5});
 
 stage.addChild(rectPath);
 

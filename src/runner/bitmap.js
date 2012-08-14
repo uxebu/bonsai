@@ -1,9 +1,8 @@
 define([
-  './display_object',
   './asset_display_object',
   '../asset/asset_request',
   '../tools'
-], function(DisplayObject, AssetDisplayObject, AssetRequest, tools) {
+], function(AssetDisplayObject, AssetRequest, tools) {
   'use strict';
 
   var data = tools.descriptorData, accessor = tools.descriptorAccessor;
@@ -19,8 +18,7 @@ define([
    *
    * @constructor
    * @name Bitmap
-   * @extends DisplayObject
-   * @mixes AssetDisplayObject
+   * @extends AssetDisplayObject
    *
    * @param {AssetLoader} loader The asset loader to use;
    * @param {String} [source] The URL location of the movie to load.
@@ -41,13 +39,7 @@ define([
    */
   function Bitmap(loader, source, callback) {
 
-    this._loader = loader;
-
-    DisplayObject.call(this);
-
-    if (callback) {
-      this.bindAssetCallback(callback);
-    }
+    AssetDisplayObject.call(this, loader, source, callback);
 
     this.type = 'Bitmap';
 
@@ -69,7 +61,8 @@ define([
     this.attr('source', source);
   }
 
-  var proto = Bitmap.prototype = tools.mixin(Object.create(DisplayObject.prototype), AssetDisplayObject);
+  /** @lends Bitmap.prototype */
+  var proto = Bitmap.prototype = Object.create(AssetDisplayObject.prototype);
 
   /**
    *

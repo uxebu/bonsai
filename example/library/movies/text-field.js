@@ -19,9 +19,9 @@ var configurations = [
   {   
     text: 'Foobarlotsoftextblah blahasdalksdja lsdjalsk dasjdjsald ',
     backgroundColor: 'yellow',
-    lineColor: 'red',
+    strokeColor: 'red',
     textFillColor: 'green',
-    lineWidth: 5,
+    strokeWidth: 5,
     height: 70, 
     wordwrap: true,
     y: 200
@@ -29,9 +29,9 @@ var configurations = [
   {
     htmlText: '<i>this</i> <b>is</b> <code>HTML</code>',
     backgroundColor: 'black',
-    lineColor: 'blue',
+    strokeColor: 'blue',
     textFillColor: 'white', 
-    lineWidth: 5,
+    strokeWidth: 5,
     wordwrap: true,
     y: 290
   }

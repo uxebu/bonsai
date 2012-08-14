@@ -20,7 +20,7 @@ function renderButton(buttonObj, idx){
   var x = 10;
   var shape1 = new bonsai.Path.rect(x, y, 120, 35);
   shape1.attr({fillColor: bgColor, filters:new filter.DropShadow([2,2,2,'black']),
-    lineColor:bs.color(bgColor).darker(0.1), lineWidth: 5
+    strokeColor:bs.color(bgColor).darker(0.1), strokeWidth: 5
   });
   var text = new bonsai.Text(text).attr({
     x: x+10, y: y+10, fontFamily: 'Arial', fontSize: '20px', textFillColor: fgColor
@@ -54,15 +54,13 @@ var background = {};
   var width = 13;
   var height = 25;
   var bg = new bs.Group();
-  new bonsai.Bitmap('assets/paperbg.png', {
-    onload: function() {
-      this.attr({y: 0, x: 0, scaleX:1.7, scaleY:2, opacity: 0.5});
-      bg.addChild(this, 0);
-    }
+  new bonsai.Bitmap('assets/paperbg.png', function() {
+    this.attr({y: 0, x: 0, scaleX:1.7, scaleY:2, opacity: 0.5});
+    bg.addChild(this, 0);
   });
   stage.addChild(bg);
   bs.Path.rect(0, 0, stageWidth, stageHeight)
-    .attr({lineColor:'black', lineWidth: 1})
+    .attr({strokeColor:'black', strokeWidth: 1})
     .addTo(bg);
   var counterText = new bs.Text(buttons.length)
     .attr({textFillColor:'black', y:stageHeight-20, x:10,
@@ -124,7 +122,7 @@ var pieChart = {};
   pieChart.init = function(){
     // Add a circle with a drop shadow behind the pie chart, so it looks like the pie chart has a dropshadow
     bonsai.Path.circle(pos.x, pos.y, 59)
-      .attr({fillColor:'black', lineWidth:1, lineColor: 'white',
+      .attr({fillColor:'black', strokeWidth:1, strokeColor: 'white',
              filters: new filter.DropShadow([5,5,5,'grey'])})
       .addTo(group);
     stage.addChild(group);
@@ -140,7 +138,7 @@ var pieChart = {};
       if (!count) return;
       var endAngle = startAngle+count/sum * Math.PI*2;
       arcs.push(bs.Path.arc(pos.x, pos.y, 30, startAngle, endAngle)
-        .attr({lineWidth:60, lineColor:b.bgColor})
+        .attr({strokeWidth:60, strokeColor:b.bgColor})
         .addTo(group)
       );
       startAngle = endAngle;
@@ -201,7 +199,7 @@ var barChart = {};
     .addTo(stage);
   var line = new Path().moveTo(0, 50)
     .addTo(group)
-    .attr({lineColor:'black', lineWidth:3});
+    .attr({strokeColor:'black', strokeWidth:3});
   var count = 1;
   var lastSum = 0;
   function heartBeat(){

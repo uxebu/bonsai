@@ -60,9 +60,9 @@ define([
     }
   }
 
-  var getTextLineColor = getter('_textLineColor');
-  function setTextLineColor(color) {
-    this._textLineColor = parseColor(color, this._textLineColor);
+  var getTextStrokeColor = getter('_textStrokeColor');
+  function setTextStrokeColor(color) {
+    this._textStrokeColor = parseColor(color, this._textStrokeColor);
   }
 
   /**
@@ -88,8 +88,8 @@ define([
    * @property {string} __supportedAttributes__.cap The shape to be used at the end of open Path items, when they have a stroke. Can be one of 'round', 'square', 'butt'. Default: 'butt'
    * @property {string} __supportedAttributes__.textFillColor The fill color. Default: black.
    * @property {string} __supportedAttributes__.join The shape to be used at the corners of paths. Can be one of 'miter', 'round', 'bevel'. Default: 'miter'
-   * @property {string} __supportedAttributes__.textLineColor The line color. Default: transparent
-   * @property {number} __supportedAttributes__.textLineWidth The line width. Default: 0
+   * @property {string} __supportedAttributes__.textStrokeColor The line color. Default: transparent
+   * @property {number} __supportedAttributes__.textStrokeWidth The line width. Default: 0
    * @property {number} __supportedAttributes__.miterLimit The miter limit of the stroke. Default: 4
    * @property {number} __supportedAttributes__.selectable Boolean indicates whether the text is selectable or not
    *
@@ -116,9 +116,9 @@ define([
       glyphx: accessor(getGlyphx, setGlyphx, true),
       glyphy: accessor(getGlyphy, setGlyphy, true),
       textLineOpacity: data(1, true, true),
-      _textLineColor: data(null, true), // black by default
-      textLineColor: accessor(getTextLineColor, setTextLineColor, true),
-      textLineWidth: data(0, true, true),
+      _textStrokeColor: data(null, true), // black by default
+      textStrokeColor: accessor(getTextStrokeColor, setTextStrokeColor, true),
+      textStrokeWidth: data(0, true, true),
       selectable: data(true, true, true)
     });
 
@@ -135,9 +135,9 @@ define([
       filters: '_filters',
       glyphx: '_glyphx',
       glyphy: '_glyphy',
-      lineOpacity: 'textLineOpacity',
-      lineColor: '_textLineColor',
-      lineWidth: 'textLineWidth',
+      strokeOpacity: 'textLineOpacity',
+      strokeColor: '_textStrokeColor',
+      strokeWidth: 'textStrokeWidth',
       opacity: '_opacity',
       text: 'text',
       selectable: 'selectable'

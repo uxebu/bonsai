@@ -26,6 +26,7 @@ define([
     /**
      * Chooses a runner url from a list of candidate filenames.
      *
+     * @private
      * @param {Array} filenames All filenames to choose from.
      * @param {RegExp} [additionalCheck] An additional regular expression to
      *    test the filenames with.
