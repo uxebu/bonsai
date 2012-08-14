@@ -9,7 +9,7 @@ define(['../../color'], function(color) {
    */
 
   function translation(prop) {
-    // prop = lineGradient OR fillGradient
+    // prop = strokeGradient OR fillGradient
     return {
       setup: function(values) {
 
@@ -100,6 +100,6 @@ define(['../../color'], function(color) {
 
   return {
     fillGradient: translation('fillGradient'),
-    lineGradient: translation('lineGradient')
+    strokeGradient: translation('strokeGradient')
   };
 });

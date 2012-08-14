@@ -5,8 +5,8 @@ for (var i = 0; i <= 1000; i += 20) {
   lines.push('M0,' + i +'l1000,0 M' + i +',0 l0,1000');
 }
 new Path(lines.join()).attr({
-  lineColor:'rgba(59,107,153,1)',
-  lineWidth:1
+  strokeColor:'rgba(59,107,153,1)',
+  strokeWidth:1
 }).addTo(stage);
 
 

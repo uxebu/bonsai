@@ -12,8 +12,8 @@ function draw() {
     opacity: 0,
     fillColor: color,
     fillGradient: bonsai.gradient.linear(0, ['#000000AA', '#00000000']),
-    lineWidth: 7,
-    lineColor: color.lighter(.2),
+    strokeWidth: 7,
+    strokeColor: color.lighter(.2),
     x: Math.random() * 500,
     y: Math.random() * 500
   }).addTo(stage);

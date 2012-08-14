@@ -1,5 +1,5 @@
 var rainbow = Path.rect(0, 0, 480, 480).attr({
-  lineWidth: 1,
+  strokeWidth: 1,
   fillGradient: gradient.linear(90,
     ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
   )

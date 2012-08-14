@@ -44,60 +44,60 @@ require([
 
       describe('has some special handlers for certain attributes', function() {
 
-        describe('has a special handler for `lineWidth`', function() {
+        describe('has a special handler for `strokeWidth`', function() {
 
-          it('sets `stroke-width` attribute to given element when `lineWidth` > 0', function() {
-            svgInstance.attr(aDomElement, {lineWidth: 5});
+          it('sets `stroke-width` attribute to given element when `strokeWidth` > 0', function() {
+            svgInstance.attr(aDomElement, {strokeWidth: 5});
             expect(aDomElement.getAttribute('stroke-width')).toEqual('5');
           });
 
-          it('sets `stroke-width` attribute to given element when `lineWidth` is equals 0', function() {
-            svgInstance.attr(aDomElement, {lineWidth: 0});
+          it('sets `stroke-width` attribute to given element when `strokeWidth` is equals 0', function() {
+            svgInstance.attr(aDomElement, {strokeWidth: 0});
             expect(aDomElement.getAttribute('stroke-width')).toEqual('0');
           });
 
-          xit('sets `stroke-width` and `data-stroke` when `lineWidth` equals 0 and `stroke` was already set', function() {
-            svgInstance.attr(aDomElement, {lineColor: 'black', lineWidth:0});
+          xit('sets `stroke-width` and `data-stroke` when `strokeWidth` equals 0 and `stroke` was already set', function() {
+            svgInstance.attr(aDomElement, {strokeColor: 'black', strokeWidth:0});
             expect(aDomElement.getAttribute('stroke-width')).toEqual('0');
             expect(aDomElement.hasAttribute('data-stroke')).toBeTruthy();
           });
 
           xit('sets `stroke-width` and `stroke` when `stroke-width` > 0 and ' + 
-             '`data-stroke` was already set and `lineColor` is not passed as parameter', function() {
-            svgInstance.attr(aDomElement, {lineColor: 'aColor'});
-            svgInstance.attr(aDomElement, {lineWidth: 0});
-            svgInstance.attr(aDomElement, {lineWidth:10});
+             '`data-stroke` was already set and `strokeColor` is not passed as parameter', function() {
+            svgInstance.attr(aDomElement, {strokeColor: 'aColor'});
+            svgInstance.attr(aDomElement, {strokeWidth: 0});
+            svgInstance.attr(aDomElement, {strokeWidth:10});
             expect(aDomElement.getAttribute('stroke-width')).toEqual('10');
             expect(aDomElement.hasAttribute('stroke')).toBeTruthy();
           });
 
         });
 
-        /*describe('has a special handler for `lineColor`', function() {
+        /*describe('has a special handler for `strokeColor`', function() {
 
-          it('sets a `data-stroke` attribute to given element when `lineColor` is set ' +
+          it('sets a `data-stroke` attribute to given element when `strokeColor` is set ' +
              'and `stroke-width` is not available', function() {
-            svgInstance.attr(aDomElement, {lineColor: 'fakeColor'});
+            svgInstance.attr(aDomElement, {strokeColor: 'fakeColor'});
             expect(aDomElement.hasAttribute('data-stroke')).toBeTruthy();
           });
 
-          it('sets a `data-stroke` attribute to given element when `lineWidth` was previously set to 0', function() {
-            svgInstance.attr(aDomElement, {lineWidth:0, lineColor: 'fakeColor'});
+          it('sets a `data-stroke` attribute to given element when `strokeWidth` was previously set to 0', function() {
+            svgInstance.attr(aDomElement, {strokeWidth:0, strokeColor: 'fakeColor'});
             expect(aDomElement.hasAttribute('data-stroke')).toBeTruthy();
           });
 
-          it('sets a `stroke` attribute to given element when `lineWidth` was previously set', function() {
-            svgInstance.attr(aDomElement, {lineWidth:2, lineColor: 'fakeColor'});
+          it('sets a `stroke` attribute to given element when `strokeWidth` was previously set', function() {
+            svgInstance.attr(aDomElement, {strokeWidth:2, strokeColor: 'fakeColor'});
             expect(aDomElement.hasAttribute('stroke')).toBeTruthy();
           });
 
-          it('removes `stroke` from given element when `lineColor` equals null', function() {
-            svgInstance.attr(aDomElement, {lineColor: null});
+          it('removes `stroke` from given element when `strokeColor` equals null', function() {
+            svgInstance.attr(aDomElement, {strokeColor: null});
             expect(aDomElement.hasAttribute('stroke')).toBeFalsy();
           });
 
           it('removes `data-stroke` from given element when `ineColor` equals null', function() {
-            svgInstance.attr(aDomElement, {lineColor: null});
+            svgInstance.attr(aDomElement, {strokeColor: null});
             expect(aDomElement.hasAttribute('data-stroke')).toBeFalsy();
           });
 

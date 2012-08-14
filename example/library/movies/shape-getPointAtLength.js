@@ -14,7 +14,7 @@ function getPointAtLength(percent, points) {
 }
 
 var path = ['M',20,20, 'C',140,1110, 490,310, 180,480].join(' ');
-var bezier = new bonsai.Path(path).attr('lineColor','#000').addTo(stage);
+var bezier = new bonsai.Path(path).attr('strokeColor','#000').addTo(stage);
 var circle = bonsai.Path.circle(20,20,5).attr('fillColor', '#000').addTo(stage);
 
 var points = bezier.segments().join().split(",").filter(function(e){

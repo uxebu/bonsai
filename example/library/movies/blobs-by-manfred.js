@@ -63,13 +63,13 @@ function stats(){
 function stateInit(){
   var clip = Path.rect(0,0,setup.stageWidth,setup.stageHeight).attr({fillColor:'#333333'}).addTo(groups[0]);
   groups[1].attr('clip',clip.clone());
-  Path.rect(setup.stageCenter.x-70,setup.stageHeight-120, 140, 40, 5).attr({fillColor:'#666666',lineColor:'#999999',lineWidth:2}).addTo(groups[2]);
+  Path.rect(setup.stageCenter.x-70,setup.stageHeight-120, 140, 40, 5).attr({fillColor:'#666666',strokeColor:'#999999',strokeWidth:2}).addTo(groups[2]);
   new Text('Pause').attr({x:setup.stageCenter.x-24,y:setup.stageHeight-108,fontSize: '20px',textFillColor: 'white'}).addTo(groups[2]);
   groups[2].on('click', pauseHandler);
-  Path.rect(setup.stageCenter.x-120,setup.stageHeight-120, 40, 40, 5).attr({fillColor:'#666666',lineColor:'#999999',lineWidth:2}).addTo(groups[3]);
+  Path.rect(setup.stageCenter.x-120,setup.stageHeight-120, 40, 40, 5).attr({fillColor:'#666666',strokeColor:'#999999',strokeWidth:2}).addTo(groups[3]);
   new Text('-').attr({x:setup.stageCenter.x-103,y:setup.stageHeight-108,fontSize: '20px',textFillColor: 'white'}).addTo(groups[3]);
   groups[3].on('click', minusHandler);
-  Path.rect(setup.stageCenter.x+80,setup.stageHeight-120, 40, 40, 5).attr({fillColor:'#666666',lineColor:'#999999',lineWidth:2}).addTo(groups[4]);
+  Path.rect(setup.stageCenter.x+80,setup.stageHeight-120, 40, 40, 5).attr({fillColor:'#666666',strokeColor:'#999999',strokeWidth:2}).addTo(groups[4]);
   new Text('+').attr({x:setup.stageCenter.x+94,y:setup.stageHeight-108,fontSize: '20px',textFillColor: 'white'}).addTo(groups[4]);
   groups[4].on('click', plusHandler);
   new Text("Calculating...").attr({x:10,y:10,fontFamily: 'Arial',fontSize: '12px',textFillColor: 'white'}).addTo(groups[5]);

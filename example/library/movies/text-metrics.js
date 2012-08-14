@@ -13,16 +13,16 @@ function drawText(x, y, origin, text) {
     .moveTo(1000, y+12)
     .lineTo(0, y+12)
     .attr({
-      lineWidth: 1,
-      lineColor: 'red'
+      strokeWidth: 1,
+      strokeColor: 'red'
     })
     .addTo(stage);
   new Path()
     .moveTo(0, y-12)
     .lineTo(1000, y-12)
     .attr({
-      lineWidth: 1,
-      lineColor: 'blue'
+      strokeWidth: 1,
+      strokeColor: 'blue'
     })
     .addTo(stage);
   t.addTo(stage);

@@ -18,7 +18,7 @@ Path.rect(10,10,500,300).addTo(g)
   .attr({fillColor:'black'})
 
 new Path(logo).addTo(g)
-  .attr({lineColor: 'white', lineWidth:4, x:200, y:70, scale:.4});
+  .attr({strokeColor: 'white', strokeWidth:4, x:200, y:70, scale:.4});
 
 new Text('Wolfram Kriesing, CTO').addTo(g)
   .attr({fontSize:20, fontFamily:'DIN', x:150, y:150})

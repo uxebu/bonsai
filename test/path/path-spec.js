@@ -295,7 +295,7 @@ require([
       it('Gets default values', function(){
         var s = new Path();
         expect(s.attr('cap')).toBe('butt');
-        expect(s.attr('lineColor')).toBe(0x000000ff);
+        expect(s.attr('strokeColor')).toBe(0x000000ff);
         expect(s.attr('fillColor')).toBe(0x00000000);
         expect(s.attr('opacity')).toBe(1);
       });
@@ -313,13 +313,13 @@ require([
         expect(s.attr('cap')).toBe('square');
       });
 
-      it('Sets & Gets lineColor', function(){
+      it('Sets & Gets strokeColor', function(){
         var s = new Path();
-        expect(s.attr('lineColor')).toBe(0x000000ff);
-        s.attr('lineColor', 0xff00ffff);
-        expect(s.attr('lineColor')).toBe(0xff00ffff);
-        s.attr('lineColor', 'red');
-        expect(s.attr('lineColor')).toBe(0xff0000ff);
+        expect(s.attr('strokeColor')).toBe(0x000000ff);
+        s.attr('strokeColor', 0xff00ffff);
+        expect(s.attr('strokeColor')).toBe(0xff00ffff);
+        s.attr('strokeColor', 'red');
+        expect(s.attr('strokeColor')).toBe(0xff0000ff);
       });
 
       it('Sets & Gets opacity', function(){
@@ -355,13 +355,13 @@ require([
         expect(s.attr('miterLimit')).toBe(777);
       });
 
-      it('Sets & Gets lineWidth', function(){
+      it('Sets & Gets strokeWidth', function(){
         var s = new Path();
-        expect(s.attr('lineWidth')).toBe(0);
-        s.attr('lineWidth', 2);
-        expect(s.attr('lineWidth')).toBe(2);
-        s.attr('lineWidth', 88);
-        expect(s.attr('lineWidth')).toBe(88);
+        expect(s.attr('strokeWidth')).toBe(0);
+        s.attr('strokeWidth', 2);
+        expect(s.attr('strokeWidth')).toBe(2);
+        s.attr('strokeWidth', 88);
+        expect(s.attr('strokeWidth')).toBe(88);
       });
     });
 
@@ -459,93 +459,93 @@ require([
 
     });
 
-  });
+    describe('#getComputed()', function() {
+      describe('uses all control points to determine the extrema', function() {
+        var left = 20;
+        var top = 30;
+        var width = 40;
+        var height = 50;
+        var expectedRight = left + width;
+        var expectedBottom = top + height;
+        var shape = new Rect(left, top, width, height);
 
-  describe('#getComputed()', function() {
-    describe('uses all control points to determine the extrema', function() {
-      var left = 20;
-      var top = 30;
-      var width = 40;
-      var height = 50;
-      var expectedRight = left + width;
-      var expectedBottom = top + height;
-      var shape = new Rect(left, top, width, height);
+        it('computes the "top" value', function() {
+          expect(shape.getComputed('top')).toBe(top);
+        });
+        it('computes the "right" value', function() {
+          expect(shape.getComputed('right')).toBe(expectedRight);
+        });
+        it('computes the "bottom" value', function() {
+          expect(shape.getComputed('bottom')).toBe(expectedBottom);
+        });
+        it('computes the "left" value', function() {
+          expect(shape.getComputed('left')).toBe(left);
+        });
+        it('computes the "width" value', function() {
+          expect(shape.getComputed('width')).toBe(width);
+        });
+        it('computes the "height" value', function() {
+          expect(shape.getComputed('height')).toBe(height);
+        });
 
-      it('computes the "top" value', function() {
-        expect(shape.getComputed('top')).toBe(top);
       });
-      it('computes the "right" value', function() {
-        expect(shape.getComputed('right')).toBe(expectedRight);
-      });
-      it('computes the "bottom" value', function() {
-        expect(shape.getComputed('bottom')).toBe(expectedBottom);
-      });
-      it('computes the "left" value', function() {
-        expect(shape.getComputed('left')).toBe(left);
-      });
-      it('computes the "width" value', function() {
-        expect(shape.getComputed('width')).toBe(width);
-      });
-      it('computes the "height" value', function() {
-        expect(shape.getComputed('height')).toBe(height);
-      });
-
     });
-  });
 
-  describe('fillGradient', function() {
-    it('Can be set/get', function() {
-      var s = new Rect(0, 0, 10, 10);
-      var g = gradient.linear(0, ['red', 'yellow']);
-      s.attr('fillGradient', g);
-      expect(s.attr('fillGradient')).toBe(g);
-      s.attr('fillGradient', null);
-      expect(s.attr('fillGradient')).toBe(null);
+    describe('fillGradient', function() {
+      it('Can be set/get', function() {
+        var s = new Rect(0, 0, 10, 10);
+        var g = gradient.linear(0, ['red', 'yellow']);
+        s.attr('fillGradient', g);
+        expect(s.attr('fillGradient')).toBe(g);
+        s.attr('fillGradient', null);
+        expect(s.attr('fillGradient')).toBe(null);
+      });
     });
-  });
 
-  describe('lineGradient', function() {
-    it('Can be set/get', function() {
-      var s = new Rect(0, 0, 10, 10);
-      var g = gradient.linear(0, ['red', 'yellow']);
-      s.attr('lineGradient', g);
-      expect(s.attr('lineGradient')).toBe(g);
-      s.attr('lineGradient', null);
-      expect(s.attr('lineGradient')).toBe(null);
+    describe('strokeGradient', function() {
+      it('Can be set/get', function() {
+        var s = new Rect(0, 0, 10, 10);
+        var g = gradient.linear(0, ['red', 'yellow']);
+        s.attr('strokeGradient', g);
+        expect(s.attr('strokeGradient')).toBe(g);
+        s.attr('strokeGradient', null);
+        expect(s.attr('strokeGradient')).toBe(null);
+      });
     });
-  });
 
-  describe('fill', function() {
-    it('Can set fillGradient, fillColor and fillImage', function() {
-      var s = new Path,
-          grad = gradient.linear(0, ['red', 'purple']),
-          bitmap = new Bitmap('data:image/png,');
-      s.fill('red');
-      expect(s.attr('fillColor')).toBe(+color('red'));
-      s.fill('blue');
-      expect(s.attr('fillColor')).toBe(+color('blue'));
-      s.fill(grad);
-      expect(s.attr('fillColor')).toBe(+color('blue'));
-      expect(s.attr('fillGradient')).toBe(grad);
-      s.fill(bitmap);
-      expect(s.attr('fillColor')).toBe(+color('blue'));
-      expect(s.attr('fillGradient')).toBe(grad);
-      expect(s.attr('fillImage')).toBe(bitmap);
+    describe('fill', function() {
+      it('Can set fillGradient, fillColor and fillImage', function() {
+        var s = new Path,
+            grad = gradient.linear(0, ['red', 'purple']),
+            bitmap = new Bitmap('data:image/png,');
+        s.fill('red');
+        expect(s.attr('fillColor')).toBe(+color('red'));
+        s.fill('blue');
+        expect(s.attr('fillColor')).toBe(+color('blue'));
+        s.fill(grad);
+        expect(s.attr('fillColor')).toBe(+color('blue'));
+        expect(s.attr('fillGradient')).toBe(grad);
+        s.fill(bitmap);
+        expect(s.attr('fillColor')).toBe(+color('blue'));
+        expect(s.attr('fillGradient')).toBe(grad);
+        expect(s.attr('fillImage')).toBe(bitmap);
+      });
     });
-  });
 
-  describe('line', function() {
-    it('Can set lineGradient and lineColor', function() {
-      var s = new Path,
-          grad = gradient.linear(0, ['red', 'purple']);
-      s.line('red');
-      expect(s.attr('lineColor')).toBe(+color('red'));
-      s.line('blue');
-      expect(s.attr('lineColor')).toBe(+color('blue'));
-      s.line(grad);
-      expect(s.attr('lineColor')).toBe(+color('blue'));
-      expect(s.attr('lineGradient')).toBe(grad);
+    describe('stroke', function() {
+      it('Can set strokeGradient and strokeColor', function() {
+        var s = new Path,
+            grad = gradient.linear(0, ['red', 'purple']);
+        s.stroke('red');
+        expect(s.attr('strokeColor')).toBe(+color('red'));
+        s.stroke('blue');
+        expect(s.attr('strokeColor')).toBe(+color('blue'));
+        s.stroke(grad);
+        expect(s.attr('strokeColor')).toBe(+color('blue'));
+        expect(s.attr('strokeGradient')).toBe(grad);
+      });
     });
+
   });
 
 });

@@ -105,19 +105,19 @@ require([
           stage.addChild(Path.rect(10, 10, 60, 60).attr({
             fillColor: '#00ff00',
             opacity: 0.5,
-            lineColor: 0x00000000
+            strokeColor: 0x00000000
           }));
 
           stage.addChild(Path.rect(30, 30, 60, 60).attr({
             fillColor: '#ff0000',
             opacity: 0.5,
-            lineColor: 0x00000000
+            strokeColor: 0x00000000
           }));
 
           stage.addChild(Path.rect(50, 50, 60, 60).attr({
             fillColor: '#0000ff',
             opacity: 0.5,
-            lineColor: 0x00000000
+            strokeColor: 0x00000000
           }));
         },
         delay: 2000
@@ -155,7 +155,7 @@ require([
                 r = Math.round(((l-i)/l) * 60);
             return bonsai.Path
               .circle(60, 60, r)
-              .attr({fillColor: color, lineColor: 0x00000000});
+              .attr({fillColor: color, strokeColor: 0x00000000});
           }).forEach(function(circle) {
             stage.addChild(circle);
           });
@@ -189,7 +189,7 @@ require([
 
           stage.addChild(s.attr({
             fillColor: '#00ff00',
-            lineColor: 0x00000000
+            strokeColor: 0x00000000
           }));
         },
         delay: 2000

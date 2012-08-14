@@ -6,8 +6,8 @@ var dict = [
 
 function shape_1() { // DefinePath4
   var s = new bonsai.Path().moveTo(81, 79).attr({
-    lineWidth: 1,
-    lineColor: 0x000000ff,
+    strokeWidth: 1,
+    strokeColor: 0x000000ff,
     cap: 'round',
     join: 'round'
   }).lineBy(339.95, 0)

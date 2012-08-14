@@ -2,7 +2,7 @@
 // x, y, radius, aStartAngle, aEndAngle, anticlockwise
 
 var attr = {
-  lineWidth: 1
+  strokeWidth: 1
 };
 
 // arc test (smiley)
@@ -21,12 +21,12 @@ var color = bonsai.color('orange');
 var anti, donat;
 var i = 0;
 var attr = {
-  lineWidth: 15,
-  lineColor:color //lineColor?
+  strokeWidth: 15,
+  strokeColor:color //strokeColor?
 };
 var antiAttr = {
-  lineWidth: 15,
-  lineColor:'#eee'
+  strokeWidth: 15,
+  strokeColor:'#eee'
 };
 
 (function donatChart() {
@@ -42,22 +42,22 @@ var antiAttr = {
 
   if (i >= Math.PI*2) {
     i = 0;
-    antiAttr.lineColor = attr.lineColor;
-    attr.lineColor = color.randomize(['hue'], 0, 10);
+    antiAttr.strokeColor = attr.strokeColor;
+    attr.strokeColor = color.randomize(['hue'], 0, 10);
   }
 })();
 
 bonsai.Path.arc(400, 350, 60, 0, 1)
-  .attr({lineWidth: 20, lineColor: 'red'}) // should be lineColor!
+  .attr({strokeWidth: 20, strokeColor: 'red'}) // should be strokeColor!
   .addTo(stage);
 bonsai.Path.arc(400, 350, 60, 1.1, 3)
-  .attr({lineWidth: 40, lineColor: 'blue'}) // should be lineColor!
+  .attr({strokeWidth: 40, strokeColor: 'blue'}) // should be strokeColor!
   .addTo(stage);
 bonsai.Path.arc(400, 350, 80, Math.PI, 4)
-  .attr({lineWidth: 1, lineColor: 'green'}) // should be lineColor!
+  .attr({strokeWidth: 1, strokeColor: 'green'}) // should be strokeColor!
   .addTo(stage);
 bonsai.Path.arc(400, 350, 90, 0, Math.PI*2 - 0.1)
-  .attr({lineWidth: 1, lineColor: 'grey'}) // should be lineColor!
+  .attr({strokeWidth: 1, strokeColor: 'grey'}) // should be strokeColor!
   .addTo(stage);
 
 // pizza slice

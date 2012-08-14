@@ -1,10 +1,10 @@
 /**
  * Animated attributes
  */
-var rectPath = bonsai.Path.rect(0, 0, 150, 150).attr({
+var rectPath = new Rect(0, 0, 150, 150).attr({
   fillColor: 'red',
-  lineColor: 'green',
-  lineWidth: 5,
+  strokeColor: 'green',
+  strokeWidth: 5,
   x: 150,
   y: 150
 });

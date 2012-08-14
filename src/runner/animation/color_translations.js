@@ -7,7 +7,7 @@ define(['../../color'], function(color) {
    */
 
   return {
-    lineColor: makeColorTranslationSpec('lineColor'),
+    strokeColor: makeColorTranslationSpec('strokeColor'),
     fillColor: makeColorTranslationSpec('fillColor')
   };
 

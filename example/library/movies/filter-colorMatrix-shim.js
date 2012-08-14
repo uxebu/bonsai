@@ -13,13 +13,13 @@ Path.rect(150, 0, 100, 250).attr({
 
 Path.rect(300, 5, 100, 250).attr({
   fillColor: 'blue',
-  lineColor: 'red',
-  lineWidth: 10
+  strokeColor: 'red',
+  strokeWidth: 10
 }).addTo(stage);
 Path.rect(410, 5, 100, 250).attr({
   fillColor: 'blue',
-  lineColor: 'red',
-  lineWidth: 10,
+  strokeColor: 'red',
+  strokeWidth: 10,
   filters:[filter.colorMatrix([
       1, 0, 0, 0, -0.26953125,
       0, 1, 0, 0, 0.39453125,

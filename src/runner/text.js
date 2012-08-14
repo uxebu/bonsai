@@ -37,9 +37,9 @@ define([
     this._fontFamily = fontFamily ? fontFamily.fontId || fontFamily : null;
   }
 
-  var getTextLineColor = getter('_textLineColor');
-  function setTextLineColor(color) {
-    this._textLineColor = parseColor(color, this._textLineColor);
+  var getTextStrokeColor = getter('_textStrokeColor');
+  function setTextStrokeColor(color) {
+    this._textStrokeColor = parseColor(color, this._textStrokeColor);
   }
 
   var getCap = getter('_cap');
@@ -101,7 +101,7 @@ define([
    * @property {string} __supportedAttributes__.fill The fill color. Default: black.
    * @property {string} __supportedAttributes__.join The shape to be used at the corners of paths. Can be one of 'miter', 'round', 'bevel'. Default: 'miter'
    * @property {string} __supportedAttributes__.line The line color. Default: transparent
-   * @property {number} __supportedAttributes__.textLineWidth The line width. Default: 0
+   * @property {number} __supportedAttributes__.textStrokeWidth The line width. Default: 0
    * @property {number} __supportedAttributes__.miterLimit The miter limit of the stroke. Default: 4
    * @property {number} __supportedAttributes__.selectable Boolean indicates whether the text is selectable or not
    *
@@ -125,9 +125,9 @@ define([
       textLineOpacity: data(1, true, true),
       _join: data('miter', true),
       join: accessor(getJoin, setJoin, true),
-      _textLineColor: data(0x000000ff, true), // black by default
-      textLineColor: accessor(getTextLineColor, setTextLineColor, true),
-      textLineWidth: data(0, true, true),
+      _textStrokeColor: data(0x000000ff, true), // black by default
+      textStrokeColor: accessor(getTextStrokeColor, setTextStrokeColor, true),
+      textStrokeWidth: data(0, true, true),
       _miterLimit: data(4, true),
       miterLimit: accessor(getMiterLimit, setMiterLimit, true),
       text: accessor(getText, setText, true),
@@ -142,12 +142,12 @@ define([
     rendererAttributes.fontWeight = 'fontWeight';
     rendererAttributes.cap = '_cap';
     rendererAttributes.fillColor = '_textFillColor';
-    rendererAttributes.lineColor = '_textLineColor';
+    rendererAttributes.strokeColor = '_textStrokeColor';
     rendererAttributes.fillGradient = '_textFillGradient';
     rendererAttributes.fillOpacity = 'textFillOpacity';
-    rendererAttributes.lineOpacity = 'textLineOpacity';
+    rendererAttributes.strokeOpacity = 'textLineOpacity';
     rendererAttributes.join = '_join';
-    rendererAttributes.lineWidth = 'textLineWidth';
+    rendererAttributes.strokeWidth = 'textStrokeWidth';
     rendererAttributes.miterLimit = '_miterLimit';
     rendererAttributes.selectable = 'selectable';
     rendererAttributes.textOrigin = 'textOrigin';
