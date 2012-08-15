@@ -5,7 +5,7 @@ define([
   '../player',
   '../context/iframe/bootstrap',
   '../context/iframe/context',
-  '../../renderer/svg/svg',
+  '../../renderer/svg_with_layers/svg',
   '../../tools',
   '../util'
 ], function(player, bootstrapIframe, IframeRunnerContext, SvgRenderer, tools, bootstrapUtil) {

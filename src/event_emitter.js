@@ -111,6 +111,7 @@ define([
      * @returns {Object} The host object.
      */
     emit: function(type) {
+      
       // find listeners
       var events = this._events;
       var listeners = events && events[typeName(type)];
