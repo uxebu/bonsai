@@ -9,7 +9,7 @@ define([
   var getSource = tools.getter('_source');
   function setSource(source) {
     this._source = source;
-    this._owner.request.call(bitmap, source);
+    this._owner.request(source);
   }
 
   /**
