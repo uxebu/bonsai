@@ -518,7 +518,7 @@ define([
     var ratio = naturalHeight / naturalWidth;
 
     if (attributes.source != null) {
-      img.setAttributeNS(xlink, 'href', AssetController.assets[message.id].src);
+      img.setAttributeNS(xlink, 'href', attributes.source);
     }
 
     if (attributes.width == null && attributes.height == null) {

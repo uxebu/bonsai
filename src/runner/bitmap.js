@@ -48,7 +48,9 @@ define([
       width: data(null, true, true),
       source: accessor(getSource, setSource, true),
       _naturalWidth: data(0, true, true),
-      _naturalHeight: data(0, true, true)
+      _naturalHeight: data(0, true, true),
+      _source: data('', true, true),
+      _absoluteSource: data('', true, true),
     });
 
     var rendererAttributes = this._renderAttributes;
@@ -56,7 +58,7 @@ define([
     rendererAttributes.width = 'width';
     rendererAttributes.naturalHeight = '_naturalHeight';
     rendererAttributes.naturalWidth = '_naturalWidth';
-    rendererAttributes.source = '_source';
+    rendererAttributes.source = '_absoluteSource';
 
     this.attr('source', source);
   }
@@ -84,7 +86,11 @@ define([
       return this._request;
     }
     var request = this._request = new AssetRequest(aRequest);
+    // Loader will apply baseUrl to the request
     this._loader.request(this, request, this.type);
+    // Save full absolute URL to _absoluteSource so that it is
+    // send to the renderer as `attributes.source`:
+    this._attributes._absoluteSource = request.resources[0].src;
   };
 
   /**

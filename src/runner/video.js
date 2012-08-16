@@ -106,6 +106,20 @@ define([
     return new Video(this._loader, this._request);
   };
 
+  var protoDestroy = Video.prototype.destroy;
+  /** 
+   * Destroys the DisplayObject and removes any references to the
+   * asset, including data held by the renderer's assetController about the
+   * source of the video
+   *
+   * @returns {this}
+   */
+  proto.destroy = function() {
+    protoDestroy.call(this);
+    this._loader.destroyAsset(this);
+    return this;
+  };
+
   /**
    * Notify the video that the corresponding data has been loaded. To be used
    * by the asset loader.
