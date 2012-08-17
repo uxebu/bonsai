@@ -4,7 +4,13 @@ define([
 ], function(AssetDisplayObject, tools) {
   'use strict';
 
-  var data = tools.descriptorData;
+  var data = tools.descriptorData, accessor = tools.descriptorAccessor;
+
+  var getSource = tools.getter('_source');
+  function setSource(source) {
+    this._source = source;
+    this._owner.request(source);
+  }
 
   /**
    * The Bitmap constructor
@@ -40,7 +46,10 @@ define([
       height: data(null, true, true),
       width: data(null, true, true),
       _naturalWidth: data(0, true, true),
-      _naturalHeight: data(0, true, true)
+      _naturalHeight: data(0, true, true),
+      source: accessor(getSource, setSource, true),
+      _source: data('', true, true),
+      _absoluteUrl: data('', true, true)
     });
 
     var rendererAttributes = this._renderAttributes;
@@ -48,12 +57,16 @@ define([
     rendererAttributes.width = 'width';
     rendererAttributes.naturalHeight = '_naturalHeight';
     rendererAttributes.naturalWidth = '_naturalWidth';
+    rendererAttributes.absoluteUrl = '_absoluteUrl';
 
     this.attr('source', source);
   }
 
+  var parentPrototype = AssetDisplayObject.prototype;
+  var parentPrototypeRequest = parentPrototype.request;
+
   /** @lends Bitmap.prototype */
-  var proto = Bitmap.prototype = Object.create(AssetDisplayObject.prototype);
+  var proto = Bitmap.prototype = Object.create(parentPrototype);
 
   /**
    * Clones the method
@@ -62,6 +75,28 @@ define([
    */
   proto.clone = function() {
     return new Bitmap(this._loader, this.attr('source'));
+  };
+
+  /**
+   * @see AssetDisplayObject.request
+   * @method
+   * @this {Bitmap}
+   * @param {String|Array} aRequest The request needs to accomplish the requirements of AssetRequest
+   * @returns {Bitmap|AssetRequest} The current Bitmap Istance or an AssetRequest instance
+   * @name request
+   */
+  proto.request = function(aRequest) {
+    if (typeof aRequest === 'undefined') {
+      return this._request;
+    }
+
+    parentPrototypeRequest.call(this, aRequest);
+
+    // Save full absolute URL to _absoluteSource so that it is
+    // send to the renderer as `attributes.source`:
+    this._attributes._absoluteUrl = this._request.resources[0].src;
+
+    return this;
   };
 
   /**

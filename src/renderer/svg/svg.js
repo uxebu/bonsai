@@ -509,7 +509,7 @@ define([
   proto.drawBitmap = function(img, message) {
 
     var attributes = message.attributes;
-    //TODO: can't we set preserveAspectRatio only when `attributes.source != null`?
+    //TODO: can't we set preserveAspectRatio only when `attributes.absoluteUrl != null`?
     img.setAttribute('preserveAspectRatio', 'none');
 
     var naturalWidth = attributes.naturalWidth;
@@ -517,8 +517,8 @@ define([
 
     var ratio = naturalHeight / naturalWidth;
 
-    if (attributes.source != null) {
-      img.setAttributeNS(xlink, 'href', attributes.source);
+    if (attributes.absoluteUrl != null) {
+      img.setAttributeNS(xlink, 'href', attributes.absoluteUrl);
     }
 
     if (attributes.width == null && attributes.height == null) {

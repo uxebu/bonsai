@@ -5,13 +5,7 @@ define([
 ], function(tools, DisplayObject, AssetRequest) {
   'use strict';
 
-  var data = tools.descriptorData, accessor = tools.descriptorAccessor;
-
-  var getSource = tools.getter('_source');
-  function setSource(source) {
-    this._source = source;
-    this._owner.request(source);
-  }
+  var data = tools.descriptorData;
 
   /**
    * Constructs an AssetDisplayObject instance
@@ -33,15 +27,6 @@ define([
     if (callback) {
       this.bindAssetCallback(callback);
     }
-
-    Object.defineProperties(this._attributes, {
-      source: accessor(getSource, setSource, true),
-      _source: data('', true, true),
-      _absoluteSource: data('', true, true)
-    });
-
-    var rendererAttributes = this._renderAttributes;
-    rendererAttributes.source = '_absoluteSource';
   }
 
   /** @lends AssetDisplayObject.prototype */
@@ -49,8 +34,8 @@ define([
 
   /**
    *
-   * Provides support to perform the loading of a Video via HTTP. request and returns the current Video instance.
-   * Or returns a copy of all the contained segments of the Shape when no parameter is given.
+   * Provides support to perform the loading of a Video or Bitmap via HTTP
+   * Request and returns the current Video or Bitmap instance.
    *
    * @example
    * myVideo.request();
@@ -78,7 +63,6 @@ define([
    * @this {AssetDisplayObject}
    * @param {String|Array} aRequest The request needs to accomplish the requirements of AssetRequest
    * @returns {AssetDisplayObject|AssetRequest} The current AssetDisplayObject Istance or an AssetRequest instance
-   * @memberOf module:video.Video
    * @name request
    */
   proto.request = function(aRequest) {
@@ -87,10 +71,6 @@ define([
     }
     var request = this._request = new AssetRequest(aRequest);
     this._loader.request(this, request, this.type);
-
-    // Save full absolute URL to _absoluteSource so that it is
-    // send to the renderer as `attributes.source`:
-    this._attributes._absoluteSource = this._request.resources[0].src;
 
     return this;
   };
