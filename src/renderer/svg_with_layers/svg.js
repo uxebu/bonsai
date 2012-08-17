@@ -69,7 +69,7 @@ define([
 
   var xlink = 'http://www.w3.org/1999/xlink';
 
-  function createElement(n, id) {
+  function createSVGElement(n, id) {
     if (!n) {
       throw TypeError('Invalid tag name: ' + n);
     }
@@ -80,6 +80,12 @@ define([
     return el;
   }
 
+  /**
+   * A DisplayGroup is the renderer's DisplayObject container. A DisplayGroup
+   * will contain layers, either SVG or DOM, which will contain the group's
+   * children. A DisplayGroup can contain other DisplayGroups.
+   * DisplayGroup is generally analogous to `bonsai.Group`
+   */
   function DisplayGroup(id) {
     this.dom = document.createElement('div');
     this.dom.setAttribute('data-bonsai-type', 'displayGroup');
@@ -90,20 +96,29 @@ define([
     this.isDisplayGroup = true;
   }
 
+  /**
+   * Helper: Returns boolean indicating whether or not the passed
+   * layer is empty
+   */
+  DisplayGroup.isEmptyLayer = function(layerElement) {
+    if (!layerElement.rootLayerType) {
+      return false; // It's not a layer
+    }
+    if (layerElement.rootLayerType === 'svg') {
+      return layerElement.childNodes.length === 0 ||
+        (layerElement.childNodes.length === 1 && layerElement.firstChild === layerElement.defs);
+    } else {
+      // dom
+      return layerElement.childNodes.length === 0;
+    }
+  };
+
   DisplayGroup.prototype = {
 
-    isEmptyLayer: function(layerElement) {
-      if (!layerElement.rootLayerType) {
-        return false; // It's not a layer
-      }
-      if (layerElement.rootLayerType === 'svg') {
-        return layerElement.childNodes.length === 1 && layerElement.firstChild === layerElement.defs;
-      } else {
-        // dom
-        return layerElement.childNodes.length === 0;
-      }
-    },
-
+    /** 
+     * Retrieves SVG layer, either if it's already at the top of creates a 
+     * new one
+     */
     getSVGLayer: function() {
       var topMost = this.layers[this.layers.length - 1];
       if (topMost && topMost.rootLayerType === 'svg') {
@@ -113,6 +128,10 @@ define([
       }
     },
 
+    /** 
+     * Retrieves DOM layer, either if it's already at the top of creates a 
+     * new one
+     */
     getDOMLayer: function() {
       var topMost = this.layers[this.layers.length - 1];
       if (topMost && topMost.rootLayerType === 'dom') {
@@ -122,6 +141,9 @@ define([
       }
     },
 
+    /** 
+     * Executes a callback on every layer of the passed type
+     */
     forEachLayerOfType: function(type, callback) {
       for (var i = 0, l = this.layers.length; i < l; ++i) {
         if (this.layers[i].rootLayerType === type) {
@@ -130,6 +152,9 @@ define([
       }
     },
 
+    /** 
+     * Removes a layer
+     */
     removeLayer: function(layerElement) {
       for (var i = 0, l = this.layers.length; i < l; ++i) {
         if (this.layers[i] === layerElement) {
@@ -139,6 +164,10 @@ define([
       }
     },
 
+    /**
+     * Adds a layer of the passed type
+     * Supported types: 'svg', 'dom'
+     */
     addLayer: function(type) {
 
       var newLayer;
@@ -148,8 +177,7 @@ define([
 
       switch (type) {
         case 'svg':
-          newLayer = createElement('svg');
-          newLayer.defs = newLayer.appendChild(createElement('defs'));
+          newLayer = createSVGElement('svg');
           if (width && height) {
             newLayer.setAttribute('viewBox', '-0.5 -0.5 ' + width + ' ' + height);
           }
@@ -185,6 +213,9 @@ define([
     this.height = height;
 
     this.root = this[0] = new DisplayGroup(0);
+    this.svgDefs = createSVGElement('defs');
+    this.svgRoot = this.root.getSVGLayer();
+    this.svgRoot.appendChild(this.svgDefs);
 
     if (width) {
       this.root.dom.style.width = width + 'px';
@@ -256,6 +287,7 @@ define([
             if (type === 'Group') {
               if (value != null) {
                 el.style.WebkitTransform = matrixToString(value);
+                el.style.MozTransform = matrixToString(value);
               } else if (value === null) {
                 el.style.WebkitTransform = '';
               }
@@ -351,8 +383,6 @@ define([
 
   proto.render = function(messages) {
 
-    console.log('>>', messages);
-
     var drawName,
       element,
       fragment,
@@ -402,7 +432,7 @@ define([
             //element.style.width = '400px';
             //element.style.height = '400px';
           } else {
-            element = display[id] = createElement(typesToTags[type], id);
+            element = display[id] = createSVGElement(typesToTags[type], id);
           }
         }
       }
@@ -479,7 +509,6 @@ define([
       for (var i = 0, l = updateIds.length; i < l; ++i) {
         var msg = updateMessages[updateIds[i]];
         parent = display[msg.parent];
-        console.log(msg.parent, parent, msg)
         if (parent.isDisplayGroup) {
           if (msg.type === 'Group') {
             parent = parent.dom;
@@ -496,7 +525,7 @@ define([
         ///console.log(display[msg.id], '::', display[msg.next], '::', parent);
         if (nextEl && nextEl.parentNode) {
           nextEl.parentNode.insertBefore(el, nextEl);
-          if (display.isEmptyLayer(parent)) {
+          if (DisplayGroup.isEmptyLayer(parent)) {
             display.removeLayer(parent);
           }
         } else {
@@ -556,7 +585,7 @@ define([
       var svgClipId = attr.clipId + '_offStageParent';
 
       if (!(element._clip = this.svg[svgClipId])) {
-        element._clip = this.svg[svgClipId] = this.svg.defs.appendChild(createElement('mask'));
+        element._clip = this.svg[svgClipId] = this.display.svgDefs.appendChild(createSVGElement('mask'));
         element._clip.id = this._genDefUID();
         element._clip._clipId = svgClipId; // Save real ID too (as in `this.svg`)
         element._clip.n = 1;
@@ -828,7 +857,7 @@ define([
 
     if (element._pattern) {
       this.removeFillImage(element);
-      this.svg.defs.removeChild(element._pattern);
+      this.display.svgDefs.removeChild(element._pattern);
       element._pattern._fillGradientSignature &&
         this.removeGradient(element._pattern, 'fill');
     }
@@ -859,7 +888,7 @@ define([
     if (def.n > 1) {
       def.n--;
     } else {
-      this.svg.defs.removeChild(def.element);
+      this.display.svgDefs.removeChild(def.element);
       delete this.definitions[signature];
     }
 
@@ -870,7 +899,7 @@ define([
     var pattern = element._pattern;
     if (pattern && pattern._fillImage) {
       pattern.removeChild(pattern._fillImage);
-      delete this.svg[pattern._fillImage._fillImageId];
+      delete this.display[pattern._fillImage._fillImageId];
       delete pattern._fillImage;
     }
   };
@@ -887,7 +916,7 @@ define([
     if (def.n > 1) {
       def.n--;
     } else {
-      this.svg.defs.removeChild(def.element);
+      this.display.svgDefs.removeChild(def.element);
       delete this.definitions[signature];
     }
 
@@ -900,8 +929,8 @@ define([
       if (clip.n > 1) {
         clip.n--;
       } else {
-        this.svg.defs.removeChild(clip);
-        delete this.svg[clip._clipId];
+        this.display.svgDefs.removeChild(clip);
+        delete this.display[clip._clipId];
       }
       element.removeAttribute('mask');
       delete element._clip;
@@ -914,8 +943,8 @@ define([
       if (mask.n > 1) {
         mask.n--;
       } else {
-        this.svg.defs.removeChild(mask);
-        delete this.svg[mask._maskId];
+        this.display.svgDefs.removeChild(mask);
+        delete this.display[mask._maskId];
       }
       element.removeAttribute('mask');
       delete element._mask;
@@ -923,10 +952,10 @@ define([
   };
 
   proto.destroy = function() {
-    var svg = this.svg;
+    var display = this.display;
     // remove event listeners
     eventTypes.forEach(function(e) {
-      svg.root.removeEventListener(e, this, false);
+      display.root.dom.removeEventListener(e, this, false);
     }, this);
 
     // remove key listeners
@@ -937,8 +966,8 @@ define([
     // stop fps interval
     clearInterval(this._fpsInterval);
 
-    svg.root.parentNode && svg.root.parentNode.removeChild(svg.root);
-    delete this.svg;
+    display.root.dom.parentNode && display.root.dom.parentNode.removeChild(display.root.dom);
+    delete this.display;
   };
 
   proto._genDefUID = function() {
@@ -1127,7 +1156,7 @@ define([
 
         if (!gradientEl) {
           // Doesn't exist yet -- create it:
-          gradientEl = createElement('linearGradient');
+          gradientEl = createSVGElement('linearGradient');
           gradientEl.setAttribute('gradientTransform', matrixToString(gradient.matrix));
           gradientEl.setAttribute(
             'gradientUnits',
@@ -1140,7 +1169,7 @@ define([
 
         for (i = 0, l = stops.length; i < l; ++i) {
           stop = stops[i];
-          stopEl = createElement('stop');
+          stopEl = createSVGElement('stop');
           stopColor = colorMatrix ? color(stop[0]).setColorMatrix(colorMatrix) : color(stop[0]);
 
           stopEl.setAttribute('offset', stop[1] + '%');
@@ -1161,7 +1190,7 @@ define([
 
         if (!gradientEl) {
           // Doesn't exist yet -- create it:
-          gradientEl = createElement('radialGradient');
+          gradientEl = createSVGElement('radialGradient');
           gradientEl.setAttribute(
             'gradientUnits',
             gradient.units == 'boundingBox' ? 'objectBoundingBox' : 'userSpaceOnUse'
@@ -1175,7 +1204,7 @@ define([
         for (i = 0, l = stops.length; i < l; ++i) {
 
           stop = stops[i];
-          stopEl = createElement('stop');
+          stopEl = createSVGElement('stop');
           stopColor = colorMatrix ? color(stop[0]).setColorMatrix(colorMatrix) : color(stop[0]);
 
           stopEl.setAttribute('offset', stop[1] + '%');
@@ -1195,7 +1224,7 @@ define([
       }
     }
 
-    this.svg.defs.appendChild(gradientEl);
+    this.display.root.getSVGLayer().appendChild(gradientEl);
     element.setAttribute(styleAttribute, 'url(#' + gradientEl.id + ')');
 
     // Save the new gradient to this.definitions:
@@ -1209,8 +1238,8 @@ define([
 
     var boundingBox, group, image, mask;
     var attributes = message.attributes,
-        svg = this.svg,
-        defs = svg.defs,
+        display = this.display,
+        defs = display.svgDefs,
         fillRepeat = attributes.fillRepeat,
         fillRepeatX = fillRepeat && fillRepeat[0] || 1,
         fillRepeatY = fillRepeat && fillRepeat[1] || 1,
@@ -1225,7 +1254,7 @@ define([
         isNewPattern = !pattern;
 
     // getBBox wants us to append `element` to the dom tree
-    svg.root.appendChild(element);
+    display.svgRoot.appendChild(element);
 
     if (isNewPattern) {
 
@@ -1233,7 +1262,7 @@ define([
 
       // group
       group = (function createGroup(id, dict, aBoundingBox, aMatrix) {
-        var aGroup = createElement('g', id);
+        var aGroup = createSVGElement('g', id);
         dict[id] = aGroup;
         aMatrix.tx += aBoundingBox.x;
         aMatrix.ty += aBoundingBox.y;
@@ -1243,7 +1272,7 @@ define([
 
       // create a mask node and append it to the <defs> section
       mask = (function createMask(aGroup, id, defsNode) {
-        var mask = createElement('mask');
+        var mask = createSVGElement('mask');
         mask.id = id;
         defsNode.appendChild(mask);
         group._pattern = mask;
@@ -1261,14 +1290,14 @@ define([
     }
 
     if (!patternFillImage && attributes.fillImageId) {
-      patternFillImage = group._fillImage = createElement('g');
+      patternFillImage = group._fillImage = createSVGElement('g');
       patternFillImage._fillImageId = attributes.fillImageId + '_offStageParent';
       svg[patternFillImage._fillImageId] = patternFillImage;
     }
 
     if (!patternFillGradient && fillGradient) {
       boundingBox || (boundingBox = element.getBBox());
-      patternFillGradient = group._fillGradient = createElement('rect');
+      patternFillGradient = group._fillGradient = createSVGElement('rect');
       patternFillGradient.setAttribute('x', 0);
       patternFillGradient.setAttribute('y', 0);
       patternFillGradient.setAttribute('width', boundingBox.width);
@@ -1276,7 +1305,7 @@ define([
     }
 
     if (fillColor) {
-      patternFillColor = group._fillColor = createElement('rect');
+      patternFillColor = group._fillColor = createSVGElement('rect');
       patternFillColor.setAttribute('x', 0);
       patternFillColor.setAttribute('y', 0);
       patternFillColor.setAttribute('width', boundingBox.width);
@@ -1307,8 +1336,8 @@ define([
     // Use a pattern to contain fills
 
     var boundingBox,
-        svg = this.svg,
-        defs = svg.defs,
+        display = this.display,
+        defs = display.svgDefs,
         fillRepeat = attributes.fillRepeat,
         fillRepeatX = fillRepeat && fillRepeat[0] || 1,
         fillRepeatY = fillRepeat && fillRepeat[1] || 1,
@@ -1321,14 +1350,14 @@ define([
         patternFillColor = pattern && pattern._fillColor,
         isNewPattern = !pattern;
 
-    this.svg.root.appendChild(element);
+    display.svgRoot.appendChild(element);
 
     if (isNewPattern) {
 
       boundingBox = element.getBBox();
 
-      pattern = element._pattern = createElement('pattern');
-      patternFillColor = pattern._fillColor = createElement('rect');
+      pattern = element._pattern = createSVGElement('pattern');
+      patternFillColor = pattern._fillColor = createSVGElement('rect');
 
       pattern.setAttribute('patternUnits', 'objectBoundingBox');
       pattern.setAttribute('patternContentUnits', 'userSpaceOnUse');
@@ -1346,7 +1375,7 @@ define([
 
     if (!patternFillGradient && fillGradient) {
       boundingBox || (boundingBox = element.getBBox());
-      patternFillGradient = pattern._fillGradient = createElement('rect');
+      patternFillGradient = pattern._fillGradient = createSVGElement('rect');
       patternFillGradient.setAttribute('width', boundingBox.width / fillRepeatX);
       patternFillGradient.setAttribute('height', boundingBox.height / fillRepeatY);
       patternFillGradient.setAttribute('x', 0);
@@ -1354,7 +1383,7 @@ define([
     }
 
     if (!patternFillImage && attributes.fillImageId) {
-      patternFillImage = pattern._fillImage = createElement('g');
+      patternFillImage = pattern._fillImage = createSVGElement('g');
       patternFillImage._fillImageId = attributes.fillImageId + '_offStageParent';
       this.svg[patternFillImage._fillImageId] = patternFillImage;
     }
@@ -1423,7 +1452,7 @@ define([
       }
     }
 
-    var filterContainer = createElement('filter');
+    var filterContainer = createSVGElement('filter');
 
     filterContainer.id = this._genDefUID();
 
@@ -1440,7 +1469,7 @@ define([
       filterContainer.appendChild(filterElements[i]);
     }
 
-    this.svg.defs.appendChild(filterContainer);
+    this.display.svgDefs.appendChild(filterContainer);
     element.setAttribute('filter', 'url(#' + filterContainer.id + ')');
     element._filterSignature = signature;
     // Save the new gradient to this.definitions:
@@ -1453,12 +1482,12 @@ define([
   proto.applyMask = function(element, attr) {
 
     var maskId = attr.maskId + '_offStageParent';
-    var dictionary = this.svg;
+    var dictionary = this.display;
 
     if (!(element._mask = dictionary[maskId])) {
-      element._mask = dictionary[maskId] = dictionary.defs.appendChild(createElement('mask'));
+      element._mask = dictionary[maskId] = dictionary.defs.appendChild(createSVGElement('mask'));
       element._mask.id = this._genDefUID();
-      element._mask._maskId = maskId; // Save real ID too (as in `this.svg`)
+      element._mask._maskId = maskId; // Save real ID too (as in `this.display`)
       element._mask.n = 1;
     } else {
       if (element._mask !== dictionary[maskId]) {
