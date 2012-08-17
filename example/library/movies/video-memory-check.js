@@ -3,7 +3,7 @@ var resources = [
   {src: 'assets/sample.ogv', type:'video/ogg'}
 ];
 
-new bonsai.Video(resources, function() {
+var video = new bonsai.Video(resources, function() {
     this.attr({
       y: 150,
       x: 150,
@@ -11,4 +11,10 @@ new bonsai.Video(resources, function() {
       height:240,
       autoplay:true
     }).addTo(stage);
+});
+
+
+// this would crash your browser
+stage.on('tick', function() {
+ // video.request(resources);
 });
