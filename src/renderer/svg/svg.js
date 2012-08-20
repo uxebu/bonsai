@@ -1225,9 +1225,9 @@ define([
       pattern.setAttribute('y', 0);
       pattern.setAttribute('width', boundingBox.width / fillRepeatX);
       pattern.setAttribute('height', boundingBox.height / fillRepeatY);
-
-      elementMatrix = attributes.matrix.clone();
-      elementMatrix.translate(boundingBox.x, boundingBox.y);
+      elementMatrix = tools.mixin({}, attributes.matrix);
+      elementMatrix.tx += boundingBox.x;
+      elementMatrix.ty += boundingBox.y;
       pattern.setAttribute('patternTransform', matrixToString(elementMatrix));
 
       patternFillColor.setAttribute('x', 0);
