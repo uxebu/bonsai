@@ -2,6 +2,7 @@ v0.3.3
 -------------------
 
 * Fix pattern-image-fill for Firefox
+* Fixed bug where non-function types in the animation options object were being bound
 
 v0.3.2 / 2012-08-14
 -------------------
