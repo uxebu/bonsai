@@ -1,8 +1,7 @@
 define([
   './asset_display_object',
-  '../asset/asset_request',
   '../tools'
-], function(AssetDisplayObject, AssetRequest, tools) {
+], function(AssetDisplayObject, tools) {
   'use strict';
 
   var data = tools.descriptorData;
@@ -38,7 +37,7 @@ define([
    */
   function Video(loader, aRequest, callback, options) {
     options || (options = {});
-    
+
     AssetDisplayObject.call(this, loader, aRequest, callback);
 
     this.type = 'Video';
@@ -57,44 +56,11 @@ define([
     this.request(aRequest);
   }
 
-  /** @lends Video.prototype */
-  var proto = Video.prototype = Object.create(AssetDisplayObject.prototype);
+  var parentPrototype = AssetDisplayObject.prototype;
+  var parentPrototypeDestroy = parentPrototype.destroy;
 
-  /**
-   *
-   * Provides support to perform the loading of a Video via HTTP. request and returns the current Video instance.
-   * Or returns a copy of all the contained segments of the Shape when no parameter is given.
-   *
-   * @example
-   * myVideo.request();
-   * myVideo.request('../myMovie.mp4');
-   * myVideo.request('http://www.movieCenter.com/myMovie.mp4');
-   * myShape.request([
-   *   {src:'../myMovie.mp4', type:'video/mp4'},
-   *   {src:'../myMovie.ogv', type:'video/ogg'}
-   * ]);
-   * myShape.request({
-   *   resources: [
-   *     {src:'../myMovie.mp4', type:'video/mp4'},
-   *     {src:'../myMovie.ogv', type:'video/ogg'}
-   *   ],
-   *   loadLevel: 'can-play'
-   * });
-   *
-   * @method
-   * @this {Video}
-   * @param {String|Array} aRequest The request needs to accomplish the requirements of AssetRequest
-   * @returns {AssetRequest} An AssetRequest instance
-   * @memberOf module:video.Video
-   * @name request
-   */
-  proto.request = function(aRequest) {
-    if (typeof aRequest === 'undefined') {
-      return this._request;
-    }
-    var request = this._request = new AssetRequest(aRequest);
-    this._loader.request(this, request, this.type);
-  };
+  /** @lends Video.prototype */
+  var proto = Video.prototype = Object.create(parentPrototype);
 
   /**
    * Clones the method
@@ -107,9 +73,23 @@ define([
   };
 
   /**
+   * Destroys the DisplayObject and removes any references to the
+   * asset, including data held by the renderer's assetController about the
+   * source of the video
+   *
+   * @returns {this}
+   */
+  proto.destroy = function() {
+    parentPrototypeDestroy.call(this);
+    this._loader.destroyAsset(this);
+    return this;
+  };
+
+  /**
    * Notify the video that the corresponding data has been loaded. To be used
    * by the asset loader.
    *
+   * @private
    * @param {string} type Either 'load' or 'error'
    * @param data
    */
