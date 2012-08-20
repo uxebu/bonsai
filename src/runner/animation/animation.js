@@ -328,7 +328,7 @@ define([
     _parseEventProps: function(options) {
       var propName, evtName;
       for (propName in options) {
-        if (propName.indexOf('on') == 0) {
+        if (typeof options[propName] === 'function' && propName.indexOf('on') === 0) {
           evtName = propName.slice(2).toLowerCase();
           this.on(evtName, options[propName]);
           delete options[propName];
