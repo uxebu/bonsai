@@ -14,8 +14,6 @@ define(['./asset_handler'], function(AssetHandler) {
 
     var img = new Image;
 
-    this.registerElement(img);
-
     img.onload = function() {
       doDone({
         width: img.width,

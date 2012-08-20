@@ -20,7 +20,8 @@ movieList = {
     'bitmap.js',
     'fill-image.js',
     'sprite.js',
-    'data-url.js'
+    'data-url.js',
+    'bitmap-memory-check.js'
   ],
   'Color': [
     'color.js',
@@ -148,6 +149,7 @@ movieList = {
   'Video' : [
     'video.js',
     'video-remote.js',
-    'video-onload.js'
+    'video-onload.js',
+    'video-memory-check.js'
   ]
 }

@@ -25,18 +25,5 @@ require([
       expect(d._events[':error']).toEqual([]);
     });
 
-    it('Provides destroy method which will remove the item from stage and call destroyAsset on its loader', function() {
-      var loader = {
-        destroyAsset: jasmine.createSpy('destroyAsset')
-      };
-      var d = new AssetDisplayObject(loader, '', null);
-      var parent = new Group();
-      parent.addChild(d);
-      expect(parent.children()[0]).toBe(d);
-      d.destroy();
-      expect(loader.destroyAsset).toHaveBeenCalled();
-      expect(parent.children()[0]).toBe(void 0);
-    });
-
   });
 });

@@ -20,11 +20,13 @@ define([
     Group.call(this);
 
     this._loader = loader;
+    this._callback = callback;
     this.sources = sources;
     this.currentBitmapIndex = 0;
 
     if (callback) {
-      this.bindAssetCallback(callback);
+      // TODO: Do we want such a cross-dependency?
+      AssetDisplayObject.prototype.bindAssetCallback.call(this, callback);
     }
 
     Object.defineProperties(this._attributes, {
@@ -35,8 +37,9 @@ define([
     this._load();
   }
 
-  var proto = Sprite.prototype = tools.mixin(Object.create(Group.prototype), AssetDisplayObject);
+  var proto = Sprite.prototype = Object.create(Group.prototype);
 
+  // @private
   proto._load = function() {
 
     var me = this,
@@ -53,37 +56,16 @@ define([
     }
   };
 
+  // @private
   proto._bitmapLoaded = function(bitmap) {
+
+    var callback = this._callback;
 
     this.addChild(bitmap);
 
-    if (this._children.length == this.sources.length) {
-      this.emit('load', this._children);
+    if (callback && this._children.length == this.sources.length) {
+      this.emit('load', callback);
     }
-  };
-
-  /**
-   * Overriden - Composes a message for the renderer
-   *
-   * @returns {object} The message
-   */
-  proto.composeRenderMessage = function(message) {
-
-      message = Group.prototype.composeRenderMessage.call(this, message);
-      var bitmap = this._children[this.currentBitmapIndex];
-
-      this._children.forEach(function(child) {
-        child.type = 'bitmap_hidden';
-      });
-
-      message.attributes = this.attr();
-      message.attributes.source = bitmap.attr('source');
-      message.attributes.height = bitmap.getComputed('height');
-      message.attributes.width = bitmap.getComputed('width');
-      message.type = 'Bitmap';
-      message.id = bitmap.id;
-
-      return message;
   };
 
   return Sprite;

@@ -1,23 +1,22 @@
 define([
   './asset_display_object',
-  '../asset/asset_request',
   '../tools'
-], function(AssetDisplayObject, AssetRequest, tools) {
+], function(AssetDisplayObject, tools) {
   'use strict';
 
   var data = tools.descriptorData, accessor = tools.descriptorAccessor;
+
   var getSource = tools.getter('_source');
   function setSource(source) {
     this._source = source;
-    var bitmap = this._owner;
-    bitmap.request.call(bitmap, source);
+    this._owner.request(source);
   }
 
   /**
    * The Bitmap constructor
    *
    * @constructor
-   * @name Bitmap
+   * @name Bitmap
    * @extends AssetDisplayObject
    *
    * @param {AssetLoader} loader The asset loader to use;
@@ -46,9 +45,11 @@ define([
     Object.defineProperties(this._attributes, {
       height: data(null, true, true),
       width: data(null, true, true),
-      source: accessor(getSource, setSource, true),
       _naturalWidth: data(0, true, true),
-      _naturalHeight: data(0, true, true)
+      _naturalHeight: data(0, true, true),
+      source: accessor(getSource, setSource, true),
+      _source: data('', true, true),
+      _absoluteUrl: data('', true, true)
     });
 
     var rendererAttributes = this._renderAttributes;
@@ -56,36 +57,16 @@ define([
     rendererAttributes.width = 'width';
     rendererAttributes.naturalHeight = '_naturalHeight';
     rendererAttributes.naturalWidth = '_naturalWidth';
-    rendererAttributes.source = '_source';
+    rendererAttributes.absoluteUrl = '_absoluteUrl';
 
     this.attr('source', source);
   }
 
-  /** @lends Bitmap.prototype */
-  var proto = Bitmap.prototype = Object.create(AssetDisplayObject.prototype);
+  var parentPrototype = AssetDisplayObject.prototype;
+  var parentPrototypeRequest = parentPrototype.request;
 
-  /**
-   *
-   * Provides support to perform the loading of an Image via HTTP.
-   *
-   * @example
-   * myBitmap.request();
-   * myBitmap.request('../myImage.jpg');
-   *
-   * @method
-   * @this {Image}
-   * @param {String} aRequest The request needs to accomplish the requirements of AssetRequest
-   * @returns {String} A String or Array that is actually the original user input.
-   * @memberOf module:image.Image
-   * @name request
-   */
-  proto.request = function(aRequest) {
-    if (typeof aRequest === 'undefined') {
-      return this._request;
-    }
-    var request = this._request = new AssetRequest(aRequest);
-    this._loader.request(this, request, this.type);
-  };
+  /** @lends Bitmap.prototype */
+  var proto = Bitmap.prototype = Object.create(parentPrototype);
 
   /**
    * Clones the method
@@ -97,11 +78,36 @@ define([
   };
 
   /**
+   * @see AssetDisplayObject.request
+   * @method
+   * @this {Bitmap}
+   * @param {String|Array} aRequest The request needs to accomplish the requirements of AssetRequest
+   * @returns {Bitmap|AssetRequest} The current Bitmap Istance or an AssetRequest instance
+   * @name request
+   */
+  proto.request = function(aRequest) {
+    if (typeof aRequest === 'undefined') {
+      return this._request;
+    }
+
+    parentPrototypeRequest.call(this, aRequest);
+
+    // Save full absolute URL to _absoluteSource so that it is
+    // send to the renderer as `attributes.source`:
+    this._attributes._absoluteUrl = this._request.resources[0].src;
+
+    return this;
+  };
+
+  /**
    * Notify the bitmap that the corresponding data has been loaded. To be used
    * by the asset loader.
    *
+   * @private
    * @param {string} type Either 'load' or 'error'
    * @param data
+   * @returns {this} The current instance
+   *
    */
   proto.notify = function(type, data) {
 
