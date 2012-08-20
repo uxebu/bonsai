@@ -1196,6 +1196,7 @@ define([
     // Use a pattern to contain fills
 
     var boundingBox,
+        elementMatrix,
         svg = this.svg,
         defs = svg.defs,
         fillRepeat = attributes.fillRepeat,
@@ -1219,13 +1220,14 @@ define([
       pattern = element._pattern = createElement('pattern');
       patternFillColor = pattern._fillColor = createElement('rect');
 
-      pattern.setAttribute('patternUnits', 'objectBoundingBox');
-      pattern.setAttribute('patternContentUnits', 'userSpaceOnUse');
-
-      pattern.setAttribute('width', 1 / fillRepeatX);
-      pattern.setAttribute('height', 1 / fillRepeatY);
+      pattern.setAttribute('patternUnits', 'userSpaceOnUse');
+      pattern.setAttribute('width', boundingBox.width / fillRepeatX);
+      pattern.setAttribute('height', boundingBox.height / fillRepeatY);
       pattern.setAttribute('x', 0);
       pattern.setAttribute('y', 0);
+      elementMatrix = attributes.matrix.clone();
+      elementMatrix.translate(boundingBox.x, boundingBox.y);
+      pattern.setAttribute('patternTransform', matrixToString(elementMatrix));
 
       patternFillColor.setAttribute('width', boundingBox.width / fillRepeatX);
       patternFillColor.setAttribute('height', boundingBox.height / fillRepeatY);
