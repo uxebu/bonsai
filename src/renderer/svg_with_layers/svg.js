@@ -91,9 +91,11 @@ define([
     this.dom.setAttribute('data-bonsai-type', 'displayGroup');
     this.dom.setAttribute('data-bonsai-id', id);
     this.dom.style.position = 'relative';
-    this.dom.isDisplayGroup = true;
+    this.dom.displayGroup = this;
     this.layers = [];
     this.isDisplayGroup = true;
+    this.tx = 0;
+    this.ty = 0;
   }
 
   /**
@@ -105,8 +107,7 @@ define([
       return false; // It's not a layer
     }
     if (layerElement.rootLayerType === 'svg') {
-      return layerElement.childNodes.length === 0 ||
-        (layerElement.childNodes.length === 1 && layerElement.firstChild === layerElement.defs);
+      return layerElement.childNodes.length === 1; // <defs> or <g>
     } else {
       // dom
       return layerElement.childNodes.length === 0;
@@ -115,13 +116,22 @@ define([
 
   DisplayGroup.prototype = {
 
+    getBackgroundSVGLayer: function() {
+      var defs = createSVGElement('defs');
+      var svgRootGroup = this.getSVGLayer();
+      svgRootGroup.root.appendChild(defs);
+      svgRootGroup.defs = defs;
+      svgRootGroup.isBackgroundSVG = true;
+      return svgRootGroup;
+    },
+
     /** 
      * Retrieves SVG layer, either if it's already at the top of creates a 
      * new one
      */
     getSVGLayer: function() {
       var topMost = this.layers[this.layers.length - 1];
-      if (topMost && topMost.rootLayerType === 'svg') {
+      if (topMost && topMost.rootLayerType === 'svg' && !topMost.isBackgroundSVG) {
         return topMost;
       } else {
         return this.addLayer('svg');
@@ -158,7 +168,7 @@ define([
     removeLayer: function(layerElement) {
       for (var i = 0, l = this.layers.length; i < l; ++i) {
         if (this.layers[i] === layerElement) {
-          this.dom.removeChild(layerElement);
+          this.dom.removeChild(layerElement.root);
           this.layers.splice(i, 1);
         }
       }
@@ -177,33 +187,62 @@ define([
 
       switch (type) {
         case 'svg':
-          newLayer = createSVGElement('svg');
+          var svg = createSVGElement('svg');
+          var group = createSVGElement('g');
+          svg.appendChild(group);
           if (width && height) {
-            newLayer.setAttribute('viewBox', '-0.5 -0.5 ' + width + ' ' + height);
+            svg.setAttribute('viewBox', '-0.5 -0.5 ' + width + ' ' + height);
           }
+          // Expose the <g> as the newLayer so any SVGElements are appended
+          // to it. The actual <Svg> can be accessed as `newLayer.root`
+          newLayer = group; 
+          newLayer.root = svg;
           break;
         case 'dom':
           newLayer = document.createElement('div');
+          newLayer.root = newLayer;
           break;
       }
 
       newLayer.rootLayerType = type;
 
-      newLayer.style.position = 'absolute';
-      newLayer.style.top = '0';
-      newLayer.style.left = '0';
+      newLayer.root.style.position = 'absolute';
+      newLayer.root.style.top = '0';
+      newLayer.root.style.left = '0';
 
       if (width) {
-        newLayer.style.width = width + 'px';
+        newLayer.root.style.width = width + 'px';
       }
       if (height) {
-        newLayer.style.height = height + 'px';
+        newLayer.root.style.height = height + 'px';
       }
 
-      this.dom.appendChild(newLayer);
+      newLayer.displayGroup = this;
+      this.dom.appendChild(newLayer.root);
       this.layers.push(newLayer);
 
+      this.translatePosition(this.tx, this.ty);
+
       return newLayer;
+    },
+
+    translatePosition: function(x, y) {
+      var layer;
+      this.tx = x;
+      this.ty = y;
+      for (var i = 0, l = this.layers.length; i < l; ++i) {
+        layer = this.layers[i];
+        //console.log(layer, layer.rootLayerType);
+        if (layer.rootLayerType === 'dom') {
+          layer.style.top = y + 'px';
+          layer.style.left = x + 'px';
+        } else if (layer.rootLayerType === 'svg') {
+          layer.setAttribute(
+            'transform',
+            'matrix(1,0,0,1,' + x + ',' + y + ')'
+          );
+        }
+      }
     }
   };
 
@@ -213,9 +252,8 @@ define([
     this.height = height;
 
     this.root = this[0] = new DisplayGroup(0);
-    this.svgDefs = createSVGElement('defs');
-    this.svgRoot = this.root.getSVGLayer();
-    this.svgRoot.appendChild(this.svgDefs);
+    this.svgRoot = this.root.getBackgroundSVGLayer();
+    this.svgDefs = this.svgRoot.defs;
 
     if (width) {
       this.root.dom.style.width = width + 'px';
@@ -286,10 +324,21 @@ define([
           case 'matrix':
             if (type === 'Group') {
               if (value != null) {
-                el.style.WebkitTransform = matrixToString(value);
-                el.style.MozTransform = matrixToString(value);
+                var matrix = tools.mixin({}, value);
+                matrix.tx = 0;
+                matrix.ty = 0;
+                el.displayGroup.translatePosition(value.tx, value.ty);
+                el.style.WebkitTransform = 
+                  el.style.MozTransform = 
+                    el.style.MSTransform =
+                      el.style.OTransform =
+                        el.style.transform = matrixToString(matrix);
               } else if (value === null) {
-                el.style.WebkitTransform = '';
+                el.style.WebkitTransform =
+                  el.style.MozTransform =
+                    el.style.MSTransform =
+                      el.style.OTransform =
+                        el.style.transform = '';
               }
             } else {
               if (value != null) {
@@ -439,8 +488,6 @@ define([
 
       if (message.detach) {
 
-        console.log('Removing', message);
-
         var elementToRemove = element, idToRemove = id;
 
         // message.children contains all child objects that have to be removed
@@ -507,26 +554,38 @@ define([
     for (parent in updateParents) {
       var updateIds = updateParents[parent];
       for (var i = 0, l = updateIds.length; i < l; ++i) {
+
         var msg = updateMessages[updateIds[i]];
         parent = display[msg.parent];
+
         if (parent.isDisplayGroup) {
           if (msg.type === 'Group') {
+            // If the element is a group then we want it to add itself
+            // to the root dom of the parent DisplayGroup
+            // (i.e. appending a DisplayGroup to another DisplayGroup)
             parent = parent.dom;
           } else if (msg.type === 'DOMElement') {
+            // Get the top-most DOM layer or if the top-most layer is not
+            // a DOM layer, then make a new one:
             parent = parent.getDOMLayer();
           } else {
+            // Get the top-most SVG layer or if the top-most layer is not
+            // a SVG layer, then make a new one:
             parent = parent.getSVGLayer();
           }
         }
+
         var el = display[msg.id],
             nextEl = display[msg.next];
+
         el = el.isDisplayGroup ? el.dom : el;
         nextEl = nextEl && nextEl.isDisplayGroup ? nextEl.dom : nextEl;
-        ///console.log(display[msg.id], '::', display[msg.next], '::', parent);
+
         if (nextEl && nextEl.parentNode) {
           nextEl.parentNode.insertBefore(el, nextEl);
           if (DisplayGroup.isEmptyLayer(parent)) {
-            display.removeLayer(parent);
+            // Remove parent from its own displayGroup
+            parent.displayGroup.removeLayer(parent);
           }
         } else {
           parent.appendChild(el);
@@ -584,13 +643,13 @@ define([
 
       var svgClipId = attr.clipId + '_offStageParent';
 
-      if (!(element._clip = this.svg[svgClipId])) {
-        element._clip = this.svg[svgClipId] = this.display.svgDefs.appendChild(createSVGElement('mask'));
+      if (!(element._clip = this.display[svgClipId])) {
+        element._clip = this.display[svgClipId] = this.display.svgDefs.appendChild(createSVGElement('mask'));
         element._clip.id = this._genDefUID();
         element._clip._clipId = svgClipId; // Save real ID too (as in `this.svg`)
         element._clip.n = 1;
       } else {
-        if (element._clip !== this.svg[svgClipId]) {
+        if (element._clip !== this.display[svgClipId]) {
           element._clip.n++;
         }
       }
@@ -823,21 +882,6 @@ define([
       } else if(/^css_/.test(i) && typeof attributes[i] !== 'undefined') {
         element.style[i.slice(4)] = attributes[i].toString().replace(/\{\{prefix\}\}/g, fontPrefix);
       }
-    }
-
-    // If we're mutating innerHTML and its already in the DOM, it needs a
-    // forced repaint: (TODO: only do this for Chrome)
-    if ('dom_innerHTML' in attributes && element.parentNode) {
-      var cur = element, root = element._root;
-      if (!root) {
-        // Find root <foreignObject>
-        while (cur = cur.parentNode) {
-          if (root = cur._root) {
-            break;
-          }
-        }
-      }
-      root.setAttribute('height', root._height || '100%');
     }
 
   };
@@ -1224,7 +1268,7 @@ define([
       }
     }
 
-    this.display.root.getSVGLayer().appendChild(gradientEl);
+    this.display.svgDefs.appendChild(gradientEl);
     element.setAttribute(styleAttribute, 'url(#' + gradientEl.id + ')');
 
     // Save the new gradient to this.definitions:
@@ -1328,6 +1372,9 @@ define([
       patternFillImage && group.appendChild(patternFillImage);
     }
 
+    // Remove element from tree (it was only added to retrieve BBox)
+    display.svgRoot.removeChild(element);
+
   };
 
   proto.applyFills = function(element, attributes) {
@@ -1350,6 +1397,7 @@ define([
         patternFillColor = pattern && pattern._fillColor,
         isNewPattern = !pattern;
 
+    // Add element so we can get BBox
     display.svgRoot.appendChild(element);
 
     if (isNewPattern) {
@@ -1385,7 +1433,7 @@ define([
     if (!patternFillImage && attributes.fillImageId) {
       patternFillImage = pattern._fillImage = createSVGElement('g');
       patternFillImage._fillImageId = attributes.fillImageId + '_offStageParent';
-      this.svg[patternFillImage._fillImageId] = patternFillImage;
+      this.display[patternFillImage._fillImageId] = patternFillImage;
     }
 
     if (fillColor) {
@@ -1411,6 +1459,9 @@ define([
       element.setAttribute('fill', 'url(#' + pattern.id + ')');
       defs.appendChild(pattern);
     }
+
+    // Remove element from tree (it was only added to retrieve BBox)
+    display.svgRoot.removeChild(element);
   };
 
   proto.applyFilters = function(element, list) {
@@ -1485,7 +1536,7 @@ define([
     var dictionary = this.display;
 
     if (!(element._mask = dictionary[maskId])) {
-      element._mask = dictionary[maskId] = dictionary.defs.appendChild(createSVGElement('mask'));
+      element._mask = dictionary[maskId] = this.display.svgDefs.appendChild(createSVGElement('mask'));
       element._mask.id = this._genDefUID();
       element._mask._maskId = maskId; // Save real ID too (as in `this.display`)
       element._mask.n = 1;
