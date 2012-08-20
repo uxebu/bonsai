@@ -168,6 +168,14 @@ require([
       });
     });
 
+    it('should only register onEnd if it\'s a function', function() {
+      var fn = function(){};
+      var animA = new createAnimation('50ms', {t:1}, { onEnd: fn });
+      var animB = new createAnimation('50ms', {t:1}, { onEnd: null });
+      expect(animA._events[':end'][0].listener).toBe(fn);
+      expect(animB._events).toBe(undefined);
+    });
+
     it('should transform one value to another over time after a specified delay', function() {
       var subject = {foo:0};
       var anim = new createAnimation('50ms', {
