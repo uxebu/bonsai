@@ -8,23 +8,33 @@ define([
   '../../tools',
   '../../color',
   '../../segment_helper',
+  './utils',
+
+  './display_group',
+  './display_layer',
+  './dom_layer',
+  './svg_layer',
+
   './svg_filters',
-  './svg_helper',
   './svg_event_handlers',
   '../../asset/asset_controller'
-], function(EventEmitter, tools, color, segmentHelper, svgFilters, svgHelper, eventHandlers, AssetController) {
+], function(
+  EventEmitter, tools, color, segmentHelper, utils,
+  DisplayGroup, DisplayLayer, DOMLayer, SVGLayer,
+  svgFilters, eventHandlers, AssetController
+) {
   'use strict';
 
-  var elCache = {};
   var isWebkitPatternBug = /Version\/5\.1(\.[0-4])? /.test(navigator.appVersion);
 
-  // svgHelper
-  var cssClasses = svgHelper.cssClasses,
-      matrixToString = svgHelper.matrixToString,
-      gradientToSignature = svgHelper.gradientToSignature,
-      filterToSignature = svgHelper.filterToSignature,
-      valueFromSignatureForType = svgHelper.valueFromSignatureForType,
-      exportToPath = segmentHelper.exportToPath;
+  // utils
+  var cssClasses = utils.cssClasses,
+      matrixToString = utils.matrixToString,
+      gradientToSignature = utils.gradientToSignature,
+      filterToSignature = utils.filterToSignature,
+      valueFromSignatureForType = utils.valueFromSignatureForType,
+      exportToPath = segmentHelper.exportToPath,
+      createSVGElement = utils.createSVGElement;
 
   // svgFilters
   var isFEColorMatrixEnabled = svgFilters.isFEColorMatrixEnabled,
@@ -69,237 +79,23 @@ define([
 
   var xlink = 'http://www.w3.org/1999/xlink';
 
-  function createSVGElement(n, id) {
-    if (!n) {
-      throw TypeError('Invalid tag name: ' + n);
-    }
-    var el = (elCache[n] || (elCache[n] = document.createElementNS('http://www.w3.org/2000/svg', n))).cloneNode(false);
-    if (id || id === 0) {
-      el.setAttribute('data-bs-id', id);
-    }
-    return el;
-  }
 
-  /**
-   * A DisplayGroup is the renderer's DisplayObject container. A DisplayGroup
-   * will contain layers, either SVG or DOM, which will contain the group's
-   * children. A DisplayGroup can contain other DisplayGroups.
-   * DisplayGroup is generally analogous to `bonsai.Group`
-   */
-  function DisplayGroup(id) {
-    this.dom = document.createElement('div');
-    this.dom.setAttribute('data-bonsai-type', 'displayGroup');
-    this.dom.setAttribute('data-bonsai-id', id);
-    this.dom.style.position = 'relative';
-    this.dom.displayGroup = this;
-    this.layers = [];
-    this.isDisplayGroup = true;
-    this.tx = 0;
-    this.ty = 0;
-  }
 
-  DisplayGroup.prototype = {
 
-    getResourcesSVGLayer: function() {
-      var defs = createSVGElement('defs');
-      var svgLayer = this.getSVGLayer();
-      svgLayer.dom.appendChild(defs);
-      svgLayer.defs = defs;
-      svgLayer.isResourcesSVG = true;
-      return svgLayer;
-    },
 
-    /** 
-     * Retrieves SVG layer, either if it's already at the top of creates a 
-     * new one
-     */
-    getSVGLayer: function() {
-      var topMost = this.layers[this.layers.length - 1];
-      if (topMost && topMost instanceof SVGLayer && !topMost.isResourcesSVG) {
-        return topMost;
-      } else {
-        return this.addLayer('svg');
-      }
-    },
 
-    /** 
-     * Retrieves DOM layer, either if it's already at the top of creates a 
-     * new one
-     */
-    getDOMLayer: function() {
-      var topMost = this.layers[this.layers.length - 1];
-      if (topMost && topMost instanceof DOMLayer) {
-        return topMost;
-      } else {
-        return this.addLayer('dom');
-      }
-    },
 
-    /** 
-     * Executes a callback on every layer of the passed type
-     */
-    forEachLayerOfType: function(type, callback) {
-      for (var i = 0, l = this.layers.length; i < l; ++i) {
-        if (this.layers[i].rootLayerType === type) {
-          callback(this.layers[i]);
-        }
-      }
-    },
 
-    /** 
-     * Removes a layer
-     */
-    removeLayer: function(layerElement) {
-      for (var i = 0, l = this.layers.length; i < l; ++i) {
-        if (this.layers[i] === layerElement) {
-          this.dom.removeChild(layerElement.dom);
-          this.layers.splice(i, 1);
-        }
-      }
-    },
 
-    /**
-     * Adds a layer of the passed type
-     * Supported types: 'svg', 'dom'
-     */
-    addLayer: function(type) {
 
-      var newLayer = this.createLayer(type);
-
-      this.dom.appendChild(newLayer.dom);
-      this.layers.push(newLayer);
-
-      // Update position of all layers:
-      this.translatePosition(this.tx, this.ty);
-
-      return newLayer;
-    },
-
-    createLayer: function(type) {
-      if (type === 'dom') {
-        return new DOMLayer(this);
-      } else if (type === 'svg') {
-        return new SVGLayer(this);
-      }
-    },
-
-    insertLayerBefore: function(type, layer) {
-
-      var newLayer = this.createLayer(type);
-      var index = this.layers.indexOf(layer);
-
-      this.layers.splice(index, 0, newLayer);
-      this.dom.insertBefore(newLayer.dom, layer.dom);
-
-      return newLayer;
-
-    },
-
-    translatePosition: function(x, y) {
-      var layer;
-      this.tx = x;
-      this.ty = y;
-      for (var i = 0, l = this.layers.length; i < l; ++i) {
-        layer = this.layers[i];
-        //console.log(layer, layer.rootLayerType);
-        if (layer.rootLayerType === 'dom') {
-          layer.style.top = y + 'px';
-          layer.style.left = x + 'px';
-        } else if (layer.rootLayerType === 'svg') {
-          layer.setAttribute(
-            'transform',
-            'matrix(1,0,0,1,' + x + ',' + y + ')'
-          );
-        }
-      }
-    }
-  };
-
-  /**
-   * A single layer appended to a DisplayGroup
-   * NOTE: Should be inherited and not instantiated directly.
-   */
-  function DisplayLayer(displayGroup) {
-
-    var width = displayGroup.width,
-        height = displayGroup.height;
-
-    this.displayGroup = displayGroup;
-    this.dom = this._makeDOM(width, height);
-
-    this.dom.style.position = 'absolute';
-    this.dom.style.top = '0';
-    this.dom.style.left = '0';
-
-    if (width) {
-      this.dom.style.width = width + 'px';
-    }
-    if (height) {
-      this.dom.style.height = height + 'px';
-    }
-
-  }
-
-  /**
-   * Helper: Returns boolean indicating whether or not the passed
-   * layer is empty
-   */
-  DisplayLayer.isEmptyLayer = function(layer) {
-    if (!(layer instanceof DisplayLayer)) {
-      return false; // It's not a layer
-    }
-    if (layer instanceof SVGLayer) {
-      return layer.dom.childNodes.length === 1; // <defs> or <g>
-    } else {
-      // dom
-      return layer.dom.childNodes.length === 0;
-    }
-  };
-
-  /**
-   * A layer representing <svg>
-   */
-  function SVGLayer(displayGroup) {
-    DisplayLayer.call(this, displayGroup);
-    this.appendee = this.rootGroup;
-  }
-
-  SVGLayer.prototype = Object.create(DisplayLayer.prototype);
-  SVGLayer.prototype._makeDOM = function(width, height) {
-    var svg = createSVGElement('svg');
-    // TODO: We require a pixel width/height for this to work in safari.
-    svg.setAttribute('width', 1000);
-    svg.setAttribute('height', 1000)
-    var group = createSVGElement('g');
-    svg.appendChild(group);
-    if (width && height) {
-      svg.setAttribute('viewBox', '-0.5 -0.5 ' + width + ' ' + height);
-    }
-    this.rootGroup = group;
-    // Expose the <g> as the newLayer so any SVGElements are appended
-    // to it. The actual <Svg> can be accessed as `newLayer.root`
-    return svg; 
-  };
-
-  /**
-   * A layer representing <div>
-   */
-  function DOMLayer(displayGroup) {
-    DisplayLayer.call(this, displayGroup);
-    this.appendee = this.dom;
-  }
-
-  DOMLayer.prototype = Object.create(DisplayLayer.prototype);
-  DOMLayer.prototype._makeDOM = function() {
-    return document.createElement('div');
-  };
 
   function Display(node, width, height) {
 
     this.width = width;
     this.height = height;
 
-    this.root = this[0] = new DisplayGroup(0);
+    this.root = this[0] = new DisplayGroup(null, 0);
+    this.root.dom.style.position = 'relative';
     this.svgResourcesLayer = this.root.getResourcesSVGLayer();
     this.svgResourcesDefs = this.svgResourcesLayer.defs;
 
@@ -324,7 +120,13 @@ define([
 
         value = attributes[i];
 
-        if (i in basicAttributeMap) {
+        if (type === 'Group') {
+          switch (i) {
+            case 'opacity':
+              el.dom.style.opacity = value;
+              break;
+          }
+        } else if (i in basicAttributeMap) {
           if (value != null) {
             el.setAttribute(basicAttributeMap[i], value);
           } else if (value === null) {
@@ -371,22 +173,23 @@ define([
             break;
           case 'matrix':
             if (type === 'Group') {
+              var elDom = el.dom;
               if (value != null) {
                 var matrix = tools.mixin({}, value);
                 matrix.tx = 0;
                 matrix.ty = 0;
-                el.displayGroup.translatePosition(value.tx, value.ty);
-                el.style.WebkitTransform = 
-                  el.style.MozTransform = 
-                    el.style.MSTransform =
-                      el.style.OTransform =
-                        el.style.transform = matrixToString(matrix);
+                el.translatePosition(value.tx, value.ty);
+                elDom.style.WebkitTransform = 
+                  elDom.style.MozTransform = 
+                    elDom.style.MSTransform =
+                      elDom.style.OTransform =
+                        elDom.style.transform = matrixToString(matrix);
               } else if (value === null) {
-                el.style.WebkitTransform =
-                  el.style.MozTransform =
-                    el.style.MSTransform =
-                      el.style.OTransform =
-                        el.style.transform = '';
+                elDom.style.WebkitTransform =
+                  elDom.style.MozTransform =
+                    elDom.style.MSTransform =
+                      elDom.style.OTransform =
+                        elDom.style.transform = '';
               }
             } else {
               if (value != null) {
@@ -514,23 +317,15 @@ define([
 
       element = display[id];
 
-      if (element) {
-        if (type === 'Group') {
-          element = element.dom;
-        }
-      } else if (!message.detach) {
+      if (!element && !message.detach) {
         if (type === 'DOMElement') {
           element = display[id] = document.createElement(message.attributes.nodeName);
           element.setAttribute('data-bs-id', id);
+        } else if (type === 'Group') {
+          element = display[id] = new DisplayGroup(null, id);
+          //element.dom.displayG
         } else {
-          if (type === 'Group') {
-            display[id] = new DisplayGroup(id);
-            element = display[id].dom;
-            //element.style.width = '400px';
-            //element.style.height = '400px';
-          } else {
-            element = display[id] = createSVGElement(typesToTags[type], id);
-          }
+          element = display[id] = createSVGElement(typesToTags[type], id);
         }
       }
 
@@ -543,10 +338,16 @@ define([
         var children = message.children || 0, childIndex = 0;
 
         do {
+          var removedElLayer = elementToRemove.parentDisplayLayer;
           if (elementToRemove) {
             this.removeObject(elementToRemove);
           }
           delete display[idToRemove];
+
+          if (removedElLayer.isEmpty()) {
+            // Remove parent from its own displayGroup
+            removedElLayer.parentDisplayGroup.removeLayer(removedElLayer);
+          }
 
           idToRemove = children[childIndex];
           elementToRemove = display[idToRemove];
@@ -565,36 +366,10 @@ define([
           this.drawAll(type, element, message);
         }
 
-        if (!isFEColorMatrixEnabled && type === 'Group') {
-          (function applyFilterShimOnGroup(el, filterSignature) {
-
-            if (!filterSignature) {
-              return;
-            }
-            var child = el.firstChild || {};
-            do {
-              if (child instanceof SVGGElement) {
-                applyFilterShimOnGroup(child, child._filterSignature);
-              }
-              if (child._fillColorSignature) {
-                self.applyFillColor(child, child._fillColorSignature, filterSignature);
-              }
-              if (child._strokeColorSignature) {
-                self.applyStrokeColor(child, child._strokeColorSignature, filterSignature);
-              }
-              if (child._fillGradientSignature) {
-                self.applyFillGradient(child, child._fillGradientSignature, null, filterSignature);
-              }
-            } while(child = child.nextSibling);
-
-          })(element, element._filterSignature);
-        }
-
         // Make sure `attr` is called after the draw methods because
         // the draw methods might add wrappers to the elements
-        // (which we retrieve via `_root`)
         if (message.attributes) {
-          display.attr(element._root || element, message.attributes, message.type);
+          display.attr(element, message.attributes, message.type);
         }
       }
     }
@@ -621,20 +396,15 @@ define([
             // a SVG layer, then make a new one:
             parent = parent.getSVGLayer();
           }
-          parent.displayGroupLayer = parent;
+          parent.parentDisplayLayer = parent;
         }
 
         var el = display[msg.id],
             nextEl = display[msg.next],
-            isDOM = el instanceof HTMLElement,
+            isDOM,
             isNextDOM;
 
-        // Save displayGround reference on descendents:
-        el.displayGroup = parent.displayGroup;
-        el.displayGroupLayer = parent.displayGroupLayer;
-
-        el = el.isDisplayGroup ? el.dom : el;
-        nextEl = nextEl && nextEl.isDisplayGroup ? nextEl.dom : nextEl;
+        isDOM = el instanceof HTMLElement;
 
         if (nextEl && nextEl.parentNode) {
 
@@ -645,42 +415,64 @@ define([
             //  DOM element before an SVG element
             //  SVG element before a DOM element
 
-            var nextLayer = nextEl.displayGroupLayer;
+            var nextLayer = nextEl.parentDisplayLayer;
 
             if (nextEl.parentNode.firstChild !== nextEl) {
               // If the nextEl Element (to be next sibling of el element) is NOT
               // the first in its DisplayLayer then we need to split the contents of
               // the layer, the new one with the nextEl and every element after 
               // nextEl.
-              var nextLayer = el.displayGroup.insertLayerBefore('svg', nextEl.displayGroupLayer);
-              var appendeeEl = nextEl;
+              var nextLayer = el.parentDisplayGroup.insertLayerAfter(
+                'svg',
+                nextEl.parentDisplayLayer
+              );
+              var appendEl = nextEl;
               do {
-                var _el = appendeeEl;
-                appendeeEl = appendeeEl.nextSibling;
-                nextLayer.appendChild(_el);
-              } while (appendeeEl);
+                var _appendEl = appendEl;
+                appendEl = appendEl.nextSibling;
+                nextLayer.appendee.appendChild(_appendEl);
+              } while (appendEl);
             }
 
-            // Placing DOM element before SVG element
-            var newLayer = el.displayGroup.insertLayerBefore(
-              isDOM ? 'dom' : 'svg',
-              nextLayer
-            );
+            if (el.parentDisplayLayer.dom.childNodes.length === 1) {
+              // If el is the only child of its current layer then we can
+              // move the whole layer
+              el.parentDisplayGroup.dom.insertBefore(el.parentDisplayLayer.dom, nextLayer.dom);
+            } else {
+              // If el is not the only child of its current layer then we
+              // create a new layer at the right position and insert el
+              // into that
+              var newLayer = el.parentDisplayGroup.insertLayerBefore(
+                isDOM ? 'dom' : 'svg',
+                nextLayer
+              );
 
-            // Now insert DOM element into new DOMLayer/SVGLayer:
-            newLayer.appendee.appendChild(el);
+              el.parentDisplayLayer = newLayer;
+
+              // Now insert el into new DOMLayer/SVGLayer:
+              newLayer.appendee.appendChild(el);
+            }
 
           } else {
 
             nextEl.parentNode.insertBefore(el, nextEl);
+            // Save displayGround reference on descendents:
+            el.parentDisplayGroup = nextEl.parentDisplayGroup;
+            el.parentDisplayLayer = nextEl.parentDisplayLayer;
 
           }
-          if (DisplayLayer.isEmptyLayer(parent)) {
+          if ((parent instanceof DisplayLayer) && parent.isEmpty()) {
             // Remove parent from its own displayGroup
-            parent.displayGroup.removeLayer(parent);
+            parent.parentDisplayGroup.removeLayer(parent);
           }
         } else {
-          (parent instanceof DisplayLayer ? parent.appendee : parent).appendChild(el);
+          // Save displayGround reference on descendents:
+          el.parentDisplayGroup = parent.parentDisplayGroup;
+          el.parentDisplayLayer = parent.parentDisplayLayer;
+         // console.log('Here', parent instanceof DisplayLayer ? parent.appendee : parent, el);
+          (parent instanceof DisplayLayer ? parent.appendee : parent).appendChild(
+            el instanceof DisplayLayer ? el.dom : el
+          );
         }
       }
     }
@@ -693,7 +485,6 @@ define([
 
   /* Presence of these methods required to ensure drawAll is called */
   proto.drawMovie = function() {};
-  proto.drawGroup = function() {};
 
   /**
    * Called along with draw[Whatever].
@@ -736,6 +527,7 @@ define([
       var svgClipId = attr.clipId + '_offStageParent';
 
       if (!(element._clip = this.display[svgClipId])) {
+        console.log('Creating offStage', svgClipId)
         element._clip = this.display[svgClipId] = this.display.svgResourcesDefs.appendChild(createSVGElement('mask'));
         element._clip.id = this._genDefUID();
         element._clip._clipId = svgClipId; // Save real ID too (as in `this.svg`)
@@ -947,19 +739,19 @@ define([
         id = message.id,
         parent = this.display[message.parent];
 
-    if (element._root) {
+    //if (element._root) {
       // Make sure top-level DOM element's width and height are applied
       // to the containing <foreignObject>. We don't want the <foreignObject>
       // to be any bigger than it has to be.
       if ('css_width' in attributes && /px$/.test(attributes.css_width)) {
-        element._root.setAttribute('width', attributes.css_width);
+        element.setAttribute('width', attributes.css_width);
       }
       if ('css_height' in attributes && /px$/.test(attributes.css_height)) {
-        element._root.setAttribute('height', attributes.css_height);
+        element.setAttribute('height', attributes.css_height);
         // Save height for the forced repaint below:
-        element._root._height = attributes.css_height;
+        element._height = attributes.css_height;
       }
-    }
+    //}
 
     // Mark the element as one with a corresponding BS DOMElement object
     element._isBSDOMElement = true;
@@ -980,7 +772,7 @@ define([
 
   proto.removeObject = function(element) {
 
-    var rootElement = element._root || element,
+    var rootElement = element,
         parent = rootElement.parentNode;
 
     if (parent) {

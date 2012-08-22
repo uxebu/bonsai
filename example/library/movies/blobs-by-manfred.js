@@ -61,8 +61,7 @@ function stats(){
 
 /* states */
 function stateInit(){
-  var clip = Path.rect(0,0,setup.stageWidth,setup.stageHeight).attr({fillColor:'#333333'}).addTo(groups[0]);
-  groups[1].attr('clip',clip.clone());
+
   Path.rect(setup.stageCenter.x-70,setup.stageHeight-120, 140, 40, 5).attr({fillColor:'#666666',strokeColor:'#999999',strokeWidth:2}).addTo(groups[2]);
   new Text('Pause').attr({x:setup.stageCenter.x-24,y:setup.stageHeight-108,fontSize: '20px',textFillColor: 'white'}).addTo(groups[2]);
   groups[2].on('click', pauseHandler);

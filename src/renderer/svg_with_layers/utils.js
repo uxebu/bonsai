@@ -8,6 +8,7 @@ define([
   'use strict';
 
   var hasOwn = {}.hasOwnProperty;
+  var elCache = {};
 
   var helpers = {
 
@@ -47,6 +48,17 @@ define([
       return matrix ? 'matrix(' + [
         matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx, matrix.ty
       ].join(',') + ')' : '';
+    },
+
+    createSVGElement: function createSVGElement(n, id) {
+      if (!n) {
+        throw TypeError('Invalid tag name: ' + n);
+      }
+      var el = (elCache[n] || (elCache[n] = document.createElementNS('http://www.w3.org/2000/svg', n))).cloneNode(false);
+      if (id || id === 0) {
+        el.setAttribute('data-bs-id', id);
+      }
+      return el;
     },
 
     /**

@@ -197,6 +197,7 @@ var barChart = {};
   var group = new Group()
     .attr({x:0, y:0, clip:Path.rect(0, 0, maxWidth, 50)})
     .addTo(stage);
+  console.log('FROM ME: ', group.id)
   var line = new Path().moveTo(0, 50)
     .addTo(group)
     .attr({strokeColor:'black', strokeWidth:3});
