@@ -16,7 +16,7 @@ define([
   'use strict';
 
   var elCache = {};
-  var isWebkitPatternBug = /Version\/5\.1(\.[0-4])? /.test(navigator.appVersion);
+  var isWebkitPatternBug = /AppleWebKit\/53[0-4](\.[0-4])/.test(navigator.appVersion);
 
   // svgHelper
   var cssClasses = svgHelper.cssClasses,
