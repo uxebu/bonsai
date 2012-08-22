@@ -3,6 +3,7 @@ v0.3.4
 
 * Remove `AssetController.preload`
   The existing `preload` function is broken and not needed in Bonsai core.
+* Detect UIWebView's mobile safari (`isWebkitPatternBug`).
 
 v0.3.3
 -------------------
