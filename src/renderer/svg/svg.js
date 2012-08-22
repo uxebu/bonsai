@@ -16,7 +16,9 @@ define([
   'use strict';
 
   var elCache = {};
-  var isWebkitPatternBug = /AppleWebKit\/53[0-4](\.[0-4])/.test(navigator.appVersion);
+  // this decides if a svg-pattern-bugfix is applied
+  // targets webkit based browsers from version 530.0 to 534.4
+  var isWebkitPatternBug = /AppleWebKit\/53([0-3]|4.([0-4]))/.test(navigator.appVersion);
 
   // svgHelper
   var cssClasses = svgHelper.cssClasses,
