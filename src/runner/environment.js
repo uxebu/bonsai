@@ -60,11 +60,14 @@ define([
   function Environment(stage, assetLoader) {
 
     var exports = this.exports = {
+
+      // DisplayObjects
       DOMElement: DOMElement,
       DisplayObject: DisplayObject,
       Group: Group,
       Matrix: Matrix,
-      Point: Point,
+      Text: Text,
+      TextSpan: TextSpan,
 
       // Path Classes
       Path: Path,
@@ -76,8 +79,7 @@ define([
       Circle: Circle,
       Arc: Arc,
 
-      Text: Text,
-      TextSpan: TextSpan,
+      Point: Point,
       color: color,
       tools: tools,
       gradient: gradient,
