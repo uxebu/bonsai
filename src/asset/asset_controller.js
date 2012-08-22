@@ -6,7 +6,6 @@
 define([
   '../tools',
   '../event_emitter',
-  './extensions',
   './asset_request',
   './font_handler',
   './video_handler',
@@ -14,7 +13,7 @@ define([
   './raw_handler'
 ],
 function(
-  tools, EventEmitter, extensions, AssetRequest,
+  tools, EventEmitter, AssetRequest,
   FontHandler, VideoHandler, BitmapHandler, RawHandler
 ) {
   'use strict';
@@ -88,11 +87,11 @@ function(
       successEvent = successEvent || 'assetLoadSuccess';
       errorEvent = errorEvent || 'assetLoadError';
 
-      var type = data.type;
+      var displayObjectType = data.type;
 
-      if (type in handlers) {
+      if (displayObjectType in handlers) {
 
-        new handlers[type](data.request, data.id)
+        new handlers[displayObjectType](data.request, data.id)
           .on('registerElement', function(element) {
             AssetController.assets[data.id] = element;
           })
@@ -105,64 +104,10 @@ function(
           })
           .load();
       } else {
-        throw new Error('Type not found in AssetController.handlers: ' + type);
-      }
-    },
-
-    /**
-     * Preloads array of assets and fires callback when ALL are loaded
-     *
-     * @param {object} data Asset data
-     * @param {string} data.source URI source for image
-     * @param {string} [data.type] source type (generic)
-     * @returns {this}
-     */
-    preload: function(sources, callback) {
-
-      sources = tools.isArray(sources) ? sources : [sources];
-
-      if (!sources.length) {
-        callback();
-      }
-
-      var i, len, request, source, type,
-          attemptedLoads = 0,
-          loaded = 0,
-          preloadID = this.preloadID ? ++this.preloadID : (this.preloadID = 1);
-
-      this.on('_preloadedAssetLoadSuccess', function(data) {
-        if (data.id.indexOf(preloadID + '__') == 0) {
-          loaded++;
-        }
-        if (loaded == attemptedLoads) {
-          callback();
-        }
-      });
-
-      this.on('_preloadedAssetLoadError', function(data) {
-        // TODO decide if loading multiple sources fails here
-        // (just because 1+ caused errors when loading)
-      });
-
-      for (i = 0, len = sources.length; i < len; i++) {
-
-        source = sources[i];
-        request = new AssetRequest(source);
-        type = request.type || source.type;
-
-        if (!type) {
-          continue;
-        }
-
-        attemptedLoads++;
-
-        this.load({
-          request: request,
-          type: type,
-          id: preloadID + '__' + i
-        }, '_preloadedAssetLoadSuccess', '_preloadedAssetLoadError');
+        throw new Error('Type not found in AssetController.handlers: ' + displayObjectType);
       }
     }
+
   };
 
   tools.mixin(AssetController.prototype, EventEmitter);

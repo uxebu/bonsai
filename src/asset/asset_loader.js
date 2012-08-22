@@ -11,7 +11,7 @@ define([
   }
 
   var proto = AssetLoader.prototype = {
-    /** 
+    /**
      * Handles events emitted on this AssetLoader instance,
      * notifying the relevant requester of the event:
      */
@@ -24,7 +24,7 @@ define([
       }
     },
 
-    /** 
+    /**
      * Emits a request event
      */
     request: function(requester, url, type) {
@@ -32,7 +32,7 @@ define([
       this.emit('request', requester.id, url, type);
     },
 
-    /** 
+    /**
      * Emits a destroy method.
      * Intended to destroy data held about an asset within the renderer
      */

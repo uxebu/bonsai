@@ -150,12 +150,12 @@ define([
       }
     },
 
-    /** 
+    /**
      * Sends a `loadAsset` message to the renderer
      */
-    loadAsset: function(baseUrl, id, request, type) {
+    loadAsset: function(baseUrl, id, request, displayObjectType) {
       // Make asset urls absolute here
-      baseUrl || (baseUrl = this.assetBaseUrl);
+      baseUrl = baseUrl || this.assetBaseUrl;
       tools.forEach(request.resources, function(assetResource) {
         var src = URI.parse(assetResource.src);
         if (src.scheme !== 'data') {
@@ -167,13 +167,13 @@ define([
         command: 'loadAsset',
         data: {
           id: id,
-          type: type,
+          type: displayObjectType,
           request: request
         }
       });
     },
 
-    /** 
+    /**
      * Sends a `destroyAsset` message to the renderer
      */
     destroyAsset: function(id) {
