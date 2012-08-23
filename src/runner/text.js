@@ -12,6 +12,8 @@ define([
       getter = tools.getter,
       parseColor = color.parse;
 
+  var textAlignValues = ['left', 'center', 'right'];
+
   // Getters and setters stolen from shape.js
 
   function getTextFillColor() {
@@ -64,8 +66,9 @@ define([
   }
 
   function setText(text) {
-    this._owner.clear();
-    this._owner.addChild(new TextSpan(text));
+    var _owner = this._owner;
+    _owner.clear();
+    _owner.addChild(new TextSpan(text));
   }
 
   function getText() {
@@ -75,6 +78,16 @@ define([
       text.push(children[i].attr('text'));
     }
     return text.join('');
+  }
+
+  function getTextAlign() {
+    return textAlignValues[this._textAlign];
+  }
+  function setTextAlign(textAlign) {
+    var index = textAlignValues.indexOf(textAlign);
+    if (index !== -1) {
+      this._textAlign = index;
+    }
   }
 
   /**
@@ -111,8 +124,8 @@ define([
 
     Object.defineProperties(this._attributes, {
       fontSize: data(16, true, true),
-      fontFamily: accessor(getFontFamily, setFontFamily, true),
       _fontFamily: data('monospace', true),
+      fontFamily: accessor(getFontFamily, setFontFamily, true),
       fontStyle: data('normal', true, true),
       fontWeight: data('normal', true, true),
       _cap: data('butt', true),
@@ -132,7 +145,9 @@ define([
       miterLimit: accessor(getMiterLimit, setMiterLimit, true),
       text: accessor(getText, setText, true),
       textOrigin: data(null, true, true),
-      selectable: data(true, true, true)
+      selectable: data(true, true, true),
+      _textAlign: data(0, true),
+      textAlign: accessor(getTextAlign, setTextAlign)
     });
 
     var rendererAttributes = this._renderAttributes;
@@ -151,14 +166,17 @@ define([
     rendererAttributes.miterLimit = '_miterLimit';
     rendererAttributes.selectable = 'selectable';
     rendererAttributes.textOrigin = 'textOrigin';
+    rendererAttributes.textAlign = '_textAlign';
 
     if (text) {
       this.attr('text', text);
     }
   }
 
-  var superObject = Group.prototype;
-  var proto = Text.prototype = Object.create(superObject);
+  var parentPrototype = Group.prototype;
+  var parentPrototypeAddChild = parentPrototype.addChild;
+
+  var proto = Text.prototype = Object.create(parentPrototype);
 
   /**
    * Adds a TextSpan child at the end list of contained TextSpans.
@@ -183,7 +201,7 @@ define([
       throw TypeError('child is not a TextSpan instance/an array of TextSpans');
     }
 
-    return superObject.addChild.apply(this, arguments);
+    return parentPrototypeAddChild.apply(this, arguments);
   };
 
   proto.type = 'Text';

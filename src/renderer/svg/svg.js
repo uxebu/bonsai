@@ -69,6 +69,8 @@ define([
     'mousewheel'
   ];
 
+  var textAlignValues = ['start', 'middle', 'end'];
+
   var xlink = 'http://www.w3.org/1999/xlink';
 
   function createElement(n, id) {
@@ -130,6 +132,13 @@ define([
               el.setAttribute('font-family', value);
             } else if (value === null) {
               el.removeAttribute('font-family');
+            }
+            break;
+          case 'textAlign':
+            value = textAlignValues[value];
+            // set what matches with `textAlignValues` or ignore it.
+            if (typeof value !== 'undefined') {
+              el.style.textAnchor = value;
             }
             break;
           case 'strokeWidth':
@@ -271,6 +280,8 @@ define([
       if (type === 'bitmap_hidden') {
         continue;
       }
+
+      console.log(message);
 
       // Check that it's an off-stage el AND that it's the top-most:
       if (message.offStageType && message.parent === 0) {
@@ -544,7 +555,8 @@ define([
 
     var attributes = message.attributes,
         fontSize = attributes.fontSize,
-        fontFamily = attributes.fontFamily;
+        fontFamily = attributes.fontFamily,
+        text = attributes.text;
 
     tspan.setAttributeNS(xlink, 'text-anchor', 'start');
     tspan.setAttribute('alignment-baseline', 'inherit');
@@ -566,21 +578,20 @@ define([
       tspan.removeAttribute('y');
     }
 
-    if (tspan._text !== attributes.text) {
+    if (tspan._text !== text) {
       // attribute is different to cached text is different, overwrite text nodes:
       while (tspan.firstChild) {
         tspan.removeChild(tspan.firstChild);
       }
-      tspan._text = attributes.text;
-      tspan.appendChild(document.createTextNode(attributes.text));
+      tspan._text = text;
+      tspan.appendChild(document.createTextNode(text));
     }
   };
 
   proto.drawText = function(text, message) {
 
-    var attributes = message.attributes,
-        fontSize = attributes.fontSize,
-        fontFamily = attributes.fontFamily;
+    var style;
+    var attributes = message.attributes;
 
     if (attributes.selectable !== false) {
       cssClasses.add(text, 'selectable');
@@ -588,7 +599,7 @@ define([
       cssClasses.remove(text, 'selectable');
     }
 
-    text.setAttributeNS(xlink, 'text-anchor', 'start');
+    //text.setAttributeNS(xlink, 'text-anchor', 'start');
 
     if (attributes.textOrigin != null) {
       text.setAttribute(
@@ -596,9 +607,6 @@ define([
         attributes.textOrigin === 'top' ? 'hanging' : ''
       );
     }
-
-    var style = text.style;
-    style.textAnchor = 'start';
   };
 
   proto.drawVideo = function(foreignObject, message) {
