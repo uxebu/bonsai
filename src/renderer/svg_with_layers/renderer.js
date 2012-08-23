@@ -10,8 +10,11 @@ define([
   '../../segment_helper',
   './utils',
 
+  './display_element',
   './display_group',
   './display_layer',
+  './dom_element',
+  './svg_element',
   './dom_layer',
   './svg_layer',
 
@@ -20,7 +23,7 @@ define([
   '../../asset/asset_controller'
 ], function(
   EventEmitter, tools, color, segmentHelper, utils,
-  DisplayGroup, DisplayLayer, DOMLayer, SVGLayer,
+  DisplayElement, DisplayGroup, DisplayLayer, DOMElement, SVGElement, DOMLayer, SVGLayer,
   svgFilters, eventHandlers, AssetController
 ) {
   'use strict';
@@ -79,16 +82,6 @@ define([
 
   var xlink = 'http://www.w3.org/1999/xlink';
 
-
-
-
-
-
-
-
-
-
-
   function Display(node, width, height) {
 
     this.width = width;
@@ -115,6 +108,7 @@ define([
     attr: function(el, attributes, type) {
 
       var value;
+      var dom = el.dom;
 
       for (var i in attributes) {
 
@@ -123,14 +117,14 @@ define([
         if (type === 'Group') {
           switch (i) {
             case 'opacity':
-              el.dom.style.opacity = value;
+              dom.style.opacity = value;
               break;
           }
         } else if (i in basicAttributeMap) {
           if (value != null) {
-            el.setAttribute(basicAttributeMap[i], value);
+            dom.setAttribute(basicAttributeMap[i], value);
           } else if (value === null) {
-            el.removeAttribute(basicAttributeMap[i]);
+            dom.removeAttribute(basicAttributeMap[i]);
           }
           continue;
         }
@@ -139,14 +133,14 @@ define([
           case 'fontFamily':
             value = fontIDs[value] || value;
             if (value != null) {
-              el.setAttribute('font-family', value);
+              dom.setAttribute('font-family', value);
             } else if (value === null) {
-              el.removeAttribute('font-family');
+              dom.removeAttribute('font-family');
             }
             break;
           case 'strokeWidth':
 
-            el.setAttribute('stroke-width', value);
+            dom.setAttribute('stroke-width', value);
             if (value <= 0) {
               /*
                 AFFECTS: Chrome 14
@@ -158,8 +152,8 @@ define([
                 To be able to reapply a stroke later, we store it in a data
                 attribute.
                */
-              var stroke = el.getAttribute('stroke');
-              stroke && el.setAttribute('data-stroke', stroke);
+              var stroke = dom.getAttribute('stroke');
+              stroke && dom.setAttribute('data-stroke', stroke);
             } else if (!('strokeColor' in attributes)) {
               /*
                AFFECTS: Chrome 14
@@ -167,38 +161,38 @@ define([
                We need to re-apply any previously set stroke color. It might
                 have been removed if strokeWidth has been set to 0.
                */
-              var dataStroke = el.getAttribute('data-stroke');
-              dataStroke && el.setAttribute('stroke', dataStroke);
+              var dataStroke = dom.getAttribute('data-stroke');
+              dataStroke && dom.setAttribute('stroke', dataStroke);
             }
             break;
           case 'matrix':
             if (type === 'Group') {
-              var elDom = el.dom;
               if (value != null) {
                 var matrix = tools.mixin({}, value);
                 matrix.tx = 0;
                 matrix.ty = 0;
                 el.translatePosition(value.tx, value.ty);
-                elDom.style.WebkitTransform = 
-                  elDom.style.MozTransform = 
-                    elDom.style.MSTransform =
-                      elDom.style.OTransform =
-                        elDom.style.transform = matrixToString(matrix);
+                dom.style.WebkitTransform = 
+                  dom.style.MozTransform = 
+                    dom.style.MSTransform =
+                      dom.style.OTransform =
+                        dom.style.transform = matrixToString(matrix);
               } else if (value === null) {
-                elDom.style.WebkitTransform =
-                  elDom.style.MozTransform =
-                    elDom.style.MSTransform =
-                      elDom.style.OTransform =
-                        elDom.style.transform = '';
+                el.translatePosition(0, 0);
+                dom.style.WebkitTransform =
+                  dom.style.MozTransform =
+                    dom.style.MSTransform =
+                      dom.style.OTransform =
+                        dom.style.transform = '';
               }
             } else {
               if (value != null) {
-                el.setAttribute(
+                dom.setAttribute(
                   'transform',
                   matrixToString(value)
                 );
               } else if (value === null) {
-                el.removeAttribute('transform');
+                dom.removeAttribute('transform');
               }
             }
             break;
@@ -236,6 +230,9 @@ define([
 
     eventTypes.forEach(function(e) {
       display.root.dom.addEventListener(e, this, false);
+      display.root.dom.addEventListener(e, function(e) {
+        console.log(e.type, e.target);
+      }, false);
     }, this);
 
     // This is necessary to ensure that we receive the touch events
@@ -319,13 +316,17 @@ define([
 
       if (!element && !message.detach) {
         if (type === 'DOMElement') {
-          element = display[id] = document.createElement(message.attributes.nodeName);
-          element.setAttribute('data-bs-id', id);
+          element = display[id] = new DOMElement(
+            document.createElement(message.attributes.nodeName)
+          );
+          element.dom.setAttribute('data-bs-id', id);
         } else if (type === 'Group') {
           element = display[id] = new DisplayGroup(null, id);
           //element.dom.displayG
         } else {
-          element = display[id] = createSVGElement(typesToTags[type], id);
+          element = display[id] = new SVGElement(
+            createSVGElement(typesToTags[type], id)
+          );
         }
       }
 
@@ -344,7 +345,7 @@ define([
           }
           delete display[idToRemove];
 
-          if (removedElLayer.isEmpty()) {
+          if (!(removedElLayer instanceof DisplayGroup) && removedElLayer.isEmpty()) {
             // Remove parent from its own displayGroup
             removedElLayer.parentDisplayGroup.removeLayer(removedElLayer);
           }
@@ -362,8 +363,8 @@ define([
         }
 
         if (this[drawName = 'draw' + type]) {
-          this[drawName](element, message);
-          this.drawAll(type, element, message);
+          this[drawName](element.dom, message);
+          this.drawAll(type, element.dom, message);
         }
 
         // Make sure `attr` is called after the draw methods because
@@ -382,21 +383,18 @@ define([
         parent = display[msg.parent];
 
         if (parent.isDisplayGroup) {
-          if (msg.type === 'Group') {
-            // If the element is a group then we want it to add itself
-            // to the root dom of the parent DisplayGroup
-            // (i.e. appending a DisplayGroup to another DisplayGroup)
-            parent = parent.dom;
-          } else if (msg.type === 'DOMElement') {
+          var parentGroup = parent;
+          if (msg.type === 'DOMElement') {
             // Get the top-most DOM layer or if the top-most layer is not
             // a DOM layer, then make a new one:
             parent = parent.getDOMLayer();
-          } else {
+            parent.parentDisplayGroup = parentGroup;
+          } else if (msg.type !== 'Group') {
             // Get the top-most SVG layer or if the top-most layer is not
             // a SVG layer, then make a new one:
             parent = parent.getSVGLayer();
+            parent.parentDisplayGroup = parentGroup;
           }
-          parent.parentDisplayLayer = parent;
         }
 
         var el = display[msg.id],
@@ -404,29 +402,29 @@ define([
             isDOM,
             isNextDOM;
 
-        isDOM = el instanceof HTMLElement;
+        isDOM = el instanceof DOMElement;
 
-        if (nextEl && nextEl.parentNode) {
+        if (nextEl && nextEl.dom.parentNode) {
 
-          isNextDOM = nextEl instanceof HTMLElement;
+          isNextDOM = nextEl instanceof DOMElement;
 
-          if (isNextDOM !== isDOM) {
+          if (isNextDOM !== isDOM || ((el instanceof DisplayGroup) && !(nextEl instanceof DisplayGroup))) {
             // i.e. If we're placing either a
             //  DOM element before an SVG element
             //  SVG element before a DOM element
 
             var nextLayer = nextEl.parentDisplayLayer;
 
-            if (nextEl.parentNode.firstChild !== nextEl) {
+            if (nextEl.dom.parentNode.firstChild !== nextEl) {
               // If the nextEl Element (to be next sibling of el element) is NOT
               // the first in its DisplayLayer then we need to split the contents of
               // the layer, the new one with the nextEl and every element after 
               // nextEl.
-              var nextLayer = el.parentDisplayGroup.insertLayerAfter(
-                'svg',
+              var nextLayer = nextEl.parentDisplayGroup.insertLayerAfter(
+                isNextDOM ? 'dom' : 'svg',
                 nextEl.parentDisplayLayer
               );
-              var appendEl = nextEl;
+              var appendEl = nextEl.dom;
               do {
                 var _appendEl = appendEl;
                 appendEl = appendEl.nextSibling;
@@ -434,45 +432,50 @@ define([
               } while (appendEl);
             }
 
-            if (el.parentDisplayLayer.dom.childNodes.length === 1) {
+            console.log(parent, el, el.parentDisplayGroup, el.parentDisplayLayer);
+
+            if (el.parentDisplayLayer && el.parentDisplayLayer.dom.childNodes.length === 1) {
               // If el is the only child of its current layer then we can
               // move the whole layer
               el.parentDisplayGroup.dom.insertBefore(el.parentDisplayLayer.dom, nextLayer.dom);
             } else {
-              // If el is not the only child of its current layer then we
-              // create a new layer at the right position and insert el
-              // into that
-              var newLayer = el.parentDisplayGroup.insertLayerBefore(
-                isDOM ? 'dom' : 'svg',
-                nextLayer
-              );
+              
+              if (el instanceof DisplayGroup) {
+                parent.dom.insertBefore(el.dom, nextLayer.dom);
+              } else {
+                // If el is not the only child of its current layer then we
+                // create a new layer at the right position and insert el
+                // into that
+                var newLayer = el.parentDisplayGroup.insertLayerBefore(
+                  isDOM ? 'dom' : 'svg',
+                  nextLayer
+                );
 
-              el.parentDisplayLayer = newLayer;
+                el.parentDisplayLayer = newLayer;
 
-              // Now insert el into new DOMLayer/SVGLayer:
-              newLayer.appendee.appendChild(el);
+                // Now insert el into new DOMLayer/SVGLayer:
+                newLayer.appendee.appendChild(el.dom);
+              }
             }
 
           } else {
-
-            nextEl.parentNode.insertBefore(el, nextEl);
+            nextEl.dom.parentNode.insertBefore(el.dom, nextEl.dom);
             // Save displayGround reference on descendents:
             el.parentDisplayGroup = nextEl.parentDisplayGroup;
             el.parentDisplayLayer = nextEl.parentDisplayLayer;
 
           }
-          if ((parent instanceof DisplayLayer) && parent.isEmpty()) {
+
+          if ((parent instanceof DisplayLayer) && !(parent instanceof DisplayGroup) && parent.isEmpty()) {
             // Remove parent from its own displayGroup
             parent.parentDisplayGroup.removeLayer(parent);
           }
         } else {
           // Save displayGround reference on descendents:
           el.parentDisplayGroup = parent.parentDisplayGroup;
-          el.parentDisplayLayer = parent.parentDisplayLayer;
+          el.parentDisplayLayer = parent;
          // console.log('Here', parent instanceof DisplayLayer ? parent.appendee : parent, el);
-          (parent instanceof DisplayLayer ? parent.appendee : parent).appendChild(
-            el instanceof DisplayLayer ? el.dom : el
-          );
+          parent.appendee.appendChild( el.dom );
         }
       }
     }
@@ -772,15 +775,17 @@ define([
 
   proto.removeObject = function(element) {
 
-    var rootElement = element,
+    var rootElement = element.dom,
         parent = rootElement.parentNode;
 
     if (parent) {
       parent.removeChild(rootElement);
     }
 
-    if (parent.rootLayerType && !parent.childNodes.length) {
-      this.display.removeLayer(parent);
+    var layer = element.parentDisplayLayer;
+
+    if (layer.dom.childNodes.length === 0) {
+      element.parentDisplayGroup.removeLayer(layer);
     }
 
     if (element._pattern) {

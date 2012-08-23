@@ -1,4 +1,4 @@
-define([], function() {
+define(['./display_element'], function(DisplayElement) {
   'use strict';
 
   /**
@@ -11,7 +11,9 @@ define([], function() {
         height = displayGroup && displayGroup.height || 0;
 
     this.parentDisplayGroup = displayGroup;
-    this.dom = this._makeDOM(width, height);
+    this.parentDisplayLayer = displayGroup;
+
+    DisplayElement.call(this, this._makeDOM(width, height))
 
     this.dom.style.position = 'absolute';
     this.dom.style.top = '0';
@@ -25,6 +27,8 @@ define([], function() {
     }
 
   }
+
+  DisplayLayer.prototype = Object.create(DisplayElement.prototype);
 
   DisplayLayer.prototype.isEmpty = function() {
     throw 'isEmpty should be implemented by subclass';

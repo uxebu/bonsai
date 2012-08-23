@@ -50,6 +50,9 @@ define([
       ].join(',') + ')' : '';
     },
 
+    /**
+     * Creates an SVG element with the specified id as the data-bs-id attr
+     */
     createSVGElement: function createSVGElement(n, id) {
       if (!n) {
         throw TypeError('Invalid tag name: ' + n);
