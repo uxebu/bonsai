@@ -4,6 +4,8 @@ v0.3.4
 * Remove `AssetController.preload`
   The existing `preload` function is broken and not needed in Bonsai core.
 * Detect UIWebView's mobile safari (`isWebkitPatternBug`).
+* Fix #33 where `null` should be passed instead of `undefined`
+  as second parameter to `parent.insertBefore` (thx @jdalton)
 
 v0.3.3
 -------------------
