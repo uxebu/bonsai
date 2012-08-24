@@ -281,8 +281,6 @@ define([
         continue;
       }
 
-      console.log(message);
-
       // Check that it's an off-stage el AND that it's the top-most:
       if (message.offStageType && message.parent === 0) {
         message.parent = message.id + '_offStageParent';
@@ -598,8 +596,6 @@ define([
     } else {
       cssClasses.remove(text, 'selectable');
     }
-
-    //text.setAttributeNS(xlink, 'text-anchor', 'start');
 
     if (attributes.textOrigin != null) {
       text.setAttribute(
