@@ -8,6 +8,7 @@ v0.3.4
   as second parameter to `parent.insertBefore` (thx @jdalton)
 * Add `diffX` and `diffY` properties to `pointerup` event object.
 * Fix #36 where filters couldn't be removed (thx @qfox)
+* Fix a bug where the filter-attribute wasn't removed
 
 v0.3.3
 -------------------

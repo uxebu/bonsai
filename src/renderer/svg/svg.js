@@ -734,9 +734,7 @@ define([
       this.removeGradient(element, 'stroke');
 
     this.removeMask(element);
-
-    element._filterSignature &&
-      this.removeFilters(element);
+    this.removeFilters(element);
   };
 
   proto.removeFilters = function(element) {
@@ -746,6 +744,7 @@ define([
     var signature = element._filterSignature,
         def = this.definitions[signature];
 
+    // return early when no filter was previously applied
     if (!def) {
       return;
     }
@@ -757,6 +756,8 @@ define([
       delete this.definitions[signature];
     }
 
+    // remove filter-attribute and internal filter-reference
+    element.removeAttribute('filter');
     delete element._filterSignature;
   };
 
@@ -1303,22 +1304,8 @@ define([
       return;
     }
 
-    // If the element already has an attached filter we may be able
-    // to use it (as long as it's not being used by something else)
-    if (element._filterSignature) {
-
-      filterDef = this.definitions[element._filterSignature];
-
-      if (filterDef.n > 1) {
-        // decrease retain count b/c filter is used by other elements
-        filterDef.n--;
-      } else {
-        // remove old filter
-        filterDef.element.parentNode.removeChild(filterDef.element);
-        element.removeAttribute('filter');
-        delete this.definitions[element._filterSignature];
-      }
-    }
+    // remove already applied filters
+    this.removeFilters(element);
 
     var filterContainer = createElement('filter');
 
