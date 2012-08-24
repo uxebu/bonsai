@@ -69,6 +69,9 @@ define([
     'mousewheel'
   ];
 
+  // tools
+  var isArray = tools.isArray;
+
   var xlink = 'http://www.w3.org/1999/xlink';
 
   function createElement(n, id) {
@@ -407,11 +410,10 @@ define([
    */
   proto.drawAll = function(type, element, message) {
 
-    var hasFilters = false;
     var attr = message.attributes;
+    var filters = attr.filters;
     var fillColor = attr.fillColor;
     var fillGradient = attr.fillGradient;
-    var filters = attr.filters || [];
     var svg = this.svg;
 
     // when filter is applied, force fillColor change on UA w/o SVG Filter support
@@ -419,12 +421,13 @@ define([
       fillColor = element._fillColorSignature;
     }
 
-    if (filters.length) {
-      hasFilters = true;
-      this.applyFilters(element, filters);
-    } else if (filters === null) {
-      element._filterSignature &&
+    if (isArray(filters)) {
+      // modify filters
+      if (filters.length > 0) {
+        this.applyFilters(element, filters);
+      } else {
         this.removeFilters(element);
+      }
     }
 
     if (message.offStageType === 'clip') {
