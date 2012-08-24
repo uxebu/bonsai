@@ -114,10 +114,13 @@ define([
 
         value = attributes[i];
 
-        if (type === 'Group') {
+        if (type === 'Group' || type === 'Movie') {
           switch (i) {
             case 'opacity':
               dom.style.opacity = value;
+              break;
+            case 'origin':
+              console.log('Setting origin');
               break;
           }
         } else if (i in basicAttributeMap) {
@@ -166,7 +169,7 @@ define([
             }
             break;
           case 'matrix':
-            if (type === 'Group') {
+            if (type === 'Group' || type === 'Movie') {
               if (value != null) {
                 var matrix = tools.mixin({}, value);
                 matrix.tx = 0;
@@ -230,9 +233,6 @@ define([
 
     eventTypes.forEach(function(e) {
       display.root.dom.addEventListener(e, this, false);
-      display.root.dom.addEventListener(e, function(e) {
-        console.log(e.type, e.target);
-      }, false);
     }, this);
 
     // This is necessary to ensure that we receive the touch events
@@ -273,12 +273,12 @@ define([
         });
         break;
       case 'backgroundColor':
-        this.display.container.style.backgroundColor = color(value).rgba();
+        this.display.root.dom.style.backgroundColor = color(value).rgba();
         break;
     }
   };
 
-  proto.render = function(messages) {
+  proto.render = function(messages) { 
 
     var drawName,
       element,
@@ -320,7 +320,7 @@ define([
             document.createElement(message.attributes.nodeName)
           );
           element.dom.setAttribute('data-bs-id', id);
-        } else if (type === 'Group') {
+        } else if (type === 'Group' || type === 'Movie') {
           element = display[id] = new DisplayGroup(null, id);
           //element.dom.displayG
         } else {
@@ -339,16 +339,15 @@ define([
         var children = message.children || 0, childIndex = 0;
 
         do {
-          var removedElLayer = elementToRemove.parentDisplayLayer;
           if (elementToRemove) {
+            var removedElLayer = elementToRemove.parentDisplayLayer;
             this.removeObject(elementToRemove);
+            if ((removedElLayer instanceof DisplayLayer) && !(removedElLayer instanceof DisplayGroup) && removedElLayer.isEmpty()) {
+              // Remove parent from its own displayGroup
+              removedElLayer.parentDisplayGroup.removeLayer(removedElLayer);
+            }
           }
           delete display[idToRemove];
-
-          if (!(removedElLayer instanceof DisplayGroup) && removedElLayer.isEmpty()) {
-            // Remove parent from its own displayGroup
-            removedElLayer.parentDisplayGroup.removeLayer(removedElLayer);
-          }
 
           idToRemove = children[childIndex];
           elementToRemove = display[idToRemove];
@@ -389,7 +388,7 @@ define([
             // a DOM layer, then make a new one:
             parent = parent.getDOMLayer();
             parent.parentDisplayGroup = parentGroup;
-          } else if (msg.type !== 'Group') {
+          } else if (msg.type !== 'Group' && msg.type !== 'Movie') {
             // Get the top-most SVG layer or if the top-most layer is not
             // a SVG layer, then make a new one:
             parent = parent.getSVGLayer();
@@ -431,8 +430,6 @@ define([
                 nextLayer.appendee.appendChild(_appendEl);
               } while (appendEl);
             }
-
-            console.log(parent, el, el.parentDisplayGroup, el.parentDisplayLayer);
 
             if (el.parentDisplayLayer && el.parentDisplayLayer.dom.childNodes.length === 1) {
               // If el is the only child of its current layer then we can
@@ -1196,12 +1193,12 @@ define([
       // group
       group = (function createGroup(id, dict, aBoundingBox, aMatrix) {
         var aGroup = createSVGElement('g', id);
-        dict[id] = aGroup;
+        dict[id] = new SVGElement(aGroup);
         aMatrix.tx += aBoundingBox.x;
         aMatrix.ty += aBoundingBox.y;
         aGroup.setAttribute('transform', matrixToString(aMatrix));
         return aGroup;
-      })(message.id, svg, boundingBox, attributes.matrix);
+      })(message.id, display, boundingBox, attributes.matrix);
 
       // create a mask node and append it to the <defs> section
       mask = (function createMask(aGroup, id, defsNode) {
@@ -1225,7 +1222,7 @@ define([
     if (!patternFillImage && attributes.fillImageId) {
       patternFillImage = group._fillImage = createSVGElement('g');
       patternFillImage._fillImageId = attributes.fillImageId + '_offStageParent';
-      svg[patternFillImage._fillImageId] = patternFillImage;
+      display[patternFillImage._fillImageId] = patternFillImage;
     }
 
     if (!patternFillGradient && fillGradient) {
@@ -1322,7 +1319,7 @@ define([
     if (!patternFillImage && attributes.fillImageId) {
       patternFillImage = pattern._fillImage = createSVGElement('g');
       patternFillImage._fillImageId = attributes.fillImageId + '_offStageParent';
-      this.display[patternFillImage._fillImageId] = patternFillImage;
+      this.display[patternFillImage._fillImageId] = new SVGElement(patternFillImage);
     }
 
     if (fillColor) {

@@ -18,10 +18,12 @@ define([
 
   SVGLayer.prototype._makeDOM = function(width, height) {
     var svg = createSVGElement('svg');
+    svg.style.pointerEvents = 'none';
     // TODO: We require a pixel width/height for this to work in safari.
     svg.setAttribute('width', 1000);
     svg.setAttribute('height', 1000)
     var group = createSVGElement('g');
+    group.style.pointerEvents = 'auto';
     svg.appendChild(group);
     if (width && height) {
       svg.setAttribute('viewBox', '-0.5 -0.5 ' + width + ' ' + height);
