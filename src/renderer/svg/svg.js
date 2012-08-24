@@ -387,7 +387,7 @@ define([
             } while ((prev = prev.prev));
             element = fragment;
           }
-          parent.insertBefore(element, svg[message.next]);
+          parent.insertBefore(element, svg[message.next] || null);
         }
       }
     }
