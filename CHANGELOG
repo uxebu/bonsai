@@ -6,6 +6,7 @@ v0.3.4
 * Detect UIWebView's mobile safari (`isWebkitPatternBug`).
 * Fix #33 where `null` should be passed instead of `undefined`
   as second parameter to `parent.insertBefore` (thx @jdalton)
+* Add `diffX` and `diffY` properties to `pointerup` event object.
 
 v0.3.3
 -------------------

@@ -170,6 +170,8 @@ define([
         case 'touchend':
         case 'mouseup':
           targetId = data._dragId;
+          event.diffX = clientX - start[0];
+          event.diffY = clientY - start[1];
           delete data._currentTouch;
           delete data._dragId;
           delete data._startEventPos;
