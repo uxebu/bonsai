@@ -68,6 +68,7 @@ movieList = {
     'filter-blur.js',
     'filter-list.js',
     'filter-multi.js',
+    'filter-frames.js',
     'filter-colorMatrix-shim.js',
     'filter-colorMatrix-shim-2.js'
   ],
