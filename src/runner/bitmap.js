@@ -117,6 +117,7 @@ define([
         this._attributes._naturalHeight = data.height;
         this._mutatedAttributes.naturalWidth = true;
         this._mutatedAttributes.naturalHeight = true;
+        this._mutatedAttributes.absoluteUrl = true;
         // We trigger the event asynchronously so as to ensure that any events
         // bound after instantiation are still triggered:
         this.emitAsync('load', this);

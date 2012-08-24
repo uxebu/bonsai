@@ -18,6 +18,7 @@ movieList = {
   ],
   'Bitmaps and Sprites': [
     'bitmap.js',
+    'bitmap-source.js',
     'fill-image.js',
     'sprite.js',
     'data-url.js',
