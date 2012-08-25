@@ -153,5 +153,8 @@ movieList = {
     'video-remote.js',
     'video-onload.js',
     'video-memory-check.js'
+  ],
+  'Plugins' : [
+    'plugin-preloader.js'
   ]
 }
