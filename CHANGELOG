@@ -14,6 +14,7 @@ v0.3.4
 * Remove `Animation#setSubjects` and `Animation#setSubject`
 * Modify "simple" Animation example movie
 * Change `Animation#play` signature (Remove parameters)
+* Fix pattern (used for fill images / gradients) translation (tx/ty) values in the renderer
 
 v0.3.3
 -------------------
