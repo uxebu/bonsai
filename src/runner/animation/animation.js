@@ -257,8 +257,6 @@ define([
     /**
      * Starts or resumes the animation.
      *
-     * Optionally changes the subject of the animation.
-     *
      * @returns {this}
      */
     play: function() {
