@@ -49,7 +49,13 @@ define([
    */
   proto.getSVGLayer = function() {
     var topMost = this.layers[this.layers.length - 1];
-    if (topMost && topMost instanceof SVGLayer && !topMost.isResourcesSVG) {
+    if (
+      topMost && topMost instanceof SVGLayer &&
+      !topMost.isResourcesSVG &&
+      // Confirm that topMost is the last-child, e.g. there could be a 
+      // display-group there, in which case we want a NEW SVG layer on top
+      this.dom.lastChild === topMost.dom
+    ) {
       return topMost;
     } else {
       return this.addLayer('svg');
@@ -62,7 +68,12 @@ define([
    */
   proto.getDOMLayer = function() {
     var topMost = this.layers[this.layers.length - 1];
-    if (topMost && topMost instanceof DOMLayer) {
+    if (
+      topMost && topMost instanceof DOMLayer &&
+      // Confirm that topMost is the last-child, e.g. there could be a 
+      // display-group there, in which case we want a NEW DOM layer on top
+      this.dom.lastChild === topMost.dom
+    ) {
       return topMost;
     } else {
       return this.addLayer('dom');
