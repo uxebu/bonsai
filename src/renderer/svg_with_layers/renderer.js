@@ -174,7 +174,11 @@ define([
                 var matrix = tools.mixin({}, value);
 
                 // Apply origin of @ top-left of the group/movie:
-                dom.style.WebkitTransformOrigin = value.tx + 'px ' + value.ty + 'px';
+                dom.style.WebkitTransformOrigin = 
+                  dom.style.MozTransformOrigin = 
+                    dom.style.MSTransformOrigin =
+                      dom.style.OTransformOrigin =
+                        dom.style.transformOrigin = value.tx + 'px ' + value.ty + 'px';
 
                 // Make matrix properties accurate to 8 decimal points
                 // This is to avoid numbers being so small that they use 
