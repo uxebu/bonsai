@@ -94,13 +94,13 @@ require([
         var anim = createAnimation();
         var listener = jasmine.createSpy('listener');
         anim.on('play', listener);
-        anim.play({}, 'prop');
+        anim.play();
 
         expect(listener).toHaveBeenCalled();
       });
       it('should play', function() {
         var anim = createAnimation();
-        anim.play({}, 'prop');
+        anim.play();
         expect(anim.isPlaying).toBeTruthy();
       });
     });
@@ -110,14 +110,14 @@ require([
         var anim = createAnimation();
         var listener = jasmine.createSpy('listener');
         anim.on('pause', listener);
-        anim.play({}, 'prop');
+        anim.play();
         anim.pause();
 
         expect(listener).toHaveBeenCalled();
       });
       it('should stop', function() {
         var anim = createAnimation();
-        anim.play({}, 'prop');
+        anim.play();
         anim.pause();
         expect(anim.isPlaying).toBeFalsy();
       });
@@ -129,7 +129,7 @@ require([
         var result = 0;
         anim.on('beforebegin', function(){ result += 1; });
         anim.on('play', function(){ result *= 2; } );
-        anim.play({}, 'prop');
+        anim.play();
         expect(result).toBe(2);
       });
     });
@@ -199,7 +199,7 @@ require([
       var anim = createAnimation('50ms', {
         foo: 1000,
         bar: -777,
-        far: .053
+        far: 0.053
       });
       anim.setSubjects(subject, 'prop');
       anim.play();
@@ -207,7 +207,7 @@ require([
         anim.on('end', function() {
           expect(subject.foo).toBe(1000);
           expect(subject.bar).toBe(-777);
-          expect(subject.far).toBeCloseTo(.053);
+          expect(subject.far).toBeCloseTo(0.053);
           next();
         });
       });
@@ -252,7 +252,7 @@ require([
           next();
         });
       });
-    })
+    });
   });
 
   describe('Path - morphing', function() {
@@ -261,18 +261,18 @@ require([
       return segments.map(function(seg){
         return [].slice.call(seg).map(function(arg){
           return isNaN(arg) ? arg : arg.toFixed(5);
-        })
+        });
       });
     }
 
     describe('morphTo', function() {
 
-      var source = new Path().moveTo(01, 01).lineTo(100, 50).arcTo(10, 10, 0, 0, 0, 20, 20),
+      var source = new Path().moveTo(1, 1).lineTo(100, 50).arcTo(10, 10, 0, 0, 0, 20, 20),
           sourceClone = source.clone(),
           target = new Path().moveTo(20, 20).lineTo(200, 11).arcTo(22, 33, 0, 0, 0, 30, 30);
 
-      source.attr({strokeColor: 'red', opacity: .5});
-      target.attr({strokeColor: 'blue', opacity: .5});
+      source.attr({strokeColor: 'red', opacity: 0.5});
+      target.attr({strokeColor: 'blue', opacity: 0.5});
 
       it('Should morph a source to the target segments', function() {
 
@@ -290,7 +290,7 @@ require([
                 sensibleCopyOfSegments(target._segments)
               );
               expect(+source.attr('strokeColor')).toBe(+color('blue'));
-              expect(source.attr('opacity')).toBe(.5);
+              expect(source.attr('opacity')).toBe(0.5);
               next();
             }
           });
