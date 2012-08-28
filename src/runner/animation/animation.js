@@ -19,6 +19,8 @@ define([
   'use strict';
 
   var mixin = tools.mixin;
+  var isArray = tools.isArray;
+  var forEach = tools.forEach;
 
   /**
    * Translations, in the form of:
@@ -407,11 +409,10 @@ define([
      *     methods.
      */
     addSubjects: function(subjects, strategy) {
-      var me = this;
-      subjects = tools.isArray(subjects) ? subjects : [subjects];
-      subjects.forEach(function(subject) {
-        me.addSubject(subject, strategy);
-      });
+      subjects = isArray(subjects) ? subjects : [subjects];
+      forEach(subjects, function(subject) {
+        this.addSubject(subject, strategy);
+      }, this);
       return this;
     },
 
@@ -436,7 +437,9 @@ define([
      * @param {Array} subjects Array of subjects to remove
      */
     removeSubjects: function(subjects) {
-      subjects.forEach(tools.hitch(this, 'removeSubject'));
+      forEach(subjects, function(subject) {
+        this.removeSubject(subject);
+      }, this);
       return this;
     },
 
@@ -453,7 +456,7 @@ define([
      */
     setSubjects: function(subjects, strategy) {
 
-      subjects = tools.isArray(subjects) ? subjects : [subjects];
+      subjects = isArray(subjects) ? subjects : [subjects];
 
       this.removeSubjects(this.subjects.map(function(subj) {
         return subj.subject;
