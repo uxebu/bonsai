@@ -761,7 +761,7 @@ define([
         animation = new Animation(clock, duration, properties, options);
       }
 
-      animation.play(this);
+      animation.addSubject(this).play();
       return this;
     }
   };

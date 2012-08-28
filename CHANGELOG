@@ -10,6 +10,10 @@ v0.3.4
 * Fix #36 where filters couldn't be removed (thx @qfox)
 * Fix a bug where the filter-attribute wasn't removed
 * Fix a bug where Bitmaps weren't updated via "source"
+* Replace ES5's forEach by `tools.forEach` in Animation class.
+* Remove `Animation#setSubjects` and `Animation#setSubject`
+* Modify "simple" Animation example movie
+* Change `Animation#play` signature (Remove parameters)
 
 v0.3.3
 -------------------
