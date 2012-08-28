@@ -259,21 +259,9 @@ define([
      *
      * Optionally changes the subject of the animation.
      *
-     * @param {Object} [subject]
-     * @param {mixed} [strategy='attr'] The set/get strategy to use
-     *   - 'attr': The 'attr' method of the object is used (for DisplayObjects)
-     *   - 'prop': Normal property setting and getting is used
-     *   - Object with 'set(subject, values)' and 'get(subject, propertyNames)'
-     *     methods.
      * @returns {this}
      */
-    play: function(subjects, strategy) {
-
-      var me = this;
-
-      if (subjects) {
-        this.addSubjects(subjects, strategy);
-      }
+    play: function() {
 
       if (!this.subjects) {
         throw new Error('Unspecified subjects.');
