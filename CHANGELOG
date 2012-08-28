@@ -13,7 +13,7 @@ v0.3.4
 * Replace ES5's forEach by `tools.forEach` in Animation class.
 * Remove `Animation#setSubjects` and `Animation#setSubject`
 * Modify "simple" Animation example movie
-* Change `Animation#play` signiture (Remove parameters)
+* Change `Animation#play` signature (Remove parameters)
 
 v0.3.3
 -------------------
