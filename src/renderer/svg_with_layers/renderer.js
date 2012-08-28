@@ -172,14 +172,32 @@ define([
             if (type === 'Group' || type === 'Movie') {
               if (value != null) {
                 var matrix = tools.mixin({}, value);
+
+                // Apply origin of @ top-left of the group/movie:
+                dom.style.WebkitTransformOrigin = value.tx + 'px ' + value.ty + 'px';
+
+                // Make matrix properties accurate to 8 decimal points
+                // This is to avoid numbers being so small that they use 
+                // scientific E notation (e.g. -6.938893903907228e-18)
+                // (CSS `transform` property doesn't seem to support this)
+                matrix.a = Math.round(matrix.a * 10000000) / 10000000;
+                matrix.b = Math.round(matrix.b * 10000000) / 10000000;
+                matrix.c = Math.round(matrix.c * 10000000) / 10000000;
+                matrix.d = Math.round(matrix.d * 10000000) / 10000000;
+
+                // Clear matrix tx/ty and instead apply directly to child layers
+                // via translatePosition method. This is to avoid clipping
+                // occuring beyond the top-left of the displayGroup
                 matrix.tx = 0;
                 matrix.ty = 0;
                 el.translatePosition(value.tx, value.ty);
+
+                // Apply transform plus 3d translateZ to kick hardware-accel:
                 dom.style.WebkitTransform = 
                   dom.style.MozTransform = 
                     dom.style.MSTransform =
                       dom.style.OTransform =
-                        dom.style.transform = matrixToString(matrix);
+                        dom.style.transform = matrixToString(matrix) + ' translateZ(0)';
               } else if (value === null) {
                 el.translatePosition(0, 0);
                 dom.style.WebkitTransform =
