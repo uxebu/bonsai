@@ -79,16 +79,6 @@ require([
       });
     });
 
-    describe('setSubject', function() {
-      it('should set the subject of the animation', function() {
-        // NOTE: This will probably change.
-        var anim = createAnimation();
-        var obj = new DisplayObject();
-        anim.setSubject(obj);
-        expect(anim.subjects[0].subject).toBe(obj);
-      });
-    });
-
     describe('play', function() {
       it('should emit play event', function() {
         var anim = createAnimation();
@@ -158,7 +148,7 @@ require([
       var anim = new createAnimation('50ms', {
         foo: 1000
       });
-      anim.setSubjects(subject, 'prop');
+      anim.addSubject(subject, 'prop');
       anim.play();
       async(function(next) {
         anim.on('end', function() {
@@ -184,7 +174,7 @@ require([
         delay: '60ms'
       });
       expect(anim.delay).toBe(2);
-      anim.setSubjects(subject, 'prop');
+      anim.addSubject(subject, 'prop');
       anim.play();
       async(function(next) {
         anim.on('end', function() {
@@ -201,7 +191,7 @@ require([
         bar: -777,
         far: 0.053
       });
-      anim.setSubjects(subject, 'prop');
+      anim.addSubject(subject, 'prop');
       anim.play();
       async(function(next) {
         anim.on('end', function() {
@@ -222,7 +212,7 @@ require([
       var anim = createAnimation('50ms', {
         x: 500
       });
-      anim.setSubjects(subjects, 'prop');
+      anim.addSubjects(subjects, 'prop');
       anim.play();
       async(function(next) {
         anim.on('end', function() {
@@ -239,7 +229,7 @@ require([
       var anim = new createAnimation('50ms', {
         matrix: new Matrix(2,1,-1,1,150,200)
       });
-      anim.setSubjects(subject, 'prop');
+      anim.addSubjects(subject, 'prop');
       anim.play();
       async(function(next) {
         anim.on('end', function() {

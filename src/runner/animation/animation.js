@@ -432,47 +432,6 @@ define([
     },
 
     /**
-     * Sets the subjects of the animation while wiping all current subjects
-     *
-     * @param {Object} subject
-     * @param {mixed} [strategy='attr'] The set/get strategy to use
-     *   - 'attr': The 'attr' method of the object is used (for DisplayObjects)
-     *   - 'prop': Normal property setting and getting is used
-     *   - Object with 'set(subject, values)' and 'get(subject)'
-     *     methods.
-     * @returns {this}
-     */
-    setSubjects: function(subjects, strategy) {
-
-      subjects = isArray(subjects) ? subjects : [subjects];
-
-      this.removeSubjects(this.subjects.map(function(subj) {
-        return subj.subject;
-      }));
-      this.addSubjects(subjects, strategy);
-
-      return this;
-    },
-
-    /**
-     * Sets the subject of the animation while wiping all current subjects
-     *
-     * @param {Object} subject
-     * @param {mixed} [strategy='attr'] The set/get strategy to use
-     *   - 'attr': The 'attr' method of the object is used (for DisplayObjects)
-     *   - 'prop': Normal property setting and getting is used
-     *   - Object with 'set(subject, values)' and 'get(subject)'
-     *     methods.
-     */
-    setSubject: function(subject, strategy) {
-      this.removeSubjects(this.subjects.map(function(subj) {
-        return subj.subject;
-      }));
-      this.addSubject(subject, strategy);
-      return this;
-    },
-
-    /**
      * A single step in an animation
      *
      * @param {number} progress Progress between 0 and 1
