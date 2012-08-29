@@ -118,6 +118,12 @@ build: clean mkdist
 	echo "*/" >> ${DIST_DIR}/bonsai.iframe.min.js
 	cat ${DIST_DIR}/bonsai.iframe.js | ${CLOSURE_FINALIZE} >> ${DIST_DIR}/bonsai.iframe.min.js
 
+build-uncompressed: clean mkdist
+	r.js -o name=bootstrapper/_build/worker out=${DIST_DIR}/bonsai.uncompressed.js baseUrl=src optimize=none \
+		paths.requireLib=../lib/requirejs/almond include=requireLib
+	r.js -o name=bootstrapper/_build/iframe out=${DIST_DIR}/bonsai.iframe.uncompressed.js baseUrl=src optimize=none \
+		paths.requireLib=../lib/requirejs/almond include=requireLib
+
 preview-bundle: build
 	mkdir -p ${TEMP_DIR}/preview-bundle/lib
 	mkdir -p ${TEMP_DIR}/preview-bundle/example
