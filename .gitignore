@@ -1,0 +1,5 @@
+_site/
+.sass-cache/
+css/
+src/img/sprites
+src/js/build/
