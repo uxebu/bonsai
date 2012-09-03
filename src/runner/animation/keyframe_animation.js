@@ -344,7 +344,7 @@ define([
               this.reset();
               this.play();
             } else {
-              this.emit('end', this.subjects);
+              this.emit('end', this);
             }
           });
         }

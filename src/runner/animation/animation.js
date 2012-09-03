@@ -183,7 +183,7 @@ define([
           if (anim.repeat-- > 0) {
             anim.play();
           } else {
-            anim.emit('end', anim.subject, anim);
+            anim.emit('end', anim);
           }
           return;
         }
