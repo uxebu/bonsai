@@ -49,6 +49,25 @@ require([
       expect(subj.x).toBe(1);
     });
 
+    it('Will animate multiple subjects', function() {
+      var subj1 = { id: 1, a: 0 };
+      var subj2 = { id: 2, a: 10 };
+      var k = createKeyframes(1, {
+        0: { a: 0 },
+        to: { a: 20 }
+      });
+      k.setSubjects([subj1, subj2], 'prop');
+      k.play();
+      expect(subj2.a).toBe(0);
+      async(function(nxt) {
+        k.on('end', function() {
+          expect(subj1.a).toBe(20);
+          expect(subj2.a).toBe(20);
+          nxt();
+        });
+      });
+    });
+
     it('Will play transitions in sequence', function() {
 
       var prevX = 0;

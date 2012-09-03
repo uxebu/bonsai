@@ -134,8 +134,8 @@ define([
               subject.attr(initial);
               break;
             case 'prop':
-              for (var i in initial) {
-                subject[i] = initial[i];
+              for (var p in initial) {
+                subject[p] = initial[p];
               }
               break;
             default: // assume object with get/set methods
