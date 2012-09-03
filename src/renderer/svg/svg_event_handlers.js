@@ -222,6 +222,7 @@ define([
           event.ctrlKey = domEvent.ctrlKey;
           event.altKey = domEvent.altKey;
           event.metaKey = domEvent.metaKey;
+          event.shiftKey = domEvent.shiftKey;
           // Pass focused element's value to bonsai
           event.inputValue = domEvent.target.value;
           break;
