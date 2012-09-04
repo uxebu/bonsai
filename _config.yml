@@ -1,0 +1,4 @@
+source:      ./src
+permalink: /:title.html
+auto: true
+pygments: true

@@ -1,0 +1,6 @@
+@import "susy";
+
+$total-columns  : 12;              // a 12-column grid
+$column-width   : 69px;            // each column is 4em wide
+$gutter-width   : 12px;            // 1em gutters between columns
+$grid-padding   : $gutter-width;   // grid-padding equal to gutters

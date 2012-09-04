@@ -1,0 +1,213 @@
+@import "compass/reset";
+@import "compass/css3";
+@import "compass/css3/transform";
+@import "compass/layout/stretching";
+@import "compass/css3/user-interface";
+@import "animate";
+@import "base";
+@import "grid";
+@import "spacing";
+
+body {
+  min-width: 960px;
+  background-color:$primaryColor;
+  font-family:"proxima-nova",sans-serif;
+}
+
+.container {
+  @include container;
+  min-width: 936px;
+}
+
+.strip {
+  @include ptm;
+  @include pbx;
+
+  h3 {
+    text-align: center;
+    @include mbxs;
+
+    span {
+      // To make 30x30 backgrounds fit
+      padding-top: 3px;
+      padding-bottom: 3px;
+    }
+  }
+
+  &.header {
+    h1 {
+      font-size: $fontSizeExtraLarge;
+      text-rendering:optimizelegibility;
+      vertical-align:baseline;
+    }
+    color: $primaryColorContrast;
+    @include pvl;
+  }
+}
+
+.text {
+  color: $quaternaryColor;
+
+  strong {
+    font-weight: 600;
+  }
+
+  em {
+    font-style: italic;
+  }
+
+  p {
+    @include mbs;
+    font-size: $fontSizeMedium;
+    line-height: $lineHeightMedium;
+  }
+}
+
+header {
+  margin-top:$marginLarge;
+  text-transform: uppercase;
+  font-size: $fontSizeSmall;
+  font-weight: 600;
+
+  .container {
+    position:relative;
+
+    #logo {
+    }
+
+    .nav {
+      text-align: right;
+      position:absolute;
+      top:50%;
+      right:$marginSmall;
+
+      ul {
+        display: inline;
+      }
+      li {
+        margin-left: 45px; // Custom
+        display:inline-block;
+
+        a {
+          color:$primaryColorContrast;
+          text-decoration:none;
+        }
+        a:hover {
+          text-decoration:underline;
+        }
+      }
+    }
+  }
+}
+
+#tagline {
+
+  margin-top:$marginLarge;
+  position:relative;
+
+  h1 {
+    position:absolute;
+    left:0;
+    top:0;
+    width:100%;
+    text-align:center;
+    line-height:45px;
+    color:rgb(112,173,177);
+    font-size:$fontSizeLarge;
+  }
+
+  .background {
+    width:875px;
+    height:45px;
+    margin:0 auto;
+    background:rgb(25, 37, 49);
+    @include skew(-20deg, 0deg);
+    border-radius:10px;
+  }
+
+}
+
+#features {
+
+  margin-top:$marginLarge;
+  overflow:hidden;
+
+  .left {
+    float:left;
+    width:50%;
+  }
+  .right {
+    float:left;
+    width:50%;
+  }
+}
+
+footer {
+  position: relative;
+
+  background: $quinaryColor;
+  color: $quinaryColorContrast;
+
+  @include pvs;
+
+  a {
+    color: #fff;
+  }
+
+  #social {
+
+    float: left;
+  }
+
+  #legal {
+    @include translate3d(0,0,0);
+
+    text-align: right;
+    float: right;
+
+    ul {
+      @include mts;
+      font-size: $fontSizeSmall;
+    }
+  }
+
+  .nav {
+    text-transform: uppercase;
+  }
+}
+
+#teaser-movie {
+  .container {
+    border:1px solid red;
+    height:460px;
+    position:relative;
+  }
+
+  .planet {
+    position:absolute;
+    left:215px;
+    @include animate(planetAnim, 5s, infinite);
+  }
+}
+
+#contact {
+  @include ptm;
+
+  background: $quaternaryColor;
+  color: $quaternaryColorContrast;
+
+
+  @include pbx;
+
+  #envelope {
+    /* Without warming up the GPU we get font
+       rendering issues in Chrome 20.0.1132.57 */
+    @include translate3d(0,0,0);
+
+    position: relative;
+    @include mtx;
+    background: $senaryColor;
+    color: $senaryColorContrast;
+    @include border-radius($borderRadiusMedium);
+  }
+}

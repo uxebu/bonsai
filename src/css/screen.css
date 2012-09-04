@@ -1,0 +1,380 @@
+/* line 17, /Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  font-size: 100%;
+  vertical-align: baseline;
+}
+
+/* line 22, /Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+html {
+  line-height: 1;
+}
+
+/* line 24, /Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+ol, ul {
+  list-style: none;
+}
+
+/* line 26, /Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* line 28, /Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+caption, th, td {
+  text-align: left;
+  font-weight: normal;
+  vertical-align: middle;
+}
+
+/* line 30, /Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+q, blockquote {
+  quotes: none;
+}
+/* line 103, /Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+q:before, q:after, blockquote:before, blockquote:after {
+  content: "";
+  content: none;
+}
+
+/* line 32, /Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+a img {
+  border: none;
+}
+
+/* line 116, /Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary {
+  display: block;
+}
+
+@-webkit-keyframes planetAnim {
+  /* line 8, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/_animate.scss */
+  50% {
+    -webkit-transform: translate(0, 30px);
+  }
+
+  /* line 11, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/_animate.scss */
+  100% {
+    -webkit-transform: translate(0, 0);
+  }
+}
+
+@-moz-keyframes planetAnim {
+  /* line 17, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/_animate.scss */
+  50% {
+    -moz-transform: translate(0, 30px);
+  }
+
+  /* line 20, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/_animate.scss */
+  100% {
+    -moz-transform: translate(0, 0);
+  }
+}
+
+@-o-keyframes planetAnim {
+  /* line 26, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/_animate.scss */
+  50% {
+    -o-transform: translate(0, 30px);
+  }
+
+  /* line 29, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/_animate.scss */
+  100% {
+    -o-transform: translate(0, 0);
+  }
+}
+
+@-ms-keyframes planetAnim {
+  /* line 35, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/_animate.scss */
+  50% {
+    -ms-transform: translate(0, 30px);
+  }
+
+  /* line 38, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/_animate.scss */
+  100% {
+    -ms-transform: translate(0, 0);
+  }
+}
+
+@keyframes planetAnim {
+  /* line 44, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/_animate.scss */
+  50% {
+    -webkit-transform: translate(0, 30px);
+  }
+
+  /* line 47, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/_animate.scss */
+  100% {
+    -webkit-transform: translate(0, 0);
+  }
+}
+
+/* Fonts */
+/* Box characteristics */
+/* Colors */
+/* container backgrounds */
+/* Tables */
+/* Margins/paddings */
+/* Font sizes */
+/* Border radius */
+/* Fonts */
+/* Box characteristics */
+/* Colors */
+/* container backgrounds */
+/* Tables */
+/* Margins/paddings */
+/* Font sizes */
+/* Border radius */
+/* spacing helpers
+p,m = padding,margin
+a,t,r,b,l,h,v = all,top,right,bottom,left,horizontal,vertical
+s,m,l,n = small(5px),medium(10px),large(20px),none(0px)
+*/
+/* line 11, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+body {
+  min-width: 960px;
+  background-color: #111926;
+  font-family: "proxima-nova",sans-serif;
+}
+
+/* line 17, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+.container {
+  *zoom: 1;
+  max-width: 960px;
+  _width: 960px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 12px;
+  padding-right: 12px;
+  min-width: 936px;
+}
+/* line 38, /Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/utilities/general/_clearfix.scss */
+.container:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* line 22, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+.strip {
+  padding-top: 30px;
+  padding-bottom: 64px;
+}
+/* line 26, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+.strip h3 {
+  text-align: center;
+  margin-bottom: 8px;
+}
+/* line 30, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+.strip h3 span {
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+/* line 37, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+.strip.header {
+  color: white;
+  padding-top: 38px;
+  padding-bottom: 38px;
+}
+/* line 38, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+.strip.header h1 {
+  font-size: 25px;
+  text-rendering: optimizelegibility;
+  vertical-align: baseline;
+}
+
+/* line 48, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+.text {
+  color: #2c3642;
+}
+/* line 51, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+.text strong {
+  font-weight: 600;
+}
+/* line 55, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+.text em {
+  font-style: italic;
+}
+/* line 59, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+.text p {
+  margin-bottom: 16px;
+  font-size: 16px;
+  line-height: 25px;
+}
+
+/* line 66, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+header {
+  margin-top: 38px;
+  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: 600;
+}
+/* line 72, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+header .container {
+  position: relative;
+}
+/* line 78, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+header .container .nav {
+  text-align: right;
+  position: absolute;
+  top: 50%;
+  right: 16px;
+}
+/* line 84, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+header .container .nav ul {
+  display: inline;
+}
+/* line 87, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+header .container .nav li {
+  margin-left: 45px;
+  display: inline-block;
+}
+/* line 91, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+header .container .nav li a {
+  color: white;
+  text-decoration: none;
+}
+/* line 95, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+header .container .nav li a:hover {
+  text-decoration: underline;
+}
+
+/* line 103, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+#tagline {
+  margin-top: 38px;
+  position: relative;
+}
+/* line 108, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+#tagline h1 {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  text-align: center;
+  line-height: 45px;
+  color: #70adb1;
+  font-size: 22px;
+}
+/* line 119, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+#tagline .background {
+  width: 875px;
+  height: 45px;
+  margin: 0 auto;
+  background: #192531;
+  -webkit-transform: skew(-20deg, 0deg);
+  -moz-transform: skew(-20deg, 0deg);
+  -ms-transform: skew(-20deg, 0deg);
+  -o-transform: skew(-20deg, 0deg);
+  transform: skew(-20deg, 0deg);
+  border-radius: 10px;
+}
+
+/* line 130, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+#features {
+  margin-top: 38px;
+  overflow: hidden;
+}
+/* line 135, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+#features .left {
+  float: left;
+  width: 50%;
+}
+/* line 139, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+#features .right {
+  float: left;
+  width: 50%;
+}
+
+/* line 145, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+footer {
+  position: relative;
+  background: #27313d;
+  color: white;
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+/* line 153, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+footer a {
+  color: #fff;
+}
+/* line 157, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+footer #social {
+  float: left;
+}
+/* line 162, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+footer #legal {
+  -webkit-transform: translate3d(0, 0, 0);
+  -moz-transform: translate3d(0, 0, 0);
+  -ms-transform: translate3d(0, 0, 0);
+  -o-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  text-align: right;
+  float: right;
+}
+/* line 168, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+footer #legal ul {
+  margin-top: 16px;
+  font-size: 14px;
+}
+/* line 174, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+footer .nav {
+  text-transform: uppercase;
+}
+
+/* line 180, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+#teaser-movie .container {
+  border: 1px solid red;
+  height: 460px;
+  position: relative;
+}
+/* line 186, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+#teaser-movie .planet {
+  position: absolute;
+  left: 215px;
+  -webkit-animation: planetAnim 5s infinite ease both;
+  -moz-animation: planetAnim 5s infinite ease both;
+  -ms-animation: planetAnim 5s infinite ease both;
+  -o-animation: planetAnim 5s infinite ease both;
+  animation: planetAnim 5s infinite ease both;
+}
+
+/* line 193, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+#contact {
+  padding-top: 30px;
+  background: #2c3642;
+  color: white;
+  padding-bottom: 64px;
+}
+/* line 202, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/screen.scss */
+#contact #envelope {
+  /* Without warming up the GPU we get font
+     rendering issues in Chrome 20.0.1132.57 */
+  -webkit-transform: translate3d(0, 0, 0);
+  -moz-transform: translate3d(0, 0, 0);
+  -ms-transform: translate3d(0, 0, 0);
+  -o-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  position: relative;
+  margin-top: 64px;
+  background: #3d4854;
+  color: #d5deeb;
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  -ms-border-radius: 8px;
+  -o-border-radius: 8px;
+  border-radius: 8px;
+}

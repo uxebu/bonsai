@@ -1,0 +1,141 @@
+@import "base";
+
+/* spacing helpers
+p,m = padding,margin
+a,t,r,b,l,h,v = all,top,right,bottom,left,horizontal,vertical
+s,m,l,n = small(5px),medium(10px),large(20px),none(0px)
+*/
+
+@mixin ptn { padding-top: 0; }
+@mixin prn { padding-right: 0; }
+@mixin pbn { padding-bottom: 0; }
+@mixin pln { padding-left: 0; }
+@mixin phn { @include pln; @include prn; }
+@mixin pvn { @include ptn; @include pbn; }
+@mixin pan { @include ptn; @include pbn; @include pln; @include prn; }
+
+@mixin ptxxs { padding-top: $paddingExtraExtraSmall; }
+@mixin prxxs { padding-right: $paddingExtraExtraSmall; }
+@mixin pbxxs { padding-bottom: $paddingExtraExtraSmall; }
+@mixin plxxs { padding-left: $paddingExtraExtraSmall; }
+@mixin phxxs { @include plxxs; @include prxxs; }
+@mixin pvxxs { @include ptxxs; @include pbxxs; }
+@mixin paxxs { @include ptxxs; @include pbxxs; @include plxxs; @include prxxs; }
+
+@mixin ptxs { padding-top: $paddingExtraSmall; }
+@mixin prxs { padding-right: $paddingExtraSmall; }
+@mixin pbxs { padding-bottom: $paddingExtraSmall; }
+@mixin plxs { padding-left: $paddingExtraSmall; }
+@mixin phxs { @include plxs; @include prxs; }
+@mixin pvxs { @include ptxs; @include pbxs; }
+@mixin paxs { @include ptxs; @include pbxs; @include plxs; @include prxs; }
+
+@mixin pts { padding-top: $paddingSmall; }
+@mixin prs { padding-right: $paddingSmall; }
+@mixin pbs { padding-bottom: $paddingSmall; }
+@mixin pls { padding-left: $paddingSmall; }
+@mixin phs { @include pls; @include prs; }
+@mixin pvs { @include pts; @include pbs; }
+@mixin pas { @include pts; @include pbs; @include pls; @include prs; }
+
+@mixin ptm { padding-top: $paddingMedium; }
+@mixin prm { padding-right: $paddingMedium; }
+@mixin pbm { padding-bottom: $paddingMedium; }
+@mixin plm { padding-left: $paddingMedium; }
+@mixin phm { @include plm; @include prm; }
+@mixin pvm { @include ptm; @include pbm; }
+@mixin pam { @include ptm; @include pbm; @include plm; @include prm; }
+
+@mixin ptl { padding-top: $paddingLarge; }
+@mixin prl { padding-right: $paddingLarge; }
+@mixin pbl { padding-bottom: $paddingLarge; }
+@mixin pll { padding-left: $paddingLarge; }
+@mixin phl { @include pll; @include prl; }
+@mixin pvl { @include ptl; @include pbl; }
+@mixin pal { @include ptl; @include pbl; @include pll; @include prl; }
+
+@mixin ptx { padding-top: $paddingExtraLarge; }
+@mixin prx { padding-right: $paddingExtraLarge; }
+@mixin pbx { padding-bottom: $paddingExtraLarge; }
+@mixin plx { padding-left: $paddingExtraLarge; }
+@mixin phx { @include plx; @include prx; }
+@mixin pvx { @include ptx; @include pbx; }
+@mixin pax { @include ptx; @include pbx; @include plx; @include prx; }
+
+@mixin ptxx { padding-top: $paddingExtraExtraLarge; }
+@mixin prxx { padding-right: $paddingExtraExtraLarge; }
+@mixin pbxx { padding-bottom: $paddingExtraExtraLarge; }
+@mixin plxx { padding-left: $paddingExtraExtraLarge; }
+@mixin phxx { @include plxx; @include prxx; }
+@mixin pvxx { @include ptxx; @include pbxx; }
+@mixin paxx { @include ptxx; @include pbxx; @include plxx; @include prxx; }
+
+
+@mixin mtn { margin-top: 0; }
+@mixin mrn { margin-right: 0; }
+@mixin mbn { margin-bottom: 0; }
+@mixin mln { margin-left: 0; }
+@mixin mhn { @include mln; @include mrn; }
+@mixin mvn { @include mtn; @include mbn; }
+@mixin man { @include mtn; @include mbn; @include mln; @include mrn; }
+
+@mixin mtxxs { margin-top: $marginExtraExtraSmall; }
+@mixin mrxxs { margin-right: $marginExtraExtraSmall; }
+@mixin mbxxs { margin-bottom: $marginExtraExtraSmall; }
+@mixin mlxxs { margin-left: $marginExtraExtraSmall; }
+@mixin mhxxs { @include mlxxs; @include mrxxs; }
+@mixin mvxxs { @include mtxxs; @include mbxxs; }
+@mixin maxxs { @include mtxxs; @include mbxxs; @include mlxxs; @include mrxxs; }
+
+@mixin mtxs { margin-top: $marginExtraSmall; }
+@mixin mrxs { margin-right: $marginExtraSmall; }
+@mixin mbxs { margin-bottom: $marginExtraSmall; }
+@mixin mlxs { margin-left: $marginExtraSmall; }
+@mixin mhxs { @include mlxs; @include mrxs; }
+@mixin mvxs { @include mtxs; @include mbxs; }
+@mixin maxs { @include mtxs; @include mbxs; @include mlxs; @include mrxs; }
+
+@mixin mts { margin-top: $marginSmall; }
+@mixin mrs { margin-right: $marginSmall; }
+@mixin mbs { margin-bottom: $marginSmall; }
+@mixin mls { margin-left: $marginSmall; }
+@mixin mhs { @include mls; @include mrs; }
+@mixin mvs { @include mts; @include mbs; }
+@mixin mas { @include mts; @include mbs; @include mls; @include mrs; }
+
+@mixin mtm { margin-top: $marginMedium; }
+@mixin mrm { margin-right: $marginMedium; }
+@mixin mbm { margin-bottom: $marginMedium; }
+@mixin mlm { margin-left: $marginMedium; }
+@mixin mhm { @include mlm; @include mrm; }
+@mixin mvm { @include mtm; @include mbm; }
+@mixin mam { @include mtm; @include mbm; @include mlm; @include mrm; }
+
+@mixin mtl { margin-top: $marginLarge; }
+@mixin mrl { margin-right: $marginLarge; }
+@mixin mbl { margin-bottom: $marginLarge; }
+@mixin mll { margin-left: $marginLarge; }
+@mixin mhl { @include mll; @include mrl; }
+@mixin mvl { @include mtl; @include mbl; }
+@mixin mal { @include mtl; @include mbl; @include mll; @include mrl; }
+
+@mixin mtx { margin-top: $marginExtraLarge; }
+@mixin mrx { margin-right: $marginExtraLarge; }
+@mixin mbx { margin-bottom: $marginExtraLarge; }
+@mixin mlx { margin-left: $marginExtraLarge; }
+@mixin mhx { @include mlx; @include mrx; }
+@mixin mvx { @include mtx; @include mbx; }
+@mixin max { @include mtx; @include mbx; @include mlx; @include mrx; }
+
+@mixin mtxx { margin-top: $marginExtraExtraLarge; }
+@mixin mrxx { margin-right: $marginExtraExtraLarge; }
+@mixin mbxx { margin-bottom: $marginExtraExtraLarge; }
+@mixin mlxx { margin-left: $marginExtraExtraLarge; }
+@mixin mhxx { @include mlxx; @include mrxx; }
+@mixin mvxx { @include mtxx; @include mbxx; }
+@mixin maxx { @include mtxx; @include mbxx; @include mlxx; @include mrxx; }
+
+@mixin centerHoriontal {
+  margin-left: auto;
+  margin-right: auto;
+}

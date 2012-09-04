@@ -1,0 +1,82 @@
+@import 'compass/css3';
+
+/* Fonts */
+$fontFamilyDefault: "proxima-nova",sans-serif;
+
+/* Box characteristics */
+$primaryBorderRadius: 6px;
+$secondaryBorderRadius: 4px;
+
+/* Colors */
+$primaryColor: rgb(17,25,38);
+$primaryColorContrast: #fff;
+
+$secondaryColor: #8fd9eb;
+$secondaryColorContrast: #003e59;
+
+$tertiaryColor: #efeff0;
+$tertiaryColorContrast: #68757e;
+
+$quaternaryColor: #2c3642;
+$quaternaryColorContrast: #fff;
+
+$quinaryColor: #27313d;
+$quinaryColorContrast: #fff;
+
+$senaryColor: #3d4854;
+$senaryColorContrast: #d5deeb;
+
+$highlightColor: #e97d47;
+$highlightColorContrast: #fff;
+
+/* container backgrounds */
+
+/* Tables */
+$primaryTableBackgroundColor: #fff;
+$primaryTableColor: #747474;
+$primaryCellPadding: 13px;
+
+/* Margins/paddings */
+$paddingExtraExtraSmall:4px;
+$marginExtraExtraSmall:4px;
+
+$paddingExtraSmall:8px;
+$marginExtraSmall:8px;
+
+$paddingSmall:16px;
+$marginSmall:16px;
+
+$paddingMedium:30px;
+$marginMedium:30px;
+
+$paddingLarge:38px;
+$marginLarge:38px;
+
+$paddingExtraLarge:64px;
+$marginExtraLarge:64px;
+
+$paddingExtraExtraLarge:107px;
+$marginExtraExtraLarge:107px;
+
+/* Font sizes */
+$fontSizeExtraExtraLarge: 35px;
+$lineHeightExtraExtraLarge: 35px;
+
+$fontSizeExtraLarge: 25px;
+$lineHeightExtraLarge: 25px;
+
+$fontSizeLarge: 22px;
+$lineHeightLarge: 22px;
+
+$fontSizeMedium: 16px;
+$lineHeightMedium: 25px;
+
+$fontSizeSmall: 14px;
+$lineHeightSmall: 14px;
+
+$fontSizeExtraSmall: 12px;
+$lineHeightExtraSmall: 12px;
+
+/* Border radius */
+$borderRadiusSmall: 4px;
+$borderRadiusMedium: 8px;

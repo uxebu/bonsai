@@ -1,0 +1,50 @@
+// Animation Mixins
+
+@mixin animate($name: fadeIn, $duration: 1s, $delay: 0.2s, $function: ease, $mode: both) {
+  @include experimental(animation, $name $duration $delay $function $mode);
+}
+
+@-webkit-keyframes planetAnim {
+  50% {
+    -webkit-transform: translate(0, 30px);
+  }
+  100% {
+    -webkit-transform: translate(0, 0);
+  }
+}
+
+@-moz-keyframes planetAnim {
+  50% {
+    -moz-transform: translate(0, 30px);
+  }
+  100% {
+    -moz-transform: translate(0, 0);
+  }
+}
+
+@-o-keyframes planetAnim {
+  50% {
+    -o-transform: translate(0, 30px);
+  }
+  100% {
+    -o-transform: translate(0, 0);
+  }
+}
+
+@-ms-keyframes planetAnim {
+  50% {
+    -ms-transform: translate(0, 30px);
+  }
+  100% {
+    -ms-transform: translate(0, 0);
+  }
+}
+
+@keyframes planetAnim {
+  50% {
+    -webkit-transform: translate(0, 30px);
+  }
+  100% {
+    -webkit-transform: translate(0, 0);
+  }
+}

@@ -1,0 +1,86 @@
+@import 'compass/css3';
+@import "animate";
+@import "base";
+@import "spacing";
+
+@mixin form-input-stretch {
+  select,
+  textarea,
+  input[type="text"],
+  input[type="password"],
+  input[type="datetime"],
+  input[type="datetime-local"],
+  input[type="date"],
+  input[type="month"],
+  input[type="time"],
+  input[type="week"],
+  input[type="number"],
+  input[type="email"],
+  input[type="url"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="color"],
+  .uneditable-input {
+    width: 100%;
+    @include box-sizing('border-box');
+  }
+}
+
+@mixin form-equal-padding {
+  select,
+  textarea,
+  input[type="text"],
+  input[type="password"],
+  input[type="datetime"],
+  input[type="datetime-local"],
+  input[type="date"],
+  input[type="month"],
+  input[type="time"],
+  input[type="week"],
+  input[type="number"],
+  input[type="email"],
+  input[type="url"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="color"],
+  button,
+  .uneditable-input {
+    @include pas;
+  }
+}
+
+@mixin appendInput {
+  @include man;
+  vertical-align: middle;
+  line-height: normal; // Same height as input
+  @include border-top-left-radius(0);
+  @include border-bottom-left-radius(0);
+}
+
+@mixin prependInput {
+  @include man;
+  vertical-align: middle;
+  line-height: normal; // Same height as button
+  margin-right: 1px;
+  @include border-top-right-radius(0);
+  @include border-bottom-right-radius(0);
+}
+
+@mixin inputWidhIcon {
+  input,
+  textarea {
+    @include icon-left;
+    padding-left: 45px;
+    background-position: 10px center, right center;
+  }
+
+  .placeholder {
+    > span {
+      padding-left: 45px;
+    }
+
+    > span.validation {
+      @include pls;
+    }
+  }
+}

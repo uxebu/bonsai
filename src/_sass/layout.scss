@@ -1,0 +1,651 @@
+@import "compass/css3";
+@import "compass/layout/stretching";
+@import "compass/css3/user-interface";
+@import "base";
+@import "form-helper";
+@import "grid";
+@import "icon-helper";
+@import "image-helper";
+@import "spacing";
+
+body {
+  min-width: 960px;
+  background-color:$primaryColor;
+}
+
+.container {
+  @include container;
+  min-width: 936px;
+}
+
+.strip {
+  @include ptm;
+  @include pbx;
+
+  h3 {
+    text-align: center;
+    @include mbxs;
+
+    span {
+      // To make 30x30 backgrounds fit
+      padding-top: 3px;
+      padding-bottom: 3px;
+    }
+  }
+
+  &.header {
+    h1 {
+      font-size: $fontSizeExtraLarge;
+    }
+    color: $primaryColorContrast;
+    @include pvl;
+  }
+}
+
+.text {
+  color: $quaternaryColor;
+
+  strong {
+    font-weight: 600;
+  }
+
+  em {
+    font-style: italic;
+  }
+
+  p {
+    @include mbs;
+    font-size: $fontSizeMedium;
+    line-height: $lineHeightMedium;
+  }
+}
+
+header {
+  margin-top:$marginExtraLarge;
+  text-transform: uppercase;
+  font-size: $fontSizeSmall;
+  font-weight: 600;
+
+  #logo {
+    @include span-columns(3,12);
+  }
+
+  .nav {
+    color: #27313d;
+    text-align: right;
+    line-height:180px; /* depending on logo's height */
+
+    @include span-columns(9 omega,12);
+
+    li {
+      margin-left: 45px; // Custom
+    }
+  }
+}
+
+footer {
+  position: relative;
+
+  background: $quinaryColor;
+  color: $quinaryColorContrast;
+
+  @include pvs;
+
+  a {
+    color: #fff;
+  }
+
+  #social {
+
+    form {
+      display: inline-block;
+    }
+
+    input {
+      // TODO: abstract?
+      width: 300px;
+      margin-bottom: 0;
+    }
+
+    .placeholder {
+      @include prependInput;
+      width: auto;
+      vertical-align: top; // Chrome wouldn't render correctly otherwise :(
+    }
+
+    button.submit {
+      @include appendInput;
+    }
+
+    float: left;
+  }
+
+  #legal {
+    @include translate3d(0,0,0);
+
+    text-align: right;
+    float: right;
+
+    ul {
+      @include mts;
+      font-size: $fontSizeSmall;
+    }
+  }
+
+  .nav {
+    text-transform: uppercase;
+  }
+}
+
+#teaser-movie .container {
+  border:1px solid red;
+  height:450px;
+  position:relative;
+}
+#teaser-movie .planet {
+  position:absolute;
+  left:215px;
+  @include animate(planetAnim, 5s, infinite);
+}
+
+#features {
+  @include pbx;
+  @include ptn;
+  @include user-select(none);
+
+  background-color: $primaryColor;
+
+  color: $primaryColorContrast;
+
+  position: relative;
+
+  height: 182px;
+
+  #flowers-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  #flowers-one {
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    margin-left: -320px;
+
+    @include image-flowers-one;
+    background-position: bottom right;
+    background-repeat: repeat-x;
+    background-size: 900px auto;
+  }
+
+  #flowers-two {
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    right: 0;
+    top: 0;
+    margin-right: -320px;
+
+    @include image-flowers-two;
+    background-position: bottom left;
+    background-repeat: repeat-x;
+    background-size: 900px auto;
+  }
+
+  #demo-file-container {
+    position: relative;
+
+    width: 106px;
+    height: 72px;
+
+    @include centerHoriontal;
+
+    background: rgba(255, 255, 255, .3);
+
+    @include border-bottom-left-radius($borderRadiusMedium);
+    @include border-bottom-right-radius($borderRadiusMedium);
+  }
+
+  #demo-arrow {
+    @include image-arrow;
+    background-repeat: no-repeat;
+    background-position: left bottom;
+    width: 59px;
+    height: 0px;
+    position: absolute;
+    bottom: 140px;
+  }
+
+  #demo-arrow.active {
+    @include animate(animateArrow, 3s);
+  }
+
+  h3 {
+    margin-top: 127px; // Custom
+    text-transform: none;
+    font-weight: normal;
+  }
+
+  ul {
+    text-align: center;
+  }
+
+  .features-mode {
+    cursor: pointer;
+  }
+}
+
+#examples {
+  background: $highlightColor;
+  color: $secondaryColorContrast;
+
+  @include central-circles-orange;
+  background-position: center 39px;
+  background-repeat: no-repeat;
+
+  @include ptm;
+  @include pbxx;
+
+  .joypad {
+    @include icon-left;
+    @include icon-joypad;
+    @include pll;
+  }
+
+  ul.thumbnails {
+    width: 100%;
+    @include ptx;
+
+    li {
+      position: relative;
+      cursor: pointer;
+      height: 149px;
+
+      @include span-columns(1,4);
+      @include border-radius($borderRadiusSmall);
+
+      img {
+        @include border-radius($borderRadiusSmall);
+      }
+    }
+
+    li:last-child {
+      @include span-columns(1 omega,4);
+    }
+
+    li:hover:after {
+      content: "";
+      background-color: rgba(39,49,61,.8);
+      @include image-play;
+      background-position: center center;
+      background-repeat: no-repeat;
+      width: 214px;
+      height: 149px;
+      position: absolute;
+      top: 0;
+      left: 0;
+
+      @include border-radius($borderRadiusSmall);
+    }
+  }
+
+  .container {
+    position: relative;
+  }
+
+  #example-container {
+    width: 940px;
+    height: 388px;
+    position: absolute;
+    background: #2B2B2B;
+    left: 50%;
+    margin-left: -470px;
+    top: -340px;
+    display: none;
+    color: $primaryColorContrast;
+
+    @include border-radius($borderRadiusSmall);
+  }
+
+  #example {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 72px;
+    overflow: hidden;
+    @include box-sizing('border-box');
+
+    iframe {
+      overflow: hidden;
+      height: 100%;
+    }
+  }
+
+  .sharing {
+    ul {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+
+      background: #242424;
+
+      width: 56px;
+
+      @include border-radius($borderRadiusSmall);
+    }
+
+    li {
+      width: 100%;
+    }
+
+    i {
+      @include icon-medium;
+    }
+  }
+
+  .toolbar {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 72px;
+
+    > div {
+      @include pas;
+      @include box-sizing('border-box');
+    }
+
+    > div:first-child {
+      padding-top: 28px;
+      @include span-columns(1,2);
+    }
+
+    > div:last-child {
+      @include span-columns(1 omega,2);
+      text-align: right;
+    }
+  }
+}
+
+#platforms {
+  @include ptm;
+  @include pbxx;
+
+  background-color: $secondaryColor;
+  @include central-circles-blue;
+  background-position: center center;
+  background-repeat: no-repeat;
+
+  color: $secondaryColorContrast;
+
+  i {
+    @include border-radius(51px); // Custom radius!
+    @include icon-x-large;
+
+    background-color: $quaternaryColor;
+  }
+
+  i.other {
+    color: #d7e1e4; // TODO: abstract?
+    font-size: 20px;
+    text-transform: uppercase;
+    padding-top: 40px;
+
+    @include box-sizing('border-box');
+  }
+
+  .flag {
+    @include icon-left;
+    @include icon-flag;
+    @include pll;
+  }
+
+  .container {
+    @include pad(1,1,48);
+    @include box-sizing('border-box');
+  }
+
+  .nav {
+    width: 100%;
+    @include ptx;
+
+    li {
+      position: relative;
+      text-align: center;
+      vertical-align: top;
+      width: 20%;
+      float: left;
+    }
+
+    li:after {
+      content: "\25CF\0000a0\0000a0\0000a0\25CF\0000a0\0000a0\0000a0\25CF\0000a0\0000a0\0000a0\25CF";
+      position: absolute;
+      letter-spacing: 2px;
+
+      color: $quaternaryColor;
+
+      width: 100%;
+      overflow: hidden;
+      left: 68%;
+      top: 43px;
+    }
+
+    li:last-child:after {
+      content: ""
+    }
+  }
+}
+
+#service {
+  @include ptm;
+  @include pbx;
+
+  @include central-circles;
+  background-position: center -666px;
+  background-repeat: no-repeat;
+
+  color: $quaternaryColor;
+
+  i {
+    @include border-radius($borderRadiusSmall);
+    @include icon-large;
+
+    background-color: $tertiaryColor;
+    display: inline-block;
+  }
+
+  .tools {
+    @include icon-left;
+    @include icon-tools;
+    @include pll;
+  }
+
+  .nav {
+    @include ptl;
+
+    li {
+      width: 50%;
+      float: left;
+      overflow: hidden;
+      vertical-align: top;
+      @include box-sizing('border-box');
+
+      @include mbl;
+    }
+
+    li:nth-child(2n+1) {
+      clear: both;
+    }
+
+    i {
+      float: left;
+    }
+
+    h4, p {
+      @include mlxx;
+      @include mts;
+      @include prm;
+    }
+  }
+}
+
+#how-it-works {
+  @include ptm;
+
+  background: $tertiaryColor;
+  color: $tertiaryColorContrast;
+
+  @include pbx;
+
+  i {
+    @include icon-medium; // Rendering issue if not included here.
+
+    @include border-radius(28px); // Custom radius!
+    @include icon-medium;
+
+    background-color: $tertiaryColorContrast;
+  }
+
+  .graph {
+    @include icon-left;
+    @include icon-graph;
+    @include pll;
+  }
+
+  .nav {
+    width: 100%;
+    @include ptx;
+
+    li {
+      position: relative;
+      text-align: center;
+      vertical-align: top;
+      width: columns(1,5);
+
+      @include span-columns(1,5);
+    }
+
+    li:last-child {
+      @include span-columns(1 omega,5);
+    }
+
+    li:after {
+      content: "\25CF\0000a0\0000a0\0000a0\25CF\0000a0\0000a0\0000a0\25CF\0000a0\0000a0\0000a0\25CF";
+      position: absolute;
+      letter-spacing: 2px;
+
+      width: 100%;
+      overflow: hidden;
+      left: 60%;
+      top: 21px;
+    }
+
+    li:last-child:after {
+      content: "";
+    }
+  }
+
+  .info {
+    @include mtm;
+    display: block;
+    font-size: $fontSizeSmall;
+  }
+}
+
+#contact {
+  @include ptm;
+
+  background: $quaternaryColor;
+  color: $quaternaryColorContrast;
+
+  @include form-input-stretch;
+
+  @include pbx;
+
+  .bubble {
+    @include icon-left;
+    @include icon-bubble;
+    @include pll;
+  }
+
+  #envelope {
+    /* Without warming up the GPU we get font
+       rendering issues in Chrome 20.0.1132.57 */
+    @include translate3d(0,0,0);
+
+    position: relative;
+    @include mtx;
+    background: $senaryColor;
+    color: $senaryColorContrast;
+    @include border-radius($borderRadiusMedium);
+  }
+
+  #form {
+    position: relative;
+    @include pas;
+    @include box-sizing('border-box');
+    @include inputWidhIcon;
+
+    width: 50%;
+    display: inline-block;
+
+    p {
+      @include mbxs;
+    }
+
+    p:last-child {
+      @include mbn;
+    }
+
+    .arrow {
+      position: absolute;
+      left: 50%;
+      bottom: -10px;
+      margin-left: -10px;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 10px solid $senaryColor;
+    }
+  }
+
+  #form-submit {
+    width: 50%;
+    text-align: center;
+    @include mts;
+
+    button {
+      background: $highlightColor;
+      color: $highlightColorContrast;
+    }
+  }
+
+  #cooperate {
+    @include pas;
+    @include box-sizing('border-box');
+
+    width: 50%;
+    display: inline-block;
+    @include stretch-y;
+
+    @include image-stamp;
+    background-position: 305px 5px;
+    background-repeat: no-repeat;
+
+    h5, p {
+      @include mtm;
+      @include mbm;
+    }
+
+    p:last-child {
+      @include mbn;
+    }
+
+    #thanks {
+      display: none;
+    }
+  }
+}
