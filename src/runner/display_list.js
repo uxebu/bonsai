@@ -46,6 +46,11 @@ define([
         return this;
       }
 
+      // Avoid adding a displaylist to itself
+      if (this === child) {
+        return this;
+      }
+
       var stage = this.stage;
 
       if (child.parent) {

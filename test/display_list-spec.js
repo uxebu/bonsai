@@ -93,6 +93,12 @@ require([
         expect(dl.children()).toEqual([a1, c1, c2, c3, a2]);
       });
 
+      it('Avoid adding a displaylist to itself', function() {
+        var dl = createDisplayList();
+        dl.addChild(dl);
+        expect(dl.children().length).toBe(0);
+      });
+
       it('Adds child to registry::displayObjects', function() {
 
         var dl = createDisplayList(),
@@ -230,6 +236,7 @@ require([
           expect(fifth.next).toBeUndefined();
         });
       });
+
     });
 
     describe('getIndexOfChild', function() {
