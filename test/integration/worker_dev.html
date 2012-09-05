@@ -6,9 +6,13 @@
 
 <body>
 
-  <h1 id="heading">worker_dev</h1>
+  <h1>worker_dev</h1>
+  <h2 id="heading0"></h2>
 
-  <div id="player"></div>
+  <div id="stage0"></div>
+
+  <h2 id="heading1"></h2>
+  <div id="stage1"></div>
 
   <script>
     var require = {
@@ -25,7 +29,8 @@
 
     require(['bonsai/bootstrapper/_dev/worker'], function(player) {
 
-      playerInit(player, {});
+      playerInit(0, player, {});
+      playerInit(1, player, {});
 
     });
 

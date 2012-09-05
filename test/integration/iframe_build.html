@@ -6,16 +6,21 @@
 
 <body>
 
-  <h1 id="heading">iframe_build</h1>
+  <h1>iframe_build</h1>
+  <h2 id="heading0"></h2>
 
-  <div id="player"></div>
+  <div id="stage0"></div>
+
+  <h2 id="heading1"></h2>
+  <div id="stage1"></div>
 
   <script src="../../dist/bonsai.iframe.js"></script>
   <script src="assets/integration.js"></script>
 
   <script>
 
-    playerInit(bonsai, {});
+    playerInit(0, bonsai, {});
+    playerInit(1, bonsai, {});
 
   </script>
 

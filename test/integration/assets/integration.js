@@ -1,5 +1,6 @@
-var code = '(' + function() {
+var code = [];
 
+code[0] = '(' + function() {
   new Rect(100, 0, 100, 100).addTo(stage).attr({
     fillColor: 'blue'
   });
@@ -21,7 +22,7 @@ var code = '(' + function() {
         rotation: Math.PI * 2
       }, {
         repeat: Infinity
-      })
+      });
     });
     new Bitmap('redpanda.jpg', function(err) {
       if (err) {
@@ -39,8 +40,9 @@ var code = '(' + function() {
       });
     });
   });
+  }.toString() + '())';
 
-}.toString() + '())';
+code[1] = '(function() { new Rect(100, 0, 100, 100).fill("orange").addTo(stage); })();';
 
 // For the integration test we load four different squares (red, blue, yellow, green)
 // We load/run them in four different ways:
@@ -49,19 +51,19 @@ var code = '(' + function() {
 //  plugins[0]  = Red
 //  subMovie    = Green
 
-function playerInit(player, config) {
+function playerInit(id, player, config) {
 
-  var startTime = +new Date;
+  var startTime = +new Date();
 
   var defaultConfig = {
-    width: 1000,
-    height: 500,
+    width: 250,
+    height: 250,
 
     baseUrl: '../../src/',
 
-    code: code,
-    plugins: ['../test/integration/assets/plugins/red_box_plugin.js?' + +new Date],
-    urls: ['../../test/integration/assets/yellow.js?' + +new Date],
+    code: code[id],
+    plugins: ['../test/integration/assets/plugins/red_box_plugin.js?' + 1*new Date()],
+    urls: ['../../test/integration/assets/yellow.js?' + 1*new Date()],
     noCache: true,
     assets: []
   };
@@ -71,13 +73,13 @@ function playerInit(player, config) {
   }
 
   player
-    .run(document.getElementById('player'), config)
+    .run(document.getElementById('stage' + id), config)
     .on('start', function() {
-      var time = +new Date - startTime;
-      document.getElementById('heading').innerHTML += ' (bootstrap:' + time + 'ms)';
+      var time = +new Date() - startTime;
+      document.getElementById('heading' + id).innerHTML += ' (bootstrap:' + time + 'ms)';
       if (window.parent !== window) {
         window.parent.iframeDone();
       }
-    })
+    });
 
 }
