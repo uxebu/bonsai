@@ -3,15 +3,20 @@
 @import "compass/css3/transform";
 @import "compass/layout/stretching";
 @import "compass/css3/user-interface";
+@import "buttons";
+@import "icons";
+@import "icon-helper";
 @import "animate";
 @import "base";
 @import "grid";
+@import "image-helper";
 @import "spacing";
 
 body {
   min-width: 960px;
-  background-color:$primaryColor;
   font-family:"proxima-nova",sans-serif;
+  color:rgb(172, 178, 187);
+  @include page-background;
 }
 
 .container {
@@ -19,52 +24,51 @@ body {
   min-width: 936px;
 }
 
-.strip {
-  @include ptm;
-  @include pbx;
-
-  h3 {
-    text-align: center;
-    @include mbxs;
-
-    span {
-      // To make 30x30 backgrounds fit
-      padding-top: 3px;
-      padding-bottom: 3px;
-    }
-  }
-
-  &.header {
-    h1 {
-      font-size: $fontSizeExtraLarge;
-      text-rendering:optimizelegibility;
-      vertical-align:baseline;
-    }
-    color: $primaryColorContrast;
-    @include pvl;
-  }
+/* general text stuff */
+strong, b {
+  font-weight: 600;
 }
 
-.text {
-  color: $quaternaryColor;
+em {
+  font-style: italic;
+}
 
-  strong {
+a {
+  color: rgb(38, 171, 146);
+  text-decoration:none;
+}
+
+.code {
+
+  background-color: $codeBlockBackgroundColor;
+  padding: $paddingExtraSmall;
+  @include border-radius($borderRadiusSmall);
+  margin-top: $marginExtraSmall;
+  margin-bottom: $marginSmall;
+  letter-spacing:0.1em;
+
+  .instance, .inst-method, .class-method {
     font-weight: 600;
   }
-
-  em {
-    font-style: italic;
+  .instance {
+    color:$codeBlockInstanceTextColor;
   }
-
-  p {
-    @include mbs;
-    font-size: $fontSizeMedium;
-    line-height: $lineHeightMedium;
+  .inst-method {
+    color:$codeBlockInstanceMethodTextColor;
+  }
+  .class-method {
+    color:$codeBlockClassMethodTextColor;
+  }
+  .stage {
+    color:$codeBlockStageTextColor;
+  }
+  .string {
+    color:$codeBlockStringTextColor;
   }
 }
 
 header {
-  margin-top:$marginLarge;
+  margin-top: $marginLarge;
   text-transform: uppercase;
   font-size: $fontSizeSmall;
   font-weight: 600;
@@ -102,7 +106,7 @@ header {
 
 #tagline {
 
-  margin-top:$marginLarge;
+  margin-top:$marginExtraLarge;
   position:relative;
 
   h1 {
@@ -113,23 +117,23 @@ header {
     text-align:center;
     line-height:45px;
     color:rgb(112,173,177);
-    font-size:$fontSizeLarge;
+    font-size:$fontSizeExtraLarge;
   }
 
   .background {
-    width:875px;
+    width:890px;
     height:45px;
     margin:0 auto;
     background:rgb(25, 37, 49);
-    @include skew(-20deg, 0deg);
-    border-radius:10px;
+    @include skewX(-20deg);
+    @include border-radius($borderRadiusMedium);
   }
 
 }
 
 #features {
 
-  margin-top:$marginLarge;
+  margin-top:$marginExtraLarge;
   overflow:hidden;
 
   .left {
@@ -140,6 +144,55 @@ header {
     float:left;
     width:50%;
   }
+
+  h4 {
+    color:rgb(89, 74, 118);
+    margin-bottom:$marginSmall;
+    font-size:$fontSizeLarge;
+    font-weight:600;
+    text-transform:uppercase;
+  }
+
+  h5 {
+    margin-top:$marginSmall;
+  }
+
+  ul {
+    margin-top:$marginExtraSmall;
+    margin-bottom:$marginMedium;
+
+    li {
+      line-height:$lineHeightLarge;
+      list-style:disc inside;
+      padding-left:$paddingSmall;
+    }
+  }
+}
+
+#demo {
+
+  margin-top:$marginExtraLarge;
+  overflow:hidden;
+  height:210px;
+  @include demo-section-background;
+
+  h3 {
+    color: white;
+    text-align:center;
+    font-size:$fontSizeLarge;
+    margin-bottom:$marginLarge;
+  }
+
+  .container {
+    @include demo-movie-background;
+  }
+
+  li {
+    float:left;
+    width:220px;
+    height:150px;
+  }
+
 }
 
 footer {
@@ -155,7 +208,6 @@ footer {
   }
 
   #social {
-
     float: left;
   }
 
@@ -178,7 +230,6 @@ footer {
 
 #teaser-movie {
   .container {
-    border:1px solid red;
     height:460px;
     position:relative;
   }
@@ -187,6 +238,15 @@ footer {
     position:absolute;
     left:215px;
     @include animate(planetAnim, 5s, infinite);
+  }
+
+  .orbit {
+    width:800px;
+    height:300px;
+    position: absolute;
+    left: 93px;
+    top: 160px;
+    @include orbit-background;
   }
 }
 

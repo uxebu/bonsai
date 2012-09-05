@@ -1,0 +1,93 @@
+@import 'icon-helper';
+
+i {
+    display: inline-block;
+
+    &.drag-drop {
+      @include icon-drag-drop;
+    }
+
+    &.quote {
+      @include icon-quote;
+    }
+
+    &.agree {
+      @include icon-agree;
+    }
+
+    &.convert {
+      @include icon-convert;
+    }
+
+    &.happy {
+      @include icon-happy;
+    }
+
+    &.apple {
+      @include icon-apple;
+    }
+
+    &.blackberry {
+      @include icon-blackberry;
+    }
+
+    &.android {
+      @include icon-android;
+    }
+
+    &.desktop {
+      @include icon-desktop;
+    }
+
+    &.error {
+      @include icon-error;
+    }
+
+    &.ok {
+      @include icon-ok;
+    }
+
+    &.ok-white {
+      @include icon-ok-white;
+    }
+
+    &.twitter {
+      @include icon-twitter;
+    }
+
+    &.facebook {
+      @include icon-facebook;
+    }
+
+    &.technology {
+      @include icon-technology;
+    }
+
+    &.reach {
+      @include icon-reach;
+    }
+
+    &.money-back {
+      @include icon-money-back;
+    }
+
+    &.oss {
+      @include icon-oss;
+    }
+
+    &.plus {
+      @include icon-plus;
+    }
+
+    &.grab {
+      @include icon-grab;
+    }
+
+    &.close {
+      @include icon-close;
+    }
+
+    &.other {
+
+    }
+  }

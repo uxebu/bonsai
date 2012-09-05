@@ -1,0 +1,99 @@
+/* Fonts */
+/* Box characteristics */
+/* Colors */
+/* container backgrounds */
+/* Tables */
+/* Margins/paddings */
+/* Font sizes */
+/* Border radius */
+/* code highlighting */
+/* Icons */
+/* line 4, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/tables.scss */
+table {
+  max-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* Base table */
+/* ---------- */
+/* line 13, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/tables.scss */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  /* No border outside */
+  /* Bottom align for column headings */
+}
+/* line 18, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/tables.scss */
+table th,
+table td {
+  padding: 13px 0 13px 13px;
+  text-align: left;
+  vertical-align: top;
+  margin: 0px;
+  background-color: white;
+  color: #747474;
+  -webkit-background-clip: padding;
+  -moz-background-clip: padding;
+  background-clip: padding-box;
+}
+/* line 29, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/tables.scss */
+table th:first-child,
+table td:first-child {
+  padding-right: 13px;
+}
+/* line 34, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/tables.scss */
+table th.error, table td.error {
+  background-color: #F04C5C;
+}
+/* line 37, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/tables.scss */
+table th.warning, table td.warning {
+  background-color: #ffe471;
+  color: #383934;
+}
+/* line 47, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/tables.scss */
+table tr:first-child th {
+  border-top: 0;
+}
+/* line 50, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/tables.scss */
+table tr:last-child td {
+  border-bottom: 0;
+}
+/* line 54, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/tables.scss */
+table tr td:first-child,
+table tr th:first-child {
+  border-left: 0;
+}
+/* line 58, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/tables.scss */
+table tr td:last-child,
+table tr th:last-child {
+  border-right: 0;
+}
+/* line 62, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/tables.scss */
+table th {
+  font-weight: bold;
+}
+/* line 67, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/tables.scss */
+table thead th {
+  vertical-align: bottom;
+}
+/* line 72, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/tables.scss */
+table.data tr:nth-child(odd) {
+  background: #fafafa;
+}
+/* line 76, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/tables.scss */
+table.data tr:nth-child(even) {
+  background: #f6f6f7;
+}
+/* line 80, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/tables.scss */
+table.data td {
+  background: none;
+}
+/* line 84, /Users/apollo/uxebu/bikeshed-project/bonsai/src/_sass/tables.scss */
+table.data i {
+  width: 20px;
+  height: 20px;
+  background-position: center center;
+  background-repeat: no-repeat;
+  margin: -6px 0;
+}
