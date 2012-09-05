@@ -8,7 +8,6 @@ define([
   'use strict';
 
   var hasOwn = {}.hasOwnProperty;
-
   var helpers = {
 
     filterToSignature: function filterToSignature(filter) {
@@ -54,7 +53,8 @@ define([
      */
     cssClasses: (function() {
 
-      if (typeof document == 'undefined') {
+      // return early when document context is not available
+      if (typeof document === 'undefined') {
         return;
       }
 
@@ -66,31 +66,35 @@ define([
       // `internalName` is, e.g. 'nonSelectable' (any defined in `classes`)
 
       var classes = {
-            nonSelectable: '-webkit-touch-callout: none;' +
-                            '-webkit-user-select: none;' +
-                            '-khtml-user-select: none;' +
-                            '-moz-user-select: none;' +
-                            '-moz-user-select: -moz-none;' +
-                            '-ms-user-select: none;' +
-                            '-o-user-select: none;' +
-                            'user-select: none;',
-            selectable: '-webkit-touch-callout: default;' +
-              '-webkit-user-select: text;' +
-              '-khtml-user-select: text;' +
-              '-moz-user-select: text;' +
-              '-ms-user-select: text;' +
-              '-o-user-select: text;' +
-              'user-select: text;'
-          },
-          classNameMap = {},
-          classNameUID = 0,
-          style = (
-            document.getElementsByTagName('head') || [document.body]
-          )[0].appendChild(document.createElement('style')),
-          styleText = [];
+        nonSelectable: '-webkit-touch-callout: none;' +
+                        '-webkit-user-select: none;' +
+                        '-khtml-user-select: none;' +
+                        '-moz-user-select: none;' +
+                        '-moz-user-select: -moz-none;' +
+                        '-ms-user-select: none;' +
+                        '-o-user-select: none;' +
+                        'user-select: none;',
+        selectable: '-webkit-touch-callout: default;' +
+          '-webkit-user-select: text;' +
+          '-khtml-user-select: text;' +
+          '-moz-user-select: text;' +
+          '-ms-user-select: text;' +
+          '-o-user-select: text;' +
+          'user-select: text;'
+      };
+
+      var classNameMap = {};
+      var classNameUID = 0;
+      // get <head/> if available, otherwise <body/>
+      var headElement = (document.getElementsByTagName('head') || [document.body])[0];
+      var styleText = [];
+      // append a style tag to the <head/>
+      var styleElement = headElement.appendChild(document.createElement('style'));
+
 
       for (var i in classes) {
-        classNameMap[i] = 'bs-' + (+new Date) + '-' + ++classNameUID;
+        ++classNameUID;
+        classNameMap[i] = 'bs-' + (+new Date()) + '-' + classNameUID;
         if (hasOwn.call(classes, i)) {
           styleText.push(
             '.' + classNameMap[i] + '{' + classes[i] + '}\n'
@@ -98,14 +102,14 @@ define([
         }
       }
 
-      style.appendChild(document.createTextNode(styleText.join('')));
+      styleElement.appendChild(document.createTextNode(styleText.join('')));
 
       return {
-        add: function(element, internalClassName) {
 
+        add: function(element, internalClassName) {
+          var existingClasses = element.getAttribute('class') || '';
           element.setAttribute(
-            'class',
-            (element.getAttribute('class') || '') + ' ' + classNameMap[internalClassName]
+            'class', existingClasses + ' ' + classNameMap[internalClassName]
           );
         },
         remove: function(element, internalClassName) {
