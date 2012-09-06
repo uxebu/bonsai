@@ -6,7 +6,7 @@
 
 @-webkit-keyframes planetAnim {
   50% {
-    -webkit-transform: translate(0, 30px);
+    -webkit-transform: translate(0, 10px);
   }
   100% {
     -webkit-transform: translate(0, 0);
@@ -15,7 +15,7 @@
 
 @-moz-keyframes planetAnim {
   50% {
-    -moz-transform: translate(0, 30px);
+    -moz-transform: translate(0, 10px);
   }
   100% {
     -moz-transform: translate(0, 0);
@@ -24,7 +24,7 @@
 
 @-o-keyframes planetAnim {
   50% {
-    -o-transform: translate(0, 30px);
+    -o-transform: translate(0, 10px);
   }
   100% {
     -o-transform: translate(0, 0);
@@ -33,7 +33,7 @@
 
 @-ms-keyframes planetAnim {
   50% {
-    -ms-transform: translate(0, 30px);
+    -ms-transform: translate(0, 10px);
   }
   100% {
     -ms-transform: translate(0, 0);
@@ -42,7 +42,7 @@
 
 @keyframes planetAnim {
   50% {
-    -webkit-transform: translate(0, 30px);
+    -webkit-transform: translate(0, 10px);
   }
   100% {
     -webkit-transform: translate(0, 0);

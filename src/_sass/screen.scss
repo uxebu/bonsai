@@ -14,7 +14,8 @@
 
 body {
   min-width: 960px;
-  font-family:"proxima-nova",sans-serif;
+  font-family: "freight-sans-pro", sans-serif;
+  font-weight: 400;
   color:rgb(172, 178, 187);
   @include page-background;
 }
@@ -26,7 +27,7 @@ body {
 
 /* general text stuff */
 strong, b {
-  font-weight: 600;
+  font-weight: 700;
 }
 
 em {
@@ -37,9 +38,12 @@ a {
   color: rgb(38, 171, 146);
   text-decoration:none;
 }
+a:hover {
+  text-decoration:underline;
+}
 
 .code {
-
+  font-family:inconsolata, sans-serif;
   background-color: $codeBlockBackgroundColor;
   padding: $paddingExtraSmall;
   @include border-radius($borderRadiusSmall);
@@ -56,9 +60,6 @@ a {
   .inst-method {
     color:$codeBlockInstanceMethodTextColor;
   }
-  .class-method {
-    color:$codeBlockClassMethodTextColor;
-  }
   .stage {
     color:$codeBlockStageTextColor;
   }
@@ -70,7 +71,7 @@ a {
 header {
   margin-top: $marginLarge;
   text-transform: uppercase;
-  font-size: $fontSizeSmall;
+  font-size: $fontSizeMedium;
   font-weight: 600;
 
   .container {
@@ -96,10 +97,6 @@ header {
 
         a {
           color:$primaryColorContrast;
-          text-decoration:none;
-        }
-        a:hover {
-          text-decoration:underline;
         }
       }
     }
@@ -116,6 +113,7 @@ header {
     left:0;
     top:0;
     width:100%;
+    font-weight: 500; /* medium */
     text-align:center;
     line-height:45px;
     color:rgb(112,173,177);
@@ -182,6 +180,7 @@ header {
     color: white;
     text-align:center;
     font-size:$fontSizeLarge;
+    font-weight: 500; /* medium */
     margin-bottom:$marginLarge;
   }
 
@@ -197,37 +196,22 @@ header {
 
 }
 
+#the-art-of-bonsai {
+  margin-top:$marginExtraLarge;
+  text-align:center;
+  font-size: $fontSizeLarge;
+  font-weight: 500; /* medium */;
+}
+
 footer {
-  position: relative;
+  text-align:center;
+  color: rgb(57,65,76);
+  font-size: $fontSizeMedium;
+  font-weight: 500; /* medium */;
 
-  background: $quinaryColor;
-  color: $quinaryColorContrast;
 
-  @include pvs;
-
-  a {
-    color: #fff;
-  }
-
-  #social {
-    float: left;
-  }
-
-  #legal {
-    @include translate3d(0,0,0);
-
-    text-align: right;
-    float: right;
-
-    ul {
-      @include mts;
-      font-size: $fontSizeSmall;
-    }
-  }
-
-  .nav {
-    text-transform: uppercase;
-  }
+  margin-top: $marginExtraLarge;
+  margin-bottom: $marginSmall;
 }
 
 #teaser-movie {
@@ -241,17 +225,17 @@ footer {
     width: 500px;
     height: 430px;
     left:215px;
-    top:0;
+    top:20px;
     @include planet-background;
-    @include animate(planetAnim, 5s, infinite);
+    @include animate(planetAnim, 4s, infinite);
   }
 
   .orbit {
     position: absolute;
     width: 800px;
     height: 300px;
-    left: 90px;
-    top: 160px;
+    left: 91px;
+    top: 170px;
     @include orbit-background;
   }
 
@@ -277,9 +261,26 @@ footer {
     position: absolute;
     width: 500px;
     height: 450px;
-    left: 250px;
-    top: -5px;
+    left: 240px;
+    top: 5px;
     @include spaceship-background;
+  }
+
+  .downloadship {
+    position:absolute;
+    width: 500px;
+    height: 200px;
+    left:490px;
+    top:50px;
+    @include downloadship-background;
+
+    a {
+      display:inline-block;
+      text-transform: uppercase;
+      font-size: $fontSizeExtraLarge;
+      color: white;
+      @include transform(matrix(1, -0.07, 0, 1, 150, 135));
+    }
   }
 }
 

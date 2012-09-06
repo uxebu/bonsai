@@ -10,6 +10,7 @@ page-name: home
     <div class="flyingsaucer"></div>
     <div class="satellite"></div>
     <div class="spaceship"></div>
+    <div class="downloadship"></div>
   </div>
 </div>
 
@@ -42,8 +43,7 @@ page-name: home
       <h4>How to use Bonsai</h4>
       <p>Draw a 100x100 rectangle</p>
       <p class="code">
-        <b>var</b> r = <b>new</b> <span class="instance">Rect</span>(0, 0, 100, 200).
-          <span class="inst-method">addTo</span>(<span class="stage">stage</span>);
+        <b>var</b> r = <b>new</b> <span class="instance">Rect</span>(0, 0, 100, 200).<span class="inst-method">addTo</span>(<span class="stage">stage</span>);
       </p>
       <p>Fill it:</p>
       <p class="code">
@@ -51,7 +51,7 @@ page-name: home
       </p>
       <p>Change your mind... Make it darker:</p>
       <p class="code">
-        r.<span class="inst-method">fill</span>(<span class="class-method">color</span>(<span class="string">'green'</span>).<span class="inst-method">darker</span>());
+        r.<span class="inst-method">fill</span>(<span class="instance">color</span>(<span class="string">'green'</span>).<span class="inst-method">darker</span>());
       </p>
       <p>Animate it:</p>
       <p class="code">
@@ -72,5 +72,11 @@ page-name: home
       <li></li>
       <li></li>
     </ul>
+  </div>
+</div>
+
+<div class="row" id="the-art-of-bonsai">
+  <div class="container">
+    “The art of bonsai tells a story through living illusion. A bonsai artist searches for ways to express his personal creativity by mixing form and thought in a miniature world.“
   </div>
 </div>
