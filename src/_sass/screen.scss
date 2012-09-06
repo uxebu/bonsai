@@ -277,8 +277,8 @@ footer {
     position: absolute;
     width: 500px;
     height: 450px;
-    left: 0;
-    top: 0;
+    left: 250px;
+    top: -5px;
     @include spaceship-background;
   }
 }
