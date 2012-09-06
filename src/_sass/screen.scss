@@ -236,7 +236,11 @@ footer {
 
   .planet {
     position:absolute;
+    width: 500px;
+    height: 430px;
     left:215px;
+    top:0;
+    @include planet-background;
     @include animate(planetAnim, 5s, infinite);
   }
 
@@ -244,12 +248,12 @@ footer {
     position: absolute;
     width: 800px;
     height: 300px;
-    left: 93px;
+    left: 90px;
     top: 160px;
     @include orbit-background;
   }
 
-  .flyingsauer {
+  .flyingsaucer {
     position: absolute;
     width: 200px;
     height: 150px;
@@ -265,7 +269,15 @@ footer {
     left: 60px;
     top: 150px;
     @include satellite-background;
+  }
 
+  .spaceship {
+    position: absolute;
+    width: 500px;
+    height: 450px;
+    left: 0;
+    top: 0;
+    @include spaceship-background;
   }
 }
 
