@@ -241,12 +241,31 @@ footer {
   }
 
   .orbit {
-    width:800px;
-    height:300px;
     position: absolute;
+    width: 800px;
+    height: 300px;
     left: 93px;
     top: 160px;
     @include orbit-background;
+  }
+
+  .flyingsauer {
+    position: absolute;
+    width: 200px;
+    height: 150px;
+    left: 400px;
+    top: -9px;
+    @include flying-saucer-background;
+  }
+
+  .satellite {
+    position: absolute;
+    width: 120px;
+    height: 70px;
+    left: 60px;
+    top: 150px;
+    @include satellite-background;
+
   }
 }
 
