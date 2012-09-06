@@ -76,7 +76,9 @@ header {
   .container {
     position:relative;
 
-    #logo {
+    #logo img {
+      width: 150px;
+      height: 180px;
     }
 
     .nav {
