@@ -44,6 +44,7 @@ a:hover {
 
 .code {
   font-family:inconsolata, sans-serif;
+  font-weight:500;
   background-color: $codeBlockBackgroundColor;
   padding: $paddingExtraSmall;
   @include border-radius($borderRadiusSmall);
@@ -71,7 +72,6 @@ a:hover {
 header {
   margin-top: $marginLarge;
   text-transform: uppercase;
-  font-size: $fontSizeMedium;
   font-weight: 600;
 
   .container {
@@ -121,7 +121,7 @@ header {
   }
 
   .background {
-    width:890px;
+    width:855px;
     height:45px;
     margin:0 auto;
     background:rgb(25, 37, 49);
@@ -206,7 +206,6 @@ header {
 footer {
   text-align:center;
   color: rgb(57,65,76);
-  font-size: $fontSizeMedium;
   font-weight: 500; /* medium */;
 
 
@@ -227,7 +226,7 @@ footer {
     left:215px;
     top:20px;
     @include planet-background;
-    @include animate(planetAnim, 4s, infinite);
+    @include animate(planetAnim, 3s, infinite);
   }
 
   .orbit {
