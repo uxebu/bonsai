@@ -8,6 +8,144 @@ require([
   './runner.js'
 ], function(DisplayList, DisplayObject, Stage, tools, EventEmitter, fakeMessageproxy) {
 
+  function createDisplayList(owner) {
+    return new DisplayList(owner);
+  }
+
+  function createArbitraryDisplayObject() {
+    return {id: createArbitraryDisplayObject.objectId += 1};
+  }
+  createArbitraryDisplayObject.objectId = 0;
+
+  describe('DisplayList', function() {
+    describe('constructor', function() {
+      it('should expose the first argument as `owner` property', function() {
+        var owner = {};
+        expect(createDisplayList(owner).owner).toBe(owner);
+      });
+    });
+
+    describe('instances', function() {
+      it('should have a `children` property being an array', function() {
+        expect(createDisplayList()).toHaveOwnProperties('children');
+        expect(createDisplayList().children).toBeArray();
+      })
+    });
+
+    describe('prototype', function() {
+      describe('addChild', function() {
+        it('should append a child to an empty list', function() {
+          var displayList = createDisplayList();
+          var newChild = createArbitraryDisplayObject();
+
+          displayList.addChild(newChild);
+          expect(displayList.children).toEqual([newChild]);
+        });
+
+        it('should append an array of children to an empty list', function() {
+          var displayList = createDisplayList();
+          var newChildren = [
+            createArbitraryDisplayObject(),
+            createArbitraryDisplayObject(),
+            createArbitraryDisplayObject()
+          ];
+
+          displayList.addChild(newChildren);
+          expect(displayList.children).toEqual(newChildren);
+          expect(displayList.children).toHaveLength(3);
+        });
+
+        it('should append a child to a non-empty list', function() {
+          var displayList = createDisplayList();
+          var existingChildren = [
+            createArbitraryDisplayObject(),
+            createArbitraryDisplayObject(),
+            createArbitraryDisplayObject()
+          ];
+          displayList.addChild(existingChildren);
+          var newChild = createArbitraryDisplayObject();
+
+          displayList.addChild(newChild);
+          expect(displayList.children).toEqual(existingChildren.concat(newChild));
+        });
+
+        it('should append an array of children to a non-empty list', function() {
+          var displayList = createDisplayList();
+          var existingChildren = [
+            createArbitraryDisplayObject(),
+            createArbitraryDisplayObject(),
+            createArbitraryDisplayObject()
+          ];
+          displayList.addChild(existingChildren);
+          var newChildren = [
+            createArbitraryDisplayObject(),
+            createArbitraryDisplayObject()
+          ];
+
+          displayList.addChild(newChildren);
+          expect(displayList.children).toEqual(existingChildren.concat(newChildren));
+        });
+
+        it('should insert a child at a specified index', function() {
+          var displayList = createDisplayList();
+          var existingChild1 = createArbitraryDisplayObject();
+          var existingChild2 = createArbitraryDisplayObject();
+          displayList.addChild([existingChild1, existingChild2]);
+          var newChild = createArbitraryDisplayObject();
+
+          displayList.addChild(newChild, 1);
+          expect(displayList.children).toEqual([existingChild1, newChild, existingChild2]);
+        });
+
+        it('should insert an array of children at a specified index', function() {
+          var displayList = createDisplayList();
+          var existingChild1 = createArbitraryDisplayObject();
+          var existingChild2 = createArbitraryDisplayObject();
+          displayList.addChild([existingChild1, existingChild2]);
+          var newChildren = [
+            createArbitraryDisplayObject(),
+            createArbitraryDisplayObject()
+          ];
+
+          displayList.addChild(newChildren, 1);
+          expect(displayList.children)
+            .toEqual([existingChild1].concat(newChildren, existingChild2));
+        });
+
+        it('should append a child to the end of the list if the specified ' +
+          'index is higher than the length of the list', function() {
+
+          var displayList = createDisplayList();
+          var existingChild1 = createArbitraryDisplayObject();
+          var existingChild2 = createArbitraryDisplayObject();
+          displayList.addChild([existingChild1, existingChild2]);
+          var newChild = createArbitraryDisplayObject();
+
+          displayList.addChild(newChild, 16);
+          expect(displayList.children).toEqual([existingChild1, existingChild2, newChild]);
+        });
+
+        it('should append an array of children to the end of the list if the ' +
+          'specified index is higher than the length of the list', function() {
+
+          var displayList = createDisplayList();
+          var existingChild1 = createArbitraryDisplayObject();
+          var existingChild2 = createArbitraryDisplayObject();
+          displayList.addChild([existingChild1, existingChild2]);
+          var newChildren = [
+            createArbitraryDisplayObject(),
+            createArbitraryDisplayObject()
+          ];
+
+          displayList.addChild(newChildren, 16);
+          expect(displayList.children).toEqual([existingChild1, existingChild2].concat(newChildren));
+        });
+
+      });
+    });
+  });
+
+  return;
   function CustomDisplayList() {
     DisplayObject.call(this);
   }
@@ -17,9 +155,6 @@ require([
     DisplayList
   );
 
-  function createDisplayList() {
-    return new CustomDisplayList();
-  }
 
   var mockDisplayObjectIds = 0;
   function MockDisplayObject() {

@@ -3,6 +3,58 @@ define([
 ], function(tools) {
   'use strict';
 
+  var isArray = tools.isArray;
+
+  /**
+   * Constructs a display list.
+   *
+   * This is the standard display list implementation: It does not allow for
+   * sparse child arrays and will always remove all gaps.
+   *
+   * @param {DisplayObject} [owner=undefined] The object owning the display list.
+   * @constructor
+   */
+  function DisplayList(owner) {
+    this.children = [];
+    this.owner = owner;
+  }
+
+  DisplayList.prototype = {
+    /**
+     * Adds a `DisplayObject` or an array of DisplayObjects to the display list.
+     *
+     * When called without index, the new child(ren) are appended at the end of
+     * the list.
+     *
+     * When called with index, the children will be inserted into the display
+     * list at that index. Any existing object at the index will be shifted
+     * towards the end.
+     *
+     * @param {DisplayObject|Array} child The new child to add, or an array of
+     *    DisplayObjects to add.
+     * @param {Number} [index=undefined] A natural number at which index the
+     *    child/children will be added.
+     */
+    addChild: function(child, index) {
+      var hasIndex = index >>> 0 === index;
+
+      var children = this.children;
+      if (hasIndex) {
+        if (isArray(child)) {
+          children.splice.apply(children, [index, 0].concat(child));
+        } else {
+          children.splice(index, 0, child);
+        }
+      } else if (isArray(child)) {
+        children.push.apply(children, child);
+      } else {
+        children.push(child);
+      }
+    }
+  };
+
+  return DisplayList;
+
   var max = Math.max, min = Math.min;
   var reduce = tools.reduce;
   var removeValueFromArray = tools.removeValueFromArray;
