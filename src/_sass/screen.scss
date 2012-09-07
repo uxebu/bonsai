@@ -179,10 +179,25 @@ header {
   margin:$marginExtraLarge auto 0 auto;
   overflow:hidden;
   height:210px;
-  /*@include demo-section-background;*/
 
   .containerWithoutPadding {
     background-color: $primaryColor;
+  }
+
+  .rounded-rects-left, .rounded-rects-right {
+    position:absolute;
+    width: 50%;
+    height: 210px;
+    @include demo-section-background;
+  }
+  .rounded-rects-left {
+    background-position: 100% bottom;
+    margin-right: 513px;
+    right: 50%;
+  }
+  .rounded-rects-right {
+    margin-left: 520px;
+    left: 50%;
   }
 
   h3 {
@@ -254,9 +269,27 @@ footer {
   text-align:center;
   color: rgb(57,65,76);
   font-weight: 500; /* medium */;
+  height: 160px;
+
 
   margin-top: $marginExtraLarge;
-  margin-bottom: $marginSmall;
+
+  .flowers-left, .flowers-right {
+    position:absolute;
+    width: 50%;
+    height: 160px;
+    @include flower-background;
+  }
+  .flowers-left {
+    background-position: 100% bottom;
+    margin-right: 250px;
+    right: 50%;
+  }
+  .flowers-right {
+    margin-left: 250px;
+    left: 50%;
+  }
+
 }
 
 #teaser-movie {
