@@ -98,9 +98,11 @@ define([
 
     DisplayObject.call(this);
 
+    text = String(text);
+
     Object.defineProperties(this._attributes, {
       // many are null: default to null to inherit from Text parent
-      text: data(text || '', true, true),
+      text: data('', true, true),
       fontSize: data(null, true, true),
       fontFamily: accessor(getFontFamily, setFontFamily, true),
       _fontFamily: data(null, true),
@@ -143,7 +145,7 @@ define([
       selectable: 'selectable'
     };
 
-    if (text) {
+    if (text != null) {
       this.attr('text', text);
     }
   }

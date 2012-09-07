@@ -20,6 +20,7 @@ v0.3.4 / 2012-09-04
 * Change `Animation#play` signature (Remove parameters)
 * Fix pattern (used for fill images / gradients) translation (tx/ty) values in the renderer
 * Avoid adding a DisplayList to itself
+* Fixed Text and TextSpan so that they both accept non-null falsey values as text
 
 v0.3.3 / 2012-08-20
 -------------------
