@@ -24,6 +24,11 @@ body {
   @include container;
   min-width: 936px;
 }
+.containerWithoutPadding {
+  @include container;
+  padding: 0;
+  min-width: 984px; /* 960 + 12 (left padding) + 12 (right padding) */
+}
 
 /* general text stuff */
 strong, b {
@@ -171,10 +176,14 @@ header {
 
 #demo {
 
-  margin-top:$marginExtraLarge;
+  margin:$marginExtraLarge auto 0 auto;
   overflow:hidden;
   height:210px;
   @include demo-section-background;
+
+  .container {
+    padding:0;
+  }
 
   h3 {
     color: white;
@@ -184,14 +193,13 @@ header {
     margin-bottom:$marginLarge;
   }
 
-  .container {
-    @include demo-movie-background;
-  }
-
   li {
+    @include border-radius($borderRadiusLarge);
+    background-color: #403452;
+    margin:2px 10px 0 0;
     float:left;
-    width:220px;
-    height:150px;
+    width:199px;
+    height:145px;
   }
 
 }
