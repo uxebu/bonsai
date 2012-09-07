@@ -36,6 +36,9 @@ require([
     });
 
     it('can extract extensions for sources [if not specified]', function() {
+      expect(new AssetResource('data:image/jpg,aaa').type).toBe('image/jpg');
+      expect(new AssetResource('data:image/svg+xml,aaa').type).toBe('image/svg+xml');
+      expect(new AssetResource('foo/bar/txt.eot').type).toBe('eot');
       expect(new AssetResource('foo/bar/txt.eot').type).toBe('eot');
       expect(new AssetResource('foo/bar/txt.eot#hashy').type).toBe('eot');
       expect(new AssetResource('/foo/bar/txt.eot#hashy').type).toBe('eot');

@@ -38,8 +38,10 @@ define([
     } else {
       var uri = URI.parse(src);
       var re = uri.scheme === 'data' ?
-        /^(\w+\/\w+);/ : // extract mime type from beginning
+        /^(\w+\/[\w+]+)[;,]/ : // extract mime type from beginning
         /\.([^.]+)$/; // extract file extension
+
+      console.log(re);
       this.type = (uri.path.match(re) || [, null])[1];
     }
 
