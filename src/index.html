@@ -3,16 +3,7 @@ layout: default
 title: BonsaiJS - A Graphics Library
 page-name: home
 ---
-<div class="row" id="teaser-movie">
-  <div class="container">
-    <div class="planet"></div>
-    <div class="orbit"></div>
-    <div class="flyingsaucer"></div>
-    <div class="satellite"></div>
-    <div class="spaceship"></div>
-    <div class="downloadship"></div>
-  </div>
-</div>
+<div class="row" id="teaser-movie"></div>
 
 <div class="row" id="tagline">
   <div class="container">
@@ -85,3 +76,24 @@ page-name: home
     <span class="startquote">“</span>The art of bonsai tells a story through living illusion. A bonsai artist searches for ways to express his personal creativity by mixing form and thought in a miniature world.<span class="endquote">“</span>
   </div>
 </div>
+
+<script src="/lib/bonsai.iframe.min.js"></script>
+<script>
+
+(function() {
+
+  var player = document.getElementById('teaser-movie');
+
+  var w = 1000;
+  var h = 500;
+
+  bonsai.run(player, {
+    urls: ['/planet-movie/assets.js', '/planet-movie/movie.js'],
+    height: h,
+    width: w,
+    framerate: 40
+  });
+
+}());
+
+</script>
