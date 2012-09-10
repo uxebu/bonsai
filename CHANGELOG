@@ -1,6 +1,6 @@
 v0.3.6
 -------------------
-
+* Add additional container DIV in renderer to fix `getOffset` on iOS devices
 
 v0.3.5 / 2012-09-10
 -------------------
