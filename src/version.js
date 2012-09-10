@@ -1,3 +1,3 @@
 define(function() {
-  return '0.3.4-pre';
+  return '0.3.5';
 });
