@@ -3,7 +3,9 @@ layout: default
 title: BonsaiJS - A Graphics Library
 page-name: home
 ---
-<div class="row" id="teaser-movie"></div>
+<div class="row" id="teaser-movie">
+  <div class="container"></div>
+</div>
 
 <div class="row" id="tagline">
   <div class="container">
@@ -77,12 +79,12 @@ page-name: home
   </div>
 </div>
 
-<script src="/lib/bonsai.iframe.min.js"></script>
+<script src="http://cloud.github.com/downloads/uxebu/bonsai/bonsai.iframe-0.3.5.min.js"></script>
 <script>
 
 (function() {
 
-  var player = document.getElementById('teaser-movie');
+  var player = document.querySelectorAll('#teaser-movie .container')[0];
 
   var w = 1000;
   var h = 500;
