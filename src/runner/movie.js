@@ -3,8 +3,10 @@ define([
   './display_list',
   './timeline',
   '../tools'
-], function(AssetDisplayObject, DisplayList, Timeline, tools) {
+], function(AssetDisplayObject, displayList, Timeline, tools) {
   'use strict';
+
+  var DisplayList = displayList.DisplayList;
 
   /**
    * Constructs a Movie instance
@@ -19,10 +21,16 @@ define([
    *
    * @extends AssetDisplayObject
    * @mixes Timeline
-   * @mixes DisplayList
+   * @mixes displayList.timelineMethods
    */
-  function Movie(root, url, callback) {
+  function Movie(root, url, callback, displayList) {
     AssetDisplayObject.call(this, null, url, callback);
+
+    if (!displayList) {
+      displayList = new DisplayList();
+    }
+    displayList.owner = this;
+    this.displayList = displayList;
 
     this.root = root;
     this._children = [];
@@ -40,7 +48,8 @@ define([
     }
   }
 
-  var proto = Movie.prototype = tools.mixin(Object.create(AssetDisplayObject.prototype), Timeline, DisplayList);
+  var proto = Movie.prototype =
+    tools.mixin(Object.create(AssetDisplayObject.prototype), Timeline, displayList.timelineMethods);
 
   proto.loadSubMovie = function() {
     return this.root.loadSubMovie.apply(this.root, arguments);

@@ -9,30 +9,28 @@ define([
   './environment',
   './ui_event',
   '../uri'
-], function(EventEmitter, DisplayList, color, Timeline,
+], function(EventEmitter, displayList, color, Timeline,
             tools, Registry, AssetLoader, Environment,
             uiEvent, URI) {
   'use strict';
 
   var hitch = tools.hitch;
+  var DisplayList = displayList.DisplayList;
 
   /** @const */
   var DEFAULT_FRAMERATE = 30;
 
   /**
-   * Helper used to collect all descendent IDs of a DisplayList
+   * Helper used to collect all descendent IDs of a display list
    * (recursive)
    */
   function collectChildIds(object) {
-    var children = object._children,
+    var children = object.children(),
         ids = [];
     if (children) {
       for (var i = 0, l = children.length; i < l; ++i) {
-        if (children[i]) {
-          // TODO: why is this check necessary? children should never be falsey.
-          ids.push(children[i].id);
-          ids.push.apply(ids, collectChildIds(children[i]));
-        }
+        ids.push(children[i].id);
+        ids.push.apply(ids, collectChildIds(children[i]));
       }
     }
     return ids;
@@ -51,8 +49,14 @@ define([
    * @mixes EventEmitter
    * @mixes Timeline
    */
-  function Stage(messageChannel) {
+  function Stage(messageChannel, displayList) {
     var registry = this.registry = new Registry();
+
+    if (!displayList) {
+      this.displayList = new DisplayList();
+    }
+    displayList.owner = this;
+    this.displayList = displayList;
 
     var assetLoader = this.assetLoader =
       new AssetLoader(registry.pendingAssets)
@@ -429,7 +433,7 @@ define([
     }
   };
 
-  tools.mixin(Stage.prototype, EventEmitter, DisplayList, Timeline);
+  tools.mixin(Stage.prototype, EventEmitter, displayList.timelineMethods, Timeline);
 
   return Stage;
 });
