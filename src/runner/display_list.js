@@ -189,7 +189,7 @@ define([
         displayList.add(newChildren);
         return this;
       }
-      return displayList.children;
+      return displayList.children.slice();
     },
     /**
      * Removes all children from the object
