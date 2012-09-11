@@ -1,9 +1,23 @@
 define([
-  '../tools'
-], function(tools) {
+  '../tools',
+  './display_object'
+], function(tools, DisplayObject) {
   'use strict';
 
   var isArray = tools.isArray;
+  var min = Math.min;
+  function getAncestors(displayObject) {
+    var ancestors = [];
+    do {
+      ancestors.push(displayObject);
+      displayObject = displayObject.parent;
+    } while (displayObject);
+
+    return ancestors;
+  }
+  function inThisArray(item) {
+    return this.indexOf(item) !== -1;
+  }
 
   /**
    * Constructs a display list.
@@ -32,30 +46,191 @@ define([
      *
      * @param {DisplayObject|Array} child The new child to add, or an array of
      *    DisplayObjects to add.
-     * @param {Number} [index=undefined] A natural number at which index the
-     *    child/children will be added.
+     * @param {Number} [insertAt=undefined] A natural number at which
+     *    index the child/children will be added.
      */
-    addChild: function(child, index) {
-      var hasIndex = index >>> 0 === index;
+    add: function(child, insertAt) {
+      var isChildArray = isArray(child);
+      var owner = this.owner;
+      var ancestors = getAncestors(owner);
+      var numNewChildren = isChildArray ? child.length : 1;
+      var newChildrenStop;
+
+      if (!isChildArray && ancestors.indexOf(child) !== -1) {
+        return;
+      } else if (isChildArray && child.some(inThisArray, ancestors)) {
+        return;
+      } else if (numNewChildren === 0) {
+        return;
+      }
 
       var children = this.children;
-      if (hasIndex) {
-        if (isArray(child)) {
-          children.splice.apply(children, [index, 0].concat(child));
-        } else {
-          children.splice(index, 0, child);
-        }
-      } else if (isArray(child)) {
-        children.push.apply(children, child);
+      var numExistingChildren = children.length;
+      insertAt = arguments.length > 1 ?
+        min(insertAt >>> 0, numExistingChildren) : numExistingChildren;
+
+      if (isChildArray) {
+        children.splice.apply(children, [insertAt, 0].concat(child));
       } else {
-        children.push(child);
+        children.splice(insertAt, 0, child);
       }
+
+      if (insertAt > 0) {
+        children[insertAt - 1].next = isChildArray ? child[0] : child;
+      }
+      newChildrenStop = insertAt + numNewChildren;
+      for (var nextChild, i = insertAt; i < newChildrenStop; i += 1) {
+        child = nextChild || children[i];
+
+        var previousParent = child.parent;
+        if (previousParent) {
+          previousParent.displayList.remove(child);
+        }
+        nextChild = children[i + 1];
+        child.next = nextChild;
+        child.parent = owner;
+        child._activate(owner.stage);
+      }
+
+    },
+
+    /**
+     * Removes all children from the display list.
+     */
+    clear: function() {
+      var children = this.children;
+      for (var i = 0, child; (child = children[i]); i += 1) {
+        child._deactivate();
+        child.next = child.parent = void 0;
+      }
+      children.length = 0
+    },
+
+    /**
+     * Removes a child from the display list
+     *
+     * @param displayObject
+     */
+    remove: function(displayObject) {
+      var children = this.children;
+      var childIndex = children.indexOf(displayObject);
+      if (childIndex === -1) { return; }
+
+      if (childIndex > 0) {
+        children[childIndex - 1].next = displayObject.next;
+      }
+      displayObject.next = displayObject.parent = void 0;
+      displayObject._deactivate();
+      children.splice(childIndex, 1);
     }
   };
 
-  return DisplayList;
+  function activate(stage) {
+    DisplayObject.prototype._activate.call(this, stage);
+    var children = this.children;
+    for (var i = 0, length = children.length; i < length; i += 1) {
+      children[i]._activate(stage);
+    }
+  }
 
-  var max = Math.max, min = Math.min;
+  function deactivate() {
+    DisplayObject.prototype._deactivate.call(this);
+    var children = this.children;
+    for (var i = 0, length = children.length; i < length; i += 1) {
+      children[i]._deactivate();
+    }
+  }
+
+  /**
+   * Ready made methods that can be used by / mixed into objects owning a
+   * display list and inherit from DisplayObject
+   *
+   * @name display_list.methods
+   */
+  var methods = {
+    /**
+     * Activates the object and all of its children.
+     *
+     * @param {Stage} stage
+     * @private
+     */
+    _activate: activate,
+
+    /**
+     * Deactivates the object and all of its children
+     *
+     * @private
+     */
+    _deactivate: deactivate,
+
+    /**
+     * Adds a child or an array of children to the object.
+     *
+     * @param {DisplayObject|Array} child The display object (or array of
+     *    display objects) to add.
+     * @param {Number} [index=undefined] A natural number at which index the
+     *    child should be inserted.
+     * @return {this}
+     */
+    addChild: function(child, index) {
+      this.displayList.add(child, index);
+      return this;
+    },
+    /**
+     * Returns or sets the array of child display objects.
+     * @param {Array} [newChildren=undefined] If passed, the display list is
+     *    cleared and the new children are appended.
+     * @return {this|Array}
+     */
+    children: function(newChildren) {
+      var displayList = this.displayList;
+      if (arguments.length) {
+        displayList.clear();
+        displayList.add(newChildren);
+        return this;
+      }
+      return displayList.children;
+    },
+    /**
+     * Removes all children from the object
+     * @return {this}
+     */
+    clear: function() {
+      this.displayList.clear();
+      return this;
+    },
+    getComputed: function() {
+      throw 'implement me';
+    },
+    getIndexOfChild: function() {
+      return this.displayList.getIndexOfChild();
+    },
+    removeChild: function(child) {
+      this.displayList.removeChild(child);
+      return this;
+    }
+  };
+  return {
+    DisplayList: DisplayList,
+    methods: methods,
+    timelineMethods: tools.mixin({
+      _activate: function(stage) {
+        activate.call(this, stage);
+        if (stage) {
+          stage.registry.movies.add(this);
+        }
+      },
+      _deactivate: function() {
+        if (this.stage) {
+          this.stage.registry.movies.remove(this);
+        }
+        deactivate.call(this);
+      }
+    }, methods)
+  };
+
+
+  var max = Math.max;
   var reduce = tools.reduce;
   var removeValueFromArray = tools.removeValueFromArray;
 
@@ -66,7 +241,7 @@ define([
    * @name DisplayList
    * @mixin
    */
-  var DisplayList = /** @lends DisplayList */{
+  DisplayList = /** @lends DisplayList */{
     /**
      * Adds a child at the end list of contained display objects.
      *

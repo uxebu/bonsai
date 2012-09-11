@@ -473,6 +473,13 @@ define([
         this._isOffStage = true;
       }
 
+      if (stage) {
+        var registry = stage && stage.registry;
+        registry.displayObjects[this.id] = this;
+        registry.needsInsertion[this.id] = this;
+      }
+      this.markUpdate();
+
       this.emit('addedToStage');
     },
 
