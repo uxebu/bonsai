@@ -13,7 +13,7 @@
 @import "spacing";
 
 body {
-  min-width: 970px;
+  min-width: 960px;
   font-family: "freight-sans-pro", sans-serif;
   font-weight: 400;
   color:rgb(172, 178, 187);
@@ -308,6 +308,7 @@ footer {
   .container {
     height:460px;
     position:relative;
+    overflow: hidden;
   }
 
   .planet {
