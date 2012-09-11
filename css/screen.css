@@ -314,7 +314,7 @@ s,m,l,n = small(5px),medium(10px),large(20px),none(0px)
 */
 /* line 15, /Users/nikolaionken/dev/bonsai/_sass/screen.scss */
 body {
-  min-width: 1030px;
+  min-width: 960px;
   font-family: "freight-sans-pro", sans-serif;
   font-weight: 400;
   color: #acb2bb;
@@ -646,7 +646,7 @@ footer {
 footer .flowers-container {
   position: absolute;
   width: 100%;
-  height: 100%;
+  height: 160px;
   overflow: hidden;
 }
 /* line 284, /Users/nikolaionken/dev/bonsai/_sass/screen.scss */
