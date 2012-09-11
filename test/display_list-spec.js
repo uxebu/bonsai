@@ -70,14 +70,6 @@ require([
     return createArbitraryGroup();
   }
 
-  function createRegistry() {
-    return {
-      displayObjects: {},
-      needsDraw: {},
-      needsInsertion: {}
-    };
-  }
-
   describe('DisplayList', function() {
     describe('constructor', function() {
       it('should expose the first argument as `owner` property', function() {
