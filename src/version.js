@@ -1,3 +1,3 @@
 define(function() {
-  return '0.3.5';
+  return '0.3.6';
 });
