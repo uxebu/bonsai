@@ -1,6 +1,11 @@
-v0.3.6
+v0.3.7
+-------------------
+
+
+v0.3.6 / 2012-09-12
 -------------------
 * Add additional container DIV in renderer to fix `getOffset` on iOS devices
+* Make sure Bitmap does not ignore manually set dimensions if the source is changed
 
 v0.3.5 / 2012-09-10
 -------------------
