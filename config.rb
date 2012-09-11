@@ -1,7 +1,7 @@
 # Compass configuration
 require "susy"
 
-project_path = "src"
+project_path = "./"
 http_path = "/"
 css_dir = "css"
 sass_dir = "_sass"

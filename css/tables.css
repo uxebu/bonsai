@@ -8,7 +8,7 @@
 /* Border radius */
 /* code highlighting */
 /* Icons */
-/* line 4, /Users/tobias/projects/bonsai/src/_sass/tables.scss */
+/* line 4, /Users/nikolaionken/dev/bonsai/_sass/tables.scss */
 table {
   max-width: 100%;
   border-collapse: separate;
@@ -17,14 +17,14 @@ table {
 
 /* Base table */
 /* ---------- */
-/* line 13, /Users/tobias/projects/bonsai/src/_sass/tables.scss */
+/* line 13, /Users/nikolaionken/dev/bonsai/_sass/tables.scss */
 table {
   width: 100%;
   border-collapse: collapse;
   /* No border outside */
   /* Bottom align for column headings */
 }
-/* line 18, /Users/tobias/projects/bonsai/src/_sass/tables.scss */
+/* line 18, /Users/nikolaionken/dev/bonsai/_sass/tables.scss */
 table th,
 table td {
   padding: 13px 0 13px 13px;
@@ -37,59 +37,59 @@ table td {
   -moz-background-clip: padding;
   background-clip: padding-box;
 }
-/* line 29, /Users/tobias/projects/bonsai/src/_sass/tables.scss */
+/* line 29, /Users/nikolaionken/dev/bonsai/_sass/tables.scss */
 table th:first-child,
 table td:first-child {
   padding-right: 13px;
 }
-/* line 34, /Users/tobias/projects/bonsai/src/_sass/tables.scss */
+/* line 34, /Users/nikolaionken/dev/bonsai/_sass/tables.scss */
 table th.error, table td.error {
   background-color: #F04C5C;
 }
-/* line 37, /Users/tobias/projects/bonsai/src/_sass/tables.scss */
+/* line 37, /Users/nikolaionken/dev/bonsai/_sass/tables.scss */
 table th.warning, table td.warning {
   background-color: #ffe471;
   color: #383934;
 }
-/* line 47, /Users/tobias/projects/bonsai/src/_sass/tables.scss */
+/* line 47, /Users/nikolaionken/dev/bonsai/_sass/tables.scss */
 table tr:first-child th {
   border-top: 0;
 }
-/* line 50, /Users/tobias/projects/bonsai/src/_sass/tables.scss */
+/* line 50, /Users/nikolaionken/dev/bonsai/_sass/tables.scss */
 table tr:last-child td {
   border-bottom: 0;
 }
-/* line 54, /Users/tobias/projects/bonsai/src/_sass/tables.scss */
+/* line 54, /Users/nikolaionken/dev/bonsai/_sass/tables.scss */
 table tr td:first-child,
 table tr th:first-child {
   border-left: 0;
 }
-/* line 58, /Users/tobias/projects/bonsai/src/_sass/tables.scss */
+/* line 58, /Users/nikolaionken/dev/bonsai/_sass/tables.scss */
 table tr td:last-child,
 table tr th:last-child {
   border-right: 0;
 }
-/* line 62, /Users/tobias/projects/bonsai/src/_sass/tables.scss */
+/* line 62, /Users/nikolaionken/dev/bonsai/_sass/tables.scss */
 table th {
   font-weight: bold;
 }
-/* line 67, /Users/tobias/projects/bonsai/src/_sass/tables.scss */
+/* line 67, /Users/nikolaionken/dev/bonsai/_sass/tables.scss */
 table thead th {
   vertical-align: bottom;
 }
-/* line 72, /Users/tobias/projects/bonsai/src/_sass/tables.scss */
+/* line 72, /Users/nikolaionken/dev/bonsai/_sass/tables.scss */
 table.data tr:nth-child(odd) {
   background: #fafafa;
 }
-/* line 76, /Users/tobias/projects/bonsai/src/_sass/tables.scss */
+/* line 76, /Users/nikolaionken/dev/bonsai/_sass/tables.scss */
 table.data tr:nth-child(even) {
   background: #f6f6f7;
 }
-/* line 80, /Users/tobias/projects/bonsai/src/_sass/tables.scss */
+/* line 80, /Users/nikolaionken/dev/bonsai/_sass/tables.scss */
 table.data td {
   background: none;
 }
-/* line 84, /Users/tobias/projects/bonsai/src/_sass/tables.scss */
+/* line 84, /Users/nikolaionken/dev/bonsai/_sass/tables.scss */
 table.data i {
   width: 20px;
   height: 20px;
