@@ -53,7 +53,7 @@ define([
     var registry = this.registry = new Registry();
 
     if (!displayList) {
-      this.displayList = new DisplayList();
+      displayList = new DisplayList();
     }
     displayList.owner = this;
     this.displayList = displayList;
