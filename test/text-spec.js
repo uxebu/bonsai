@@ -13,6 +13,11 @@ require([
         expect(t.attr('text')).toBe(ex);
       });
 
+      it('Allows falsey non-null text', function() {
+        expect(new Text(0).attr('text')).toBe('0');
+        expect(new Text(false).attr('text')).toBe('false');
+      });
+
       it('sets text via attr() and get text', function() {
         var ex = 'myTest', t = new Text('').attr('text', ex);
         expect(t.attr('text')).toBe(ex);
@@ -119,6 +124,11 @@ require([
       it('set text via constructor and get text', function() {
         var ex = 'myTest', t = new TextSpan(ex);
         expect(t.attr('text')).toBe(ex);
+      });
+
+      it('Allows falsey non-null text', function() {
+        expect(new TextSpan(0).attr('text')).toBe('0');
+        expect(new TextSpan(false).attr('text')).toBe('false');
       });
 
       it('sets text via attr() and get text', function() {

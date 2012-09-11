@@ -86,7 +86,15 @@ define([
   }
 
   function Svg(node, width, height) {
+
     var root = this.root = this[0] = createElement('svg', 0);
+
+    // We require an additional rootContainer div so we can accurately
+    // retrieve the position of the movie in getOffset on iOS devices.
+    var rootContainer = this.rootContainer = document.createElement('div');
+    rootContainer.style.paddingLeft = '0';
+    rootContainer.style.paddingTop = '0';
+
     if (width) {
       root.setAttribute('width', width);
     }
@@ -98,7 +106,8 @@ define([
     this.viewBox(width, height);
 
     this.defs = this.root.appendChild(createElement('defs'));
-    node.appendChild(root);
+    rootContainer.appendChild(root);
+    node.appendChild(rootContainer);
   }
 
   Svg.prototype = {
@@ -1354,11 +1363,15 @@ define([
 
   proto.getOffset = function() {
 
+    // We query the bounding box of the rootContainer instead of the root
+    // (i.e. the parent DIV). This is due to an issue with getting the offset
+    // of an SVGElement on iOS devices (unreliable).
+
     var ctm,
-        offset = this.svg.root.getBoundingClientRect();
+        offset = this.svg.rootContainer.getBoundingClientRect();
 
     if (isNaN(offset.left) || isNaN(offset.top)) {
-      ctm = this.svg.root.getScreenCTM();
+      ctm = this.svg.rootContainer.getScreenCTM();
       offset.left = ctm.e;
       offset.top = ctm.f;
     }
