@@ -115,8 +115,12 @@ define([
       case 'load':
         this._attributes._naturalWidth = data.width;
         this._attributes._naturalHeight = data.height;
-        this._mutatedAttributes.naturalWidth = true;
-        this._mutatedAttributes.naturalHeight = true;
+        if (this._attributes.width == null || this._attributes.height == null) {
+          // Only send naturalWidth/Height to renderer if width/height haven't
+          // been manually set.
+          this._mutatedAttributes.naturalWidth = true;
+          this._mutatedAttributes.naturalHeight = true;
+        }
         this._mutatedAttributes.absoluteUrl = true;
         // We trigger the event asynchronously so as to ensure that any events
         // bound after instantiation are still triggered:
