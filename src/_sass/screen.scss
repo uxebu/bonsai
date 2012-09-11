@@ -277,7 +277,7 @@ footer {
 
   .flowers-left, .flowers-right {
     position:absolute;
-    width: 35%;
+    width: 350px;
     background-size: 900px auto;
     height: 160px;
     @include flower-background;
@@ -287,6 +287,7 @@ footer {
   }
   .flowers-right {
     background-position: left bottom;
+    right: 0;
   }
 
 }
