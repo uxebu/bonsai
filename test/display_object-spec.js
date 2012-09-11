@@ -228,26 +228,60 @@ require([
       });
     });
 
-    describe('#_activate()', function() {
-      it('should add the display object to the registry for display objects ' +
-        'of the passed in stage', function() {
-
-        var displayObject = new DisplayObject();
-        displayObject.parent = new DisplayObject();
-        var displayObjectsRegistry = {};
-        var stage = {
-          registry: {
-            displayObjects: displayObjectsRegistry,
-            needsInsertion: {},
-            needsDraw: {}
-          }
+    describe('lifecycle', function() {
+      function createMockRegistry() {
+        return {
+          displayObjects: {},
+          needsInsertion: {},
+          needsDraw: {}
         };
+      }
 
-        displayObject._activate(stage);
+      var displayObject, registry, stage;
+      beforeEach(function() {
+        displayObject = new DisplayObject();
+        displayObject.parent = new DisplayObject();
+        stage = {};
+        stage.registry = registry = {
+          displayObjects: {},
+          needsInsertion: {},
+          needsDraw: {}
+        };
+      });
 
-        expect(displayObjectsRegistry[displayObject.id]).toBe(displayObject);
+      describe('#_activate()', function() {
+        it('should add the display object to the registry for display objects ' +
+          'of the passed in stage', function() {
+          var displayObjectsRegistry = registry.displayObjects;
+          displayObject._activate(stage);
+
+          expect(displayObjectsRegistry[displayObject.id]).toBe(displayObject);
+        });
+      });
+      describe('#_deactivate', function() {
+        beforeEach(function() {
+          displayObject.stage = stage;
+        });
+        it('should delete the display object from the registry of display objects', function() {
+          var displayObjectsRegistry = registry.displayObjects;
+          displayObjectsRegistry[displayObject.id] = displayObject;
+          displayObject._deactivate();
+          expect(displayObjectsRegistry).not.toHaveProperties(displayObject.id);
+        });
+        it('should add the display object to the registry of objects that need drawing', function() {
+          var needsDrawRegistry = registry.needsDraw;
+          displayObject._deactivate();
+          expect(needsDrawRegistry[displayObject.id]).toBe(displayObject);
+        });
+        it('should delete the display object from the registry of objects that need insertion', function() {
+          var needsInsertionRegistry = registry.needsInsertion;
+          needsInsertionRegistry[displayObject.id] = displayObject;
+          displayObject._deactivate();
+          expect(needsInsertionRegistry).not.toHaveProperties(displayObject.id);
+        });
       });
     });
+
     describe('addTo', function() {
       var displayObject, parent;
       beforeEach(function() {

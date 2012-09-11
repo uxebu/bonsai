@@ -488,7 +488,15 @@ define([
      * ancestors from the stage.
      */
     _deactivate: function() {
-      delete this.stage;
+      var stage = this.stage;
+      if (stage) {
+        var registry = stage.registry;
+        var id = this.id;
+        this.stage = void 0;
+        registry.needsDraw[id] = this;
+        delete registry.displayObjects[id];
+        delete registry.needsInsertion[id];
+      }
       this.emit('removedFromStage');
     },
 

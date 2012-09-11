@@ -14,16 +14,41 @@ define(function() {
   function createMockDisplayObject() {
     return {
       id: id += 1,
+      _attributes: {},
+      _activate: jasmine.createSpy('_activate'),
       markUpdate: jasmine.createSpy('markUpdate')
     };
   }
 
-  return function(createOwner, skipMarkUpdate) {
+  return function(createOwner, skipDisplayObjectTests) {
     var displayList, owner;
     beforeEach(function() {
       displayList = createMockDisplayList();
       owner = createOwner(displayList);
     });
+    skipDisplayObjectTests || describe('_activate()', function() {
+      it('should call activate on all children and forward the stage property', function() {
+        var stage = {
+          registry: {
+            displayObjects: {},
+            needsDraw: {},
+            needsInsertion: {}
+          }
+        };
+        var child1 = createMockDisplayObject(),
+            child2 = createMockDisplayObject(),
+            child3 = createMockDisplayObject();
+
+        displayList.children = [child1, child2, child3];
+        owner.parent = createMockDisplayObject();
+
+        owner._activate(stage);
+        expect(child1._activate).toHaveBeenCalledWith(stage);
+        expect(child2._activate).toHaveBeenCalledWith(stage);
+        expect(child3._activate).toHaveBeenCalledWith(stage);
+      });
+    });
+
     describe('addChild()', function() {
 
       it('forwards a single argument to this.displayList.add', function() {
@@ -114,7 +139,7 @@ define(function() {
         });
       });
 
-      skipMarkUpdate || describe('markUpdate', function() {
+      skipDisplayObjectTests || describe('markUpdate', function() {
         it('should call markUpdate on all children', function() {
           var children = displayList.children = [
             createMockDisplayObject(),
