@@ -79,7 +79,7 @@ define([
 
   }
 
-  Stage.prototype = /** @lends Stage.prototype */ {
+  var proto = Stage.prototype = /** @lends Stage.prototype */ {
     _isFrozen: true,
 
     assetBaseUrl: new URI(null, null, ''),
@@ -433,7 +433,8 @@ define([
     }
   };
 
-  tools.mixin(Stage.prototype, EventEmitter, displayList.timelineMethods, Timeline);
+  tools.mixin(proto, EventEmitter, displayList.timelineMethods, Timeline);
+  delete proto.markUpdate;
 
   return Stage;
 });

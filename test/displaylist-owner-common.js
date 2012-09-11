@@ -18,7 +18,7 @@ define(function() {
     };
   }
 
-  return function(createOwner) {
+  return function(createOwner, skipMarkUpdate) {
     var displayList, owner;
     beforeEach(function() {
       displayList = createMockDisplayList();
@@ -114,7 +114,7 @@ define(function() {
         });
       });
 
-      describe('markUpdate', function() {
+      skipMarkUpdate || describe('markUpdate', function() {
         it('should call markUpdate on all children', function() {
           var children = displayList.children = [
             createMockDisplayObject(),

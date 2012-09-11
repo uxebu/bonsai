@@ -1,9 +1,14 @@
 require([
   'bonsai/runner/movie',
+  './displaylist-owner-common',
   './runner.js'
-], function(Movie) {
+], function(Movie, testDisplayList) {
 
-  describe('Movie', function(){
+  describe('Movie', function() {
+
+    testDisplayList(function(displayList) {
+      return new Movie({}, null, null, displayList);
+    });
 
     it('Sets its root to first argument [usually bound by environment.js]', function() {
       var root = {},
