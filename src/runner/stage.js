@@ -24,15 +24,19 @@ define([
    * Helper used to collect all descendent IDs of a display list
    * (recursive)
    */
-  function collectChildIds(object) {
-    var children = object.children(),
-        ids = [];
-    if (children) {
-      for (var i = 0, l = children.length; i < l; ++i) {
-        ids.push(children[i].id);
-        ids.push.apply(ids, collectChildIds(children[i]));
+  function collectChildIds(displayList) {
+    var ids = [];
+    if (displayList) {
+      var children = displayList.children;
+      for (var child, i = 0; (child = children[i]); ++i) {
+        ids.push(child.id);
+        var subDisplayList = child.displayList;
+        if (subDisplayList) {
+          ids.push.apply(ids, collectChildIds(subDisplayList));
+        }
       }
     }
+
     return ids;
   }
 
@@ -293,7 +297,7 @@ define([
         } else {
 
           // collect ids of all children (all levels) that are removed together with the parent
-          var childIds = collectChildIds(obj);
+          var childIds = collectChildIds(obj.displayList);
 
           message = {id: +id, detach: true};
           if (childIds.length) {
