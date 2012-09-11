@@ -228,5 +228,26 @@ require([
       });
     });
 
+    describe('#_activate()', function() {
+      it('should add the display object to the registry for display objects ' +
+        'of the passed in stage', function() {
+
+        var displayObject = new DisplayObject();
+        displayObject.parent = new DisplayObject();
+        var displayObjectsRegistry = {};
+        var stage = {
+          registry: {
+            displayObjects: displayObjectsRegistry,
+            needsInsertion: {},
+            needsDraw: {}
+          }
+        };
+
+        displayObject._activate(stage);
+
+        expect(displayObjectsRegistry[displayObject.id]).toBe(displayObject);
+      });
+    });
+
   });
 });
