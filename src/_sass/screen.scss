@@ -178,6 +178,7 @@ header {
 
   margin:$marginExtraLarge auto 0 auto;
   overflow:hidden;
+  position:relative;
   height:210px;
 
   .containerWithoutPadding {
@@ -276,18 +277,16 @@ footer {
 
   .flowers-left, .flowers-right {
     position:absolute;
-    width: 50%;
+    width: 35%;
+    background-size: 900px auto;
     height: 160px;
     @include flower-background;
   }
   .flowers-left {
-    background-position: 100% bottom;
-    margin-right: 250px;
-    right: 50%;
+    background-position: right bottom;
   }
   .flowers-right {
-    margin-left: 250px;
-    left: 50%;
+    background-position: left bottom;
   }
 
 }
