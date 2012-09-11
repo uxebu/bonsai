@@ -127,7 +127,7 @@ define([
 
   function activate(stage) {
     DisplayObject.prototype._activate.call(this, stage);
-    var children = this.children;
+    var children = this.displayList.children;
     for (var i = 0, length = children.length; i < length; i += 1) {
       children[i]._activate(stage);
     }
@@ -173,7 +173,11 @@ define([
      * @return {this}
      */
     addChild: function(child, index) {
-      this.displayList.add(child, index);
+      if (arguments.length === 1) {
+        this.displayList.add(child);
+      } else {
+        this.displayList.add(child, index);
+      }
       return this;
     },
     /**
@@ -247,11 +251,19 @@ define([
         return key === 'size' ? size : size[key];
       }
     },
-    getIndexOfChild: function() {
-      return this.displayList.getIndexOfChild();
+    getIndexOfChild: function(displayObject) {
+      return this.displayList.children.indexOf(displayObject);
+    },
+
+    markUpdate: function() {
+      var children = this.displayList.children;
+      for (var i = 0, child; (child = children[i]); i += 1) {
+        child.markUpdate();
+      }
+      return DisplayObject.prototype.markUpdate.call(this);
     },
     removeChild: function(child) {
-      this.displayList.removeChild(child);
+      this.displayList.remove(child);
       return this;
     }
   };
