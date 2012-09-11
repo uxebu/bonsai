@@ -637,7 +637,11 @@ define([
      * @returns {this}
      */
     addTo: function(parent, index) {
-      parent.addChild(this, index);
+      if (arguments.length === 1) {
+        parent.addChild(this);
+      } else {
+        parent.addChild(this, index);
+      }
       return this;
     },
 

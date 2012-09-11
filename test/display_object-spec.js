@@ -248,6 +248,27 @@ require([
         expect(displayObjectsRegistry[displayObject.id]).toBe(displayObject);
       });
     });
+    describe('addTo', function() {
+      var displayObject, parent;
+      beforeEach(function() {
+        displayObject = new DisplayObject();
+        parent = {
+          addChild: jasmine.createSpy('addChild')
+        };
+      });
 
+      it('calls addChild on the parent with itself as only argument if no ' +
+        'index is given', function() {
+        displayObject.addTo(parent);
+        expect(parent.addChild).toHaveBeenCalledWith(displayObject);
+      });
+
+      it('calls addChild on the parent with itself and the index as ' +
+        'arguments if index is given', function() {
+        var index = 20;
+        displayObject.addTo(parent, index);
+        expect(parent.addChild).toHaveBeenCalledWith(displayObject, index);
+      });
+    });
   });
 });
