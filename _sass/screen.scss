@@ -13,7 +13,7 @@
 @import "spacing";
 
 body {
-  min-width: 960px;
+  min-width: 1030px;
   font-family: "freight-sans-pro", sans-serif;
   font-weight: 400;
   color:rgb(172, 178, 187);
@@ -267,17 +267,21 @@ header {
 }
 
 footer {
+  position: relative;
+
   text-align:center;
   color: rgb(57,65,76);
   font-weight: 500; /* medium */;
   height: 160px;
 
-
   margin-top: $marginExtraLarge;
 
   .flowers-container {
     position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
+
     height: 160px;
     overflow: hidden;
   }
@@ -289,11 +293,11 @@ footer {
     @include flower-background;
   }
   .flowers-left {
-    margin-left: -320px;
+    margin-left: -280px;
     background-position: right bottom;
   }
   .flowers-right {
-    margin-right: -320px;
+    margin-right: -280px;
     background-position: left bottom;
     right: 0;
   }
