@@ -80,6 +80,24 @@ require([
 
     describe('prototype', function() {
       describe('add', function() {
+        it('should not replace its children property, but modify it in place', function() {
+          var displayList = createDisplayList();
+          var children = displayList.children;
+
+          displayList.add(createArbitraryDisplayObject());
+          expect(displayList.children).toBe(children);
+        });
+
+        it('should not replace its children property, but modify it in ' +
+          'place when adding an array', function() {
+
+          var displayList = createDisplayList();
+          var children = displayList.children;
+
+          displayList.add([createArbitraryDisplayObject(), createArbitraryDisplayObject()]);
+          expect(displayList.children).toBe(children);
+        });
+
         it('should append a child to an empty list', function() {
           var displayList = createDisplayList();
           var newChild = createArbitraryDisplayObject();
@@ -375,21 +393,21 @@ require([
 
           expect(oldParent.displayList.children).toEqual([]);
         });
-      });
 
-      it('should remove all display objects from their old parent before adding', function() {
-        var oldParent = createArbitraryGroup();
-        var newParent = createArbitraryGroup();
-        var children = [
-          createArbitraryDisplayObject(),
-          createArbitraryDisplayObject(),
-          createArbitraryDisplayObject()
-        ];
+        it('should remove all display objects from their old parent before adding', function() {
+          var oldParent = createArbitraryGroup();
+          var newParent = createArbitraryGroup();
+          var children = [
+            createArbitraryDisplayObject(),
+            createArbitraryDisplayObject(),
+            createArbitraryDisplayObject()
+          ];
 
-        oldParent.displayList.add(children);
-        newParent.displayList.add(children);
+          oldParent.displayList.add(children);
+          newParent.displayList.add(children);
 
-        expect(oldParent.displayList.children).toEqual([]);
+          expect(oldParent.displayList.children).toEqual([]);
+        });
       });
 
       describe('remove()', function() {
@@ -412,6 +430,17 @@ require([
           displayList.remove(childToRemove);
           expect(displayList.children).toEqual(expected)
         }
+
+        it('should not replace its children property, but modify it in place', function() {
+          var displayList = createDisplayList();
+          var children = displayList.children;
+
+          var child = createArbitraryDisplayObject();
+          displayList.add(child);
+
+          displayList.remove(child);
+          expect(displayList.children).toBe(children);
+        });
 
         it('removes a child at from a display list containing only that child', function() {
           testRemoval([]);
@@ -495,6 +524,15 @@ require([
             createArbitraryDisplayObject()
           ];
           displayList.add(children);
+        });
+
+        it('should not replace its children property, but modify it in place', function() {
+          var displayList = createDisplayList();
+          var children = displayList.children;
+          displayList.add(createArbitraryDisplayObject());
+
+          displayList.clear();
+          expect(displayList.children).toBe(children);
         });
 
         it('should remove all display objects', function() {
