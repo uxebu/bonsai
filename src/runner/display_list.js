@@ -135,7 +135,7 @@ define([
 
   function deactivate() {
     DisplayObject.prototype._deactivate.call(this);
-    var children = this.children;
+    var children = this.displayList.children;
     for (var i = 0, length = children.length; i < length; i += 1) {
       children[i]._deactivate();
     }

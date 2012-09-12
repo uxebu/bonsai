@@ -16,7 +16,22 @@ define(function() {
       id: id += 1,
       _attributes: {},
       _activate: jasmine.createSpy('_activate'),
+      _deactivate: jasmine.createSpy('_activate'),
       markUpdate: jasmine.createSpy('markUpdate')
+    };
+  }
+
+  function createMockRegistry() {
+    return {
+      displayObjects: {},
+      needsDraw: {},
+      needsInsertion: {}
+    };
+  }
+
+  function createMockStage() {
+    return {
+      registry: createMockRegistry()
     };
   }
 
@@ -26,28 +41,39 @@ define(function() {
       displayList = createMockDisplayList();
       owner = createOwner(displayList);
     });
-    skipDisplayObjectTests || describe('_activate()', function() {
-      it('should call activate on all children and forward the stage property', function() {
-        var stage = {
-          registry: {
-            displayObjects: {},
-            needsDraw: {},
-            needsInsertion: {}
-          }
-        };
-        var child1 = createMockDisplayObject(),
-            child2 = createMockDisplayObject(),
-            child3 = createMockDisplayObject();
 
+    skipDisplayObjectTests || describe('lifecycle', function() {
+      var child1, child2, child3;
+      beforeEach(function() {
+        child1 = createMockDisplayObject();
+        child2 = createMockDisplayObject();
+        child3 = createMockDisplayObject();
         displayList.children = [child1, child2, child3];
         owner.parent = createMockDisplayObject();
+      });
 
-        owner._activate(stage);
-        expect(child1._activate).toHaveBeenCalledWith(stage);
-        expect(child2._activate).toHaveBeenCalledWith(stage);
-        expect(child3._activate).toHaveBeenCalledWith(stage);
+      describe('_activate()', function() {
+        it('should call activate on all children and forward the stage property', function() {
+          var stage = createMockStage();
+
+          owner._activate(stage);
+          expect(child1._activate).toHaveBeenCalledWith(stage);
+          expect(child2._activate).toHaveBeenCalledWith(stage);
+          expect(child3._activate).toHaveBeenCalledWith(stage);
+        });
+      });
+
+      describe('_deactivate()', function() {
+        it('should call _deactivate on all children', function() {
+          owner._deactivate();
+
+          expect(child1._deactivate).toHaveBeenCalled();
+          expect(child2._deactivate).toHaveBeenCalled();
+          expect(child3._deactivate).toHaveBeenCalled();
+        });
       });
     });
+
 
     describe('addChild()', function() {
 
