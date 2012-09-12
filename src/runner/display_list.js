@@ -267,22 +267,24 @@ define([
       return this;
     }
   };
+
+  var timelineMethods = tools.mixin({}, methods);
+  timelineMethods._activate = function(stage) {
+    activate.call(this, stage);
+    if (stage) {
+      stage.registry.movies.add(this);
+    }
+  };
+  timelineMethods._deactivate = function() {
+    if (this.stage) {
+      this.stage.registry.movies.remove(this);
+    }
+    deactivate.call(this);
+  };
+
   return {
     DisplayList: DisplayList,
     methods: methods,
-    timelineMethods: tools.mixin({
-      _activate: function(stage) {
-        activate.call(this, stage);
-        if (stage) {
-          stage.registry.movies.add(this);
-        }
-      },
-      _deactivate: function() {
-        if (this.stage) {
-          this.stage.registry.movies.remove(this);
-        }
-        deactivate.call(this);
-      }
-    }, methods)
+    timelineMethods: timelineMethods
   };
 });

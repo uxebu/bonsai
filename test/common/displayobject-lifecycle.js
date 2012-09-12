@@ -1,4 +1,6 @@
-define(function() {
+define([
+  './mock'
+], function(mock) {
   'use strict';
 
   return function(createDisplayObject) {
@@ -6,13 +8,9 @@ define(function() {
       var displayObject, registry, stage;
       beforeEach(function() {
         displayObject = createDisplayObject();
-        displayObject.parent = {};
-        stage = {};
-        stage.registry = registry = {
-          displayObjects: {},
-          needsInsertion: {},
-          needsDraw: {}
-        };
+        displayObject.parent = mock.createDisplayObject();
+        stage = mock.createStage();
+        registry = stage.registry;
       });
 
       describe('#_activate()', function() {
