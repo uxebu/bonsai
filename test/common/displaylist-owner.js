@@ -111,6 +111,170 @@ define([
         });
       });
 
+      describe('#getComputed()', function() {
+        function createChild(x, y, top, right, bottom, left) {
+          var child = mock.createDisplayObject();
+          child.getComputed = function(key) {
+            var size = {
+              top: top,
+              right: right,
+              bottom: bottom,
+              left: left,
+              height: bottom - top,
+              width: right - left
+            };
+
+            return key === 'size' ? size : size[key];
+          };
+
+          child.attr = function(key) {
+            return key === 'x' ? x : y;
+          };
+
+          return child;
+        }
+
+        var createDisplayList = createOwner;
+        describe('without children', function() {
+          var displayList = createDisplayList();
+
+          it('computes the correct value for "top"', function() {
+            expect(displayList.getComputed('top')).toBe(0);
+          });
+
+          it('computes the correct value for "right"', function() {
+            expect(displayList.getComputed('right')).toBe(0);
+          });
+
+          it('computes the correct value for "bottom"', function() {
+            expect(displayList.getComputed('bottom')).toBe(0);
+          });
+
+          it('computes the correct value for "left"', function() {
+            expect(displayList.getComputed('left')).toBe(0);
+          });
+
+          it('computes the correct value for "width"', function() {
+            expect(displayList.getComputed('width')).toBe(0);
+          });
+
+          it('computes the correct value for "height"', function() {
+            expect(displayList.getComputed('height')).toBe(0);
+          });
+
+          it('computes the correct size object', function() {
+            expect(displayList.getComputed('size')).toEqual({
+              top: 0,
+              right: 0,
+              bottom: 0,
+              left: 0,
+              height: 0,
+              width: 0
+            });
+          });
+        });
+
+        describe('with one child', function() {
+          var displayList = createDisplayList();
+          var x = 7, y = 9, top = 11, right = 113, bottom = 127, left = 13;
+          displayList.addChild(createChild(x, y, top, right, bottom, left));
+
+          var expectedTop = top + y,
+            expectedRight = right + x,
+            expectedBottom = bottom + y,
+            expectedLeft = left + x,
+            expectedWidth = expectedRight - expectedLeft,
+            expectedHeight = expectedBottom - expectedTop;
+
+          it('computes the correct value for "top"', function() {
+            expect(displayList.getComputed('top')).toBe(expectedTop);
+          });
+
+          it('computes the correct value for "right"', function() {
+            expect(displayList.getComputed('right')).toBe(expectedRight);
+          });
+
+          it('computes the correct value for "bottom"', function() {
+            expect(displayList.getComputed('bottom')).toBe(expectedBottom);
+          });
+
+          it('computes the correct value for "left"', function() {
+            expect(displayList.getComputed('left')).toBe(expectedLeft);
+          });
+
+          it('computes the correct value for "width"', function() {
+            expect(displayList.getComputed('width')).toBe(expectedWidth);
+          });
+
+          it('computes the correct value for "height"', function() {
+            expect(displayList.getComputed('height')).toBe(expectedHeight);
+          });
+
+          it('computes the correct size object', function() {
+            expect(displayList.getComputed('size')).toEqual({
+              top: expectedTop,
+              right: expectedRight,
+              bottom: expectedBottom,
+              left: expectedLeft,
+              height: expectedHeight,
+              width: expectedWidth
+            });
+          });
+        });
+
+        describe('with two children', function() {
+          var displayList = createDisplayList();
+          var x1 = 7, y1 = 9, top1 = 11, right1 = 113, bottom1 = 127, left1 = 13;
+          var x2 = 53, y2 = 59, top2 = 17, right2 = 251, bottom2 = 257, left2 = 19;
+
+
+          displayList.addChild(createChild(x1, y1, top1, right1, bottom1, left1), 1);
+          displayList.addChild(createChild(x2, y2, top2, right2, bottom2, left2), 3);
+
+          var expectedTop = Math.min(top1 + y1, top2 + y2),
+            expectedRight = Math.max(right1 + x1, right2 + x2),
+            expectedBottom = Math.max(bottom1 + y1, bottom2 + y2),
+            expectedLeft = Math.min(left1 + x1, left2 + x2),
+            expectedWidth = expectedRight - expectedLeft,
+            expectedHeight = expectedBottom - expectedTop;
+
+          it('computes the correct value for "top"', function() {
+            expect(displayList.getComputed('top')).toBe(expectedTop);
+          });
+
+          it('computes the correct value for "right"', function() {
+            expect(displayList.getComputed('right')).toBe(expectedRight);
+          });
+
+          it('computes the correct value for "bottom"', function() {
+            expect(displayList.getComputed('bottom')).toBe(expectedBottom);
+          });
+
+          it('computes the correct value for "left"', function() {
+            expect(displayList.getComputed('left')).toBe(expectedLeft);
+          });
+
+          it('computes the correct value for "width"', function() {
+            expect(displayList.getComputed('width')).toBe(expectedWidth);
+          });
+
+          it('computes the correct value for "height"', function() {
+            expect(displayList.getComputed('height')).toBe(expectedHeight);
+          });
+
+          it('computes the correct size object', function() {
+            expect(displayList.getComputed('size')).toEqual({
+              top: expectedTop,
+              right: expectedRight,
+              bottom: expectedBottom,
+              left: expectedLeft,
+              height: expectedHeight,
+              width: expectedWidth
+            });
+          });
+        });
+      });
+
       describe('getIndexOfChild()', function() {
         var children;
         beforeEach(function() {
