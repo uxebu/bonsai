@@ -4,22 +4,19 @@ require([
   'bonsai/runner/environment',
   'bonsai/runner/display_object',
   'bonsai/event_emitter',
+  'common/mock',
   'common/displaylist-owner',
   './runner.js'
-], function(tools, Stage, Environment, DisplayObject, EventEmitter, testDisplayList) {
-  function createMockMessageChannel() {
-    return tools.mixin({notifyRenderer: function() {}}, EventEmitter);
-  }
-
+], function(tools, Stage, Environment, DisplayObject, EventEmitter, mock, testDisplayList) {
   function makeStage() {
-    var messageChannel = createMockMessageChannel();
+    var messageChannel = mock.createMessageProxy();
     return new Stage(messageChannel);
   }
 
   describe('stage', function() {
 
     testDisplayList(function(displayList) {
-      return new Stage(createMockMessageChannel(), displayList);
+      return new Stage(mock.createMessageProxy(), displayList);
     }, true);
 
     describe('setFramerate', function() {

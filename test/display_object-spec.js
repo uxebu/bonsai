@@ -1,27 +1,11 @@
 require([
   'bonsai/runner/display_object',
-  'bonsai/runner/stage',
   'bonsai/event_emitter',
   'bonsai/tools',
+  'common/mock',
   'common/displayobject-lifecycle',
   './runner.js'
-], function(DisplayObject, Stage, EventEmitter, tools, testLifeCycle) {
-  function createFakeStage() {
-    var messageChannel = tools.mixin({notifyRenderer: function() {}}, EventEmitter);
-    return new Stage(messageChannel, function() {});
-  }
-  // Create fake stage
-  var stage = createFakeStage();
-
-  stage.handleEvent({
-    command: 'run',
-    data: {
-      code: ';'
-    }
-  });
-
-  stage.freeze();
-
+], function(DisplayObject, EventEmitter, tools, mock, testLifeCycle) {
   describe('DisplayObject', function() {
     testLifeCycle(function() {
       return new DisplayObject();

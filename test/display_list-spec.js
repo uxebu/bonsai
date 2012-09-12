@@ -5,9 +5,10 @@ require([
   'bonsai/runner/stage',
   'bonsai/tools',
   'bonsai/event_emitter',
+  'common/mock',
   './fake_messageproxy',
   './runner.js'
-], function(displayList, DisplayObject, Movie, Stage, tools, EventEmitter, fakeMessageproxy) {
+], function(displayList, DisplayObject, Movie, Stage, tools, EventEmitter, mock, fakeMessageproxy) {
   var DisplayList = displayList.DisplayList;
 
   function reduce(sequence, callback, initial) {
@@ -54,14 +55,6 @@ require([
   function createArbitraryGroup() {
     var group = createArbitraryDisplayObject();
     group.displayList = createDisplayList(group);
-
-    group.addChild = function(child, index) {
-      this.displayList.add(child, index);
-      return this;
-    };
-    group.children = function() {
-      return this.displayList.children();
-    };
 
     return group;
   }
@@ -352,7 +345,7 @@ require([
           var displayList = createDisplayList(owner);
 
           var group = createArbitraryGroup();
-          group.addChild(owner);
+          group.displayList.add(owner);
 
           displayList.add(group);
           expect(displayList.children).toEqual([]);
