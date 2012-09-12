@@ -4,7 +4,7 @@ require([
   'bonsai/runner/environment',
   'bonsai/runner/display_object',
   'bonsai/event_emitter',
-  './displaylist-owner-common',
+  'common/displaylist-owner',
   './runner.js'
 ], function(tools, Stage, Environment, DisplayObject, EventEmitter, testDisplayList) {
   function createMockMessageChannel() {

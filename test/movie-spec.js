@@ -1,8 +1,9 @@
 require([
   'bonsai/runner/movie',
-  './displaylist-owner-common',
+  'common/displaylist-owner',
+  'common/displayobject-lifecycle',
   './runner.js'
-], function(Movie, testDisplayList) {
+], function(Movie, testDisplayList, testLifeCycle) {
 
   describe('Movie', function() {
 
@@ -26,6 +27,7 @@ require([
       expect(root.loadSubMovie).toHaveBeenCalled();
     });
 
+    testLifeCycle(function() { return new Movie({}); });
   });
 
 });

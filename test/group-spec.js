@@ -4,12 +4,15 @@ require([
   'bonsai/runner/display_list',
   'bonsai/runner/stage',
   'bonsai/tools',
-  './displaylist-owner-common',
-  './fake_messageproxy',
+  'common/displaylist-owner',
+  'common/displayobject-lifecycle',
   './runner.js'
-], function(Group, DisplayObject, DisplayList, Stage, tools, testDisplayList, fakeMessageproxy) {
+], function(Group, DisplayObject, DisplayList, Stage, tools, testDisplayList, testLifeCycle) {
 
   describe('Group', function() {
+    testLifeCycle(function() {
+      return new Group();
+    });
 
     testDisplayList(function(displayList) {
       return new Group(displayList);

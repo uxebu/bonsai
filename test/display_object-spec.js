@@ -3,8 +3,9 @@ require([
   'bonsai/runner/stage',
   'bonsai/event_emitter',
   'bonsai/tools',
+  'common/displayobject-lifecycle',
   './runner.js'
-], function(DisplayObject, Stage, EventEmitter, tools) {
+], function(DisplayObject, Stage, EventEmitter, tools, testLifeCycle) {
   function createFakeStage() {
     var messageChannel = tools.mixin({notifyRenderer: function() {}}, EventEmitter);
     return new Stage(messageChannel, function() {});
@@ -22,8 +23,9 @@ require([
   stage.freeze();
 
   describe('DisplayObject', function() {
-
-    window.DisplayObject = DisplayObject;
+    testLifeCycle(function() {
+      return new DisplayObject();
+    });
 
     /*
      Define precision as object so it'll be toString'd as an obj and
@@ -225,60 +227,6 @@ require([
         expect(new DisplayObject().getComputed('arbitrary')).toBe();
         expect(new DisplayObject().getComputed(12)).toBe();
         expect(new DisplayObject().getComputed({})).toBe();
-      });
-    });
-
-    describe('lifecycle', function() {
-      function createMockRegistry() {
-        return {
-          displayObjects: {},
-          needsInsertion: {},
-          needsDraw: {}
-        };
-      }
-
-      var displayObject, registry, stage;
-      beforeEach(function() {
-        displayObject = new DisplayObject();
-        displayObject.parent = new DisplayObject();
-        stage = {};
-        stage.registry = registry = {
-          displayObjects: {},
-          needsInsertion: {},
-          needsDraw: {}
-        };
-      });
-
-      describe('#_activate()', function() {
-        it('should add the display object to the registry for display objects ' +
-          'of the passed in stage', function() {
-          var displayObjectsRegistry = registry.displayObjects;
-          displayObject._activate(stage);
-
-          expect(displayObjectsRegistry[displayObject.id]).toBe(displayObject);
-        });
-      });
-      describe('#_deactivate', function() {
-        beforeEach(function() {
-          displayObject.stage = stage;
-        });
-        it('should delete the display object from the registry of display objects', function() {
-          var displayObjectsRegistry = registry.displayObjects;
-          displayObjectsRegistry[displayObject.id] = displayObject;
-          displayObject._deactivate();
-          expect(displayObjectsRegistry).not.toHaveProperties(displayObject.id);
-        });
-        it('should add the display object to the registry of objects that need drawing', function() {
-          var needsDrawRegistry = registry.needsDraw;
-          displayObject._deactivate();
-          expect(needsDrawRegistry[displayObject.id]).toBe(displayObject);
-        });
-        it('should delete the display object from the registry of objects that need insertion', function() {
-          var needsInsertionRegistry = registry.needsInsertion;
-          needsInsertionRegistry[displayObject.id] = displayObject;
-          displayObject._deactivate();
-          expect(needsInsertionRegistry).not.toHaveProperties(displayObject.id);
-        });
       });
     });
 
