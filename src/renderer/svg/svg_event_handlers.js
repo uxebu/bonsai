@@ -88,17 +88,7 @@ define([
           touchData[allTouches[0].identifier] || (touchData[allTouches[0].identifier] = {}),
           false
         );
-      } else {
-        if (type === 'touchend') {
-          // Final touchend (not part of `.changedTouches`) TODO: find out why
-          // Fire touchend->pointerup
-          this.handleSingleTouch(
-            domEvent,
-            {}
-          );
-          this.touchData = {};
-        }
-      }
+      } 
 
       if (changedTouches && changedTouches.length) {
         // Go through new touch events and fire individually:
