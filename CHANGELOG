@@ -1,6 +1,6 @@
 v0.3.7
 -------------------
-
+* Fix issue where click event would be fired twice on touch devices (#60)
 
 v0.3.6 / 2012-09-12
 -------------------
