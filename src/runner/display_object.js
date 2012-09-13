@@ -371,9 +371,11 @@ define([
 
     // We need to ensure that all children are registered as off-stage objects
     // (this includes adding them to the registry!)
-    if (obj._children) {
-      for (var i = 0, l = obj._children.length; i < l; ++i) {
-        var child = obj._children[i];
+
+    var children = obj.displayList && obj.displayList.children;
+    if (children) {
+      for (var i = 0, l = children.length; i < l; ++i) {
+        var child = children[i];
         if (child) {
           DisplayObject.registerOffStageObj(subject, child, stage, type, true);
         }
@@ -410,9 +412,10 @@ define([
       delete obj._offStageType;
       obj._isOffStage = false;
 
-      if (obj._children) {
-        for (var i = 0, l = obj._children.length; i < l; ++i) {
-          var child = obj._children[i];
+      var children = obj.displayList && obj.displayList.children;
+      if (children) {
+        for (var i = 0, l = children.length; i < l; ++i) {
+          var child = children[i];
           if (child) {
             DisplayObject.unregisterOffStageObj(subject, child, true);
           }

@@ -33,7 +33,6 @@ define([
     this.displayList = displayList;
 
     this.root = root;
-    this._children = [];
     var me = this;
     if (url) {
       root.loadSubMovie(url, function(err) {
