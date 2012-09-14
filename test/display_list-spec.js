@@ -567,6 +567,48 @@ require([
           expect(children[2].parent).toBe(void 0);
         });
       });
+
+      describe('contains()', function() {
+        var displayList, candidate;
+        beforeEach(function() {
+          displayList = createDisplayList();
+          displayList.add([
+            createArbitraryDisplayObject(),
+            createArbitraryDisplayObject(),
+            createArbitraryDisplayObject()
+          ]);
+          candidate = createArbitraryDisplayObject();
+        });
+        it('should return false if a display object is not contained by the display list', function() {
+          expect(displayList.contains(candidate)).toBe(false);
+        });
+        it('should return true if a display object is contained by the display list', function() {
+          displayList.add(candidate, 1);
+          expect(displayList.contains(candidate)).toBe(true);
+        });
+        it('should return false if the display list has child display list that don\'t contain the object', function() {
+          var subList = createArbitraryGroup();
+          subList.displayList.add([
+            createArbitraryDisplayObject(),
+            createArbitraryDisplayObject()
+          ]);
+          displayList.add(subList);
+
+          expect(displayList.contains(candidate)).toBe(false);
+        });
+        it('should return true if a display object is contained by a sub display list', function() {
+          var subList = createArbitraryGroup();
+          subList.displayList.add([
+            createArbitraryDisplayObject(),
+            candidate,
+            createArbitraryDisplayObject()
+          ]);
+          displayList.add(subList);
+
+          expect(displayList.contains(candidate)).toBe(true);
+        });
+
+      });
     });
   });
 });

@@ -107,6 +107,21 @@ define([
     },
 
     /**
+     * Checks whether a display object is contained by the display list or any
+     * child of the display list.
+     *
+     * @param key
+     * @return {*}
+     */
+    contains: function(displayObject) {
+      var children = this.children;
+      return children.indexOf(displayObject) !== -1 ||
+        children.some(function(child) {
+          return child.displayList && child.displayList.contains(displayObject);
+        });
+    },
+
+    /**
      * Removes a child from the display list
      *
      * @param displayObject
@@ -203,6 +218,7 @@ define([
       this.displayList.clear();
       return this;
     },
+
     getComputed: function(key) {
       var children = this.displayList.children;
       var isOffsetKey =
