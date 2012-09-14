@@ -124,12 +124,14 @@ define([
     /**
      * Removes a child from the display list
      *
-     * @param displayObject
+     * @param {DisplayObject} displayObject The display object to remove
+     * @return {Boolean} Whether the display object was contained by the
+     *    display list and removed successfully.
      */
     remove: function(displayObject) {
       var children = this.children;
       var childIndex = children.indexOf(displayObject);
-      if (childIndex === -1) { return; }
+      if (childIndex === -1) { return false; }
 
       if (childIndex > 0) {
         children[childIndex - 1].next = displayObject.next;
@@ -137,6 +139,7 @@ define([
       displayObject.next = displayObject.parent = void 0;
       displayObject._deactivate();
       children.splice(childIndex, 1);
+      return true;
     }
   };
 

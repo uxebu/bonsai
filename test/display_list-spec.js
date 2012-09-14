@@ -442,6 +442,21 @@ require([
           expect(displayList.children).toBe(children);
         });
 
+        it('should return true if the child was removed (was an actual child)', function() {
+          var displayList = createDisplayList();
+          var child = createArbitraryDisplayObject();
+          displayList.add(child);
+
+          expect(displayList.remove(child)).toBe(true);
+        });
+
+        it('should return true if the display object is not contained by the display list', function() {
+          var displayList = createDisplayList();
+          var child = createArbitraryDisplayObject();
+
+          expect(displayList.remove(child)).toBe(false);
+        });
+
         it('removes a child at from a display list containing only that child', function() {
           testRemoval([]);
         });
