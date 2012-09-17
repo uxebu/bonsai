@@ -383,6 +383,19 @@ require([
           expect(newChild._activate).toHaveBeenCalledWith(stage)
         });
 
+        it('should not call the _activate method of a new child if the parent ' +
+          'is not contained by the stage (its stage property has no value)', function() {
+
+          var owner = createArbitraryDisplayObject();
+          var displayList = createDisplayList(owner);
+
+          var newChild = createArbitraryDisplayObject();
+          newChild._activate = jasmine.createSpy('_activate');
+
+          displayList.add(newChild);
+          expect(newChild._activate).not.toHaveBeenCalled();
+        });
+
         it('should remove a display object from its old parent before adding', function() {
           var oldParent = createArbitraryGroup();
           var newParent = createArbitraryGroup();

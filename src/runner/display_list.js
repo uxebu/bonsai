@@ -79,6 +79,7 @@ define([
         children[insertAt - 1].next = isChildArray ? child[0] : child;
       }
       newChildrenStop = insertAt + numNewChildren;
+      var stage = owner.stage;
       for (var nextChild, i = insertAt; i < newChildrenStop; i += 1) {
         child = nextChild || children[i];
 
@@ -89,7 +90,9 @@ define([
         nextChild = children[i + 1];
         child.next = nextChild;
         child.parent = owner;
-        child._activate(owner.stage);
+        if (stage) {
+          child._activate(stage);
+        }
       }
 
     },
