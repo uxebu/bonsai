@@ -476,7 +476,7 @@ define([
         this._isOffStage = true;
       }
 
-      var registry = stage && stage.registry;
+      var registry = stage.registry;
       registry.displayObjects[this.id] = this;
       registry.needsInsertion[this.id] = this;
       this.markUpdate();
