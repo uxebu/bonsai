@@ -103,7 +103,9 @@ define([
     clear: function() {
       var children = this.children;
       for (var i = 0, child; (child = children[i]); i += 1) {
-        child._deactivate();
+        if (child.stage) {
+          child._deactivate();
+        }
         child.next = child.parent = void 0;
       }
       children.length = 0
@@ -140,7 +142,9 @@ define([
         children[childIndex - 1].next = displayObject.next;
       }
       displayObject.next = displayObject.parent = void 0;
-      displayObject._deactivate();
+      if (displayObject.stage) {
+        displayObject._deactivate();
+      }
       children.splice(childIndex, 1);
       return true;
     }

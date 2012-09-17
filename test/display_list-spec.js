@@ -60,7 +60,7 @@ require([
   }
 
   function createStage() {
-    return createArbitraryGroup();
+    return mock.createStage();
   }
 
   describe('DisplayList', function() {
@@ -532,7 +532,9 @@ require([
           expect(child1.next).toBe(child3);
         });
         it('should invoke the _deactivate method of the removed display object', function() {
-          var displayList = createDisplayList();
+          var owner = createArbitraryDisplayObject();
+          owner.stage = createStage();
+          var displayList = createDisplayList(owner);
           var child = createArbitraryDisplayObject();
           child._deactivate = jasmine.createSpy('_deactivate');
           displayList.add(child);
@@ -540,12 +542,23 @@ require([
           displayList.remove(child);
           expect(child._deactivate).toHaveBeenCalled();
         });
+        it('should not invoke the _deactivate method of the removed display ' +
+          'object if it was not contained by the stage', function() {
+          var displayList = createDisplayList();
+          var child = createArbitraryDisplayObject();
+          child._deactivate = jasmine.createSpy('_deactivate');
+          displayList.add(child);
+
+          displayList.remove(child);
+          expect(child._deactivate).not.toHaveBeenCalled();
+        });
       });
 
       describe('clear()', function() {
         var children, displayList;
         beforeEach(function() {
           displayList = createDisplayList();
+          displayList.owner.stage = createStage();
           children = [
             createArbitraryDisplayObject(),
             createArbitraryDisplayObject(),
@@ -577,6 +590,20 @@ require([
           expect(children[0]._deactivate).toHaveBeenCalled();
           expect(children[1]._deactivate).toHaveBeenCalled();
           expect(children[2]._deactivate).toHaveBeenCalled();
+        });
+
+        it('should not call the _deactivate method of any child not contained by the stage', function() {
+          map(children, function(child) {
+            child._deactivate = jasmine.createSpy('_deactivate');
+          });
+          [displayList.owner].concat(children).forEach(function(displayObject) {
+            displayObject.stage = undefined;
+          });
+
+          displayList.clear();
+          expect(children[0]._deactivate).not.toHaveBeenCalled();
+          expect(children[1]._deactivate).not.toHaveBeenCalled();
+          expect(children[2]._deactivate).not.toHaveBeenCalled();
         });
 
         it('should set the next property of each child to undefined', function() {
