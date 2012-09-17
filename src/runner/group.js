@@ -2,8 +2,10 @@ define([
   './display_object',
   './display_list',
   '../tools'
-], function(DisplayObject, DisplayList, tools) {
+], function(DisplayObject, displayList, tools) {
   'use strict';
+
+  var DisplayList = displayList.DisplayList;
 
   /**
    * Creates an empty Group instance
@@ -12,15 +14,20 @@ define([
    * @constructor
    * @name Group
    * @extends DisplayObject
-   * @mixes DisplayList
+   * @mixes displayList.methods
    */
-  function Group() {
+  function Group(displayList) {
+    if (!displayList) {
+      displayList = new DisplayList();
+    }
+    displayList.owner = this;
+    this.displayList = displayList;
     DisplayObject.call(this);
   }
 
   /** @lends Group.prototype */
   var proto = Group.prototype = Object.create(DisplayObject.prototype);
-  tools.mixin(proto, DisplayList);
+  tools.mixin(proto, displayList.methods);
 
   proto.type = 'Group';
 

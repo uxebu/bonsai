@@ -26,6 +26,7 @@ define([
   './text_span',
   './video',
   './filter/builtin',
+  './display_list',
   './dom_element',
   '../version'
 ], function(
@@ -34,7 +35,7 @@ define([
   Bitmap, DisplayObject, Group,
   Animation, KeyframeAnimation, easing, FontFamily, Matrix,
   Sprite, color, gradient, Text, TextSpan, Video, filter,
-  DOMElement, version
+  displayList, DOMElement, version
 ) {
   'use strict';
 
@@ -78,6 +79,8 @@ define([
       Ellipse: Ellipse,
       Circle: Circle,
       Arc: Arc,
+
+      DisplayList: displayList.DisplayList,
 
       Point: Point,
       color: color,
