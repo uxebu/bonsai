@@ -274,13 +274,6 @@ define([
       return this.displayList.children.indexOf(displayObject);
     },
 
-    markUpdate: function() {
-      var children = this.displayList.children;
-      for (var i = 0, child; (child = children[i]); i += 1) {
-        child.markUpdate();
-      }
-      return DisplayObject.prototype.markUpdate.call(this);
-    },
     removeChild: function(child) {
       this.displayList.remove(child);
       return this;
