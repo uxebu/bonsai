@@ -1,6 +1,7 @@
 v0.3.7
 -------------------
 * Fix issue where click event would be fired twice on touch devices (#60)
+* Change display list implementation from mixin to composition
 
 v0.3.6 / 2012-09-12
 -------------------
