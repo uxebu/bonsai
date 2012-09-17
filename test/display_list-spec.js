@@ -1,14 +1,9 @@
 require([
   'bonsai/runner/display_list',
   'bonsai/runner/display_object',
-  'bonsai/runner/movie',
-  'bonsai/runner/stage',
-  'bonsai/tools',
-  'bonsai/event_emitter',
   'common/mock',
-  './fake_messageproxy',
   './runner.js'
-], function(displayList, DisplayObject, Movie, Stage, tools, EventEmitter, mock, fakeMessageproxy) {
+], function(displayList, DisplayObject, mock) {
   var DisplayList = displayList.DisplayList;
 
   function reduce(sequence, callback, initial) {
