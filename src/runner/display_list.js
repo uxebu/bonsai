@@ -79,6 +79,7 @@ define([
         children[insertAt - 1].next = isChildArray ? child[0] : child;
       }
       newChildrenStop = insertAt + numNewChildren;
+      var stage = owner.stage;
       for (var nextChild, i = insertAt; i < newChildrenStop; i += 1) {
         child = nextChild || children[i];
 
@@ -89,7 +90,9 @@ define([
         nextChild = children[i + 1];
         child.next = nextChild;
         child.parent = owner;
-        child._activate(owner.stage);
+        if (stage) {
+          child._activate(stage);
+        }
       }
 
     },
@@ -100,7 +103,9 @@ define([
     clear: function() {
       var children = this.children;
       for (var i = 0, child; (child = children[i]); i += 1) {
-        child._deactivate();
+        if (child.stage) {
+          child._deactivate();
+        }
         child.next = child.parent = void 0;
       }
       children.length = 0
@@ -137,7 +142,9 @@ define([
         children[childIndex - 1].next = displayObject.next;
       }
       displayObject.next = displayObject.parent = void 0;
-      displayObject._deactivate();
+      if (displayObject.stage) {
+        displayObject._deactivate();
+      }
       children.splice(childIndex, 1);
       return true;
     }
@@ -274,13 +281,6 @@ define([
       return this.displayList.children.indexOf(displayObject);
     },
 
-    markUpdate: function() {
-      var children = this.displayList.children;
-      for (var i = 0, child; (child = children[i]); i += 1) {
-        child.markUpdate();
-      }
-      return DisplayObject.prototype.markUpdate.call(this);
-    },
     removeChild: function(child) {
       this.displayList.remove(child);
       return this;

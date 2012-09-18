@@ -299,25 +299,6 @@ define([
         });
       });
 
-      skipDisplayObjectTests || describe('markUpdate', function() {
-        it('should call markUpdate on all children', function() {
-          var children = displayList.children = [
-            mock.createDisplayObject(),
-            mock.createDisplayObject(),
-            mock.createDisplayObject()
-          ];
-
-          owner.markUpdate();
-          expect(children[0].markUpdate).toHaveBeenCalled();
-          expect(children[1].markUpdate).toHaveBeenCalled();
-          expect(children[2].markUpdate).toHaveBeenCalled();
-        });
-
-        it('returns the instance', function() {
-          expect(owner.markUpdate()).toBe(owner);
-        });
-      });
-
       describe('removeChild', function() {
         it('calls this.displayList.remove with the first argument', function() {
 
