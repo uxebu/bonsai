@@ -2,6 +2,7 @@ v0.3.7
 -------------------
 * Fix issue where click event would be fired twice on touch devices (#60)
 * Change display list implementation from mixin to composition
+* Cleanup KeyframeAnimation and remove setSubject(s) methods to bring inline with current Animation class
 
 v0.3.6 / 2012-09-12
 -------------------

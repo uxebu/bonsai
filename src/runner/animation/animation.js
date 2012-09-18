@@ -192,7 +192,7 @@ define([
       };
 
       if (options.subjects) {
-        this.setSubjects(options.subjects, options.strategy);
+        this.addSubjects(options.subjects, options.strategy);
       }
     },
 

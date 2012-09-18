@@ -21,7 +21,6 @@ define([
    * @param {Object} [properties] The keyframes to animate through
    * @param {Object} [options] Additional options
    * @param {String|Function} [options.easing] Easing function for each sub-animation
-   * @param {Number} [options.delay] Delay before animation begins, in ms
    *  @param {Array|Object} [options.subjects] The subject(s) (e.g. DisplayObjects) of
    *    the keyframe-animation
    *  @param {string|Object} [options.strategy='attr'] The strategy to use to
@@ -50,7 +49,7 @@ define([
     this.keys.sort(function(a, b){ return a - b; });
 
     if (options.subjects) {
-      this.setSubjects(options.subjects, options.strategy);
+      this.addSubjects(options.subjects, options.strategy);
     }
   }
 
@@ -72,7 +71,7 @@ define([
     play: function(subjects, strategy) {
 
       if (subjects) {
-        this.setSubjects(subjects, strategy);
+        this.addSubjects(subjects, strategy);
       }
 
       if (this.currentAnimation < 0) {
@@ -245,47 +244,6 @@ define([
      */
     removeSubjects: function(subjects) {
       subjects.forEach(tools.hitch(this, 'removeSubject'));
-      return this;
-    },
-
-    /**
-     * Sets the subjects of the animation while wiping all current subjects
-     *
-     * @param {Object} subject
-     * @param {mixed} [strategy='attr'] The set/get strategy to use
-     *   - 'attr': The 'attr' method of the object is used (for DisplayObjects)
-     *   - 'prop': Normal property setting and getting is used
-     *   - Object with 'set(subject, values)' and 'get(subject)'
-     *     methods.
-     * @returns {this}
-     */
-    setSubjects: function(subjects, strategy) {
-
-      subjects = tools.isArray(subjects) ? subjects : [subjects];
-
-      this.removeSubjects(this.subjects.map(function(subj) {
-        return subj.subject;
-      }));
-      this.addSubjects(subjects, strategy);
-
-      return this;
-    },
-
-    /**
-     * Sets the subject of the animation while wiping all current subjects
-     *
-     * @param {Object} subject
-     * @param {mixed} [strategy='attr'] The set/get strategy to use
-     *   - 'attr': The 'attr' method of the object is used (for DisplayObjects)
-     *   - 'prop': Normal property setting and getting is used
-     *   - Object with 'set(subject, values)' and 'get(subject)'
-     *     methods.
-     */
-    setSubject: function(subject, strategy) {
-      this.removeSubjects(this.subjects.map(function(subj) {
-        return subj.subject;
-      }));
-      this.addSubject(subject, strategy);
       return this;
     },
 
