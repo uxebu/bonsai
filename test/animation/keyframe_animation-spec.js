@@ -44,7 +44,7 @@ require([
         1: {x: 2}
       });
 
-      k.setSubjects(subj, 'prop');
+      k.addSubjects(subj, 'prop');
       k.play();
       expect(subj.x).toBe(1);
     });
@@ -56,7 +56,7 @@ require([
         0: { a: 0 },
         to: { a: 20 }
       });
-      k.setSubjects([subj1, subj2], 'prop');
+      k.addSubjects([subj1, subj2], 'prop');
       k.play();
       expect(subj2.a).toBe(0);
       async(function(nxt) {
@@ -81,7 +81,7 @@ require([
         '0.5s': {x: 1353}
       });
 
-      k.setSubject(subj, {
+      k.addSubject(subj, {
         set: function(subject, values) {
           var x = values.x;
           expect(x).toBeGreaterThan(prevX);
