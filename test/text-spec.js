@@ -18,6 +18,10 @@ require([
         expect(new Text(false).attr('text')).toBe('false');
       });
 
+      it('Expect default textOrigin to be "top"', function() {
+        expect(new Text('').attr('textOrigin')).toBe('top');
+      });
+
       it('sets text via attr() and get text', function() {
         var ex = 'myTest', t = new Text('').attr('text', ex);
         expect(t.attr('text')).toBe(ex);
