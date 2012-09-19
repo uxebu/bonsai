@@ -86,6 +86,9 @@ test: mktemp
 	phantomjs --load-plugins=yes ${CI_TOOLS_DIR}/script/phantom_runner.js ${BASE_URL}/${TEST_RUNNER_COMPARE} ${TEMP_DIR} 0 jasmine
 	phantomjs --load-plugins=yes ${CI_TOOLS_DIR}/script/phantom_runner.js ${BASE_URL}/${TEST_RUNNER_QC} ${TEMP_DIR} 0 qc
 
+test-local: mktemp
+	phantomjs test/runner-jasmine.js test/runner.html
+
 syntux-diff: mktemp
 	${CI_TOOLS_DIR}/bin/syntux_diff.sh ${WORKSPACE}/src ${TEMP_DIR}
 
