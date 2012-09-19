@@ -100,10 +100,20 @@ define([
     return this;
   };
 
+  /**
+   * Play the audio
+   *
+   * @returns {Audio} this
+   */
   proto.play = function() {
     return this.attr('isPlaying', true);
   };
 
+  /**
+   * Stop/pause the audio
+   *
+   * @returns {Audio} this
+   */
   proto.stop = function() {
     return this.attr('isPlaying', false);
   };
