@@ -673,6 +673,8 @@ define([
     if ('volume' in attributes) {
       // Value between 0-1. NaN is treated as `0`
       audioElement.volume = +attributes.volume || 0;
+    } else {
+      audioElement.volume = 0.5;
     }
   };
 
