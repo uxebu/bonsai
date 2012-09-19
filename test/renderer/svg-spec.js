@@ -124,7 +124,7 @@ require([
           createSvgRenderer().drawAudio(audioElement, message);
           expect(audioElement.volume).toBe(1.0);
         });
-        it('attributes.volume=NaN (=0)', function() {
+        it('attributes.volume=NaN (casted to `0`)', function() {
           var audioElement = { volume: -1 };
           var message = { attributes: { volume: NaN } };
           createSvgRenderer().drawAudio(audioElement, message);
