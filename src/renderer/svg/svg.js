@@ -295,6 +295,8 @@ define([
         if (type === 'DOMElement') {
           element = svg[id] = document.createElement(message.attributes.nodeName);
           element.setAttribute('data-bs-id', id);
+        } else if (type === 'Audio') {
+          element = AssetController.assets[id];
         } else {
           element = svg[id] = createElement(typesToTags[type], id);
         }
@@ -649,6 +651,29 @@ define([
     }
 
     foreignObject.appendChild(video);
+  };
+
+  proto.drawAudio = function(audioElement, message) {
+
+    var attributes = message.attributes;
+    var id = message.id;
+    var playing = attributes.playing;
+
+    if (typeof audioElement === 'undefined') {
+      throw Error('asset <' + id + '> is unkown.');
+    }
+
+    if (playing === true) {
+      audioElement.play();
+    }
+    if (playing === false) {
+      audioElement.pause();
+    }
+
+    if ('volume' in attributes) {
+      // Value between 0-1. NaN is treated as `0`
+      audioElement.volume = +attributes.volume || 0;
+    }
   };
 
   proto.drawDOMElement = function(element, message) {
