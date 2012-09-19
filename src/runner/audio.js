@@ -37,11 +37,11 @@ define([
     this.type = 'Audio';
 
     Object.defineProperties(this._attributes, {
-      isPlaying: data(options.autoplay, true, true)
+      playing: data(!!options.autoplay, true, true)
     });
 
     var rendererAttributes = this._renderAttributes;
-    rendererAttributes.isPlaying = 'isPlaying';
+    rendererAttributes.playing = 'playing';
 
     this.request(aRequest);
   }
@@ -106,7 +106,7 @@ define([
    * @returns {Audio} this
    */
   proto.play = function() {
-    return this.attr('isPlaying', true);
+    return this.attr('playing', true);
   };
 
   /**
@@ -115,7 +115,7 @@ define([
    * @returns {Audio} this
    */
   proto.stop = function() {
-    return this.attr('isPlaying', false);
+    return this.attr('playing', false);
   };
 
   proto.getComputed = function(key) {};

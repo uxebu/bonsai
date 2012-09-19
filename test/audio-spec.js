@@ -19,5 +19,20 @@ require([
       expect(parent.children()[0]).toBe(void 0);
     });
 
+    it('Can play()', function() {
+      var a = new Audio();
+      expect(a.attr('playing')).toBe(false);
+      a.play();
+      expect(a.attr('playing')).toBe(true);
+    });
+
+    it('Can stop()', function() {
+      var a = new Audio();
+      expect(a.attr('playing')).toBe(false);
+      a.attr('playing', true);
+      a.stop();
+      expect(a.attr('playing')).toBe(false);
+    });
+
   })
 });
