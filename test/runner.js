@@ -4,9 +4,14 @@ define([
   'order!../lib/jasmine-core/jasmine.junit-reporter.js',
   'order!jasmine.helper.js',
   'order!jasmine.compare-reporter.js',
-  'order!jasmine-matchers.js'
+  'order!jasmine-matchers.js',
+  'order!../lib/jasmine-console/console-runner.js'
 ], function(jasmineCore, jasmineHtml, junitReporter, jasmineHelper, compareReporter) {
+  // exporting this to window because ConsoleReporter is complaining otherwise
+  var console_reporter = window.console_reporter = new jasmine.ConsoleReporter();
   var jasmineEnv = jasmine.getEnv();
+  jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
+  jasmine.getEnv().addReporter(console_reporter);
   jasmineEnv.updateInterval = 10000;
 
   this.async = jasmineHelper.async;
