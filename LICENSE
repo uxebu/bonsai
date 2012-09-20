@@ -27,3 +27,8 @@ External libraries (each with their own license):
   - jasmine: https://github.com/pivotal/jasmine/blob/master/MIT.LICENSE
   - closure: http://code.google.com/p/closure-compiler/source/browse/trunk/COPYING
   - qc.js: https://github.com/darrint/qc.js/blob/master/COPYING
+
+External resources (each with their own license):
+
+  - http://www.freesound.org/people/HerbertBoland/sounds/33637/:
+    http://creativecommons.org/licenses/by/3.0/
