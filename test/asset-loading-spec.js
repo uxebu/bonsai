@@ -23,7 +23,7 @@ require([
 
     });
 
-    it('Calls notify on requestor when request completes', function() {
+    it('Calls `notify` on requestor when request completes', function() {
 
       var eventType = null,
           requester = {
@@ -37,6 +37,26 @@ require([
       assetLoader.handleEvent('load', 1, {});
 
       expect(eventType).toBe('load');
+
+    });
+
+    it('On request completion passes data to `notify` method', function() {
+
+      var eventType = null,
+          eventData = null,
+          requester = {
+            id: 1,
+            notify: function(type, data) {
+              eventType = type;
+              eventData = data;
+            }
+          };
+
+      assetLoader.request(requester, 'f', 'bitmap');
+      assetLoader.handleEvent('load', 1, 12340987);
+
+      expect(eventType).toBe('load');
+      expect(eventData).toBe(12340987);
 
     });
 

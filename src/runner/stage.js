@@ -130,10 +130,10 @@ define([
           this[command](data);
           break;
         case 'assetLoadSuccess':
-          this.assetLoader.handleEvent('load', data.id, data);
+          this.assetLoader.handleEvent('load', data.id, data.loadData);
           break;
         case 'assetLoadError':
-          this.assetLoader.handleEvent('error', data.id, data);
+          this.assetLoader.handleEvent('error', data.id, data.loadData);
           break;
         case 'userevent':
           var target = data.targetId ? this.registry.displayObjects[data.targetId] : this;

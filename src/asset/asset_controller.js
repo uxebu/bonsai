@@ -95,11 +95,12 @@ function(
           .on('registerElement', function(element) {
             AssetController.assets[data.id] = element;
           })
-          .on('load', this, function(assetData) {
-            this.emit(successEvent, tools.mixin(data, assetData));
+          .on('load', this, function(loadData) {
+            data.loadData = loadData;
+            this.emit(successEvent, data);
           })
-          .on('error', this, function(err) {
-            data.err = err;
+          .on('error', this, function(errorData) {
+            data.loadData = errorData;
             this.emit(errorEvent, data);
           })
           .load();
