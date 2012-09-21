@@ -623,7 +623,7 @@ define([
     var video = AssetController.assets[id];
 
     if (typeof video === 'undefined') {
-      throw Error('asset <' + id + '> is unkown.');
+      throw Error('asset <' + id + '> is unknown.');
     }
 
     var obj = this.svg[id];
@@ -660,7 +660,7 @@ define([
     var playing = attributes.playing;
 
     if (typeof audioElement === 'undefined') {
-      throw Error('asset <' + id + '> is unkown.');
+      throw Error('asset <' + id + '> is unknown.');
     }
 
     if ('time' in attributes) {
