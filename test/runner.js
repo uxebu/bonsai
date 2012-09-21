@@ -10,8 +10,7 @@ define([
   // exporting this to window because ConsoleReporter is complaining otherwise
   var console_reporter = window.console_reporter = new jasmine.ConsoleReporter();
   var jasmineEnv = jasmine.getEnv();
-  jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
-  jasmine.getEnv().addReporter(console_reporter);
+  jasmineEnv.addReporter(console_reporter);
   jasmineEnv.updateInterval = 10000;
 
   this.async = jasmineHelper.async;
