@@ -16,6 +16,11 @@ movieList = {
     'animation-stars-2.js',
     'animation-circles.js'
   ],
+  'Audio': [
+    'audio-tick-16.js',
+    'audio-volume.js',
+    'audio-boom.js'
+  ],
   'Bitmaps and Sprites': [
     'bitmap.js',
     'bitmap-source.js',
