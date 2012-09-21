@@ -41,7 +41,7 @@ require([
     it('Timeout will trigger an error + custom timeout', function() {
 
       var called = 0;
-      var request = new AssetRequest('b/i/k/e/s/h/e/d.txt');
+      var request = new AssetRequest('b/o/n/s/a/i/j/s.txt');
       var handler = new AssetHandler(request, 1, 10 /* 10ms */);
       var errorHandler = jasmine.createSpy('errorHandler');
 
