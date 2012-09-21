@@ -663,6 +663,15 @@ define([
       throw Error('asset <' + id + '> is unkown.');
     }
 
+    if ('time' in attributes) {
+      try {
+        var vol = audioElement.volume;
+        audioElement.volume = 0;
+        audioElement.currentTime = +attributes.time || 0;
+        audioElement.volume = vol;
+      } catch(e) {};
+    }
+
     if (playing === true) {
       audioElement.play();
     }
