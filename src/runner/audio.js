@@ -38,6 +38,7 @@ define([
 
     Object.defineProperties(this._attributes, {
       playing: data(!!options.autoplay, true, true),
+      prepareUserEvent: data(false, true, true),
       volume: data(0.5, true, true),
       time: data(0.0, true, true)
     });
@@ -46,6 +47,7 @@ define([
     rendererAttributes.playing = 'playing';
     rendererAttributes.volume = 'volume';
     rendererAttributes.time = 'time';
+    rendererAttributes.prepareUserEvent = 'prepareUserEvent';
 
     this.request(aRequest);
   }
@@ -123,6 +125,16 @@ define([
       playing: true,
       time: time
     });
+  };
+
+  /** 
+   * Prepare the Audio object for a user-event. 
+   * (currently this is for iOS devices, see drawAudio method in svg.js)
+   *
+   * @returns {Audio} this
+   */
+  proto.prepareUserEvent = function() {
+    return this.attr('prepareUserEvent', true);
   };
 
   /**

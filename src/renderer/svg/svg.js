@@ -663,6 +663,21 @@ define([
       throw Error('asset <' + id + '> is unknown.');
     }
 
+    if (attributes.prepareUserEvent) {
+      // We bind to the next touch-event and play/pause the audio to cause
+      // iOS devices to allow subsequent play/pause commands on the audio el.
+      // --
+      // (Usually, iOS Devices will only allow play/pause methods to be called
+      // after a user event. Due to bonsai's async nature, a movie programmer
+      // can never achieve this. So we setup a fake one here...)
+      var touchStartHandler = function() {
+        audioElement.play();
+        audioElement.pause();
+        document.removeEventListener('touchstart', touchStartHandler, true);
+      };
+      document.addEventListener('touchstart', touchStartHandler, true);
+    }
+
     if ('time' in attributes) {
       try {
         var vol = audioElement.volume;
