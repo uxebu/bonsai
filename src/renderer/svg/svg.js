@@ -296,7 +296,7 @@ define([
           element = svg[id] = document.createElement(message.attributes.nodeName);
           element.setAttribute('data-bs-id', id);
         } else if (type === 'Audio') {
-          element = AssetController.assets[id];
+          element = svg[id] = AssetController.assets[id];
         } else {
           element = svg[id] = createElement(typesToTags[type], id);
         }
