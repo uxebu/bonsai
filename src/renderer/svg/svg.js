@@ -556,9 +556,7 @@ define([
 
   proto.drawTextSpan = function(tspan, message) {
 
-    var attributes = message.attributes,
-        fontSize = attributes.fontSize,
-        fontFamily = attributes.fontFamily;
+    var attributes = message.attributes;
 
     tspan.setAttributeNS(xlink, 'text-anchor', 'start');
     tspan.setAttribute('alignment-baseline', 'inherit');
@@ -592,9 +590,7 @@ define([
 
   proto.drawText = function(text, message) {
 
-    var attributes = message.attributes,
-        fontSize = attributes.fontSize,
-        fontFamily = attributes.fontFamily;
+    var attributes = message.attributes;
 
     if (attributes.selectable !== false) {
       cssClasses.add(text, 'selectable');
@@ -623,7 +619,7 @@ define([
     var video = AssetController.assets[id];
 
     if (typeof video === 'undefined') {
-      throw Error('asset <' + id + '> is unknown.');
+      throw new Error('asset <' + id + '> is unknown.');
     }
 
     var obj = this.svg[id];
