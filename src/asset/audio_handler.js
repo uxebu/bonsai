@@ -27,18 +27,31 @@ define([
 
   AudioHandler.prototype.loadResource = function(resource, doDone, doError) {
 
-    var audioElement, vendorMimeType;
+    var audioElement, vendorMimeType, audioSlashMimeType;
     var assetId = this.id,
         loadLevel = this.request.loadLevel || 'can-play',
         mimeType = resource.type,
         canPlayMimeType = domAudio.canPlayType(mimeType),
         src = resource.src;
 
+    // first fallback
     if (!canPlayMimeType) {
-      // mime type is unkown, second try. lookup browser's mimetype table
+      // mime type is unknown, second try. lookup browser's mimetype table
       vendorMimeType = AUDIO_MIME_TYPES[mimeType],
       canPlayMimeType = domAudio.canPlayType(vendorMimeType);
-      mimeType = vendorMimeType;
+      if (canPlayMimeType) {
+        mimeType = vendorMimeType;
+      }
+    }
+
+    // second fallback
+    if (!canPlayMimeType) {
+      // mime type is still unknown, third try. add a "audio/" before the type
+      audioSlashMimeType = 'audio/' + mimeType;
+      canPlayMimeType = domAudio.canPlayType(audioSlashMimeType);
+      if (canPlayMimeType) {
+        mimeType = audioSlashMimeType;
+      }
     }
 
     if (!canPlayMimeType || this.hasInitiatedLoad) {
