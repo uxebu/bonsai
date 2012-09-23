@@ -1,4 +1,4 @@
-require([
+define([
   'bonsai/runner/animation/animation',
   'bonsai/runner/display_object',
   'bonsai/runner/timeline',

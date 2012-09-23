@@ -1,4 +1,4 @@
-require([
+define([
   'bonsai/runner/filter/builtin',
   'bonsai/color'
 ], function(filter, color) {

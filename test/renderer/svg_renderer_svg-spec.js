@@ -1,4 +1,4 @@
-require([
+define([
   'bonsai/renderer/svg/svg',
   'bonsai/renderer/svg/svg_helper'
 ], function(SvgRenderer, svgHelper) {

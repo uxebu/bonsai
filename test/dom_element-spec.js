@@ -1,4 +1,4 @@
-require([
+define([
   'bonsai/runner/dom_element'
 ], function(DOMElement) {
 

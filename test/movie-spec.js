@@ -1,4 +1,4 @@
-require([
+define([
   'bonsai/runner/movie',
   'common/mock',
   'common/displaylist-owner',

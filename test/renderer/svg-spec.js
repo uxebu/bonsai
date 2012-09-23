@@ -1,4 +1,4 @@
-require([
+define([
   'bonsai/renderer/svg/svg'
 ], function(SvgRenderer) {
   describe('SvgRenderer', function() {

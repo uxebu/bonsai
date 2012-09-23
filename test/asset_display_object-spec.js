@@ -1,4 +1,4 @@
-require([
+define([
   'bonsai/runner/display_object',
   'bonsai/runner/group',
   'bonsai/runner/asset_display_object',

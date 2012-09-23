@@ -1,4 +1,4 @@
-require([
+define([
   'bonsai/runner/display_object',
   'bonsai/event_emitter',
   'bonsai/tools',

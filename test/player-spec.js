@@ -1,4 +1,4 @@
-require([
+define([
   'bonsai/bootstrapper/player',
   'bonsai/uri'
 ], function (player, URI) {

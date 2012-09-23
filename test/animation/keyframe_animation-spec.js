@@ -1,4 +1,4 @@
-require([
+define([
   'bonsai/runner/animation/keyframe_animation',
   'bonsai/runner/timeline',
   'bonsai/tools'

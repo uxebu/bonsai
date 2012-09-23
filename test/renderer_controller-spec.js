@@ -1,4 +1,4 @@
-require([
+define([
   'bonsai/renderer/renderer_controller',
   'bonsai/uri',
   'bonsai/event_emitter',

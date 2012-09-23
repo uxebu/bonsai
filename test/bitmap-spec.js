@@ -1,4 +1,4 @@
-require([
+define([
   'bonsai/runner/bitmap'
 ], function(Bitmap) {
   'use strict';

@@ -1,4 +1,4 @@
-require([
+define([
   'bonsai/segment_helper'
 ], function(segmentHelper) {
   describe('segmentHelper', function() {

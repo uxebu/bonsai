@@ -1,4 +1,4 @@
-require([
+define([
   'bonsai/uri'
 ], function(URI) {
   'use strict';

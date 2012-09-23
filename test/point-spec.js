@@ -1,4 +1,4 @@
-require([
+define([
   'bonsai/point'
 ], function(Point) {
 

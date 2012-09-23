@@ -1,4 +1,4 @@
-require([
+define([
   'bonsai/color'
 ], function(color) {window.color = color;
 

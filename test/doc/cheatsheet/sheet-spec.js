@@ -1,4 +1,4 @@
-require([
+define([
   '../doc/cheatsheet/sheet.js'
 ], function (sheet) {
 

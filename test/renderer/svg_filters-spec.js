@@ -1,4 +1,4 @@
-require([
+define([
   'bonsai/renderer/svg/svg_filters'
 ], function(svgFilters) {
   describe('svgFilters', function() {

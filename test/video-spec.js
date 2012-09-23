@@ -1,4 +1,4 @@
-require([
+define([
   'bonsai/runner/video',
   'bonsai/runner/group'
 ], function(Video, Group) {

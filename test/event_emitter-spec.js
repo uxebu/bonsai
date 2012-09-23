@@ -1,4 +1,4 @@
-require([
+define([
   'bonsai/event_emitter',
   'bonsai/tools'
 ], function(EventEmitter, tools) {

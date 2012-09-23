@@ -1,4 +1,4 @@
-require([
+define([
   'bonsai/runner/filter/base_filter'
 ], function(filter) {
 

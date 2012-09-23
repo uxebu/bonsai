@@ -1,4 +1,4 @@
-require([
+define([
   'bonsai/runner/group',
   'bonsai/runner/display_object',
   'bonsai/runner/display_list',

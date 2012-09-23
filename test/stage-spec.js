@@ -1,4 +1,4 @@
-require([
+define([
   'bonsai/tools',
   'bonsai/runner/stage',
   'bonsai/runner/environment',

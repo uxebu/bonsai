@@ -1,4 +1,4 @@
-require([
+define([
   'bonsai/runner/matrix'
 ], function(Matrix) {
   

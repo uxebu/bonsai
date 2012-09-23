@@ -1,4 +1,4 @@
-require([
+define([
   'bonsai/runner/text',
   'bonsai/runner/text_span'
 ], function(Text, TextSpan) {

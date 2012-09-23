@@ -37,7 +37,6 @@ define(['jasmine.helper.js'], function(jasmineHelper) {
   function execJasmine() {
     jasmineEnv.execute();
   }
-
   if (document.body) {
     setTimeout(execJasmine, 1000);
   } else {

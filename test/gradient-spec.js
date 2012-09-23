@@ -1,4 +1,4 @@
-require([
+define([
   'bonsai/runner/gradient',
   'bonsai/runner/matrix',
   'bonsai/color'

@@ -1,4 +1,4 @@
-require([
+define([
   'bonsai/point',
   'bonsai/runner/path/path',
   'bonsai/runner/path/curved_path'

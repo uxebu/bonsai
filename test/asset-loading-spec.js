@@ -1,4 +1,4 @@
-require([
+define([
   'bonsai/asset/asset_controller',
   'bonsai/asset/asset_loader',
   'bonsai/asset/asset_request'

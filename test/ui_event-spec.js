@@ -1,4 +1,4 @@
-require([
+define([
   'bonsai/runner/ui_event',
   'common/mock'
 ], function(uiEvent, mock) {
