@@ -16,10 +16,11 @@
     <script type="text/javascript" src="../lib/qc/qc.js"></script>
   </head>
   <body>
-    <div id=filter></div>
-    <div id=testresults></div>
+    <div id="filter"></div>
+    <div id="testresults"></div>
     <script type="text/javascript">
-      define('HtmlListener', function(){return qc.HtmlListener}); // Just to fullfill a require() so UxebuCiListener can load :( ... to be improved.
+      // Just to fullfill a require() so UxebuCiListener can load :( ... to be improved.
+      define('HtmlListener', function(){return qc.HtmlListener});
       require([
         '../lib/qc/UxebuCiListener',
         './matrix-qc.js',
@@ -28,8 +29,18 @@
       ], function(UxebuCiListener){
         // Actually we can let the tests easily run a thousand times, they are pretty fast and
         // this ups our test range a bit.
-        var config = new qc.Config({allowConfigByUrlParams:true, maxPass:1000});
-        qc.runProps(config, new UxebuCiListener({nodeId:'testresults', filterNodeId:'filter', showPassedTests:true}));
+        var config = new qc.Config({
+          allowConfigByUrlParams: true,
+          maxPass: 1000
+        });
+        qc.runProps(
+          config,
+          new UxebuCiListener({
+            nodeId: 'testresults',
+            filterNodeId: 'filter',
+            showPassedTests: true
+          })
+        );
       });
     </script>
   </body>
