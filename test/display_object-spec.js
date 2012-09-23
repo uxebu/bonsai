@@ -3,8 +3,7 @@ require([
   'bonsai/event_emitter',
   'bonsai/tools',
   'common/mock',
-  'common/displayobject-lifecycle',
-  './runner.js'
+  'common/displayobject-lifecycle'
 ], function(DisplayObject, EventEmitter, tools, mock, testLifeCycle) {
   describe('DisplayObject', function() {
     testLifeCycle(function() {

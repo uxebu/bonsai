@@ -1,7 +1,6 @@
 require([
   'bonsai/runner/video',
-  'bonsai/runner/group',
-  './runner.js'
+  'bonsai/runner/group'
 ], function(Video, Group) {
   describe('Video', function() {
     describe('#getComputed()', function() {

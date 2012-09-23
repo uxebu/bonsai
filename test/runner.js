@@ -1,11 +1,5 @@
-define([
-  'order!../lib/jasmine-core/jasmine.js',
-  'order!../lib/jasmine-core/jasmine-html.js',
-  'order!../lib/jasmine-core/jasmine.junit-reporter.js',
-  'order!jasmine.helper.js',
-  'order!jasmine.compare-reporter.js',
-  'order!jasmine-matchers.js'
-], function(jasmineCore, jasmineHtml, junitReporter, jasmineHelper, compareReporter) {
+define(['jasmine.helper.js'], function(jasmineHelper) {
+  // jasmineCore, jasmineHtml, junitReporter, jasmineHelper, compareReporter
   var jasmineEnv = jasmine.getEnv();
   jasmineEnv.updateInterval = 10000;
 

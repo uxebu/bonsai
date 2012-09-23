@@ -6,8 +6,7 @@ require([
   'bonsai/runner/animation/easing',
   'bonsai/runner/path/path',
   'bonsai/color',
-  'bonsai/runner/matrix',
-  './runner.js'
+  'bonsai/runner/matrix'
 ], function(Animation, DisplayObject, Timeline, tools, easing, Path, color, Matrix) {
 
   var clock = tools.mixin({}, Timeline, {

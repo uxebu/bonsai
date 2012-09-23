@@ -2,8 +2,7 @@ require([
   'bonsai/renderer/renderer_controller',
   'bonsai/uri',
   'bonsai/event_emitter',
-  'bonsai/tools',
-  './runner.js'
+  'bonsai/tools'
 ], function(RendererController, URI, EventEmitter, tools) {
   var mockAssetController, mockRenderer, mockRunner, baseUri;
 

@@ -1,8 +1,7 @@
 require([
   'bonsai/runner/display_list',
   'bonsai/runner/display_object',
-  'common/mock',
-  './runner.js'
+  'common/mock'
 ], function(displayList, DisplayObject, mock) {
   var DisplayList = displayList.DisplayList;
 

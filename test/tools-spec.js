@@ -1,6 +1,5 @@
 require([
-  'bonsai/tools',
-  './runner.js'
+  'bonsai/tools'
 ], function(tools) {
   'use strict';
 

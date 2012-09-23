@@ -1,7 +1,6 @@
 require([
   'bonsai/asset/asset_request',
-  'bonsai/asset/asset_resource',
-  './runner.js'
+  'bonsai/asset/asset_resource'
 ], function(AssetRequest, AssetResource) {
 
   var url = 'http://simpleurl.org/file.txt';

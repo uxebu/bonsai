@@ -1,7 +1,6 @@
 require([
   'bonsai/runner/ui_event',
-  'common/mock',
-  './runner.js'
+  'common/mock'
 ], function(uiEvent, mock) {
   describe('uiEvent', function() {
     describe('scaffolding', function() {

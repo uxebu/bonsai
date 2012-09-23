@@ -1,7 +1,6 @@
 require([
   'bonsai/tools',
-  'bonsai/runner/timeline',
-  './runner.js'
+  'bonsai/runner/timeline'
 ], function(tools, Timeline) {
 
   function makeTimeline() {

@@ -1,6 +1,5 @@
 require([
-  'bonsai/point',
-  './runner.js'
+  'bonsai/point'
 ], function(Point) {
 
   var toString = {}.toString;

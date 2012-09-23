@@ -5,8 +5,7 @@ require([
   'bonsai/runner/stage',
   'bonsai/tools',
   'common/displaylist-owner',
-  'common/displayobject-lifecycle',
-  './runner.js'
+  'common/displayobject-lifecycle'
 ], function(Group, DisplayObject, DisplayList, Stage, tools, testDisplayList, testLifeCycle) {
 
   describe('Group', function() {

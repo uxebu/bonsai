@@ -1,7 +1,6 @@
 require([
-  './runner.js',
   'bonsai/runner/filter/base_filter'
-], function(runner, filter) {
+], function(filter) {
 
   describe('filter.BaseFilter', function() {
 

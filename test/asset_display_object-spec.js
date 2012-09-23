@@ -2,8 +2,7 @@ require([
   'bonsai/runner/display_object',
   'bonsai/runner/group',
   'bonsai/runner/asset_display_object',
-  'bonsai/tools',
-  './runner.js'
+  'bonsai/tools'
 ], function(DisplayObject, Group, AssetDisplayObject, tools) {
 
   describe('AssetDisplayObject', function() {

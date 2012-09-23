@@ -1,6 +1,5 @@
 require([
-  'bonsai/runner/font_family',
-  './runner.js'
+  'bonsai/runner/font_family'
 ], function(FontFamily) {
 
   describe('FontFamily', function() {

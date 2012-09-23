@@ -1,8 +1,7 @@
 require([
-  './runner.js',
   'bonsai/runner/filter/builtin',
   'bonsai/color'
-], function(runner, filter, color) {
+], function(filter, color) {
 
   ['Blur', 'Grayscale', 'Sepia', 'Invert', 'Saturate', 'Brightness', 'Contrast', 'HueRotate', 'Opacity', 'DropShadow'].forEach(function(filterType) {
 

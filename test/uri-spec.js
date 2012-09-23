@@ -1,6 +1,5 @@
 require([
-  'bonsai/uri',
-  './runner.js'
+  'bonsai/uri'
 ], function(URI) {
   'use strict';
   describe('URI.parse', function() {

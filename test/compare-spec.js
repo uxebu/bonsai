@@ -1,6 +1,4 @@
-require([
-  './runner.js'
-], function() {
+require(function() {
   var MAE_N_PASS_THRESHOLD = 0.001;
   jasmine.getEnv().defaultTimeoutInterval = 10000;
 

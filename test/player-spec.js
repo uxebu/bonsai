@@ -1,7 +1,6 @@
 require([
   'bonsai/bootstrapper/player',
-  'bonsai/uri',
-  './runner.js'
+  'bonsai/uri'
 ], function (player, URI) {
   'use strict';
 

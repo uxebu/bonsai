@@ -1,6 +1,5 @@
 require([
-  'bonsai/runner/bitmap',
-  './runner.js'
+  'bonsai/runner/bitmap'
 ], function(Bitmap) {
   'use strict';
 

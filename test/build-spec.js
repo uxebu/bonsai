@@ -1,6 +1,4 @@
-require([
-  './runner.js'
-], function() {
+require(function() {
   jasmine.getEnv().defaultTimeoutInterval = 10000;
 
   describe('Bonsai build', function(){

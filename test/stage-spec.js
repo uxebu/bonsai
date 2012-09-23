@@ -5,8 +5,7 @@ require([
   'bonsai/runner/display_object',
   'bonsai/event_emitter',
   'common/mock',
-  'common/displaylist-owner',
-  './runner.js'
+  'common/displaylist-owner'
 ], function(tools, Stage, Environment, DisplayObject, EventEmitter, mock, testDisplayList) {
   function makeStage() {
     var messageChannel = mock.createMessageProxy();

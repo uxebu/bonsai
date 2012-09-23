@@ -1,6 +1,5 @@
 require([
-  'bonsai/runner/matrix',
-  './runner.js'
+  'bonsai/runner/matrix'
 ], function(Matrix) {
   
   describe('Matrix', function(){

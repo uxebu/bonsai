@@ -1,6 +1,5 @@
 require([
-  '../doc/cheatsheet/sheet.js',
-  './runner.js'
+  '../doc/cheatsheet/sheet.js'
 ], function (sheet) {
 
   describe('sheet', function () {

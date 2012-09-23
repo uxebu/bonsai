@@ -2,8 +2,7 @@ require([
   'bonsai/runner/movie',
   'common/mock',
   'common/displaylist-owner',
-  'common/displayobject-lifecycle',
-  './runner.js'
+  'common/displayobject-lifecycle'
 ], function(Movie, mock, testDisplayList, testLifeCycle) {
 
   describe('Movie', function() {

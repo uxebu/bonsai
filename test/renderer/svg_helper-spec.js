@@ -1,6 +1,5 @@
 require([
-  'bonsai/renderer/svg/svg_helper',
-  './runner.js'
+  'bonsai/renderer/svg/svg_helper'
 ], function(svgHelper) {
   describe('svgHelper', function() {
 

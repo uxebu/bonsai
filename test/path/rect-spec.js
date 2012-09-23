@@ -1,6 +1,5 @@
 require([
-  'bonsai/runner/path/rect',
-  './runner.js'
+  'bonsai/runner/path/rect'
 ], function(Rect) {
 
   describe('rect', function() {
