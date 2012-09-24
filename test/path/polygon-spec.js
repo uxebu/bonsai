@@ -1,6 +1,5 @@
-require([
-  'bonsai/runner/path/polygon',
-  './runner.js'
+define([
+  'bonsai/runner/path/polygon'
 ], function(Polygon) {
 
   describe('Polygon', function() {

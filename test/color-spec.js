@@ -1,6 +1,5 @@
-require([
-  'bonsai/color',
-  './runner.js'
+define([
+  'bonsai/color'
 ], function(color) {window.color = color;
 
   function toRGBA(c) {

@@ -1,6 +1,5 @@
-require([
-  'bonsai/asset/asset_resource',
-  './runner.js'
+define([
+  'bonsai/asset/asset_resource'
 ], function(AssetResource) {
 
   var url = 'http://simpleurl.org/file.txt';

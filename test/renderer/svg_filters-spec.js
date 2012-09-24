@@ -1,6 +1,5 @@
-require([
-  'bonsai/renderer/svg/svg_filters',
-  './runner.js'
+define([
+  'bonsai/renderer/svg/svg_filters'
 ], function(svgFilters) {
   describe('svgFilters', function() {
 

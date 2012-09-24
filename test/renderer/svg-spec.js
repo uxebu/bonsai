@@ -1,6 +1,5 @@
-require([
-  'bonsai/renderer/svg/svg',
-  './runner.js'
+define([
+  'bonsai/renderer/svg/svg'
 ], function(SvgRenderer) {
   describe('SvgRenderer', function() {
     function createFakeDomNode() {

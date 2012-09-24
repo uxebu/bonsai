@@ -1,8 +1,7 @@
-require([
+define([
   'bonsai/asset/asset_controller',
   'bonsai/asset/asset_loader',
-  'bonsai/asset/asset_request',
-  './runner.js'
+  'bonsai/asset/asset_request'
 ], function(AssetController, AssetLoader, AssetRequest) {
 
   var assetLoader = new AssetLoader({}),

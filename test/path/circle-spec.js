@@ -1,6 +1,5 @@
-require([
-  'bonsai/runner/path/circle',
-  './runner.js'
+define([
+  'bonsai/runner/path/circle'
 ], function(Circle) {
 
   describe('Circle', function() {

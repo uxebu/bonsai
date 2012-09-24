@@ -1,6 +1,5 @@
-require([
-  'bonsai/runner/path/arc',
-  './runner.js'
+define([
+  'bonsai/runner/path/arc'
 ], function(Arc) {
 
   describe('Arc', function() {

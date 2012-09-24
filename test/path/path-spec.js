@@ -1,9 +1,8 @@
-require([
+define([
   'bonsai/runner/path/path',
   'bonsai/runner/path/rect',
   'bonsai/runner/gradient',
-  'bonsai/runner/bitmap',
-  './runner.js'
+  'bonsai/runner/bitmap'
 ], function(Path, Rect, gradient, Bitmap) {
 
   var precision = new Number(12);

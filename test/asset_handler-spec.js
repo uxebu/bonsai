@@ -1,8 +1,7 @@
-require([
+define([
   'bonsai/asset/asset_handler',
   'bonsai/asset/asset_request',
-  'bonsai/asset/asset_resource',
-  './runner.js'
+  'bonsai/asset/asset_resource'
 ], function(AssetHandler, AssetRequest, AssetResource) {
 
   function makeAssetRequest() {

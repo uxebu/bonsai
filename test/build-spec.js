@@ -1,8 +1,5 @@
-require([
-  './runner.js'
-], function() {
+define(function() {
   jasmine.getEnv().defaultTimeoutInterval = 10000;
-
   describe('Bonsai build', function(){
     it('should generate a shape which looks like a reference image', function() {
       var bsVariant = {

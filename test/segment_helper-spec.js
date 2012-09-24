@@ -1,6 +1,5 @@
-require([
-  'bonsai/segment_helper',
-  './runner.js'
+define([
+  'bonsai/segment_helper'
 ], function(segmentHelper) {
   describe('segmentHelper', function() {
 
