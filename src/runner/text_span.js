@@ -120,7 +120,7 @@ define([
       textLineOpacity: data(1, true, true),
       _textStrokeColor: data(null, true), // black by default
       textStrokeColor: accessor(getTextStrokeColor, setTextStrokeColor, true),
-      textStrokeWidth: data(0, true, true),
+      textStrokeWidth: data(null, true, true),
       selectable: data(true, true, true)
     });
 

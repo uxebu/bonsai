@@ -134,6 +134,10 @@ define([
         expect(new TextSpan(false).attr('text')).toBe('false');
       });
 
+      it('Has a default strokeWidth of null, so it is not rendered', function() {
+        expect(new TextSpan('...').attr('textStrokeWidth')).toBe(null);
+      });
+
       it('sets text via attr() and get text', function() {
         var ex = 'myTest', t = new TextSpan('').attr('text', ex);
         expect(t.attr('text')).toBe(ex);
