@@ -1,8 +1,7 @@
-require([
+define([
   'bonsai/runner/gradient',
   'bonsai/runner/matrix',
-  'bonsai/color',
-  './runner.js'
+  'bonsai/color'
 ], function(gradient, Matrix, color) {
 
   describe('gradient', function() {

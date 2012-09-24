@@ -4,6 +4,9 @@ v0.3.7
 * Change display list implementation from mixin to composition
 * Make the default textOrigin in the Text class 'top'
 * Cleanup KeyframeAnimation and remove setSubject(s) methods to bring inline with current Animation class
+* Fix internal asset messaging so that assetData (loadData) is correctly sent to the runner (AssetLoader)
+* Add missing `delay` option to KeyframeAnimation
+* Fix issue where TextSpan child default strokeWidth took precedence over parent (Text instance) strokeWidth
 
 v0.3.6 / 2012-09-12
 -------------------

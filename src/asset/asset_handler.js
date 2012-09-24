@@ -57,19 +57,18 @@ define([
       this.emit('registerElement', element);
     },
 
-    resourceLoadSuccess: function(assetData) {
-      tools.mixin(this.assetData, assetData);
+    resourceLoadSuccess: function(loadData) {
       var resourcesLoaded = this.resourcesLoaded += 1;
       if (resourcesLoaded === this.resourcesExpectedLength) {
         clearTimeout(this._timeoutID);
         this.emit('resourcesLoaded'); // internal resourcesLoaded event
-        this.emit('load', this.assetData);
+        this.emit('load', loadData);
       }
     },
 
-    resourceLoadError: function(err) {
+    resourceLoadError: function(loadError) {
       clearTimeout(this._timeoutID);
-      this.emit('error', err);
+      this.emit('error', loadError);
     }
 
   };
