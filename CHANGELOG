@@ -7,6 +7,7 @@ v0.3.7
 * Fix internal asset messaging so that assetData (loadData) is correctly sent to the runner (AssetLoader)
 * Add missing `delay` option to KeyframeAnimation
 * Fix issue where TextSpan child default strokeWidth took precedence over parent (Text instance) strokeWidth
+* Add the ability to execute tests via commandline: `make test-phantom`
 
 v0.3.6 / 2012-09-12
 -------------------
