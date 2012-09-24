@@ -27,13 +27,13 @@ define(['jasmine.helper.js'], function(jasmineHelper) {
   var reporter = isPhantom ? new jasmine.ConsoleReporter() : new jasmine.TrivialReporter();
 
   jasmineEnv.addReporter(reporter);
+  jasmineEnv.addReporter(new jasmine.JUnitXmlReporter('', true, false));
 
   if (isPhantom) {
     // exporting this to window because phantomjs/ConsoleReporter is complaining otherwise
     window.console_reporter = reporter;
   } else {
 
-    jasmineEnv.addReporter(new jasmine.JUnitXmlReporter('', true, false));
     // passing reporter so we can access the individual DOM nodes
     jasmineEnv.addReporter(new jasmine.CompareReporter(reporter));
 
