@@ -371,9 +371,11 @@ define([
 
     // We need to ensure that all children are registered as off-stage objects
     // (this includes adding them to the registry!)
-    if (obj._children) {
-      for (var i = 0, l = obj._children.length; i < l; ++i) {
-        var child = obj._children[i];
+
+    var children = obj.displayList && obj.displayList.children;
+    if (children) {
+      for (var i = 0, l = children.length; i < l; ++i) {
+        var child = children[i];
         if (child) {
           DisplayObject.registerOffStageObj(subject, child, stage, type, true);
         }
@@ -410,9 +412,10 @@ define([
       delete obj._offStageType;
       obj._isOffStage = false;
 
-      if (obj._children) {
-        for (var i = 0, l = obj._children.length; i < l; ++i) {
-          var child = obj._children[i];
+      var children = obj.displayList && obj.displayList.children;
+      if (children) {
+        for (var i = 0, l = children.length; i < l; ++i) {
+          var child = children[i];
           if (child) {
             DisplayObject.unregisterOffStageObj(subject, child, true);
           }
@@ -473,6 +476,11 @@ define([
         this._isOffStage = true;
       }
 
+      var registry = stage.registry;
+      registry.displayObjects[this.id] = this;
+      registry.needsInsertion[this.id] = this;
+      this.markUpdate();
+
       this.emit('addedToStage');
     },
 
@@ -481,7 +489,15 @@ define([
      * ancestors from the stage.
      */
     _deactivate: function() {
-      delete this.stage;
+      var stage = this.stage;
+      if (stage) {
+        var registry = stage.registry;
+        var id = this.id;
+        this.stage = void 0;
+        registry.needsDraw[id] = this;
+        delete registry.displayObjects[id];
+        delete registry.needsInsertion[id];
+      }
       this.emit('removedFromStage');
     },
 
@@ -630,7 +646,11 @@ define([
      * @returns {this}
      */
     addTo: function(parent, index) {
-      parent.addChild(this, index);
+      if (arguments.length === 1) {
+        parent.addChild(this);
+      } else {
+        parent.addChild(this, index);
+      }
       return this;
     },
 
@@ -761,7 +781,7 @@ define([
         animation = new Animation(clock, duration, properties, options);
       }
 
-      animation.play(this);
+      animation.addSubject(this).play();
       return this;
     }
   };

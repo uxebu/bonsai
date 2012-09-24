@@ -1,17 +1,22 @@
-require([
+define([
   'bonsai/tools',
   'bonsai/runner/stage',
   'bonsai/runner/environment',
   'bonsai/runner/display_object',
   'bonsai/event_emitter',
-  './runner.js'
-], function(tools, Stage, Environment, DisplayObject, EventEmitter) {
+  'common/mock',
+  'common/displaylist-owner'
+], function(tools, Stage, Environment, DisplayObject, EventEmitter, mock, testDisplayList) {
   function makeStage() {
-    var messageChannel = tools.mixin({notifyRenderer: function() {}}, EventEmitter);
-    return new Stage(messageChannel, function() {});
+    var messageChannel = mock.createMessageProxy();
+    return new Stage(messageChannel);
   }
 
   describe('stage', function() {
+
+    testDisplayList(function(displayList) {
+      return new Stage(mock.createMessageProxy(), displayList);
+    }, true);
 
     describe('setFramerate', function() {
 

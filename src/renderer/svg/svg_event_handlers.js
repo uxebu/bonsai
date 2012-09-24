@@ -78,40 +78,25 @@ define([
           touchData = this.touchData || (this.touchData = {}),
           type = domEvent.type,
           identifier,
+          singleTouchData,
           touch;
-
-      if (allTouches && allTouches.length) {
-        // Fire the non-multi event for the very first event in the touch-list
-        allTouches[0].type = type;
-        this.handleSingleTouch(
-          allTouches[0],
-          touchData[allTouches[0].identifier] || (touchData[allTouches[0].identifier] = {}),
-          false
-        );
-      } else {
-        if (type === 'touchend') {
-          // Final touchend (not part of `.changedTouches`) TODO: find out why
-          // Fire touchend->pointerup
-          this.handleSingleTouch(
-            domEvent,
-            {}
-          );
-          this.touchData = {};
-        }
-      }
 
       if (changedTouches && changedTouches.length) {
         // Go through new touch events and fire individually:
         for (var i = 0, l = changedTouches.length; i < l; ++i) {
           touch = changedTouches[i];
+          // Handle each touch individually:
+          identifier = touch.identifier;
           touch.type = type;
           touch.index = allTouches.indexOf(touch);
-          // Handle each touch individually:
-          this.handleSingleTouch(
-            touch,
-            touchData[touch.identifier] || (touchData[touch.identifier] = {}),
-            true
-          );
+
+          singleTouchData = touchData[identifier] || (touchData[identifier] = {});
+          this.handleSingleTouch(touch, singleTouchData, true);
+
+          // Fire the non-multi event for the very first event in the touch-list
+          if (i === 0) {
+            this.handleSingleTouch(touch, singleTouchData, false);
+          }
         }
       }
     },
@@ -170,6 +155,8 @@ define([
         case 'touchend':
         case 'mouseup':
           targetId = data._dragId;
+          event.diffX = clientX - start[0];
+          event.diffY = clientY - start[1];
           delete data._currentTouch;
           delete data._dragId;
           delete data._startEventPos;
@@ -220,6 +207,7 @@ define([
           event.ctrlKey = domEvent.ctrlKey;
           event.altKey = domEvent.altKey;
           event.metaKey = domEvent.metaKey;
+          event.shiftKey = domEvent.shiftKey;
           // Pass focused element's value to bonsai
           event.inputValue = domEvent.target.value;
           break;

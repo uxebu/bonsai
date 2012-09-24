@@ -1,8 +1,7 @@
-require([
+define([
   'bonsai/runner/animation/keyframe_animation',
   'bonsai/runner/timeline',
-  'bonsai/tools',
-  './runner.js'
+  'bonsai/tools'
 ], function(KeyframeAnimation, Timeline, tools) {
 
   var clock = tools.mixin({}, Timeline, {
@@ -44,9 +43,28 @@ require([
         1: {x: 2}
       });
 
-      k.setSubjects(subj, 'prop');
+      k.addSubjects(subj, 'prop');
       k.play();
       expect(subj.x).toBe(1);
+    });
+
+    it('Will animate multiple subjects', function() {
+      var subj1 = { id: 1, a: 0 };
+      var subj2 = { id: 2, a: 10 };
+      var k = createKeyframes(1, {
+        0: { a: 0 },
+        to: { a: 20 }
+      });
+      k.addSubjects([subj1, subj2], 'prop');
+      k.play();
+      expect(subj2.a).toBe(0);
+      async(function(nxt) {
+        k.on('end', function() {
+          expect(subj1.a).toBe(20);
+          expect(subj2.a).toBe(20);
+          nxt();
+        });
+      });
     });
 
     it('Will play transitions in sequence', function() {
@@ -62,7 +80,7 @@ require([
         '0.5s': {x: 1353}
       });
 
-      k.setSubject(subj, {
+      k.addSubject(subj, {
         set: function(subject, values) {
           var x = values.x;
           expect(x).toBeGreaterThan(prevX);

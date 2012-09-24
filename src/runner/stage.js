@@ -9,32 +9,34 @@ define([
   './environment',
   './ui_event',
   '../uri'
-], function(EventEmitter, DisplayList, color, Timeline,
+], function(EventEmitter, displayList, color, Timeline,
             tools, Registry, AssetLoader, Environment,
             uiEvent, URI) {
   'use strict';
 
   var hitch = tools.hitch;
+  var DisplayList = displayList.DisplayList;
 
   /** @const */
   var DEFAULT_FRAMERATE = 30;
 
   /**
-   * Helper used to collect all descendent IDs of a DisplayList
+   * Helper used to collect all descendent IDs of a display list
    * (recursive)
    */
-  function collectChildIds(object) {
-    var children = object._children,
-        ids = [];
-    if (children) {
-      for (var i = 0, l = children.length; i < l; ++i) {
-        if (children[i]) {
-          // TODO: why is this check necessary? children should never be falsey.
-          ids.push(children[i].id);
-          ids.push.apply(ids, collectChildIds(children[i]));
+  function collectChildIds(displayList) {
+    var ids = [];
+    if (displayList) {
+      var children = displayList.children;
+      for (var child, i = 0; (child = children[i]); ++i) {
+        ids.push(child.id);
+        var subDisplayList = child.displayList;
+        if (subDisplayList) {
+          ids.push.apply(ids, collectChildIds(subDisplayList));
         }
       }
     }
+
     return ids;
   }
 
@@ -51,8 +53,14 @@ define([
    * @mixes EventEmitter
    * @mixes Timeline
    */
-  function Stage(messageChannel) {
+  function Stage(messageChannel, displayList) {
     var registry = this.registry = new Registry();
+
+    if (!displayList) {
+      displayList = new DisplayList();
+    }
+    displayList.owner = this;
+    this.displayList = displayList;
 
     var assetLoader = this.assetLoader =
       new AssetLoader(registry.pendingAssets)
@@ -75,7 +83,7 @@ define([
 
   }
 
-  Stage.prototype = /** @lends Stage.prototype */ {
+  var proto = Stage.prototype = /** @lends Stage.prototype */ {
     _isFrozen: true,
 
     assetBaseUrl: new URI(null, null, ''),
@@ -122,10 +130,10 @@ define([
           this[command](data);
           break;
         case 'assetLoadSuccess':
-          this.assetLoader.handleEvent('load', data.id, data);
+          this.assetLoader.handleEvent('load', data.id, data.loadData);
           break;
         case 'assetLoadError':
-          this.assetLoader.handleEvent('error', data.id, data);
+          this.assetLoader.handleEvent('error', data.id, data.loadData);
           break;
         case 'userevent':
           var target = data.targetId ? this.registry.displayObjects[data.targetId] : this;
@@ -150,12 +158,12 @@ define([
       }
     },
 
-    /** 
+    /**
      * Sends a `loadAsset` message to the renderer
      */
-    loadAsset: function(baseUrl, id, request, type) {
+    loadAsset: function(baseUrl, id, request, displayObjectType) {
       // Make asset urls absolute here
-      baseUrl || (baseUrl = this.assetBaseUrl);
+      baseUrl = baseUrl || this.assetBaseUrl;
       tools.forEach(request.resources, function(assetResource) {
         var src = URI.parse(assetResource.src);
         if (src.scheme !== 'data') {
@@ -167,13 +175,13 @@ define([
         command: 'loadAsset',
         data: {
           id: id,
-          type: type,
+          type: displayObjectType,
           request: request
         }
       });
     },
 
-    /** 
+    /**
      * Sends a `destroyAsset` message to the renderer
      */
     destroyAsset: function(id) {
@@ -289,7 +297,7 @@ define([
         } else {
 
           // collect ids of all children (all levels) that are removed together with the parent
-          var childIds = collectChildIds(obj);
+          var childIds = collectChildIds(obj.displayList);
 
           message = {id: +id, detach: true};
           if (childIds.length) {
@@ -429,7 +437,8 @@ define([
     }
   };
 
-  tools.mixin(Stage.prototype, EventEmitter, DisplayList, Timeline);
+  tools.mixin(proto, EventEmitter, displayList.timelineMethods, Timeline);
+  delete proto.markUpdate;
 
   return Stage;
 });

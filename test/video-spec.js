@@ -1,7 +1,7 @@
-require([
+define([
   'bonsai/runner/video',
-  './runner.js'
-], function(Video) {
+  'bonsai/runner/group'
+], function(Video, Group) {
   describe('Video', function() {
     describe('#getComputed()', function() {
       it('should return the bitmap width if invoked with "width"', function() {
@@ -91,5 +91,20 @@ require([
           });
       });
     });
+
+    it('Provides destroy method which will remove the item from stage and call destroyAsset on its loader', function() {
+      var loader = {
+        destroyAsset: jasmine.createSpy('destroyAsset'),
+        request: function() {}
+      };
+      var d = new Video(loader, 'abc.mp4', null);
+      var parent = new Group();
+      parent.addChild(d);
+      expect(parent.children()[0]).toBe(d);
+      d.destroy();
+      expect(loader.destroyAsset).toHaveBeenCalled();
+      expect(parent.children()[0]).toBe(void 0);
+    });
+
   })
 });

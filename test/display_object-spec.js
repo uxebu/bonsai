@@ -1,29 +1,14 @@
-require([
+define([
   'bonsai/runner/display_object',
-  'bonsai/runner/stage',
   'bonsai/event_emitter',
   'bonsai/tools',
-  './runner.js'
-], function(DisplayObject, Stage, EventEmitter, tools) {
-  function createFakeStage() {
-    var messageChannel = tools.mixin({notifyRenderer: function() {}}, EventEmitter);
-    return new Stage(messageChannel, function() {});
-  }
-  // Create fake stage
-  var stage = createFakeStage();
-
-  stage.handleEvent({
-    command: 'run',
-    data: {
-      code: ';'
-    }
-  });
-
-  stage.freeze();
-
+  'common/mock',
+  'common/displayobject-lifecycle'
+], function(DisplayObject, EventEmitter, tools, mock, testLifeCycle) {
   describe('DisplayObject', function() {
-
-    window.DisplayObject = DisplayObject;
+    testLifeCycle(function() {
+      return new DisplayObject();
+    });
 
     /*
      Define precision as object so it'll be toString'd as an obj and
@@ -228,5 +213,27 @@ require([
       });
     });
 
+    describe('addTo', function() {
+      var displayObject, parent;
+      beforeEach(function() {
+        displayObject = new DisplayObject();
+        parent = {
+          addChild: jasmine.createSpy('addChild')
+        };
+      });
+
+      it('calls addChild on the parent with itself as only argument if no ' +
+        'index is given', function() {
+        displayObject.addTo(parent);
+        expect(parent.addChild).toHaveBeenCalledWith(displayObject);
+      });
+
+      it('calls addChild on the parent with itself and the index as ' +
+        'arguments if index is given', function() {
+        var index = 20;
+        displayObject.addTo(parent, index);
+        expect(parent.addChild).toHaveBeenCalledWith(displayObject, index);
+      });
+    });
   });
 });

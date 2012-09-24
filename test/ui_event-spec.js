@@ -1,11 +1,7 @@
-require([
+define([
   'bonsai/runner/ui_event',
-  './runner.js'
-], function(uiEvent) {
-  function createMockDisplayObject() {
-    return {emit: jasmine.createSpy('emit')};
-  }
-
+  'common/mock'
+], function(uiEvent, mock) {
   describe('uiEvent', function() {
     describe('scaffolding', function() {
       it('returns the same object', function() {
@@ -26,56 +22,53 @@ require([
       it('calls emit on the passed in object with the event object as parameter', function() {
         var eventType = 'arbitrary';
         var eventObject = uiEvent({type: eventType});
-        var mockDisplayObject = createMockDisplayObject();
-        eventObject.emitOn(mockDisplayObject);
+        var displayObject = mock.createDisplayObject();
+        eventObject.emitOn(displayObject);
 
-        expect(mockDisplayObject.emit).toHaveBeenCalledWith(eventType, eventObject);
+        expect(displayObject.emit).toHaveBeenCalledWith(eventType, eventObject);
       });
 
       it('walks a chain of parents correctly', function() {
         var eventType = 'click'; // a bubbling event
         var eventObject = uiEvent({type: eventType});
-        var mockDisplayObject = createMockDisplayObject();
-        mockDisplayObject.parent = createMockDisplayObject();
-        mockDisplayObject.parent.emit.andCallFake(function(type, event) {
+        var displayObject = mock.createDisplayObject();
+        displayObject.parent = mock.createDisplayObject();
+        displayObject.parent.emit.andCallFake(function(type, event) {
           event.stop();
         });
-        mockDisplayObject.parent.parent = createMockDisplayObject();
-        mockDisplayObject.parent.parent.parent = createMockDisplayObject();
+        displayObject.parent.parent = mock.createDisplayObject();
+        displayObject.parent.parent.parent = mock.createDisplayObject();
+        eventObject.emitOn(displayObject);
 
-        eventObject.emitOn(mockDisplayObject);
-
-        expect(mockDisplayObject.emit).toHaveBeenCalledWith(eventType, eventObject);
-        expect(mockDisplayObject.parent.emit).toHaveBeenCalledWith(eventType, eventObject);
-        expect(mockDisplayObject.parent.parent.emit).not.toHaveBeenCalled();
-        expect(mockDisplayObject.parent.parent.parent.emit).not.toHaveBeenCalled();
+        expect(displayObject.emit).toHaveBeenCalledWith(eventType, eventObject);
+        expect(displayObject.parent.emit).toHaveBeenCalledWith(eventType, eventObject);
+        expect(displayObject.parent.parent.emit).not.toHaveBeenCalled();
+        expect(displayObject.parent.parent.parent.emit).not.toHaveBeenCalled();
       });
 
       it('stops walking a chain of parents when stopped', function() {
         var eventType = 'click'; // a bubbling event
         var eventObject = uiEvent({type: eventType});
-        var mockDisplayObject = createMockDisplayObject();
-        mockDisplayObject.parent = createMockDisplayObject();
-        mockDisplayObject.parent.parent = createMockDisplayObject();
-        mockDisplayObject.parent.parent.parent = createMockDisplayObject();
+        var displayObject = mock.createDisplayObject();
+        displayObject.parent = mock.createDisplayObject();
+        displayObject.parent.parent = mock.createDisplayObject();
+        displayObject.parent.parent.parent = mock.createDisplayObject();
+        eventObject.emitOn(displayObject);
 
-        eventObject.emitOn(mockDisplayObject);
-
-        expect(mockDisplayObject.emit).toHaveBeenCalledWith(eventType, eventObject);
-        expect(mockDisplayObject.parent.emit).toHaveBeenCalledWith(eventType, eventObject);
-        expect(mockDisplayObject.parent.parent.emit).toHaveBeenCalledWith(eventType, eventObject);
-        expect(mockDisplayObject.parent.parent.parent.emit).toHaveBeenCalledWith(eventType, eventObject);
+        expect(displayObject.emit).toHaveBeenCalledWith(eventType, eventObject);
+        expect(displayObject.parent.emit).toHaveBeenCalledWith(eventType, eventObject);
+        expect(displayObject.parent.parent.emit).toHaveBeenCalledWith(eventType, eventObject);
+        expect(displayObject.parent.parent.parent.emit).toHaveBeenCalledWith(eventType, eventObject);
       });
 
       it('does not walk a parent chain for non-bubbling events', function() {
         var eventType = 'arbitrary';
         var eventObject = uiEvent({type: eventType});
-        var mockDisplayObject = createMockDisplayObject();
-        mockDisplayObject.parent = createMockDisplayObject();
-
-        eventObject.emitOn(mockDisplayObject);
-        expect(mockDisplayObject.emit).toHaveBeenCalledWith(eventType, eventObject);
-        expect(mockDisplayObject.parent.emit).not.toHaveBeenCalled();
+        var displayObject = mock.createDisplayObject();
+        displayObject.parent = mock.createDisplayObject();
+        eventObject.emitOn(displayObject);
+        expect(displayObject.emit).toHaveBeenCalledWith(eventType, eventObject);
+        expect(displayObject.parent.emit).not.toHaveBeenCalled();
 
       });
     });

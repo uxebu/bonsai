@@ -26,6 +26,7 @@ define([
   './text_span',
   './video',
   './filter/builtin',
+  './display_list',
   './dom_element',
   '../version'
 ], function(
@@ -34,7 +35,7 @@ define([
   Bitmap, DisplayObject, Group,
   Animation, KeyframeAnimation, easing, FontFamily, Matrix,
   Sprite, color, gradient, Text, TextSpan, Video, filter,
-  DOMElement, version
+  displayList, DOMElement, version
 ) {
   'use strict';
 
@@ -60,11 +61,14 @@ define([
   function Environment(stage, assetLoader) {
 
     var exports = this.exports = {
+
+      // DisplayObjects
       DOMElement: DOMElement,
       DisplayObject: DisplayObject,
       Group: Group,
       Matrix: Matrix,
-      Point: Point,
+      Text: Text,
+      TextSpan: TextSpan,
 
       // Path Classes
       Path: Path,
@@ -76,8 +80,9 @@ define([
       Circle: Circle,
       Arc: Arc,
 
-      Text: Text,
-      TextSpan: TextSpan,
+      DisplayList: displayList.DisplayList,
+
+      Point: Point,
       color: color,
       tools: tools,
       gradient: gradient,

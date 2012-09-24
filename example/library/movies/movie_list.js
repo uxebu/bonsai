@@ -18,9 +18,11 @@ movieList = {
   ],
   'Bitmaps and Sprites': [
     'bitmap.js',
+    'bitmap-source.js',
     'fill-image.js',
     'sprite.js',
-    'data-url.js'
+    'data-url.js',
+    'bitmap-memory-check.js'
   ],
   'Color': [
     'color.js',
@@ -67,6 +69,7 @@ movieList = {
     'filter-blur.js',
     'filter-list.js',
     'filter-multi.js',
+    'filter-frames.js',
     'filter-colorMatrix-shim.js',
     'filter-colorMatrix-shim-2.js'
   ],
@@ -148,6 +151,10 @@ movieList = {
   'Video' : [
     'video.js',
     'video-remote.js',
-    'video-onload.js'
+    'video-onload.js',
+    'video-memory-check.js'
+  ],
+  'Plugins' : [
+    'plugin-preloader.js'
   ]
 }

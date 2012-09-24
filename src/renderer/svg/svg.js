@@ -16,7 +16,9 @@ define([
   'use strict';
 
   var elCache = {};
-  var isWebkitPatternBug = /Version\/5\.1(\.[0-4])? /.test(navigator.appVersion);
+  // this decides if a svg-pattern-bugfix is applied
+  // targets webkit based browsers from version 530.0 to 534.4
+  var isWebkitPatternBug = /AppleWebKit\/53([0-3]|4.([0-4]))/.test(navigator.appVersion);
 
   // svgHelper
   var cssClasses = svgHelper.cssClasses,
@@ -67,6 +69,9 @@ define([
     'mousewheel'
   ];
 
+  // tools
+  var isArray = tools.isArray;
+
   var xlink = 'http://www.w3.org/1999/xlink';
 
   function createElement(n, id) {
@@ -81,7 +86,15 @@ define([
   }
 
   function Svg(node, width, height) {
+
     var root = this.root = this[0] = createElement('svg', 0);
+
+    // We require an additional rootContainer div so we can accurately
+    // retrieve the position of the movie in getOffset on iOS devices.
+    var rootContainer = this.rootContainer = document.createElement('div');
+    rootContainer.style.paddingLeft = '0';
+    rootContainer.style.paddingTop = '0';
+
     if (width) {
       root.setAttribute('width', width);
     }
@@ -93,7 +106,8 @@ define([
     this.viewBox(width, height);
 
     this.defs = this.root.appendChild(createElement('defs'));
-    node.appendChild(root);
+    rootContainer.appendChild(root);
+    node.appendChild(rootContainer);
   }
 
   Svg.prototype = {
@@ -385,7 +399,7 @@ define([
             } while ((prev = prev.prev));
             element = fragment;
           }
-          parent.insertBefore(element, svg[message.next]);
+          parent.insertBefore(element, svg[message.next] || null);
         }
       }
     }
@@ -405,11 +419,10 @@ define([
    */
   proto.drawAll = function(type, element, message) {
 
-    var hasFilters = false;
     var attr = message.attributes;
+    var filters = attr.filters;
     var fillColor = attr.fillColor;
     var fillGradient = attr.fillGradient;
-    var filters = attr.filters || [];
     var svg = this.svg;
 
     // when filter is applied, force fillColor change on UA w/o SVG Filter support
@@ -417,12 +430,13 @@ define([
       fillColor = element._fillColorSignature;
     }
 
-    if (filters.length) {
-      hasFilters = true;
-      this.applyFilters(element, filters);
-    } else if (filters === null) {
-      element._filterSignature &&
+    if (isArray(filters)) {
+      // modify filters
+      if (filters.length > 0) {
+        this.applyFilters(element, filters);
+      } else {
         this.removeFilters(element);
+      }
     }
 
     if (message.offStageType === 'clip') {
@@ -509,7 +523,7 @@ define([
   proto.drawBitmap = function(img, message) {
 
     var attributes = message.attributes;
-    //TODO: can't we set preserveAspectRatio only when `attributes.source != null`?
+    //TODO: can't we set preserveAspectRatio only when `attributes.absoluteUrl != null`?
     img.setAttribute('preserveAspectRatio', 'none');
 
     var naturalWidth = attributes.naturalWidth;
@@ -517,8 +531,8 @@ define([
 
     var ratio = naturalHeight / naturalWidth;
 
-    if (attributes.source != null) {
-      img.setAttributeNS(xlink, 'href', AssetController.assets[message.id].src);
+    if (attributes.absoluteUrl != null) {
+      img.setAttributeNS(xlink, 'href', attributes.absoluteUrl);
     }
 
     if (attributes.width == null && attributes.height == null) {
@@ -729,9 +743,7 @@ define([
       this.removeGradient(element, 'stroke');
 
     this.removeMask(element);
-
-    element._filterSignature &&
-      this.removeFilters(element);
+    this.removeFilters(element);
   };
 
   proto.removeFilters = function(element) {
@@ -741,6 +753,7 @@ define([
     var signature = element._filterSignature,
         def = this.definitions[signature];
 
+    // return early when no filter was previously applied
     if (!def) {
       return;
     }
@@ -752,6 +765,8 @@ define([
       delete this.definitions[signature];
     }
 
+    // remove filter-attribute and internal filter-reference
+    element.removeAttribute('filter');
     delete element._filterSignature;
   };
 
@@ -1226,8 +1241,8 @@ define([
       pattern.setAttribute('width', boundingBox.width / fillRepeatX);
       pattern.setAttribute('height', boundingBox.height / fillRepeatY);
       elementMatrix = tools.mixin({}, attributes.matrix);
-      elementMatrix.tx += boundingBox.x;
-      elementMatrix.ty += boundingBox.y;
+      elementMatrix.tx = boundingBox.x;
+      elementMatrix.ty = boundingBox.y;
       pattern.setAttribute('patternTransform', matrixToString(elementMatrix));
 
       patternFillColor.setAttribute('x', 0);
@@ -1298,22 +1313,8 @@ define([
       return;
     }
 
-    // If the element already has an attached filter we may be able
-    // to use it (as long as it's not being used by something else)
-    if (element._filterSignature) {
-
-      filterDef = this.definitions[element._filterSignature];
-
-      if (filterDef.n > 1) {
-        // decrease retain count b/c filter is used by other elements
-        filterDef.n--;
-      } else {
-        // remove old filter
-        filterDef.element.parentNode.removeChild(filterDef.element);
-        element.removeAttribute('filter');
-        delete this.definitions[element._filterSignature];
-      }
-    }
+    // remove already applied filters
+    this.removeFilters(element);
 
     var filterContainer = createElement('filter');
 
@@ -1362,11 +1363,15 @@ define([
 
   proto.getOffset = function() {
 
+    // We query the bounding box of the rootContainer instead of the root
+    // (i.e. the parent DIV). This is due to an issue with getting the offset
+    // of an SVGElement on iOS devices (unreliable).
+
     var ctm,
-        offset = this.svg.root.getBoundingClientRect();
+        offset = this.svg.rootContainer.getBoundingClientRect();
 
     if (isNaN(offset.left) || isNaN(offset.top)) {
-      ctm = this.svg.root.getScreenCTM();
+      ctm = this.svg.rootContainer.getScreenCTM();
       offset.left = ctm.e;
       offset.top = ctm.f;
     }

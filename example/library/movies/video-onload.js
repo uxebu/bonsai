@@ -3,16 +3,12 @@ var resources = [
   {src: 'assets/sample.ogv', type:'video/ogg'}
 ];
 
-new bonsai.Video(resources, {
-  // set loadLevel, see asset_resource.js
-  loadLevel: 'can-play',
-  // when onload is fired depends on the loadLevel
-  onload: function() {
+new bonsai.Video(resources, function() {
     this.attr({
       y: 150,
       x: 150,
       width:320,
-      height:240
+      height:240,
+      autoplay:true
     }).addTo(stage);
-  }
 });

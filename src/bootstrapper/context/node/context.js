@@ -110,7 +110,6 @@ requirejs.requirejs([
       context.require = requirejs.createForVmContext(context);
 
       context.console = console;
-
       return stage;
     },
 
@@ -126,7 +125,6 @@ requirejs.requirejs([
     notifyRunner: function(message) {
       if (message.command == 'exposePluginExports') {
         tools.mixin(this.vmContext, this.vmContext.exports);
-        tools.mixin(this.vmContext.bonsai, this.vmContext.exports);
       }
       this.messageChannel.notify(message);
     },

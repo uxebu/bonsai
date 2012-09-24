@@ -19,6 +19,8 @@ define([
   'use strict';
 
   var mixin = tools.mixin;
+  var isArray = tools.isArray;
+  var forEach = tools.forEach;
 
   /**
    * Translations, in the form of:
@@ -181,7 +183,7 @@ define([
           if (anim.repeat-- > 0) {
             anim.play();
           } else {
-            anim.emit('end', anim.subject, anim);
+            anim.emit('end', anim);
           }
           return;
         }
@@ -190,7 +192,7 @@ define([
       };
 
       if (options.subjects) {
-        this.setSubjects(options.subjects, options.strategy);
+        this.addSubjects(options.subjects, options.strategy);
       }
     },
 
@@ -255,23 +257,9 @@ define([
     /**
      * Starts or resumes the animation.
      *
-     * Optionally changes the subject of the animation.
-     *
-     * @param {Object} [subject]
-     * @param {mixed} [strategy='attr'] The set/get strategy to use
-     *   - 'attr': The 'attr' method of the object is used (for DisplayObjects)
-     *   - 'prop': Normal property setting and getting is used
-     *   - Object with 'set(subject, values)' and 'get(subject, propertyNames)'
-     *     methods.
      * @returns {this}
      */
-    play: function(subjects, strategy) {
-
-      var me = this;
-
-      if (subjects) {
-        this.addSubjects(subjects, strategy);
-      }
+    play: function() {
 
       if (!this.subjects) {
         throw new Error('Unspecified subjects.');
@@ -407,11 +395,10 @@ define([
      *     methods.
      */
     addSubjects: function(subjects, strategy) {
-      var me = this;
-      subjects = tools.isArray(subjects) ? subjects : [subjects];
-      subjects.forEach(function(subject) {
-        me.addSubject(subject, strategy);
-      });
+      subjects = isArray(subjects) ? subjects : [subjects];
+      forEach(subjects, function(subject) {
+        this.addSubject(subject, strategy);
+      }, this);
       return this;
     },
 
@@ -436,48 +423,9 @@ define([
      * @param {Array} subjects Array of subjects to remove
      */
     removeSubjects: function(subjects) {
-      subjects.forEach(tools.hitch(this, 'removeSubject'));
-      return this;
-    },
-
-    /**
-     * Sets the subjects of the animation while wiping all current subjects
-     *
-     * @param {Object} subject
-     * @param {mixed} [strategy='attr'] The set/get strategy to use
-     *   - 'attr': The 'attr' method of the object is used (for DisplayObjects)
-     *   - 'prop': Normal property setting and getting is used
-     *   - Object with 'set(subject, values)' and 'get(subject)'
-     *     methods.
-     * @returns {this}
-     */
-    setSubjects: function(subjects, strategy) {
-
-      subjects = tools.isArray(subjects) ? subjects : [subjects];
-
-      this.removeSubjects(this.subjects.map(function(subj) {
-        return subj.subject;
-      }));
-      this.addSubjects(subjects, strategy);
-
-      return this;
-    },
-
-    /**
-     * Sets the subject of the animation while wiping all current subjects
-     *
-     * @param {Object} subject
-     * @param {mixed} [strategy='attr'] The set/get strategy to use
-     *   - 'attr': The 'attr' method of the object is used (for DisplayObjects)
-     *   - 'prop': Normal property setting and getting is used
-     *   - Object with 'set(subject, values)' and 'get(subject)'
-     *     methods.
-     */
-    setSubject: function(subject, strategy) {
-      this.removeSubjects(this.subjects.map(function(subj) {
-        return subj.subject;
-      }));
-      this.addSubject(subject, strategy);
+      forEach(subjects, function(subject) {
+        this.removeSubject(subject);
+      }, this);
       return this;
     },
 
