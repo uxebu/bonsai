@@ -1,8 +1,7 @@
-require([
+define([
   'bonsai/point',
   'bonsai/runner/path/path',
-  'bonsai/runner/path/curved_path',
-  './runner.js'
+  'bonsai/runner/path/curved_path'
 ], function(Point, Path, CurvedPath) {
 
   function expectEqualSegments(a, b) {

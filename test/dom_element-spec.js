@@ -1,6 +1,5 @@
-require([
-  'bonsai/runner/dom_element',
-  './runner.js'
+define([
+  'bonsai/runner/dom_element'
 ], function(DOMElement) {
 
   var toString = {}.toString;

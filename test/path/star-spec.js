@@ -1,6 +1,5 @@
-require([
-  'bonsai/runner/path/star',
-  './runner.js'
+define([
+  'bonsai/runner/path/star'
 ], function(Star) {
 
   describe('Star', function() {

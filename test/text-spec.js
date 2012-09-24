@@ -1,7 +1,6 @@
-require([
+define([
   'bonsai/runner/text',
-  'bonsai/runner/text_span',
-  './runner.js'
+  'bonsai/runner/text_span'
 ], function(Text, TextSpan) {
 
   describe('Text API', function() {
