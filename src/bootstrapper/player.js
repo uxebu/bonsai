@@ -109,6 +109,9 @@ function(RendererController, AssetController, tools, URI, version) {
       if ('baseUrl' in options) {
         this._baseUrl = URI.parse(options.baseUrl);
       }
+      if ('renderer' in options) {
+        this.Renderer = options.renderer;
+      }
       return this;
     },
 

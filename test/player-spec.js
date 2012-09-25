@@ -101,6 +101,20 @@ define([
         expect(player.runnerUrl).toBe(currentUrl);
         expect(player.RunnerContext).toBe(RunnerContext);
       });
+
+      it('sets the Renderer property of the player from the renderer option', function() {
+        var Renderer = function() {};
+        player.setup({renderer: Renderer});
+
+        expect(player.Renderer).toBe(Renderer);
+      });
+
+      it('does not set the Renderer when it is not passed as option', function() {
+        var currentRenderer = player.Renderer;
+        player.setup({});
+
+        expect(player.Renderer).toBe(currentRenderer);
+      });
     });
 
     // Helper function to test `createStage`, `run`, and `runCode`
