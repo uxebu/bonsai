@@ -20,6 +20,10 @@ define([
   // targets webkit based browsers from version 530.0 to 534.4
   var isWebkitPatternBug = /AppleWebKit\/53([0-3]|4.([0-4]))/.test(navigator.appVersion);
 
+  // Math
+  var min = Math.min;
+  var max = Math.max;
+
   // svgHelper
   var cssClasses = svgHelper.cssClasses,
       matrixToString = svgHelper.matrixToString,
@@ -681,7 +685,7 @@ define([
 
     if ('volume' in attributes) {
       // Value between 0-1. NaN is treated as `0`
-      audioElement.volume = +attributes.volume || 0;
+      audioElement.volume = min(max(+attributes.volume || 0, 0), 1);
     }
 
     // Time in seconds. `currentTime` throws when there's no
@@ -691,14 +695,9 @@ define([
       volume = audioElement.volume;
       audioElement.volume = 0;
       try {
+        // Some browsers ignore `0`, that's why we set it to `0.01`
         audioElement.currentTime = +attributes.time || 0.01;
-        // Attention: Don't place JS here. It's never going to be executed when
-        // `audioElement.currentTime` throws
-        console.log('currentTime success');
-      } catch(e) {
-        console.log('currentTime fail');
-        //audioElement.addEventListener('progress', progressFallback, false);
-      }
+      } catch(e) {}
       // Set volume back to the initial value
       audioElement.volume = volume;
     }

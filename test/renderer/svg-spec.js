@@ -100,11 +100,11 @@ require([
           createSvgRenderer().drawAudio(audioElement, message);
           expect(audioElement.pause).toHaveBeenCalled();
         });
-        it('default attributes.volume=0.5', function() {
-          var audioElement = { volume: -1 };
+        it('volume is not changed w/o attributes.volume', function() {
+          var audioElement = { volume: 0.123 };
           var message = { attributes: {} };
           createSvgRenderer().drawAudio(audioElement, message);
-          expect(audioElement.volume).toBe(0.5);
+          expect(audioElement.volume).toBe(0.123);
         });
         it('attributes.volume=0', function() {
           var audioElement = { volume: -1 };
