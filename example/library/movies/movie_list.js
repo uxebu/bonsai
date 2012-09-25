@@ -17,6 +17,7 @@ movieList = {
     'animation-circles.js'
   ],
   'Audio': [
+    'audio-simple.js',
     'audio-tick-16.js',
     'audio-volume.js',
     'audio-boom.js'

@@ -1,35 +1,40 @@
 
-var booom = new Audio('assets/cinematicBoomNorm.m4a').attr({
-  volume: 1
-}).addTo(stage);
-
-var i = 0, teaser = ['A Path', 'a red panda', 'and a Audio', 'walked into a bar'];
-
 new Rect(145, 290, 1000, 60).fill('black').addTo(stage);
-var teamText = new Text('').attr({
+
+var teamText = new Text('loading...').attr({
   textFillColor: 'white',
   scale:3,
   x: 150,
   y: 300
 }).addTo(stage);
 
-stage.frames({
-  0: function() {
-    booom.play();
-    teamText.attr({
-      'scale': [2, 2],
-      text: teaser[i]
-    }).animate('2s', {
-      scale:[1, 5]
-    });
-  },
-  '2s': function() {
-    if (i === teaser.length) {
-      stage.stop();
+var movie = new Movie();
+
+var booom = new Audio([
+  { src: 'assets/cinematicBoomNorm.m4a' },
+  { src: 'assets/cinematicBoomNorm.ogg' },
+]).attr({
+  volume: 1
+}).addTo(stage).on('load', function() {
+
+  var i = 0, teaser = ['A Path', 'a red panda', 'and an Audio', 'walked into a bar'];
+
+  movie.frames({
+    0: function() {
+      booom.play();
+      teamText.attr({
+        text: teaser[i]
+      });
+    },
+    '2s': function() {
+      if (i === teaser.length) {
+        movie.stop();
+      }
+      booom.stop();
+      i++;
     }
-    booom.stop();
-    i++;
-  }
+  }).addTo(stage);
+
 });
 
 
