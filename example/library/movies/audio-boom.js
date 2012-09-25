@@ -12,7 +12,7 @@ var movie = new Movie();
 
 var booom = new Audio([
   { src: 'assets/cinematicBoomNorm.m4a' },
-  { src: 'assets/cinematicBoomNorm.ogg' },
+  { src: 'assets/cinematicBoomNorm.ogg' }
 ]).attr({
   volume: 1
 }).addTo(stage).on('load', function() {
