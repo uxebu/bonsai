@@ -8,6 +8,28 @@ define([
   var accessor = tools.descriptorAccessor;
   var getter = tools.getter;
 
+  /** Getters & Setters */
+  function getTime() {
+    return this._time;
+  }
+  function setTime(time) {
+    time = +time;
+    if (typeof time === 'number' && !isNaN(time) && isFinite(time)) {
+      this._time = time;
+    }
+  }
+
+  function getVolume() {
+    return this._volume;
+  }
+  function setVolume(volume) {
+    if (volume != null) {
+      volume = +volume;
+      volume = Math.min( Math.max(volume, 0), 1 ); // between 0 and 1 inclusive
+      this._volume = volume;
+    }
+  }
+
   /**
    * The Audio constructor
    *
@@ -27,6 +49,8 @@ define([
    *    that this property is not available in your code, it's just here for
    *    documentation purposes.
    * @property {string} __supportedAttributes__.source The source of the audio.
+   * @property {string} __supportedAttributes__.volume The volume of the audio
+   *  (between 0 and 1 inclusive)
    *
    */
   function Audio(loader, aRequest, callback, options) {
@@ -39,14 +63,16 @@ define([
     Object.defineProperties(this._attributes, {
       playing: data(!!options.autoplay, true, true),
       prepareUserEvent: data(false, true, true),
-      volume: data(0.5, true, true),
-      time: data(0.0, true, true)
+      volume: accessor(getVolume, setVolume, true),
+      _volume: data(1, true, true),
+      time: accessor(getTime, setTime, true),
+      _time: data(0, true, true)
     });
 
     var rendererAttributes = this._renderAttributes;
     rendererAttributes.playing = 'playing';
-    rendererAttributes.volume = 'volume';
-    rendererAttributes.time = 'time';
+    rendererAttributes.volume = '_volume';
+    rendererAttributes.time = '_time';
     rendererAttributes.prepareUserEvent = 'prepareUserEvent';
 
     this.request(aRequest);
@@ -108,19 +134,11 @@ define([
 
   /**
    * Play the audio
+   * @param {Number} [time] Time to seek playhead to (in seconds)
    *
    * @returns {Audio} this
    */
-  proto.play = function() {
-    return this.attr('playing', true);
-  };
-
-  /**
-   * Play the audio
-   *
-   * @returns {Audio} this
-   */
-  proto.playAtTime = function(time) {
+  proto.play = function(time) {
     return this.attr({
       playing: true,
       time: time
@@ -154,7 +172,7 @@ define([
   proto.stop = function() {
     return this.attr({
       playing: false,
-      time: 0.0
+      time: 0
     });
   };
 
