@@ -20,7 +20,8 @@ movieList = {
     'audio-simple.js',
     'audio-tick-16.js',
     'audio-volume.js',
-    'audio-boom.js'
+    'audio-boom.js',
+    'audio-piano-sprite.js'
   ],
   'Bitmaps and Sprites': [
     'bitmap.js',
