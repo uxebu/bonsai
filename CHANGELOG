@@ -9,6 +9,7 @@ v0.3.7
 * Fix issue where TextSpan child default strokeWidth took precedence over parent (Text instance) strokeWidth
 * Add the ability to execute tests via commandline: `make test-phantom`
 * Allow to pass a function within `code` in `bonsai.run`
+* Make `player.Renderer` configurable via `player.setup()`
 
 v0.3.6 / 2012-09-12
 -------------------
