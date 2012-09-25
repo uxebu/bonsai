@@ -30,7 +30,6 @@ define([
 
   // svgFilters
   var isFEColorMatrixEnabled = svgFilters.isFEColorMatrixEnabled,
-      colorApplyColorMatrix = svgFilters.colorApplyColorMatrix,
       filterElementsFromList = svgFilters.filterElementsFromList;
 
   // AssetController
@@ -76,7 +75,7 @@ define([
 
   function createElement(n, id) {
     if (!n) {
-      throw TypeError('Invalid tag name: ' + n);
+      throw new TypeError('Invalid tag name: ' + n);
     }
     var el = (elCache[n] || (elCache[n] = document.createElementNS('http://www.w3.org/2000/svg', n))).cloneNode(false);
     if (id || id === 0) {
@@ -425,7 +424,6 @@ define([
     var filters = attr.filters;
     var fillColor = attr.fillColor;
     var fillGradient = attr.fillGradient;
-    var svg = this.svg;
 
     // when filter is applied, force fillColor change on UA w/o SVG Filter support
     if (!isFEColorMatrixEnabled && !fillColor && filters && element._fillColorSignature) {
@@ -622,7 +620,6 @@ define([
       throw new Error('asset <' + id + '> is unknown.');
     }
 
-    var obj = this.svg[id];
     var width = attributes.width || 100;
     var height = attributes.height || 100;
     var matrix = attributes.matrix || {tx: 0, ty: 0};
@@ -651,13 +648,21 @@ define([
 
   proto.drawAudio = function(audioElement, message) {
 
+    var volume;
     var attributes = message.attributes;
     var id = message.id;
     var playing = attributes.playing;
 
     if (typeof audioElement === 'undefined') {
-      throw Error('asset <' + id + '> is unknown.');
+      throw new Error('asset <' + id + '> is unknown.');
     }
+
+    /*
+    var progressFallback = function() {
+      audioElement.removeEventListener('progress', progressFallback, false);
+      audioElement.currentTime = audioElement._time;
+    };
+    */
 
     if (attributes.prepareUserEvent) {
       // We bind to the next touch-event and play/pause the audio to cause
@@ -674,13 +679,28 @@ define([
       document.addEventListener('touchstart', touchStartHandler, true);
     }
 
+    if ('volume' in attributes) {
+      // Value between 0-1. NaN is treated as `0`
+      audioElement.volume = +attributes.volume || 0;
+    }
+
+    // Time in seconds. `currentTime` throws when there's no
+    // current playback state machine
     if ('time' in attributes) {
+      // Set volume to 0 to avoid "clicks"
+      volume = audioElement.volume;
+      audioElement.volume = 0;
       try {
-        var vol = audioElement.volume;
-        audioElement.volume = 0;
-        audioElement.currentTime = +attributes.time || 0;
-        audioElement.volume = vol;
-      } catch(e) {};
+        audioElement.currentTime = +attributes.time || 0.01;
+        // Attention: Don't place JS here. It's never going to be executed when
+        // `audioElement.currentTime` throws
+        console.log('currentTime success');
+      } catch(e) {
+        console.log('currentTime fail');
+        //audioElement.addEventListener('progress', progressFallback, false);
+      }
+      // Set volume back to the initial value
+      audioElement.volume = volume;
     }
 
     if (playing === true) {
@@ -690,12 +710,6 @@ define([
       audioElement.pause();
     }
 
-    if ('volume' in attributes) {
-      // Value between 0-1. NaN is treated as `0`
-      audioElement.volume = +attributes.volume || 0;
-    } else {
-      audioElement.volume = 0.5;
-    }
   };
 
   proto.drawDOMElement = function(element, message) {
@@ -703,11 +717,7 @@ define([
     // assuming a valid assetId
     var body,
         attributes = message.attributes,
-        css = attributes.css,
-        id = message.id,
-        parent = this.svg[message.parent],
-        width = attributes.width,
-        height = attributes.height;
+        parent = this.svg[message.parent];
 
     // Parent may not be defined if message is a NeedsDraw and *not* a NeedsInsertion
     if (parent && !element._root && !(parent instanceof HTMLElement)) {
