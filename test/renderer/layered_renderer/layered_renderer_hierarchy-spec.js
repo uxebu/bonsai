@@ -3,18 +3,31 @@ define([
 ], function(Renderer) {
 
   function nodeTester(type, customTestFn) {
-    return function(id) {
-      var children = [].slice.call(arguments);
+    return function(attr, children) {
+      // if first arg is an array, then it's assumed to be 'children'
+      // otherwise, children is assumed to be empty.
+      if (arguments.length === 1) {
+        if (jasmine.isArray_(attr)) {
+          children = attr;
+          attr = {};
+        }
+      }
+      if (!children) {
+        children = [];
+      }
       return {
-        // If the first argument is a number then we assume its the ID and 
-        // therefore remote it from the children array
-        id: typeof id === 'number' ? children.shift() : null,
+        attr: attr,
         type: type,
         testFn: function(el) {
-          return customTestFn && (
-            // Also test ID if it was passed
-            this.id === null || this.id === +el.getAttribute('data-bs-id')
-          );
+          var matched = true;
+          if (attr) for (var i in attr) {
+            if (i === 'id') {
+              matched = matched && attr[i] === +el.getAttribute('data-bs-id');
+            } else {
+              matched = matched && attr[i] === el.getAttribute(i)
+            }
+          }
+          return matched && customTestFn(el);
         },
         children: children
       }
@@ -101,10 +114,10 @@ define([
               el.appendChild(this.actual.cloneNode(false));
             }
             if (nodeTest) {
-              var id = nodeTest.id ? ' (id:' + nodeTest.id + ')' : '';
+              var attr = jasmine.pp(nodeTest.attr);
               return [
-                'Expected a ' + nodeTest.type + id + ' @ position(' + _position + ') but instead got ' + (this.actual && el.innerHTML),
-                'Expected something other than a ' + nodeTest.type + id + ' @ position(' + _position + ') but instead got ' + (this.actual && el.innerHTML),
+                'Expected a ' + nodeTest.type + ' (' + attr + ') @ position(' + _position + ') but instead got ' + (this.actual && el.innerHTML),
+                'Expected something other than a ' + nodeTest.type + ' (' + attr + ') @ position(' + _position + ') but instead got ' + (this.actual && el.innerHTML),
               ];
             } else {
               return [
@@ -128,12 +141,12 @@ define([
 
         testStructure(
           [], // empty message
-          _DisplayGroup(
-            _SVGLayer(
+          _DisplayGroup([
+            _SVGLayer([
               _SVGGroup(),
               _SVGDefs()
-            )
-          )
+            ])
+          ])
         );
 
       });
@@ -149,17 +162,17 @@ define([
               parent: 0
             }
           ],
-          _DisplayGroup(
-            _SVGLayer(
+          _DisplayGroup([
+            _SVGLayer([
               _SVGGroup(),
               _SVGDefs()
-            ),
-            _SVGLayer(
-              _SVGGroup(
+            ]),
+            _SVGLayer([
+              _SVGGroup([
                 _SVGPath()
-              )
-            )
-          )
+              ])
+            ])
+          ])
         );
 
       });
@@ -180,19 +193,19 @@ define([
               parent: 1
             }
           ],
-          _DisplayGroup(
-            _SVGLayer(
+          _DisplayGroup([
+            _SVGLayer([
               _SVGGroup(),
               _SVGDefs()
-            ),
-            _DisplayGroup(
-              _SVGLayer(
-                _SVGGroup(
+            ]),
+            _DisplayGroup([
+              _SVGLayer([
+                _SVGGroup([
                   _SVGPath()
-                )
-              )
-            )
-          )
+                ])
+              ])
+            ])
+          ])
         );
 
       });
@@ -210,24 +223,24 @@ define([
             { type: 'Group', id: 7, parent: 5 },
             { type: 'Path', id: 8, attributes: {}, parent: 7 }
           ],
-          _DisplayGroup(
-            _SVGLayer(
+          _DisplayGroup([
+            _SVGLayer([
               _SVGGroup(),
               _SVGDefs()
-            ),
-            _DisplayGroup(
-              _SVGLayer(_SVGGroup(_SVGPath())),
-              _DisplayGroup(
-                _SVGLayer(_SVGGroup(_SVGPath())),
-                _DisplayGroup(
-                  _SVGLayer(_SVGGroup(_SVGPath())),
-                  _DisplayGroup(
-                    _SVGLayer(_SVGGroup(_SVGPath()))
-                  )
-                )
-              )
-            )
-          )
+            ]),
+            _DisplayGroup([
+              _SVGLayer([_SVGGroup([_SVGPath()])]),
+              _DisplayGroup([
+                _SVGLayer([_SVGGroup([_SVGPath()])]),
+                _DisplayGroup([
+                  _SVGLayer([_SVGGroup([_SVGPath()])]),
+                  _DisplayGroup([
+                    _SVGLayer([_SVGGroup([_SVGPath()])])
+                  ])
+                ])
+              ])
+            ])
+          ])
         );
 
       });
@@ -244,14 +257,14 @@ define([
             // Remove:
             { type: 'Group', id: 1, detach: true }
           ],
-          _DisplayGroup(
-            _SVGLayer(
+          _DisplayGroup([
+            _SVGLayer([
               _SVGGroup(),
               _SVGDefs()
-            ),
+            ]),
             _DisplayGroup(2),
             _DisplayGroup(3)
-          )
+          ])
         );
 
       });
@@ -273,16 +286,16 @@ define([
             { type: 'Group', id: 6, parent: 0 }
           ],
 
-          _DisplayGroup(
-            _SVGLayer(
+          _DisplayGroup([
+            _SVGLayer([
               _SVGGroup(),
               _SVGDefs()
-            ),
-            _DisplayGroup(2),
-            _DisplayGroup(4),
-            _DisplayGroup(5),
-            _DisplayGroup(6)
-          )
+            ]),
+            _DisplayGroup({id: 2}),
+            _DisplayGroup({id: 4}),
+            _DisplayGroup({id: 5}),
+            _DisplayGroup({id: 6})
+          ])
         );
       });
 
@@ -302,14 +315,14 @@ define([
             { type: 'DOMElement', id: 3, detach: true },
             { type: 'DOMElement', id: 4, detach: true }
           ],
-          _DisplayGroup(
-            _SVGLayer(
+          _DisplayGroup([
+            _SVGLayer([
               _SVGGroup(),
               _SVGDefs()
-            ),
+            ]),
             _DisplayGroup(1),
             _DisplayGroup(2)
-          )
+          ])
         );
 
       });
@@ -329,17 +342,17 @@ define([
           [
             { type: 'Path', id: 2, attributes: {}, parent: 3 }
           ],
-          _DisplayGroup(
-            _SVGLayer(
+          _DisplayGroup([
+            _SVGLayer([
               _SVGGroup(),
               _SVGDefs()
-            ),
-            _DisplayGroup(
-              _DisplayGroup(
-                _SVGLayer(_SVGGroup(_SVGPath()))
-              )
-            )
-          )
+            ]),
+            _DisplayGroup([
+              _DisplayGroup([
+                _SVGLayer([_SVGGroup([_SVGPath()])])
+              ])
+            ])
+          ])
         );
 
       });
@@ -355,16 +368,16 @@ define([
           [
             { type: 'Path', id: 3, attributes: {}, parent: 2 }
           ],
-          _DisplayGroup(
-            _SVGLayer(
+          _DisplayGroup([
+            _SVGLayer([
               _SVGGroup(),
               _SVGDefs()
-            ),
+            ]),
             _DisplayGroup(),
-            _DisplayGroup(
-              _SVGLayer(_SVGGroup(_SVGPath()))
-            )
-          )
+            _DisplayGroup([
+              _SVGLayer([_SVGGroup([_SVGPath()])])
+            ])
+          ])
         );
 
       });
@@ -384,17 +397,17 @@ define([
             { type: 'Group', id: 1, parent: 2 },
             { type: 'Group', id: 2, parent: 3 }
           ],
-          _DisplayGroup(
-            _SVGLayer(
+          _DisplayGroup([
+            _SVGLayer([
               _SVGGroup(),
               _SVGDefs()
-            ),
-            _DisplayGroup(3,
-              _DisplayGroup(2,
-                _DisplayGroup(1)
-              )
-            )
-          )
+            ]),
+            _DisplayGroup({id: 3}, [
+              _DisplayGroup({id: 2}, [
+                _DisplayGroup({id: 1})
+              ])
+            ])
+          ])
         );
 
       });
@@ -408,20 +421,20 @@ define([
           [
             { type: 'Path', id: 6, attributes: {}, parent: 0 }
           ],
-          _DisplayGroup(
-            _SVGLayer(
+          _DisplayGroup([
+            _SVGLayer([
               _SVGGroup(),
               _SVGDefs()
-            ),
-            _DOMLayer(
-              _DOMElement(9)
-            ),
-            _SVGLayer(
-              _SVGGroup(
-                _SVGPath(6)
-              )
-            )
-          )
+            ]),
+            _DOMLayer([
+              _DOMElement({id: 9})
+            ]),
+            _SVGLayer([
+              _SVGGroup([
+                _SVGPath({id: 6})
+              ])
+            ])
+          ])
         );
       });
 
@@ -434,20 +447,20 @@ define([
           [
             { type: 'Path', id: 6, attributes: {}, parent: 0, next: 9 }
           ],
-          _DisplayGroup(
-            _SVGLayer(
+          _DisplayGroup([
+            _SVGLayer([
               _SVGGroup(),
               _SVGDefs()
-            ),
-            _SVGLayer(
-              _SVGGroup(
-                _SVGPath(6)
-              )
-            ),
-            _DOMLayer(
-              _DOMElement(9)
-            )
-          )
+            ]),
+            _SVGLayer([
+              _SVGGroup([
+                _SVGPath({id: 6})
+              ])
+            ]),
+            _DOMLayer([
+              _DOMElement({id: 9})
+            ])
+          ])
         );
       });
 
