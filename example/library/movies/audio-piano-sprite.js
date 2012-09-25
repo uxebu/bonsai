@@ -1,7 +1,8 @@
 var pianoSprite = [], changePianoSprite = 0;
 
 function aSound(atTime) {
-  var aPianoSprite = pianoSprite[changePianoSprite%2];
+  // TODO: test multiple audio "confirmations" on iOS.
+  var aPianoSprite = pianoSprite[0];
   changePianoSprite += 1;
   new Movie().addTo(stage).frames({
    0: function() {
@@ -39,6 +40,6 @@ pianoSprite.push(new Audio([
   { src: 'assets/piano-sprite.ogg' }
 ]).attr('prepareUserEvent', true));
 pianoSprite[0].addTo(stage).on('load', function() {
-  pianoSprite[1] = pianoSprite[0].clone().addTo(stage);
+  //pianoSprite[1] = pianoSprite[0].clone().addTo(stage);
   aTextField.animate('0.5s', { opacity:0 }, { onEnd: ready });
 });
