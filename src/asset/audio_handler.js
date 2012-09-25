@@ -12,11 +12,12 @@ define([
     document.createElement('audio') : 0;
 
   var events = {
-    'start-with-nothing': 'loadstart',
-    'metadata': 'loadedmetadata',
-    'risky-to-play': 'loadeddata',
-    'can-play': 'canplay',
-    'can-play-through': 'canplaythrough'
+    'progress': 'progress',
+    'loadstart': 'loadstart',
+    'loadedmetadata': 'loadedmetadata',
+    'loadeddata': 'loadeddata',
+    'canplay': 'canplay',
+    'canplaythrough': 'canplaythrough'
   };
 
   function AudioHandler() {
@@ -29,7 +30,7 @@ define([
 
     var audioElement, vendorMimeType, audioSlashMimeType;
     var assetId = this.id,
-        loadLevel = this.request.loadLevel || 'can-play',
+        loadLevel = this.request.loadLevel || 'canplay',
         mimeType = resource.type,
         canPlayMimeType = domAudio.canPlayType(mimeType),
         src = resource.src;
@@ -61,36 +62,17 @@ define([
 
     this.hasInitiatedLoad = true;
 
-    // start loading audio
+    // Start loading audio
     audioElement = document.createElement('audio');
     audioElement.setAttribute('id', assetId);
     audioElement.setAttribute('type', mimeType);
     audioElement.src = src;
-
+    // Triggers partial content loading (206) and changes the audio to a state
+    // where we can make use of "currentTime"
+    audioElement.load();
     this.registerElement(audioElement);
 
-    function onload() {
-      doDone();
-    }
-
-    audioElement.addEventListener(events[loadLevel], onload, false);
-
-    audioElement.addEventListener('error', function() {
-      doError('Could not load audio.');
-    }, false);
-
-    // TODO: These events need to be passed to the worker somehow
-    audioElement.addEventListener('ended', function() {
-      //console.log('ended');
-    }, false);
-
-    audioElement.addEventListener('play', function() {
-      //console.log('play');
-    }, false);
-
-    audioElement.addEventListener('pause', function() {
-      //console.log('paused');
-    }, false);
+    audioElement.addEventListener(events[loadLevel], doDone, false);
   };
 
   return AudioHandler;
