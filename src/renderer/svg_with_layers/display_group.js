@@ -28,8 +28,8 @@ define([
 
   proto._makeDOM = function() {
     var dom = document.createElement('div');
-    dom.setAttribute('data-bonsai-type', 'displayGroup');
-    dom.setAttribute('data-bonsai-id', this.id);
+    dom.setAttribute('data-bs-type', 'displayGroup');
+    dom.setAttribute('data-bs-id', this.id);
     dom.style.position = 'relative';
     return dom;
   };

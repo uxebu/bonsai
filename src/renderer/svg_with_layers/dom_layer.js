@@ -14,7 +14,9 @@ define([
   DOMLayer.prototype = Object.create(DisplayLayer.prototype);
   
   DOMLayer.prototype._makeDOM = function() {
-    return document.createElement('div');
+    var dom = document.createElement('div');
+    dom.setAttribute('data-bs-type', 'domLayer');
+    return dom;
   };
 
   DOMLayer.prototype.isEmpty = function() {

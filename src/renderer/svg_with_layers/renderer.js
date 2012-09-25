@@ -421,7 +421,8 @@ define([
         var el = display[msg.id],
             nextEl = display[msg.next],
             isDOM,
-            isNextDOM;
+            isNextDOM,
+            prevParentLayer;
 
         isDOM = el instanceof DOMElement;
 
@@ -436,7 +437,7 @@ define([
 
             var nextLayer = nextEl.parentDisplayLayer;
 
-            if (nextEl.dom.parentNode.firstChild !== nextEl) {
+            if (nextEl.dom.parentNode.firstChild !== nextEl.dom) {
               // If the nextEl Element (to be next sibling of el element) is NOT
               // the first in its DisplayLayer then we need to split the contents of
               // the layer, the new one with the nextEl and every element after 
@@ -485,17 +486,25 @@ define([
 
           }
 
-          if ((parent instanceof DisplayLayer) && !(parent instanceof DisplayGroup) && parent.isEmpty()) {
-            // Remove parent from its own displayGroup
-            parent.parentDisplayGroup.removeLayer(parent);
-          }
+          prevParentLayer = parent;
+
         } else {
-          // Save displayGround reference on descendents:
+          prevParentLayer = el.parentDisplayLayer;
+          // Save displayGroup reference on descendents:
           el.parentDisplayGroup = parent.parentDisplayGroup;
           el.parentDisplayLayer = parent;
-         // console.log('Here', parent instanceof DisplayLayer ? parent.appendee : parent, el);
           parent.appendee.appendChild( el.dom );
         }
+
+        // The previous parent of the el is now empty, so we can remove it:
+        if (
+          (prevParentLayer instanceof DisplayLayer) &&
+          !(prevParentLayer instanceof DisplayGroup) &&
+          prevParentLayer.isEmpty()
+        ) {
+          prevParentLayer.parentDisplayGroup.removeLayer(prevParentLayer);
+        }
+
       }
     }
 
