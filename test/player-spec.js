@@ -204,6 +204,18 @@ define([
             expect(optionsPassedToController.url).toBe(String(player.baseUrl().resolveUri(url)));
           });
 
+          it('should convert a function passed as "code" option to a self invoking function expression', function() {
+            var func = function() {
+              some.arbitrary.code();
+              var located = here in this.func.tion;
+            }
+            funcSetup(createMockNode(), 50, 60, {code: func});
+            var optionsPassedToController = MockRendererControllerConstructor.mostRecentCall.args[3];
+
+            var code = optionsPassedToController.code;
+            expect(code).toBe('(' + func.toString() + '());');
+          });
+
           it('should resolve a passed array of urls against the base url of the player and forward it as an array of strings', function() {
             var urls = ['../some/./arbitrary.url', 'http://an/absolute.url'];
             funcSetup(createMockNode(), 50, 60, {urls: urls});
