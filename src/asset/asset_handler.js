@@ -32,7 +32,7 @@ define([
         return;
       }
 
-      // support "video" and "Video"
+      // case insensitive, support "video" and "Video"
       handler = handler.toLowerCase();
 
       // store a mime-type per suffix (overwrites existing suffixes)
