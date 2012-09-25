@@ -51,6 +51,9 @@ function(RendererController, AssetController, tools, URI, version) {
           urls[i] = baseUrl.resolveUri(url).toString();
         });
       }
+      if (typeof options.code === 'function') {
+        options.code = '(' + options.code.toString() + '());';
+      }
 
       var doc = typeof document === 'undefined' ? null : document;
       var context = new this.RunnerContext(this.runnerUrl, doc, options.baseUrl);
