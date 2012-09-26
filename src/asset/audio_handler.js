@@ -24,38 +24,39 @@ define([
     AssetHandler.apply(this, arguments);
   }
 
+  var playableMimeType = AudioHandler.playableMimeType = function(mimeType) {
+
+    // 1) user's mimetype
+    if (domAudio.canPlayType(mimeType)) {
+      return mimeType;
+    }
+
+    // 2nd fallback - lookup browser's mimetype table
+    var vendorMimeType = AUDIO_MIME_TYPES[mimeType];
+    if (domAudio.canPlayType(vendorMimeType)) {
+      return vendorMimeType;
+    }
+
+    // 3rd fallback - prepend "audio/"
+    var audioSlashMimeType = 'audio/' + mimeType;
+    if (domAudio.canPlayType(audioSlashMimeType)) {
+      return audioSlashMimeType;
+    }
+
+    return '';
+  };
+
   AudioHandler.prototype = Object.create(AssetHandler.prototype);
 
   AudioHandler.prototype.loadResource = function(resource, doDone, doError) {
 
-    var audioElement, vendorMimeType, audioSlashMimeType;
+    var audioElement;
     var assetId = this.id,
         loadLevel = this.request.loadLevel || 'canplay',
-        mimeType = resource.type,
-        canPlayMimeType = domAudio.canPlayType(mimeType),
+        mimeType = playableMimeType(resource.type),
         src = resource.src;
 
-    // first fallback
-    if (!canPlayMimeType) {
-      // mime type is unknown, second try. lookup browser's mimetype table
-      vendorMimeType = AUDIO_MIME_TYPES[mimeType],
-      canPlayMimeType = domAudio.canPlayType(vendorMimeType);
-      if (canPlayMimeType) {
-        mimeType = vendorMimeType;
-      }
-    }
-
-    // second fallback
-    if (!canPlayMimeType) {
-      // mime type is still unknown, third try. add a "audio/" before the type
-      audioSlashMimeType = 'audio/' + mimeType;
-      canPlayMimeType = domAudio.canPlayType(audioSlashMimeType);
-      if (canPlayMimeType) {
-        mimeType = audioSlashMimeType;
-      }
-    }
-
-    if (!canPlayMimeType || this.hasInitiatedLoad) {
+    if (!mimeType || this.hasInitiatedLoad) {
       this.resourcesExpectedLength--;
       return;
     }
@@ -67,8 +68,7 @@ define([
     audioElement.setAttribute('id', assetId);
     audioElement.setAttribute('type', mimeType);
     audioElement.src = src;
-    // Triggers partial content loading (206) and changes the audio to a state
-    // where we can make use of "currentTime"
+    // Triggers partial content loading (206)
     audioElement.load();
     this.registerElement(audioElement);
 
