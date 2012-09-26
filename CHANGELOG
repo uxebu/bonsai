@@ -1,5 +1,6 @@
-v0.3.7
+v0.3.7 / 2012-09-26
 -------------------
+
 * Fix issue where click event would be fired twice on touch devices (#60)
 * Change display list implementation from mixin to composition
 * Make the default textOrigin in the Text class 'top'
@@ -13,6 +14,7 @@ v0.3.7
 
 v0.3.6 / 2012-09-12
 -------------------
+
 * Add additional container DIV in renderer to fix `getOffset` on iOS devices
 * Make sure Bitmap does not ignore manually set dimensions if the source is changed
 
