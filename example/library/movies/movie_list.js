@@ -85,6 +85,7 @@ movieList = {
     'sprite-properties.js'
   ],
   'Games': [
+    'pong.js',
     'asteroids.js',
     'breakout.js',
     'pacman.js'
