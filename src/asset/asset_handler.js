@@ -80,6 +80,8 @@ define([
           this.resourceLoadError
         );
       }, this);
+
+      return this;
     },
 
     initTimeout: function() {
