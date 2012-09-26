@@ -25,6 +25,8 @@ define([
    *    the keyframe-animation
    *  @param {string|Object} [options.strategy='attr'] The strategy to use to
    *    get and set properties on the subjects.
+   *  @param {Number|String} [options.delay=0] Delay before animation begins, in
+   *   frames or seconds
    * @returns {KeyframeAnimation} An KeyframeAnimation instance
    *
    * @mixes EventEmitter
@@ -41,6 +43,7 @@ define([
     this.currentAnimation = -1;
 
     this.repeat = options.repeat || 0;
+    this.delay = options.delay && clock.toFrameNumber(options.delay) || 0;
     this.easing = options.easing;
 
     this.keyframes = this._convertKeysToFrames(keyframes);
@@ -276,7 +279,9 @@ define([
           keyframes[key],
           {
             easing: this.easing,
-            strategy: this.strategy
+            strategy: this.strategy,
+            // Add delay for initial animation
+            delay: i === 1 ? this.delay : null
           }
         );
 

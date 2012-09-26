@@ -5,6 +5,14 @@ v0.3.7
 * Make the default textOrigin in the Text class 'top'
 * Cleanup KeyframeAnimation and remove setSubject(s) methods
   to bring inline with current Animation class
+* Fix internal asset messaging so that assetData (loadData) is
+  correctly sent to the runner (AssetLoader)
+* Add missing `delay` option to KeyframeAnimation
+* Fix issue where TextSpan child default strokeWidth took
+  precedence over parent (Text instance) strokeWidth
+* Add the ability to execute tests via commandline: `make test-phantom`
+* Allow to pass a function within `code` in `bonsai.run`
+* Make `player.Renderer` configurable via `player.setup()`
 * Add `Audio` a new DisplayObject including new API
 * Add `drawAudio` method and according tests in renderer
 * Add `AudioHandler` a new AssetHandler for Audio resources

@@ -1,8 +1,7 @@
-require([
+define([
   'bonsai/runner/animation/keyframe_animation',
   'bonsai/runner/timeline',
-  'bonsai/tools',
-  './runner.js'
+  'bonsai/tools'
 ], function(KeyframeAnimation, Timeline, tools) {
 
   var clock = tools.mixin({}, Timeline, {

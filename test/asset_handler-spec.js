@@ -1,7 +1,6 @@
-require([
+define([
   'bonsai/asset/asset_handler',
-  'bonsai/asset/asset_request',
-  './runner.js'
+  'bonsai/asset/asset_request'
 ], function(AssetHandler, AssetRequest) {
 
   var toString = {}.toString;

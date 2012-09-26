@@ -1,7 +1,6 @@
-require([
+define([
   'bonsai/runner/text',
-  'bonsai/runner/text_span',
-  './runner.js'
+  'bonsai/runner/text_span'
 ], function(Text, TextSpan) {
 
   describe('Text API', function() {
@@ -133,6 +132,10 @@ require([
       it('Allows falsey non-null text', function() {
         expect(new TextSpan(0).attr('text')).toBe('0');
         expect(new TextSpan(false).attr('text')).toBe('false');
+      });
+
+      it('Has a default strokeWidth of null, so it is not rendered', function() {
+        expect(new TextSpan('...').attr('textStrokeWidth')).toBe(null);
       });
 
       it('sets text via attr() and get text', function() {

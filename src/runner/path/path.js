@@ -584,7 +584,14 @@ define([
   /**
    * Appends an bezier-curve segment. Appends a segment at the end of the list of contained segments.
    *
-   * @see Path.curveBy
+   * @see http://www.w3.org/TR/SVG/paths.html#InterfaceSVGPathSegCurvetoCubicRel
+   * @param {Number} cp1x (Relative) first control point x
+   * @param {Number} cp1y (Relative) first control point y
+   * @param {Number} cp2x (Relative) second control point x
+   * @param {Number} cp2y (Relative) second control point y
+   * @param {Number} x (Relative) x-value of the point
+   * @param {Number} y (Relative) y-value of the point
+   * @returns {Path} The current Path instance
    */
   proto.curveBy = function(cp1x, cp1y, cp2x, cp2y, x, y) {
     if (arguments.length < 6) {
