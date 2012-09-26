@@ -26,6 +26,11 @@ define([
 
   var playableMimeType = AudioHandler.playableMimeType = function(mimeType) {
 
+    // check environment and make sure `domAudio` is available
+    if (!domAudio) {
+      return '';
+    }
+
     // 1) user's mimetype
     if (domAudio.canPlayType(mimeType)) {
       return mimeType;
@@ -33,7 +38,7 @@ define([
 
     // 2nd fallback - lookup browser's mimetype table
     var vendorMimeType = AUDIO_MIME_TYPES[mimeType];
-    if (domAudio.canPlayType(vendorMimeType)) {
+    if (vendorMimeType && domAudio.canPlayType(vendorMimeType)) {
       return vendorMimeType;
     }
 
