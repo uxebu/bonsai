@@ -1,7 +1,6 @@
 require([
   'bonsai/asset/audio_handler',
-  'bonsai/asset/asset_request',
-  './runner.js'
+  'bonsai/asset/asset_request'
 ], function(AudioHandler, AssetRequest) {
 
   function makeAssetRequest(suffix) {
@@ -16,9 +15,6 @@ require([
     });
 
     describe('AudioHandler.playableMimeType', function() {
-      it('detects mp3 mimeType', function() {
-        expect(AudioHandler.playableMimeType('mp3')).toContain('audio/');
-      });
       it('mimetype for unknown is ""', function() {
         expect(AudioHandler.playableMimeType('unknown')).toBe('');
       });
