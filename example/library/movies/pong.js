@@ -1,5 +1,4 @@
 var Pong, audioSprite;
-stage.stage.setBackgroundColor("#000");
 
 /**
  * PONG
@@ -43,6 +42,8 @@ Pong = (function(){
       }
     }
   };
+
+  new Rect(0, 0, defaults.width, defaults.height).fill('black').addTo(stage);
 
   /**
    * Constructor for Pong, i.e. a new game of Pong
@@ -450,40 +451,23 @@ Pong = (function(){
 
 })();
 
-var ready;
-var ASSETS_LOADED = 1;
-var USER_EVENT = 2;
-
 // popup
-var popup = new Group().addTo(stage).attr({ x: 100, y: 100});
+var popup = new Group().addTo(stage).attr({ x: 140, y: 120});
 new Rect(0, 0, 200, 100, 10)
   .fill(gradient.linear(0, ['red', 'yellow']))
   .stroke('green', 2)
   .addTo(popup);
-popup.label = new Text('Go!').attr({
-  textFillColor: 'white', fontFamily: 'Arial', x: 20, y: 40
+new Text('Go!').attr({
+  textFillColor: 'white', fontFamily: 'Arial', fontSize: 60, x: 50, y: 30
 }).addTo(popup);
-
-popup.on('click', function() {
-  ready |= USER_EVENT;
-  if (ready & ASSETS_LOADED) {
-    popup.remove();
-    (new Pong()).start();
-  } else {
-    popup.label.attr({ text: 'loading assets...', x: 50 });
-  }
-});
 
 // sound
 var audioSprite = new Audio([
   { src: 'assets/pong.mp3' },
   { src: 'assets/pong.ogg' }
 ]).prepareUserEvent().addTo(stage).on('load', function() {
-  ready |= ASSETS_LOADED;
-  if (ready & USER_EVENT) {
-    popup.remove();
-    (new Pong()).start();
-  }
+  popup.destroy();
+  new Pong().start();
 });
 
 
