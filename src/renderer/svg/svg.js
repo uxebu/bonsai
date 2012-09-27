@@ -667,6 +667,8 @@ define([
       // If the element is a top-level HTML element it needs to be wrapped
       // in <foreignObject><body>...</body></foreignObject>
       body = document.createElementNS('http://www.w3.org/1999/xhtml', 'body');
+      body.style.margin = 0;
+      body.style.padding = 0;
       element._root = createElement('foreignObject', message.id);
       element._root.appendChild(body);
       body.appendChild(element);
