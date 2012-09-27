@@ -442,7 +442,7 @@ define([
               // the first in its DisplayLayer then we need to split the contents of
               // the layer, the new one with the nextEl and every element after 
               // nextEl.
-              var nextLayer = nextEl.parentDisplayGroup.insertLayerAfter(
+              var nextLayer = nextEl.parentDisplayGroup.addLayerAfter(
                 isNextDOM ? 'dom' : 'svg',
                 nextEl.parentDisplayLayer
               );
@@ -466,7 +466,7 @@ define([
                 // If el is not the only child of its current layer then we
                 // create a new layer at the right position and insert el
                 // into that
-                var newLayer = el.parentDisplayGroup.insertLayerBefore(
+                var newLayer = el.parentDisplayGroup.addLayerBefore(
                   isDOM ? 'dom' : 'svg',
                   nextLayer
                 );
@@ -480,10 +480,13 @@ define([
 
           } else {
             nextEl.dom.parentNode.insertBefore(el.dom, nextEl.dom);
-            // Save displayGround reference on descendents:
+            // Save displayGroup reference on descendents:
             el.parentDisplayGroup = nextEl.parentDisplayGroup;
             el.parentDisplayLayer = nextEl.parentDisplayLayer;
-
+            if (nextEl.parentDisplayLayer.isDisplayGroup) {
+              console.log('>', parent.tx, parent.ty);
+              nextEl.parentDisplayLayer.translatePosition(parent.tx, parent.ty);
+            }
           }
 
           prevParentLayer = parent;
@@ -491,9 +494,15 @@ define([
         } else {
           prevParentLayer = el.parentDisplayLayer;
           // Save displayGroup reference on descendents:
-          el.parentDisplayGroup = parent.parentDisplayGroup;
+          el.parentDisplayGroup = parent.isDisplayGroup ? parent : parent.parentDisplayGroup;
           el.parentDisplayLayer = parent;
-          parent.appendee.appendChild( el.dom );
+
+          if (parent.isDisplayGroup) {
+              console.log(':>', parent.tx, parent.ty);
+            parent.insertLayerBefore(el, null);
+          } else {
+            parent.appendee.appendChild( el.dom );
+          }
         }
 
         // The previous parent of the el is now empty, so we can remove it:

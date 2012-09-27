@@ -327,6 +327,125 @@ define([
 
       });
 
+      it('Deep Group structure', function() {
+
+        testStructure(
+          [
+            { type: 'Group', id: 1, parent: 0 },
+            { type: 'Group', id: 2, parent: 1 },
+            { type: 'Group', id: 3, parent: 2 },
+            { type: 'Group', id: 4, parent: 3 },
+            { type: 'Group', id: 5, parent: 4 },
+            { type: 'Group', id: 6, parent: 5 },
+            { type: 'Group', id: 7, parent: 6 },
+            { type: 'Group', id: 8, parent: 7 },
+            { type: 'Group', id: 9, parent: 8 }
+          ],
+          _DisplayGroup([
+            _SVGLayer([
+              _SVGGroup(),
+              _SVGDefs()
+            ]),
+            _DisplayGroup({id: 1}, [
+              _DisplayGroup({id: 2}, [
+                _DisplayGroup({id: 3}, [
+                  _DisplayGroup({id: 4}, [
+                    _DisplayGroup({id: 5}, [
+                      _DisplayGroup({id: 6}, [
+                        _DisplayGroup({id: 7}, [
+                          _DisplayGroup({id: 8}, [
+                            _DisplayGroup({id: 9})
+                          ])
+                        ])
+                      ])
+                    ])
+                  ])
+                ])
+              ])
+            ])
+          ])
+        );
+
+      });
+
+      it('Deep Group structure - moving half the structure', function() {
+
+        testStructure(
+          [
+            { type: 'Group', id: 1, parent: 0 },
+            { type: 'Group', id: 2, parent: 1 },
+            { type: 'Group', id: 3, parent: 2 },
+            { type: 'Group', id: 4, parent: 3 },
+            { type: 'Group', id: 5, parent: 4 },
+            { type: 'Group', id: 6, parent: 5 },
+            { type: 'Group', id: 7, parent: 6 },
+            { type: 'Group', id: 8, parent: 7 },
+            { type: 'Group', id: 9, parent: 8 }
+          ],
+          [
+            { type: 'Group', id: 5, parent: 0, next: 1 }
+          ],
+          _DisplayGroup([
+            _SVGLayer([
+              _SVGGroup(),
+              _SVGDefs()
+            ]),
+            _DisplayGroup({id: 5}, [
+              _DisplayGroup({id: 6}, [
+                _DisplayGroup({id: 7}, [
+                  _DisplayGroup({id: 8}, [
+                    _DisplayGroup({id: 9})
+                  ])
+                ])
+              ])
+            ]),
+            _DisplayGroup({id: 1}, [
+              _DisplayGroup({id: 2}, [
+                _DisplayGroup({id: 3}, [
+                  _DisplayGroup({id: 4}, [
+
+                  ])
+                ])
+              ])
+            ])
+          ])
+        );
+
+      });
+
+      it('Deep Group structure - removal of every other node', function() {
+
+        testStructure(
+          [
+            { type: 'Group', id: 1, parent: 0 },
+            { type: 'Group', id: 2, parent: 1 },
+            { type: 'Group', id: 3, parent: 2 },
+            { type: 'Group', id: 4, parent: 3 },
+            { type: 'Group', id: 5, parent: 4 },
+            { type: 'Group', id: 6, parent: 5 },
+            { type: 'Group', id: 7, parent: 6 },
+            { type: 'Group', id: 8, parent: 7 },
+            { type: 'Group', id: 9, parent: 8 }
+          ],
+          [
+            { type: 'Group', id: 8, detach: true },
+            { type: 'Group', id: 6, detach: true }
+          ],
+          [
+            { type: 'Group', id: 4, detach: true },
+            { type: 'Group', id: 2, detach: true }
+          ],
+          _DisplayGroup([
+            _SVGLayer([
+              _SVGGroup(),
+              _SVGDefs()
+            ]),
+            _DisplayGroup({id: 1})
+          ])
+        );
+
+      });
+
     });
 
     describe('Moving objects', function() {
@@ -459,6 +578,71 @@ define([
             ]),
             _DOMLayer([
               _DOMElement({id: 9})
+            ])
+          ])
+        );
+      });
+
+    });
+
+    function TranslateMatrix(tx, ty) {
+      this.tx = tx;
+      this.ty = ty;
+    }
+
+    describe('Positioning', function() {
+
+      it('Positions group\'s children correctly', function() {
+        testStructure(
+          [
+            { type: 'Group', id: 1, parent: 0 },
+            { type: 'Group', id: 2, parent: 1, attributes: { matrix: new TranslateMatrix(100, 300) } },
+            { type: 'Path', id: 3, attributes: {}, parent: 2 }
+          ],
+          _DisplayGroup([
+            _SVGLayer([
+              _SVGGroup(),
+              _SVGDefs()
+            ]),
+            _DisplayGroup({id: 1}, [
+              _DisplayGroup({id: 2}, [
+                _SVGLayer([
+                  _SVGGroup({
+                    'transform': 'matrix(1,0,0,1,100,300)'
+                  }, [
+                    _SVGPath({id: 3})
+                  ])
+                ])
+              ])
+            ])
+          ])
+        );
+      });
+
+      it('Positions group\'s children correctly, added at later frame', function() {
+        testStructure(
+          [
+            { type: 'Group', id: 1, parent: 0 },
+            { type: 'Group', id: 2, parent: 1, attributes: { matrix: new TranslateMatrix(100, 300) } }
+          ],
+          [
+            { type: 'Path', id: 3, attributes: {}, parent: 2 }
+          ],
+          _DisplayGroup([
+            _SVGLayer([
+              _SVGGroup(),
+              _SVGDefs()
+            ]),
+            _DisplayGroup({id: 1}, [
+              _DisplayGroup({id: 2}, [
+                _SVGLayer([
+                  _SVGGroup({
+                    'transform': 'matrix(1,0,0,1,100,300)'
+                  }, [
+                    _SVGPath({id: 3})
+                  ])
+                ])
+              ])
             ])
           ])
         );

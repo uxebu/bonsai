@@ -120,6 +120,16 @@ define([
     return newLayer;
   };
 
+  proto.addLayerBefore = function(type, layer) {
+    var newLayer = this.createLayer(type);
+    this.insertLayerBefore(newLayer, layer);
+  };
+
+  proto.addLayerAfter = function(type, layer) {
+    var index = this.layers.indexOf(layer);
+    return this.addLayerBefore(type, this.layers[index + 1]);
+  };
+
   proto.createLayer = function(type) {
     if (type === 'dom') {
       return new DOMLayer(this);
@@ -128,27 +138,27 @@ define([
     }
   };
 
-  proto.insertLayerBefore = function(type, layer) {
+  proto.insertLayerBefore = function(layer, refLayer) {
 
-    var newLayer = this.createLayer(type);
-    if (layer) {
-      var index = this.layers.indexOf(layer);
-      this.layers.splice(index, 0, newLayer);
-      this.dom.insertBefore(newLayer.dom, layer.dom);
+    if (refLayer) {
+      var index = this.layers.indexOf(refLayer);
+      this.layers.splice(index, 0, layer);
+      this.dom.insertBefore(layer.dom, refLayer.dom);
     } else {
-      this.layers.push(newLayer);
-      this.dom.appendChild(newLayer.dom);
+      console.log(this.tx, 'Adding', layer)
+      this.layers.push(layer);
+      this.dom.appendChild(layer.dom);
     }
 
     this.translatePosition(this.tx, this.ty);
 
-    return newLayer;
+    return layer;
 
-  },
+  };
 
-  proto.insertLayerAfter = function(type, layer) {
-    var index = this.layers.indexOf(layer);
-    return this.insertLayerBefore(type, this.layers[index + 1]);
+  proto.insertLayerAfter = function(layer, refLayer) {
+    var index = this.layers.indexOf(refLayer);
+    return this.insertLayerBefore(layer, this.layers[index + 1]);
   };
 
   proto.translatePosition = function(x, y) {

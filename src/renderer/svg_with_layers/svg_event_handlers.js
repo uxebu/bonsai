@@ -131,15 +131,6 @@ define([
           type = domEvent.type,
           data = this;
 
-      if (target && target instanceof HTMLElement) {
-        // Get DOM element for which there is a corresponding bonsai object
-        // i.e. children added via e.g. innerHTML should not trigger events
-        // (only their parents should)
-        while (!target._isBSDOMElement) {
-          target = target.parentNode;
-        }
-      }
-
       targetId = targetId || 0;
 
       var event = this._getBasicEventData(domEvent),
