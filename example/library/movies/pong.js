@@ -195,6 +195,9 @@ Pong = (function(){
     newRound: function() {
 
       if (this.ball) {
+
+        playSprite(6);
+
         var oldBall = this.ball;
         oldBall.bs.animate('.5s', {
           opacity: 0
@@ -217,7 +220,7 @@ Pong = (function(){
         onEnd: function() {
           setTimeout(function() {
             ball.start();
-          }, 1000)
+          }, 1000);
         }
       });
 
@@ -341,8 +344,7 @@ Pong = (function(){
 
       if ( this.intersectsBall() ) {
 
-
-        audioSprite.play();
+        playSprite(0);
 
         xFromPaddleCenter = (ball.x - this.x) / (this.width / 2);
         xFromPaddleCenter = xFromPaddleCenter > 0 ? Math.min(1, xFromPaddleCenter) : Math.max(-1, xFromPaddleCenter);
@@ -429,6 +431,7 @@ Pong = (function(){
       }
 
       if ( this.isAtWall() ) {
+        playSprite(4);
         this.deltaX = -this.deltaX;
       }
 
@@ -462,13 +465,22 @@ new Text('Go!').attr({
 }).addTo(popup);
 
 // sound
-var audioSprite = new Audio([
+audioSprite = new Audio([
   { src: 'assets/pong.mp3' },
   { src: 'assets/pong.ogg' }
 ]).prepareUserEvent().addTo(stage).on('load', function() {
   popup.destroy();
   new Pong().start();
 });
+
+var timeoutId = null;
+function playSprite(time) {
+  audioSprite.play(time);
+  clearTimeout(timeoutId);
+  timeoutId = setTimeout(function() {
+    audioSprite.pause();
+  }, 500);
+}
 
 
 

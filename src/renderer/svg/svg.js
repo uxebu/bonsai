@@ -661,13 +661,6 @@ define([
       throw new Error('asset <' + id + '> is unknown.');
     }
 
-    /*
-    var progressFallback = function() {
-      audioElement.removeEventListener('progress', progressFallback, false);
-      audioElement.currentTime = audioElement._time;
-    };
-    */
-
     if (attributes.prepareUserEvent) {
       // We bind to the next touch-event and play/pause the audio to cause
       // iOS devices to allow subsequent play/pause commands on the audio el.
