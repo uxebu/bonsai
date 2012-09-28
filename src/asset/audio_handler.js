@@ -9,7 +9,7 @@ define([
   var AUDIO_MIME_TYPES = AssetHandler.MIME_TYPES.audio;
 
   var domAudio;
-  try { 
+  try {
     domAudio = document.createElement('audio');
   } catch (e) {}
 
@@ -26,7 +26,7 @@ define([
     AssetHandler.apply(this, arguments);
   }
 
-  var playableMimeType = AudioHandler.playableMimeType = function(mimeType) {
+  var getPlayableMimeType = AudioHandler.getPlayableMimeType = function(mimeType) {
 
     // check environment and make sure `domAudio` is available
     if (!domAudio) {
@@ -60,7 +60,7 @@ define([
     var audioElement;
     var assetId = this.id,
         loadLevel = this.request.loadLevel || 'canplay',
-        mimeType = playableMimeType(resource.type),
+        mimeType = getPlayableMimeType(resource.type),
         src = resource.src;
 
     if (!mimeType || this.hasInitiatedLoad) {
