@@ -7,16 +7,17 @@ define([
   'use strict';
 
   var domVideo;
-  try { 
+  try {
     domVideo = document.createElement('audio');
   } catch (e) {}
 
   var events = {
-    'start-with-nothing': 'loadstart',
-    'metadata': 'loadedmetadata',
-    'risky-to-play': 'loadeddata',
-    'can-play': 'canplay',
-    'can-play-through': 'canplaythrough'
+    'progress': 'progress',
+    'loadstart': 'loadstart',
+    'loadedmetadata': 'loadedmetadata',
+    'loadeddata': 'loadeddata',
+    'canplay': 'canplay',
+    'canplaythrough': 'canplaythrough'
   };
 
   function VideoHandler() {
