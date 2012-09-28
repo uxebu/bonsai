@@ -6,8 +6,10 @@ define([
 ], function(AssetHandler) {
   'use strict';
 
-  var domVideo = typeof document !== 'undefined' && document.createElement ?
-    document.createElement('video') : 0;
+  var domVideo;
+  try { 
+    domVideo = document.createElement('audio');
+  } catch (e) {}
 
   var events = {
     'start-with-nothing': 'loadstart',
