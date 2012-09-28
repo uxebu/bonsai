@@ -79,7 +79,7 @@ define([
 
   function createElement(n, id) {
     if (!n) {
-      throw new TypeError('Invalid tag name: ' + n);
+      throw TypeError('Invalid tag name: ' + n);
     }
     var el = (elCache[n] || (elCache[n] = document.createElementNS('http://www.w3.org/2000/svg', n))).cloneNode(false);
     if (id || id === 0) {
@@ -621,7 +621,7 @@ define([
     var video = AssetController.assets[id];
 
     if (typeof video === 'undefined') {
-      throw new Error('asset <' + id + '> is unknown.');
+      throw Error('asset <' + id + '> is unknown.');
     }
 
     var width = attributes.width || 100;
@@ -658,7 +658,7 @@ define([
     var playing = attributes.playing;
 
     if (typeof audioElement === 'undefined') {
-      throw new Error('asset <' + id + '> is unknown.');
+      throw Error('asset <' + id + '> is unknown.');
     }
 
     if (attributes.prepareUserEvent) {
