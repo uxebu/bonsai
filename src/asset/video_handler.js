@@ -6,15 +6,18 @@ define([
 ], function(AssetHandler) {
   'use strict';
 
-  var domVideo = typeof document !== 'undefined' && document.createElement ?
-    document.createElement('video') : 0;
+  var domVideo;
+  try {
+    domVideo = document.createElement('video');
+  } catch (e) {}
 
   var events = {
-    'start-with-nothing': 'loadstart',
-    'metadata': 'loadedmetadata',
-    'risky-to-play': 'loadeddata',
-    'can-play': 'canplay',
-    'can-play-through': 'canplaythrough'
+    'progress': 'progress',
+    'loadstart': 'loadstart',
+    'loadedmetadata': 'loadedmetadata',
+    'loadeddata': 'loadeddata',
+    'canplay': 'canplay',
+    'canplaythrough': 'canplaythrough'
   };
 
   function VideoHandler() {
@@ -27,7 +30,7 @@ define([
 
     var video,
         assetId = this.id,
-        loadLevel = this.request.loadLevel || 'can-play',
+        loadLevel = this.request.loadLevel || 'canplay',
         mimeType = resource.type,
         src = resource.src;
 
@@ -46,7 +49,7 @@ define([
 
     this.registerElement(video);
 
-    function onload(e) {
+    function onload() {
       doDone({
         width: video.videoWidth,
         height: video.videoHeight

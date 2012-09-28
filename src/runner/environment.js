@@ -24,6 +24,7 @@ define([
   './gradient',
   './text',
   './text_span',
+  './audio',
   './video',
   './filter/builtin',
   './display_list',
@@ -34,7 +35,7 @@ define([
   Path, SpecialAttrPath, Rect, Polygon, Star, Ellipse, Circle, Arc,
   Bitmap, DisplayObject, Group,
   Animation, KeyframeAnimation, easing, FontFamily, Matrix,
-  Sprite, color, gradient, Text, TextSpan, Video, filter,
+  Sprite, color, gradient, Text, TextSpan, Audio, Video, filter,
   displayList, DOMElement, version
 ) {
   'use strict';
@@ -101,6 +102,7 @@ define([
     exports.Movie = bindConstructorToParameters(Movie, [stage]);
     exports.Sprite = bindConstructorToParameters(Sprite, [assetLoader]);
     exports.Video = bindConstructorToParameters(Video, [assetLoader]);
+    exports.Audio = bindConstructorToParameters(Audio, [assetLoader]);
 
     exports.bonsai = exports;
 

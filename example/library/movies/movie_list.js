@@ -16,6 +16,14 @@ movieList = {
     'animation-stars-2.js',
     'animation-circles.js'
   ],
+  'Audio': [
+    'audio-simple.js',
+    'audio-tick-16.js',
+    'audio-volume.js',
+    'audio-boom.js',
+    'audio-piano-sprite.js',
+    'audio-button.js'
+  ],
   'Bitmaps and Sprites': [
     'bitmap.js',
     'bitmap-source.js',
@@ -77,6 +85,7 @@ movieList = {
     'sprite-properties.js'
   ],
   'Games': [
+    'pong.js',
     'asteroids.js',
     'breakout.js',
     'pacman.js'

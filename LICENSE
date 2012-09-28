@@ -28,3 +28,9 @@ External libraries (each with their own license):
   - phantom-jasmine: Apache 2 - https://github.com/jcarver989/phantom-jasmine/issues/8
   - closure: http://code.google.com/p/closure-compiler/source/browse/trunk/COPYING
   - qc.js: https://github.com/darrint/qc.js/blob/master/COPYING
+
+External resources (each with their own license):
+
+  - cinematicBoomNorm(ogg/mp3/m4a): http://creativecommons.org/licenses/by/3.0/
+    http://www.freesound.org/people/HerbertBoland/sounds/33637/
+
