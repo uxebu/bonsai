@@ -14,9 +14,9 @@ require([
       new AudioHandler(makeAssetRequest('ogg'), 1, 30000);
     });
 
-    describe('AudioHandler.playableMimeType', function() {
+    describe('AudioHandler.getPlayableMimeType', function() {
       it('is a function', function() {
-        expect(typeof AudioHandler.playableMimeType).toBe('function');
+        expect(typeof AudioHandler.getPlayableMimeType).toBe('function');
       });
       /*it('mimetype for unknown is ""', function() {
         expect(AudioHandler.playableMimeType('unknown')).toBe('');
