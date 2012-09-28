@@ -30,7 +30,7 @@ define([
 
     var video,
         assetId = this.id,
-        loadLevel = this.request.loadLevel || 'can-play',
+        loadLevel = this.request.loadLevel || 'canplay',
         mimeType = resource.type,
         src = resource.src;
 
@@ -49,7 +49,7 @@ define([
 
     this.registerElement(video);
 
-    function onload(e) {
+    function onload() {
       doDone({
         width: video.videoWidth,
         height: video.videoHeight
