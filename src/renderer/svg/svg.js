@@ -661,7 +661,7 @@ define([
       throw new Error('asset <' + id + '> is unknown.');
     }
 
-    if (attributes.prepareUserEvent) {
+    if (attributes.prepareUserEvent && 'ontouchstart' in document) {
       // We bind to the next touch-event and play/pause the audio to cause
       // iOS devices to allow subsequent play/pause commands on the audio el.
       // --
