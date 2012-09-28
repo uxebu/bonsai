@@ -139,10 +139,10 @@ define([
    * @returns {Audio} this
    */
   proto.play = function(time) {
-    return this.attr({
-      playing: true,
-      time: time
-    });
+    if (time !== undefined) {
+      this.attr('time', time);
+    }
+    return this.attr('playing', true);
   };
 
   /** 
