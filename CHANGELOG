@@ -1,6 +1,9 @@
-v0.3.8
+v0.3.8 / 2012-09-28
 -------------------
 
+* Add `Audio` a new DisplayObject including new API
+* Add `drawAudio` method and according tests in renderer
+* Add `AudioHandler` a new AssetHandler for Audio resources
 
 v0.3.7 / 2012-09-26
 -------------------
@@ -18,9 +21,6 @@ v0.3.7 / 2012-09-26
 * Add the ability to execute tests via commandline: `make test-phantom`
 * Allow to pass a function within `code` in `bonsai.run`
 * Make `player.Renderer` configurable via `player.setup()`
-* Add `Audio` a new DisplayObject including new API
-* Add `drawAudio` method and according tests in renderer
-* Add `AudioHandler` a new AssetHandler for Audio resources
 
 v0.3.6 / 2012-09-12
 -------------------
