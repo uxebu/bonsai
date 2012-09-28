@@ -621,7 +621,7 @@ define([
     var video = AssetController.assets[id];
 
     if (typeof video === 'undefined') {
-      throw new Error('asset <' + id + '> is unknown.');
+      throw Error('asset <' + id + '> is unknown.');
     }
 
     var width = attributes.width || 100;
