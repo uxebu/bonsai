@@ -8,8 +8,10 @@ define([
 
   var AUDIO_MIME_TYPES = AssetHandler.MIME_TYPES.audio;
 
-  var domAudio = typeof document !== 'undefined' && document.createElement ?
-    document.createElement('audio') : 0;
+  var domAudio;
+  try { 
+    domAudio = document.createElement('audio');
+  } catch (e) {}
 
   var events = {
     'progress': 'progress',
