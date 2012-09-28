@@ -1,8 +1,9 @@
 define([
   'bonsai/asset/asset_handler',
-  'bonsai/asset/asset_request',
-  'bonsai/asset/asset_resource'
-], function(AssetHandler, AssetRequest, AssetResource) {
+  'bonsai/asset/asset_request'
+], function(AssetHandler, AssetRequest) {
+
+  var toString = {}.toString;
 
   function makeAssetRequest() {
     return new AssetRequest('somefile.txt');
@@ -39,12 +40,11 @@ define([
 
     it('Timeout will trigger an error + custom timeout', function() {
 
-      var called = 0;
-      var request = new AssetRequest('b/i/k/e/s/h/e/d.txt');
+      var request = new AssetRequest('b/o/n/s/a/i/j/s.txt');
       var handler = new AssetHandler(request, 1, 10 /* 10ms */);
       var errorHandler = jasmine.createSpy('errorHandler');
 
-      handler.loadResource = function(resource) { /* do nothing */ };
+      handler.loadResource = function() { /* do nothing */ };
       handler.on('error', errorHandler);
       handler.load();
 
@@ -55,6 +55,16 @@ define([
         next();
       });
 
+    });
+
+    describe('AssetHandler.MIME_TYPES', function() {
+      it('returns an object', function() {
+        expect(toString.call(AssetHandler.MIME_TYPES)).toBe('[object Object]');
+      });
+      it('has at least a `video` and `audio` key', function() {
+        expect(toString.call(AssetHandler.MIME_TYPES.video)).toBe('[object Object]');
+        expect(toString.call(AssetHandler.MIME_TYPES.audio)).toBe('[object Object]');
+      });
     });
 
   });

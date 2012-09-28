@@ -20,6 +20,10 @@ define([
   // targets webkit based browsers from version 530.0 to 534.4
   var isWebkitPatternBug = /AppleWebKit\/53([0-3]|4.([0-4]))/.test(navigator.appVersion);
 
+  // Math
+  var min = Math.min;
+  var max = Math.max;
+
   // svgHelper
   var cssClasses = svgHelper.cssClasses,
       matrixToString = svgHelper.matrixToString,
@@ -30,7 +34,6 @@ define([
 
   // svgFilters
   var isFEColorMatrixEnabled = svgFilters.isFEColorMatrixEnabled,
-      colorApplyColorMatrix = svgFilters.colorApplyColorMatrix,
       filterElementsFromList = svgFilters.filterElementsFromList;
 
   // AssetController
@@ -295,6 +298,8 @@ define([
         if (type === 'DOMElement') {
           element = svg[id] = document.createElement(message.attributes.nodeName);
           element.setAttribute('data-bs-id', id);
+        } else if (type === 'Audio') {
+          element = svg[id] = AssetController.assets[id];
         } else {
           element = svg[id] = createElement(typesToTags[type], id);
         }
@@ -423,7 +428,6 @@ define([
     var filters = attr.filters;
     var fillColor = attr.fillColor;
     var fillGradient = attr.fillGradient;
-    var svg = this.svg;
 
     // when filter is applied, force fillColor change on UA w/o SVG Filter support
     if (!isFEColorMatrixEnabled && !fillColor && filters && element._fillColorSignature) {
@@ -554,9 +558,7 @@ define([
 
   proto.drawTextSpan = function(tspan, message) {
 
-    var attributes = message.attributes,
-        fontSize = attributes.fontSize,
-        fontFamily = attributes.fontFamily;
+    var attributes = message.attributes;
 
     tspan.setAttributeNS(xlink, 'text-anchor', 'start');
     tspan.setAttribute('alignment-baseline', 'inherit');
@@ -590,9 +592,7 @@ define([
 
   proto.drawText = function(text, message) {
 
-    var attributes = message.attributes,
-        fontSize = attributes.fontSize,
-        fontFamily = attributes.fontFamily;
+    var attributes = message.attributes;
 
     if (attributes.selectable !== false) {
       cssClasses.add(text, 'selectable');
@@ -621,10 +621,9 @@ define([
     var video = AssetController.assets[id];
 
     if (typeof video === 'undefined') {
-      throw Error('asset <' + id + '> is unkown.');
+      throw Error('asset <' + id + '> is unknown.');
     }
 
-    var obj = this.svg[id];
     var width = attributes.width || 100;
     var height = attributes.height || 100;
     var matrix = attributes.matrix || {tx: 0, ty: 0};
@@ -651,16 +650,66 @@ define([
     foreignObject.appendChild(video);
   };
 
+  proto.drawAudio = function(audioElement, message) {
+
+    var volume;
+    var attributes = message.attributes;
+    var id = message.id;
+    var playing = attributes.playing;
+
+    if (typeof audioElement === 'undefined') {
+      throw Error('asset <' + id + '> is unknown.');
+    }
+
+    if (attributes.prepareUserEvent && 'ontouchstart' in document) {
+      // We bind to the next touch-event and play/pause the audio to cause
+      // iOS devices to allow subsequent play/pause commands on the audio el.
+      // --
+      // (Usually, iOS Devices will only allow play/pause methods to be called
+      // after a user event. Due to bonsai's async nature, a movie programmer
+      // can never achieve this. So we setup a fake one here...)
+      var touchStartHandler = function() {
+        audioElement.play();
+        audioElement.pause();
+        document.removeEventListener('touchstart', touchStartHandler, true);
+      };
+      document.addEventListener('touchstart', touchStartHandler, true);
+    }
+
+    if ('volume' in attributes) {
+      // Value between 0-1. NaN is treated as `0`
+      audioElement.volume = min(max(+attributes.volume || 0, 0), 1);
+    }
+
+    // Time in seconds. `currentTime` throws when there's no
+    // current playback state machine
+    if ('time' in attributes) {
+      // Set volume to 0 to avoid "clicks"
+      volume = audioElement.volume;
+      audioElement.volume = 0;
+      try {
+        // Some browsers ignore `0`, that's why we set it to `0.01`
+        audioElement.currentTime = +attributes.time || 0.01;
+      } catch(e) {}
+      // Set volume back to the initial value
+      audioElement.volume = volume;
+    }
+
+    if (playing === true) {
+      audioElement.play();
+    }
+    if (playing === false) {
+      audioElement.pause();
+    }
+
+  };
+
   proto.drawDOMElement = function(element, message) {
 
     // assuming a valid assetId
     var body,
         attributes = message.attributes,
-        css = attributes.css,
-        id = message.id,
-        parent = this.svg[message.parent],
-        width = attributes.width,
-        height = attributes.height;
+        parent = this.svg[message.parent];
 
     // Parent may not be defined if message is a NeedsDraw and *not* a NeedsInsertion
     if (parent && !element._root && !(parent instanceof HTMLElement)) {
