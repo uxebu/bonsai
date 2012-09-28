@@ -8,7 +8,7 @@ define([
 
   var domVideo;
   try {
-    domVideo = document.createElement('audio');
+    domVideo = document.createElement('video');
   } catch (e) {}
 
   var events = {
