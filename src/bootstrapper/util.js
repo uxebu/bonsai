@@ -46,6 +46,13 @@ define([
 
       return filenamesHavingVersionAndCheck[0] || filenamesHavingCheck[0] ||
         filenamesHavingVersion[0] || filenames[0];
+    },
+    getBlobUrl: function(workerFunction) {
+      var url = window.URL || window.webkitURL;
+      if (url) {
+        var blob = new Blob(['(' + workerFunction + ')();'], {'type': 'text\/javascript'});
+        return url.createObjectURL(blob)
+      }
     }
   }
 });

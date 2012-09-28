@@ -32,7 +32,7 @@ define([
     player.setup({
       baseUrl: tools.baseUri(document),
       runnerContext: IframeRunnerContext,
-      runnerUrl: bootstrapUtil.chooseRunnerUrl(scripts, /iframe/) || 'bonsai.js'
+      runnerUrl: bootstrapUtil.getBlobUrl(__bonsaiRunnerCode__) || bootstrapUtil.chooseRunnerUrl(scripts, /iframe/) || 'bonsai.js'
     });
   }
 });

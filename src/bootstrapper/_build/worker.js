@@ -37,7 +37,7 @@ define([
     player.setup({
       baseUrl: tools.baseUri(document),
       runnerContext: WorkerRunnerContext,
-      runnerUrl: bootstrapUtil.chooseRunnerUrl(scripts) || 'bonsai.js'
+      runnerUrl: bootstrapUtil.getBlobUrl(__bonsaiRunnerCode__) || bootstrapUtil.chooseRunnerUrl(scripts) || 'bonsai.js'
     });
   }
 });
