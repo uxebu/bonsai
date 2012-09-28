@@ -145,8 +145,8 @@ define([
     return this.attr('playing', true);
   };
 
-  /** 
-   * Prepare the Audio object for a user-event. 
+  /**
+   * Prepare the Audio object for a user-event.
    * (currently this is for iOS devices, see drawAudio method in svg.js)
    *
    * @returns {Audio} this
