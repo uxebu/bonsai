@@ -201,7 +201,14 @@ function(tools, EventEmitter, URI) {
           this.assetController.destroy(messageData.id);
           break;
         case 'message':
-          this.emit('message', messageData);
+          var category = message.category;
+          if (category) {
+            this
+              .emit('message:' + category, messageData)
+              .emit('message', messageData, category);
+          } else {
+            this.emit('message', messageData);
+          }
           break;
         case 'isReady':
           this.isRunnerListening = true;
@@ -299,11 +306,22 @@ function(tools, EventEmitter, URI) {
 
     /**
      * Sends a message to the RunnerContext / stage
+     *
+     * @param [category=null] The message category
      * @param messageData
      * @returns {this} The instance
      */
-    sendMessage: function(messageData) {
-      return this.post('message', messageData);
+    sendMessage: function(category, messageData) {
+      if (arguments.length < 2) {
+        messageData = category;
+        category = null;
+      }
+      this.runnerContext.notifyRunner({
+        command: 'message',
+        category: category,
+        data: messageData
+      });
+      return this;
     },
 
     /**
