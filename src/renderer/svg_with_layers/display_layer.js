@@ -16,8 +16,6 @@ define(['./display_element'], function(DisplayElement) {
     DisplayElement.call(this, this._makeDOM(width, height))
 
     this.dom.style.position = 'absolute';
-    this.dom.style.top = '0';
-    this.dom.style.left = '0';
 
     if (width) {
       this.dom.style.width = width + 'px';

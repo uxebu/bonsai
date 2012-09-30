@@ -21,10 +21,17 @@ define([
         testFn: function(el) {
           var matched = true;
           if (attr) for (var i in attr) {
+            var expectedValue = attr[i];
             if (i === 'id') {
-              matched = matched && attr[i] === +el.getAttribute('data-bs-id');
+              matched = matched && expectedValue === +el.getAttribute('data-bs-id');
+            } else if (i === 'position') {
+              // Custom tester for the 'position' attr. We test CSS transforms:
+              matched = matched &&
+                RegExp(
+                  'matrix\\([^)]+' + expectedValue[0] + ', ?' + expectedValue[1] + '\\)'
+                ).test(el.style.transform);
             } else {
-              matched = matched && attr[i] === el.getAttribute(i)
+              matched = matched && expectedValue === el.getAttribute(i)
             }
           }
           return matched && customTestFn(el);
@@ -96,6 +103,18 @@ define([
         testNode(nodeChildren[i], specNode.children[i], _position + i + ':');
       }
     }
+  }
+
+  /**
+   * Matrix helper for positioning-tests
+   */
+  function TranslationMatrix(tx, ty) {
+    this.a = 1;
+    this.b = 0;
+    this.c = 0;
+    this.d = 1;
+    this.tx = tx;
+    this.ty = ty;
   }
 
   /**********************************************************************
@@ -585,18 +604,13 @@ define([
 
     });
 
-    function TranslateMatrix(tx, ty) {
-      this.tx = tx;
-      this.ty = ty;
-    }
-
     describe('Positioning', function() {
 
       it('Positions group\'s children correctly', function() {
         testStructure(
           [
             { type: 'Group', id: 1, parent: 0 },
-            { type: 'Group', id: 2, parent: 1, attributes: { matrix: new TranslateMatrix(100, 300) } },
+            { type: 'Group', id: 2, parent: 1, attributes: { matrix: new TranslationMatrix(100, 300) } },
             { type: 'Path', id: 3, attributes: {}, parent: 2 }
           ],
           _DisplayGroup([
@@ -605,11 +619,9 @@ define([
               _SVGDefs()
             ]),
             _DisplayGroup({id: 1}, [
-              _DisplayGroup({id: 2}, [
+              _DisplayGroup({id: 2, position: [100, 300]}, [
                 _SVGLayer([
-                  _SVGGroup({
-                    'transform': 'matrix(1,0,0,1,100,300)'
-                  }, [
+                  _SVGGroup([
                     _SVGPath({id: 3})
                   ])
                 ])
@@ -623,7 +635,7 @@ define([
         testStructure(
           [
             { type: 'Group', id: 1, parent: 0 },
-            { type: 'Group', id: 2, parent: 1, attributes: { matrix: new TranslateMatrix(100, 300) } }
+            { type: 'Group', id: 2, parent: 1, attributes: { matrix: new TranslationMatrix(100, 499) } }
           ],
           [
             { type: 'Path', id: 3, attributes: {}, parent: 2 }
@@ -634,12 +646,43 @@ define([
               _SVGDefs()
             ]),
             _DisplayGroup({id: 1}, [
-              _DisplayGroup({id: 2}, [
+              _DisplayGroup({id: 2, position: [100, 499]}, [
                 _SVGLayer([
-                  _SVGGroup({
-                    'transform': 'matrix(1,0,0,1,100,300)'
-                  }, [
+                  _SVGGroup([
                     _SVGPath({id: 3})
+                  ])
+                ])
+              ])
+            ])
+          ])
+        );
+      });
+
+      it('Positions deeply nested groups correctly', function() {
+        testStructure(
+          [
+            { type: 'Group', id: 1, parent: 0 },
+            { type: 'Group', id: 2, parent: 1, attributes: { matrix: new TranslationMatrix(1, 6) } },
+            { type: 'Group', id: 3, parent: 2, attributes: { matrix: new TranslationMatrix(2, 7) } },
+            { type: 'Group', id: 4, parent: 3, attributes: { matrix: new TranslationMatrix(3, 8) } },
+            { type: 'Group', id: 5, parent: 4, attributes: { matrix: new TranslationMatrix(4, 9) } },
+            { type: 'Group', id: 6, parent: 5, attributes: { matrix: new TranslationMatrix(5, 0) } }
+          ],
+          [
+            { type: 'Group', id: 3, attributes: { matrix: new TranslationMatrix(111, 222) } }
+          ],
+          _DisplayGroup([
+            _SVGLayer([
+              _SVGGroup(),
+              _SVGDefs()
+            ]),
+            _DisplayGroup({id: 1}, [
+              _DisplayGroup({id: 2, position: [1, 6]}, [
+                _DisplayGroup({id: 3, position: [111, 222]}, [
+                  _DisplayGroup({id: 4, position: [3, 8]}, [
+                    _DisplayGroup({id: 5, position: [4, 9]}, [
+                      _DisplayGroup({id: 6, position: [5, 0]})
+                    ])
                   ])
                 ])
               ])

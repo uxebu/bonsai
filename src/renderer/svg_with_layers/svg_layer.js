@@ -17,16 +17,28 @@ define([
   SVGLayer.prototype = Object.create(DisplayLayer.prototype);
 
   SVGLayer.prototype._makeDOM = function(width, height) {
-    var svg = createSVGElement('svg');
+    var svg = this.svg = createSVGElement('svg');
+    width = width || 1000;
+    height = height || 1000;
     svg.style.pointerEvents = 'none';
     // TODO: We require a pixel width/height for this to work in safari.
-    svg.setAttribute('width', 1000);
-    svg.setAttribute('height', 1000)
     var group = createSVGElement('g');
     group.style.pointerEvents = 'auto';
     svg.appendChild(group);
     if (width && height) {
-      svg.setAttribute('viewBox', '-0.5 -0.5 ' + width + ' ' + height);
+      // SVG will not show its descendents outside of its viewport, so, we
+      // need to ensure that the SVG layer's viewport is extended to the 
+      // very-edges of the stage. We do this by position it far up top-left,
+      // giving it very large dimensions, applying its intended position
+      // to the main appendee (the <g>):
+      svg.style.left = -1e4 + 'px';
+      svg.style.top = -1e4 + 'px';
+      svg.setAttribute('width', (1e4 + width));
+      svg.setAttribute('height', (1e4 + height));
+      group.setAttribute(
+        'transform',
+        'matrix(1,0,0,1,' + 1e4 + ',' + 1e4 + ')'
+      );
     }
     this.rootGroup = group;
     // Expose the <g> as the newLayer so any SVGElements are appended

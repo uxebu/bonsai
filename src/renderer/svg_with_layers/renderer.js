@@ -80,6 +80,20 @@ define([
     'mousewheel'
   ];
 
+  var vendorPrefix = (function() {
+    var d = document.createElement('div');
+    var prefixes = ['', 'Webkit', 'Moz', 'MS', 'O'];
+    if ('transform' in d.style) {
+      return '';
+    }
+    for (var i = 0, l = prefixes.length; i < l; ++i) {
+      if (prefixes[i] + 'Transform' in d.style) {
+        return prefixes[i];
+      }
+    }
+    throw Error('No vendor prefix found');
+  }());
+
   var xlink = 'http://www.w3.org/1999/xlink';
 
   function Display(node, width, height) {
@@ -174,41 +188,26 @@ define([
                 var matrix = tools.mixin({}, value);
 
                 // Apply origin of @ top-left of the group/movie:
-                dom.style.WebkitTransformOrigin = 
-                  dom.style.MozTransformOrigin = 
-                    dom.style.MSTransformOrigin =
-                      dom.style.OTransformOrigin =
-                        dom.style.transformOrigin = value.tx + 'px ' + value.ty + 'px';
+                dom.style.transformOrigin =
+                  dom.style[vendorPrefix + 'TransformOrigin'] = 
+                    value.tx + 'px ' + value.ty + 'px';
 
-                // Make matrix properties accurate to 8 decimal points
+                // Make matrix properties accurate to 7 decimal places.
                 // This is to avoid numbers being so small that they use 
                 // scientific E notation (e.g. -6.938893903907228e-18)
                 // (CSS `transform` property doesn't seem to support this)
-                matrix.a = Math.round(matrix.a * 10000000) / 10000000;
-                matrix.b = Math.round(matrix.b * 10000000) / 10000000;
-                matrix.c = Math.round(matrix.c * 10000000) / 10000000;
-                matrix.d = Math.round(matrix.d * 10000000) / 10000000;
-
-                // Clear matrix tx/ty and instead apply directly to child layers
-                // via translatePosition method. This is to avoid clipping
-                // occuring beyond the top-left of the displayGroup
-                matrix.tx = 0;
-                matrix.ty = 0;
-                el.translatePosition(value.tx, value.ty);
+                matrix.a = Math.round(matrix.a * 1e7) / 1e7;
+                matrix.b = Math.round(matrix.b * 1e7) / 1e7;
+                matrix.c = Math.round(matrix.c * 1e7) / 1e7;
+                matrix.d = Math.round(matrix.d * 1e7) / 1e7;
 
                 // Apply transform plus 3d translateZ to kick hardware-accel:
-                dom.style.WebkitTransform = 
-                  dom.style.MozTransform = 
-                    dom.style.MSTransform =
-                      dom.style.OTransform =
-                        dom.style.transform = matrixToString(matrix) + ' translateZ(0)';
+                dom.style.transform =
+                  dom.style[vendorPrefix + 'Transform'] = 
+                    matrixToString(matrix) + ' translateZ(0)';
               } else if (value === null) {
-                el.translatePosition(0, 0);
-                dom.style.WebkitTransform =
-                  dom.style.MozTransform =
-                    dom.style.MSTransform =
-                      dom.style.OTransform =
-                        dom.style.transform = '';
+                dom.style.transform =
+                  dom.style[vendorPrefix + 'Transform'] = '';
               }
             } else {
               if (value != null) {
@@ -479,13 +478,14 @@ define([
             }
 
           } else {
-            nextEl.dom.parentNode.insertBefore(el.dom, nextEl.dom);
             // Save displayGroup reference on descendents:
             el.parentDisplayGroup = nextEl.parentDisplayGroup;
             el.parentDisplayLayer = nextEl.parentDisplayLayer;
+
             if (nextEl.parentDisplayLayer.isDisplayGroup) {
-              console.log('>', parent.tx, parent.ty);
-              nextEl.parentDisplayLayer.translatePosition(parent.tx, parent.ty);
+              nextEl.parentDisplayLayer.insertLayerBefore(el, nextEl);
+            } else {
+              nextEl.dom.parentNode.insertBefore(el.dom, nextEl.dom);
             }
           }
 
