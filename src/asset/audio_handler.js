@@ -79,7 +79,12 @@ define([
     audioElement.load();
     this.registerElement(audioElement);
 
-    audioElement.addEventListener(events[loadLevel], doDone, false);
+    // don't send *DOM* Events to the runner
+    function onload() {
+      doDone();
+    }
+
+    audioElement.addEventListener(events[loadLevel], onload, false);
   };
 
   return AudioHandler;

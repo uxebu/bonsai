@@ -30,7 +30,8 @@ movieList = {
     'fill-image.js',
     'sprite.js',
     'data-url.js',
-    'bitmap-memory-check.js'
+    'bitmap-memory-check.js',
+    'sprite-ninja.js'
   ],
   'Color': [
     'color.js',
@@ -134,7 +135,8 @@ movieList = {
     'shape-arc.js',
     'shape-getPointAtLength.js',
     'shape-center-of-arc.js',
-    'shape-fill-rule.js'
+    'shape-fill-rule.js',
+    'overlapping-paths.js'
   ],
   'Test': [
     'text.js',
