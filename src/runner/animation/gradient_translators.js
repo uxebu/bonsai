@@ -11,89 +11,84 @@ define(['../../color'], function(color) {
   function translation(prop) {
     // prop = strokeGradient OR fillGradient
     return {
-      setup: function(values) {
+      toNumeric: function(gradient) {
 
-        var stops = values[prop].stops,
+        var stops = gradient.stops,
             c;
 
-        this[prop] = values[prop].clone();
+        var numbers = [];
 
-        if (values[prop].matrix) {
-          values[prop + 'MatrixA'] = values[prop].matrix.a;
-          values[prop + 'MatrixB'] = values[prop].matrix.b;
-          values[prop + 'MatrixC'] = values[prop].matrix.c;
-          values[prop + 'MatrixD'] = values[prop].matrix.d;
-          values[prop + 'MatrixTX'] = values[prop].matrix.tx;
-          values[prop + 'MatrixTY'] = values[prop].matrix.ty;
+        this.mutableGradient = gradient.clone();
+
+        if (gradient.matrix) {
+          this.hasMatrix = true;
+          numbers.push(
+            gradient.matrix.a,
+            gradient.matrix.b,
+            gradient.matrix.c,
+            gradient.matrix.d,
+            gradient.matrix.tx,
+            gradient.matrix.ty
+          );
         }
 
-        if (values[prop].type === 'linear-gradient') {
-          if (!isNaN(values[prop].direction)) {
-            values[prop + 'Direction'] = values[prop].direction;
+        if (gradient.type === 'linear-gradient') {
+          if (!isNaN(gradient.direction)) {
+            this.hasDirection = true;
+            numbers.push(gradient.direction);
           }
         } else {
           // radial
-          this[prop + 'RadiusUnit'] = (String(values[prop].radius).match(/\D$/)||[''])[0];
-          values[prop + 'Radius'] = parseFloat(values[prop].radius);
+          this.hasRadius = true;
+          this.radiusUnit = (String(gradient.radius).match(/\D$/)||[''])[0];
+          numbers.push(parseFloat(gradient.radius));
         }
-
 
         // Break up stops so we can animate them individually
 
         for (var i = 0, l = stops.length; i < l; ++i) {
           c = color(stops[i][0]);
-          values[prop + 'Stop_' + i + 'r'] = c.r();
-          values[prop + 'Stop_' + i + 'g'] = c.g();
-          values[prop + 'Stop_' + i + 'b'] = c.b();
-          values[prop + 'Stop_' + i + 'a'] = c.a();
-          if (!isNaN(stops[i][1])) {
-            values[prop + 'Stop_' + i + '_pos'] = stops[i][1];
-          }
+          numbers.push(c.r(), c.g(), c.b(), c.a(), stops[i][1]);
         }
 
-        delete values[prop];
+        console.log(numbers);
+        return numbers;
       },
-      step: function(values) {
+      toUnique: function(numbers) {
 
-        if (this[prop].matrix) {
-          this[prop].matrix.a = values[prop + 'MatrixA'];
-          this[prop].matrix.b = values[prop + 'MatrixB'];
-          this[prop].matrix.c = values[prop + 'MatrixC'];
-          this[prop].matrix.d = values[prop + 'MatrixD'];
-          this[prop].matrix.tx = values[prop + 'MatrixTX'];
-          this[prop].matrix.ty = values[prop + 'MatrixTY'];
+        var mutableGradient = this.mutableGradient;
+        var n = 0;
+
+        if (mutableGradient.matrix) {
+          mutableGradient.matrix.a = numbers[n++];
+          mutableGradient.matrix.b = numbers[n++];
+          mutableGradient.matrix.c = numbers[n++];
+          mutableGradient.matrix.d = numbers[n++];
+          mutableGradient.matrix.tx = numbers[n++];
+          mutableGradient.matrix.ty = numbers[n++];
         }
 
-        if (this[prop].type === 'linear-gradient') {
-          if (!isNaN(values[prop + 'Direction'])) {
-            this[prop].direction = values[prop + 'Direction'];
-          }
-          delete values[prop + 'Direction'];
+        if (this.hasDirection) {
+          mutableGradient.direction = numbers[n++];;
         } else {
           // radial
-          this[prop].radius = values[prop + 'Radius'] + this[prop + 'RadiusUnit'];
-          delete values[prop + 'Radius'];
+          mutableGradient.radius = numbers[n++] + this.radiusUnit;
         }
 
-        var stops = this[prop].stops;
+        var stops = mutableGradient.stops;
 
         // Put animated stop colors/positions back into original formation
         for (var i = 0, l = stops.length; i < l; ++i) {
           stops[i][0] = +new color.RGBAColor(
-            values[prop + 'Stop_' + i + 'r'],
-            values[prop + 'Stop_' + i + 'g'],
-            values[prop + 'Stop_' + i + 'b'],
-            values[prop + 'Stop_' + i + 'a']
+            numbers[n++],
+            numbers[n++],
+            numbers[n++],
+            numbers[n++]
           );
-          stops[i][1] = values[prop + 'Stop_' + i + '_pos'];
-          delete values[prop + 'Stop_' + i + 'r'],
-          delete values[prop + 'Stop_' + i + 'g'],
-          delete values[prop + 'Stop_' + i + 'b'],
-          delete values[prop + 'Stop_' + i + 'a'];
-          delete values[prop + 'Stop_' + i + '_pos'];
+          stops[i][1] = numbers[n++];
         }
 
-        values[prop] = this[prop];
+        return mutableGradient;
       }
     };
   }

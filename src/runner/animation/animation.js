@@ -5,48 +5,15 @@ define([
   '../../tools',
   '../../event_emitter',
   '../../color',
-  './color_translators',
-  './gradient_translators',
-  './filter_translators',
-  './segment_translators',
-  './matrix_translators',
-  './corner_radius_translators'
+  './properties_tween'
 ], function(
-  easing, Timeline, tools, EventEmitter, color,
-  colorTranslations, gradientTranslations, filterTranslations,
-  segmentTranslations, matrixTranslations, cornerRadiusTranslations
+  easing, Timeline, tools, EventEmitter, color, PropertiesTween
 ) {
   'use strict';
 
   var mixin = tools.mixin;
   var isArray = tools.isArray;
   var forEach = tools.forEach;
-
-  /**
-   * Translations, in the form of:
-   * { setup: function(){}, step: function(){} }
-   * --
-   * `setupTo` will be called to translate the `to` properties (i.e. the ones
-   *         passed as the 2nd arg to the Animation constructor)
-   * `setupFrom` will be called to translate the initial values in the subject
-   *         of the animation.
-   * `step`  will be called to translate values (back) on every step of
-   *         the animation.
-   * --
-   * Both functions should mutate values to represent numerical animitable data
-   * Any other data can be saved to `this` which is a data object accessible
-   * to all.
-   * --
-   * setupFrom and setupTo can be defined as a single method, setup, if desired.
-   */
-  var propertyTranslations = Animation.propertyTranslations = {};
-
-  mixin(propertyTranslations, colorTranslations);
-  mixin(propertyTranslations, gradientTranslations);
-  mixin(propertyTranslations, filterTranslations);
-  mixin(propertyTranslations, segmentTranslations);
-  mixin(propertyTranslations, matrixTranslations);
-  mixin(propertyTranslations, cornerRadiusTranslations);
 
   /**
    * The animation class stuff
@@ -77,14 +44,12 @@ define([
    *
    * @mixes EventEmitter
    */
-  function Animation(clock, duration, properties, options) {
+  function Animation(clock, duration, endValues, options) {
 
     if (duration instanceof Animation) {
       return duration.clone();
     }
 
-    // Maintain subject map (to check duplicant IDs) and regular array:
-    this.subjectsById = {};
     this.subjects = [];
 
     options = this.options = options || {};
@@ -105,31 +70,21 @@ define([
     this.repeat = (options.repeat || 0) - (options.repeat % 1 || 0);
 
     this.delay = options.delay && clock.toFrameNumber(options.delay) || 0;
-    this.properties = properties = tools.mixin({}, properties);
-    this._cleanProperties();
-    this.propertyNames = Object.keys(properties);
+    this.endValues = endValues = tools.mixin({}, endValues);
+    this._cleanEndValues();
+    this._init();
 
-    this.translators = options.translate ? [options.translate] : [];
-    this._translationData = {};
-    this._getTranslations();
-    this._runTranslations(properties, 'setupTo');
-
-    this.propertyNames = Object.keys(properties); // must get new keys [from translation], if any
-
-    this.strategy = options.strategy;
-
-    this._bind();
   }
 
   Animation.prototype = /** @lends module:animation.Animation.prototype */ {
 
     /**
-     * Cleans properties by removing any that are NaN && falsey, or any
+     * Cleans values by removing any that are NaN && falsey, or any
      * NaN values that don't have appropriate translators available:
      *
      * @private
      */
-    _cleanProperties: function() {
+    _cleanEndValues: function() {
       var properties = this.properties;
       for (var name in properties) {
         if (isNaN(properties[name])) {
@@ -145,7 +100,7 @@ define([
      *
      * @private
      */
-    _bind: function() {
+    _init: function() {
 
       var anim = this,
           delay = this.delay,
@@ -193,64 +148,6 @@ define([
 
       if (options.subjects) {
         this.addSubjects(options.subjects, options.strategy);
-      }
-    },
-
-    /**
-     * Get initial translators. E.g. for `fill` and `line` (color translators)
-     *
-     * @private
-     */
-    _getTranslations: function() {
-      var propertyNames = this.propertyNames,
-          translation;
-
-      for (var i = 0, len = propertyNames.length; i < len; i++) {
-        if (propertyNames[i] in propertyTranslations) {
-
-          translation = propertyTranslations[propertyNames[i]];
-
-          if (!(
-            typeof translation.step == 'function' &&
-            (
-              typeof translation.setupFrom == 'function' &&
-              typeof translation.setupTo == 'function'
-            ) || typeof translation.setup == 'function'
-          )) {
-            throw Error(
-              'Translation does not implement setup (or setupFrom & setupTo) and step methods.'
-            );
-          }
-
-          this.translators.push({
-            methods: translation,
-            // Data object for this translators (can store arbitrary data here)
-            // It's unique to the translation
-            // This'll be referenced as `this` within translation methods
-            data: this._translationData[propertyNames[i]] = {}
-          });
-        }
-      }
-    },
-
-    /**
-     * Run passed method of all translators on passed values.
-     *
-     * @private
-     */
-    _runTranslations: function(values, methodName) {
-      var translation, method;
-      for (var i = this.translators.length; i--;) {
-
-        translation = this.translators[i];
-
-        // If method is setupFrom or setupTo, but it's not defined, then
-        // fall-back on 'setup' method (which should deal with both)
-        method = methodName === 'setupFrom' || methodName === 'setupTo' ?
-          translation.methods[methodName] || translation.methods.setup :
-          translation.methods[methodName];
-
-        method.call(translation.data, values);
       }
     },
 
@@ -341,63 +238,33 @@ define([
     /**
      * Adds a subject with given strategy to the animation
      * @param {Object} subject The subject (usually a DisplayObject)
-     * @param {mixed} [strategy='attr'] The set/get strategy to use
-     *   - 'attr': The 'attr' method of the object is used (for DisplayObjects)
-     *   - 'prop': Normal property setting and getting is used
-     *   - Object with 'set(subject, values)' and 'get(subject)'
-     *     methods.
      */
-    addSubject: function(subject, strategy) {
+    addSubject: function(subject) {
 
-      var propertyNames = this.propertyNames,
-          values;
+      var values = subject.attr();
 
-      strategy = strategy || this.strategy || 'attr';
-
-      // Store initial values
-
-      switch (strategy) {
-        case 'attr':
-          values = subject.attr();
-          break;
-        case 'prop':
-          values = {};
-          for (var i = 0, key; (key = propertyNames[i++]); ) {
-            values[key] = subject[key];
-          }
-          break;
-        default: // assume object with get/set methods
-          values = strategy.get(subject, this.propertyNames);
-          break;
+      for (var i in values) {
+        if (!(i in this.endValues)) {
+          delete values[i];
+        }
       }
 
-      this._runTranslations(values, 'setupFrom');
-
-      if (!(subject.id in this.subjectsById)) {
-        this.subjectsById[subject.id] = true;
-        this.subjects.push({
-          subject: subject,
-          strategy: strategy,
-          values: values
-        });
-      }
+      this.subjects.push({
+        subject: subject,
+        tween: new PropertiesTween(values, this.endValues, this.easingFunc)
+      });
 
       return this;
     },
 
     /**
-     * Adds multiple subjects with given strategy to the animation
+     * Adds multiple subjects to the animation
      * @param {Array} subjects Array of subjects to add
-     * @param {mixed} [strategy='attr'] The set/get strategy to use
-     *   - 'attr': The 'attr' method of the object is used (for DisplayObjects)
-     *   - 'prop': Normal property setting and getting is used
-     *   - Object with 'set(subject, values)' and 'get(subject)'
-     *     methods.
      */
-    addSubjects: function(subjects, strategy) {
+    addSubjects: function(subjects) {
       subjects = isArray(subjects) ? subjects : [subjects];
       forEach(subjects, function(subject) {
-        this.addSubject(subject, strategy);
+        this.addSubject(subject);
       }, this);
       return this;
     },
@@ -407,14 +274,10 @@ define([
      * @param {Object} subject The subject to remove
      */
     removeSubject: function(subject) {
-      if (subject.id in this.subjectsById) {
-        for (var i = 0, l = this.subjects.length; i < l; ++i) {
-          if (this.subjects[i].subject === subject) {
-            this.subjects.splice(i, 1);
-            break;
-          }
+      for (var i = 0, l = this.subjects.length; i < l; ++i) {
+        if (this.subjects[i].subject === subject) {
+          this.subjects.splice(i, 1);
         }
-        delete this.subjectsById[subject.id];
       }
     },
 
@@ -437,69 +300,17 @@ define([
      */
     step: function(progress) {
 
-      var strategy,
-          subject,
-          from,
-          fromValues,
-          key,
-          to,
-          isAttrStrategy,
-          hasTranslations = !!this.translators.length,
-          easingFunc = this.easing,
-          endValues = this.properties,
-          initialValues = this.initialValues,
-          propertyNames = this.propertyNames,
-          pl = propertyNames.length,
-          subjects = this.subjects,
-          values = {};
+      var subjects = this.subjects,
+          easingFn = this.easing;
 
-      if (easingFunc) {
-        progress = easingFunc(progress);
+      if (easingFn) {
+        progress = easingFn(progress);
       }
 
       for (var s = 0, sl = subjects.length; s < sl; ++s) {
-
-        fromValues = subjects[s].values;
-        subject = subjects[s].subject;
-        strategy = subjects[s].strategy;
-        isAttrStrategy = strategy === 'attr'
-
-        var subjectAttributes = subject._attributes;
-        var subjectMutatedAttributes = subject._mutatedAttributes;
-
-        // loop through all properties and calculate the value
-        for (var p = 0; p < pl; ++p) {
-
-          key = propertyNames[p];
-          from = fromValues[key];
-          to = endValues[key];
-
-          if (!hasTranslations && isAttrStrategy) {
-            // Optimal method (no translators):
-            subjectAttributes[key] = from + (to - from) * progress;
-            subjectMutatedAttributes[key] = true;
-          } else {
-            values[key] = from + (to - from) * progress;
-          }
-        }
-
-        if (!hasTranslations && isAttrStrategy) {
-          // We've already set them the optimal way. Continue:
-          subject.markUpdate();
-          continue;
-        }
-
-        this._runTranslations(values, 'step');
-
-        if (strategy === 'attr') {
-          subject.attr(values);
-        } else if (strategy === 'prop') {
-          for (var key in values) {
-            subject[key] = values[key];
-          }
-        } else {
-          strategy.set(subject, values);
-        }
+        subjects[s].subject.attr(
+          subjects[s].tween.at(progress)
+        );
       }
 
       return this;

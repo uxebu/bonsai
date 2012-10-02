@@ -12,8 +12,9 @@ define([
   }*/
 
   function PropertyTween(startValue, endValue, translator) {
-    this.numericStartValues = translator ? translator.toNumeric(startValue) : [startValue];
-    this.numericEndValues = translator ? translator.toNumeric(endValue) : [endValue];
+    this.translationData = {};
+    this.numericStartValues = translator ? translator.toNumeric.call(this.translationData, startValue) : [startValue];
+    this.numericEndValues = translator ? translator.toNumeric.call(this.translationData, endValue) : [endValue];
     this.length = this.numericStartValues.length;
     this.translator = translator;
   }
@@ -31,7 +32,7 @@ define([
     }
 
     return this.translator ?
-      this.translator.toUnique(numericCurrentValues) :
+      this.translator.toUnique.call(this.translationData, numericCurrentValues) :
       numericCurrentValues[0];
 
   };
