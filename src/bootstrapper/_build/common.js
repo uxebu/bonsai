@@ -51,13 +51,15 @@ define([
     })();
 
     player.Renderer = SvgRenderer;
+    player.IframeRunnerContext = IframeRunnerContext;
+    player.WorkerRunnerContext = WorkerRunnerContext;
 
     var originalPlayerRun = player.run;
     player.run = tools.hitch(player, function(node, url, options) {
       player.setup({
         baseUrl: player._baseUrl || tools.baseUri(document),
         runnerContext: player.RunnerContext || (supportBlobUrls ? WorkerRunnerContext : IframeRunnerContext),
-        runnerUrl: player.runnerUrl || supportBlobUrls ? bootstrapUtil.getBlobUrl(__bonsaiRunnerCode__) : ('' + __bonsaiRunnerCode__)
+        runnerUrl: player.runnerUrl || (supportBlobUrls ? bootstrapUtil.getBlobUrl(__bonsaiRunnerCode__) : ('' + __bonsaiRunnerCode__))
       });
       originalPlayerRun.apply(this, arguments);
     });
