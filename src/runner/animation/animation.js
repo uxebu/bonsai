@@ -5,12 +5,12 @@ define([
   '../../tools',
   '../../event_emitter',
   '../../color',
-  './color_translations',
-  './gradient_translations',
-  './filter_translations',
-  './segment_translations',
-  './matrix_translations',
-  './corner_radius_translations'
+  './color_translators',
+  './gradient_translators',
+  './filter_translators',
+  './segment_translators',
+  './matrix_translators',
+  './corner_radius_translators'
 ], function(
   easing, Timeline, tools, EventEmitter, color,
   colorTranslations, gradientTranslations, filterTranslations,
@@ -109,7 +109,7 @@ define([
     this._cleanProperties();
     this.propertyNames = Object.keys(properties);
 
-    this.translations = options.translate ? [options.translate] : [];
+    this.translators = options.translate ? [options.translate] : [];
     this._translationData = {};
     this._getTranslations();
     this._runTranslations(properties, 'setupTo');
@@ -125,7 +125,7 @@ define([
 
     /**
      * Cleans properties by removing any that are NaN && falsey, or any
-     * NaN values that don't have appropriate translations available:
+     * NaN values that don't have appropriate translators available:
      *
      * @private
      */
@@ -197,7 +197,7 @@ define([
     },
 
     /**
-     * Get initial translations. E.g. for `fill` and `line` (color translations)
+     * Get initial translators. E.g. for `fill` and `line` (color translators)
      *
      * @private
      */
@@ -222,9 +222,9 @@ define([
             );
           }
 
-          this.translations.push({
+          this.translators.push({
             methods: translation,
-            // Data object for this translations (can store arbitrary data here)
+            // Data object for this translators (can store arbitrary data here)
             // It's unique to the translation
             // This'll be referenced as `this` within translation methods
             data: this._translationData[propertyNames[i]] = {}
@@ -234,15 +234,15 @@ define([
     },
 
     /**
-     * Run passed method of all translations on passed values.
+     * Run passed method of all translators on passed values.
      *
      * @private
      */
     _runTranslations: function(values, methodName) {
       var translation, method;
-      for (var i = this.translations.length; i--;) {
+      for (var i = this.translators.length; i--;) {
 
-        translation = this.translations[i];
+        translation = this.translators[i];
 
         // If method is setupFrom or setupTo, but it's not defined, then
         // fall-back on 'setup' method (which should deal with both)
@@ -444,7 +444,7 @@ define([
           key,
           to,
           isAttrStrategy,
-          hasTranslations = !!this.translations.length,
+          hasTranslations = !!this.translators.length,
           easingFunc = this.easing,
           endValues = this.properties,
           initialValues = this.initialValues,
@@ -475,7 +475,7 @@ define([
           to = endValues[key];
 
           if (!hasTranslations && isAttrStrategy) {
-            // Optimal method (no translations):
+            // Optimal method (no translators):
             subjectAttributes[key] = from + (to - from) * progress;
             subjectMutatedAttributes[key] = true;
           } else {

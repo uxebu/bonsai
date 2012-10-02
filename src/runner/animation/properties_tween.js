@@ -1,32 +1,32 @@
 define([
   '../../tools',
   './property_tween',
-  './color_translations',
-  './gradient_translations',
-  './filter_translations',
-  './segment_translations',
-  './matrix_translations',
-  './corner_radius_translations'
+  './color_translators',
+  './gradient_translators',
+  './filter_translators',
+  './segment_translators',
+  './matrix_translators',
+  './corner_radius_translators'
 ], function(
   tools, PropertyTween,
-  colorTranslations, gradientTranslations, filterTranslations,
-  segmentTranslations, matrixTranslations, cornerRadiusTranslations
+  colorTranslators, gradientTranslators, filterTranslators,
+  segmentTranslators, matrixTranslators, cornerRadiusTranslators
 ) {
 
   var mixin = tools.mixin;
 
   /**
-   * Translations, in the form of:
+   * Translators, in the form of:
    * { toNumber: function(){}, toUnique: function(){} }
    */
-  var propertyTranslations = PropertiesTween.propertyTranslations = {};
+  var propertyTranslators = PropertiesTween.propertyTranslators = {};
 
-  mixin(propertyTranslations, colorTranslations);
-  mixin(propertyTranslations, gradientTranslations);
-  mixin(propertyTranslations, filterTranslations);
-  mixin(propertyTranslations, segmentTranslations);
-  mixin(propertyTranslations, matrixTranslations);
-  mixin(propertyTranslations, cornerRadiusTranslations);
+  mixin(propertyTranslators, colorTranslators);
+  mixin(propertyTranslators, gradientTranslators);
+  mixin(propertyTranslators, filterTranslators);
+  mixin(propertyTranslators, segmentTranslators);
+  mixin(propertyTranslators, matrixTranslators);
+  mixin(propertyTranslators, cornerRadiusTranslators);
 
   function PropertiesTween(propertiesFrom, propertiesTo, easingFn) {
 
@@ -70,7 +70,7 @@ define([
           new PropertyTween(
             propertiesFrom[property],
             propertiesTo[property],
-            propertyTranslations[property],
+            propertyTranslators[property],
             easingFn
           )
         );

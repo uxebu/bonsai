@@ -31,7 +31,7 @@ define([
         });
       });
       it('Should apply translations', function() {
-        PropertiesTween.propertyTranslations.fooColor = {
+        PropertiesTween.propertyTranslators.fooColor = {
           toNumeric: function(colorObj) {
             return [colorObj.r, colorObj.g, colorObj.b];
           },
