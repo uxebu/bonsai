@@ -1,5 +1,7 @@
 /**
-* Entry module for building bonsai for the iframe environment.
+* Entry module for building bonsai for  a common environment.
+*
+* It takes care to select the best-suited runner (iframe or worker) environment.
 */
 define([
   '../player',
