@@ -103,6 +103,7 @@ define([
 
     this.root = this[0] = new DisplayGroup(null, 0);
     this.root.dom.style.position = 'relative';
+    this.root.dom.style.overflow = 'hidden';
     this.svgResourcesLayer = this.root.getResourcesSVGLayer();
     this.svgResourcesDefs = this.svgResourcesLayer.defs;
 
@@ -501,6 +502,7 @@ define([
               console.log(':>', parent.tx, parent.ty);
             parent.insertLayerBefore(el, null);
           } else {
+            console.log('^:', parent, el)
             parent.appendee.appendChild( el.dom );
           }
         }
@@ -568,7 +570,9 @@ define([
 
       if (!(element._clip = this.display[svgClipId])) {
         console.log('Creating offStage', svgClipId)
-        element._clip = this.display[svgClipId] = this.display.svgResourcesDefs.appendChild(createSVGElement('mask'));
+        this.display[svgClipId] = new SVGElement(
+          element._clip = this.display.svgResourcesDefs.appendChild(createSVGElement('mask'))
+        );
         element._clip.id = this._genDefUID();
         element._clip._clipId = svgClipId; // Save real ID too (as in `this.svg`)
         element._clip.n = 1;
@@ -645,8 +649,8 @@ define([
 
     var ratio = naturalHeight / naturalWidth;
 
-    if (attributes.source != null) {
-      img.setAttributeNS(xlink, 'href', AssetController.assets[message.id].src);
+    if (attributes.absoluteUrl != null) {
+      img.setAttributeNS(xlink, 'href', attributes.absoluteUrl);
     }
 
     if (attributes.width == null && attributes.height == null) {
