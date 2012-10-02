@@ -41,14 +41,7 @@ define([
   } else {
     window['bonsai'] = player;
 
-    var scripts = tools.map(document.getElementsByTagName('script'), function(script) {
-      return script.src;
-    });
-
-    var supportBlobUrls = (function() {
-      var url = window.URL || window.webkitURL;
-      return typeof url !== 'undefined';
-    })();
+    var runnerUrl = bootstrapUtil.getUrl(__bonsaiRunnerCode__);
 
     player.Renderer = SvgRenderer;
     player.IframeRunnerContext = IframeRunnerContext;
@@ -58,8 +51,8 @@ define([
     player.run = tools.hitch(player, function(node, url, options) {
       player.setup({
         baseUrl: player._baseUrl || tools.baseUri(document),
-        runnerContext: player.RunnerContext || (supportBlobUrls ? WorkerRunnerContext : IframeRunnerContext),
-        runnerUrl: player.runnerUrl || (supportBlobUrls ? bootstrapUtil.getBlobUrl(__bonsaiRunnerCode__) : ('' + __bonsaiRunnerCode__))
+        runnerContext: player.RunnerContext || (runnerUrl ? WorkerRunnerContext : IframeRunnerContext),
+        runnerUrl: player.runnerUrl || runnerUrl || ('' + __bonsaiRunnerCode__)
       });
       originalPlayerRun.apply(this, arguments);
     });
