@@ -30,6 +30,8 @@ SpritedBitmap.prototype = Object.create(Group.prototype);
 
 // Ninja movie:
 
+
+// IMAGE FROM http://www.36peas.com/blog/2010/9/13/free-japanese-ninja-shinobi-sprite-sheet.html
 var src = 'assets/ninja-sprite.jpg';
 var ninjas = [
   new SpritedBitmap(src, 0, 0, 95, 140).attr({visible: false}).addTo(stage),
@@ -45,3 +47,6 @@ stage.on('tick', function(s, f) {
   ninjas[lastIndex].attr({visible: false});
   ninjas[lastIndex = f % ninjas.length].attr({visible: true});
 });
+
+
+new Text('Image attributed to http://www.36peas.com/blog/2010/9/13/free-japanese-ninja-shinobi-sprite-sheet.html').addTo(stage).attr({y: 200, x: 20})
