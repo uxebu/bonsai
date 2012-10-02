@@ -16,13 +16,22 @@ movieList = {
     'animation-stars-2.js',
     'animation-circles.js'
   ],
+  'Audio': [
+    'audio-simple.js',
+    'audio-tick-16.js',
+    'audio-volume.js',
+    'audio-boom.js',
+    'audio-piano-sprite.js',
+    'audio-button.js'
+  ],
   'Bitmaps and Sprites': [
     'bitmap.js',
     'bitmap-source.js',
     'fill-image.js',
     'sprite.js',
     'data-url.js',
-    'bitmap-memory-check.js'
+    'bitmap-memory-check.js',
+    'sprite-ninja.js'
   ],
   'Color': [
     'color.js',
@@ -77,6 +86,7 @@ movieList = {
     'sprite-properties.js'
   ],
   'Games': [
+    'pong.js',
     'asteroids.js',
     'breakout.js',
     'pacman.js'
@@ -125,7 +135,8 @@ movieList = {
     'shape-arc.js',
     'shape-getPointAtLength.js',
     'shape-center-of-arc.js',
-    'shape-fill-rule.js'
+    'shape-fill-rule.js',
+    'overlapping-paths.js'
   ],
   'Test': [
     'text.js',
