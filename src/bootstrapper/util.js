@@ -24,7 +24,7 @@ define([
       // worker.terminate can just be executed after the worker was created
       // and it'll stay in memory. This is why we need to wait for postMessage
       // before we destroy it.
-      blob = new Blob([workerCode]);
+      blob = new Blob([workerCode], {'type': 'text\/javascript'});
       url = window.URL || window.webkitURL;
       blobUrl = url.createObjectURL(blob);
       worker = new Worker(blobUrl);
