@@ -41,12 +41,11 @@ define([
       }
     }
 
-    console.log('>>>toFrom', this.propertiesFrom, this.propertiesTo)
-
     this.propertyNames = Object.keys(this.propertiesFrom);
     this.propertyLength = this.propertyNames.length;
     this.propertyTweens = [];
     this._setupTweens();
+    this._values = {};
 
   }
 
@@ -54,7 +53,7 @@ define([
 
     at: function(progress) {
 
-      var values = {},
+      var values = this._values,
           propertyTweens = this.propertyTweens,
           propertyNames = this.propertyNames;
 

@@ -91,7 +91,7 @@ define([
      * @returns {Animation} The clone
      */
     clone: function() {
-      console.log(this.keyframes);
+      //console.log(this.keyframes);
       return new KeyframeAnimation(this.clock, this.duration, tools.mixin({}, this.keyframes), {
         clock: this.clock,
         duration: this.duration,
@@ -133,7 +133,7 @@ define([
       if (initial && this.currentTweenIndex === 0) {
         var subjects = this.subjects;
         for (var i = 0, l = subjects.length; i < l; ++i) {
-          console.log('Applying initial to', subjects[i], initial)
+          //console.log('Applying initial to', subjects[i], initial)
           subjects[i].subject.attr(initial);
         }
       }
@@ -218,7 +218,7 @@ define([
 
       var subjects = this.subjects;
       for (var s = 0, sl = subjects.length; s < sl; ++s) {
-        var currentSubjectTween =  subjects[s].tweens[this.currentTweenIndex];
+        var currentSubjectTween = subjects[s].tweens[this.currentTweenIndex];
         subjects[s].subject.attr(
           currentSubjectTween.at(thisPhaseProgress)
         );
@@ -232,7 +232,7 @@ define([
       this.frame = 0;
       this.isPlaying = false;
       this.currentTweenIndex = 0;
-      console.log('RESETTING');
+      //console.log('RESETTING');
       this.clock.removeListener(this.isTimelineBound ? 'advance' : 'tick', this, this.onStep);
       return this;
     },
@@ -261,7 +261,7 @@ define([
         tweens: this._createTweens(initialAttributes)
       });
 
-      console.log('Added subject', this.subjects);
+      //console.log('Added subject', this.subjects);
 
       return this;
     },
