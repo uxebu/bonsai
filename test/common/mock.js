@@ -39,6 +39,7 @@ define(function() {
 
     createMessageProxy: function() {
       var messageProxy = createEventEmitter();
+      messageProxy.notifyRenderer = jasmine.createSpy('notifyRenderer');
       return messageProxy;
     },
 

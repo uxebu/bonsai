@@ -1,6 +1,8 @@
 v0.3.9
 -------------------
 
+* Add optional category to sendMessage() to allow for more specific message passing
+
 
 v0.3.8 / 2012-09-28
 -------------------
