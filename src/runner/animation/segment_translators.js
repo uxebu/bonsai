@@ -8,49 +8,38 @@ define(['../../color'], function(color) {
 
   return {
     segments: {
-      setupTo: function(values) {
-        var segments = values.segments;
-
+      toNumeric: function(segments, isEndValues) {
+        var numbers = [];
+        if (!isEndValues) {
+          this.segments = segments;
+        }
         for (var i = 0, l = segments.length; i < l; ++i) {
           var segment = segments[i];
           for (var s = 0, sl = segment.length; s < sl; ++s) {
             if (!isNaN(segment[s])) {
-              values['segment_' + i + '_' + s] = segment[s];
+              numbers.push(segment[s]);
             }
           }
         }
+        return numbers;
       },
-      setupFrom: function(values) {
-        var segments = values.segments;
-        this._segments = segments;
+      toUnique: function(numbers) {
+
+        var segments = this.segments;
+        var n = 0;
+
         for (var i = 0, l = segments.length; i < l; ++i) {
+
           var segment = segments[i];
+
           for (var s = 0, sl = segment.length; s < sl; ++s) {
             if (!isNaN(segment[s])) {
-              values['segment_' + i + '_' + s] = segment[s];
+              segment[s] = numbers[n++];
             }
           }
         }
 
-        delete values.segments;
-      },
-      step: function(values) {
-
-        var segments = this._segments;
-
-        for (var i = 0, l = segments.length; i < l; ++i) {
-
-          var segment = segments[i];
-
-          for (var s = 0, sl = segment.length; s < sl; ++s) {
-            if (!isNaN(values['segment_' + i + '_' + s])) {
-              segment[s] = values['segment_' + i + '_' + s];
-              delete values['segment_' + i + '_' + s];
-            }
-          }
-        }
-
-        values.segments = segments;
+        return segments;
       }
     }
   };

@@ -8,25 +8,17 @@ define([], function() {
 
   return {
     cornerRadius: {
-      setup: function(values) {
-        var cornerRadius = values.cornerRadius;
+      toNumeric: function(cornerRadius) {
         cornerRadius = cornerRadius || 0;
-        values.cornerRadius0 = cornerRadius[0] || cornerRadius;
-        values.cornerRadius1 = cornerRadius[1] || cornerRadius;
-        values.cornerRadius2 = cornerRadius[2] || cornerRadius;
-        values.cornerRadius3 = cornerRadius[3] || cornerRadius;
-      },
-      step: function(values) {
-        values.cornerRadius = [
-          values.cornerRadius0,
-          values.cornerRadius1,
-          values.cornerRadius2,
-          values.cornerRadius3
+        return [
+          cornerRadius[0] || cornerRadius,
+          cornerRadius[1] || cornerRadius,
+          cornerRadius[2] || cornerRadius,
+          cornerRadius[3] || cornerRadius
         ];
-        delete values.cornerRadius0;
-        delete values.cornerRadius1;
-        delete values.cornerRadius2;
-        delete values.cornerRadius3;
+      },
+      toUnique: function(numbers) {
+        return numbers;
       }
     }
   };

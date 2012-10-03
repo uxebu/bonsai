@@ -9,18 +9,18 @@ define(['../matrix'], function(Matrix) {
   return {
     matrix: {
       toNumeric: function(matrix) {
-        console.log(arguments);
         this.animatedMatrix = new Matrix;
         return [matrix.a, matrix.b, matrix.c, matrix.d, matrix.tc, matrix.ty];
       },
-      toUnique: function(values) {
+      toUnique: function(numbers) {
         var m = this.animatedMatrix;
-        m.a = values[0];
-        m.b = values[1];
-        m.c = values[2];
-        m.d = values[3];
-        m.tx = values[4];
-        m.ty = values[5];
+        m.a = numbers[0];
+        m.b = numbers[1];
+        m.c = numbers[2];
+        m.d = numbers[3];
+        m.tx = numbers[4];
+        m.ty = numbers[5];
+        return this.animatedMatrix;
       }
     }
   };

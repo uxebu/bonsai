@@ -28,7 +28,7 @@ var animation = new Animation('3s', {
   y: b.attr('y')
 });
 
-animation.setSubject(a);
+animation.addSubject(a);
 a.addTo(stage);
 
 animation.play();
