@@ -1,7 +1,7 @@
 define([
-  './audio',
+  './media_display_object',
   '../tools'
-], function(Audio, tools) {
+], function(MediaDisplayObject, tools) {
   'use strict';
 
   var data = tools.descriptorData;
@@ -18,9 +18,6 @@ define([
    *  loaded (only called if you passed a `aRequest`). The callback will be called
    *  with it's first argument signifying an error. So, if the first argument
    *  is `null` you can assume the movie was loaded successfully.
-   * @param {Object} [options]
-   * @param {Number} [options.width] Width of the video
-   * @param {Number} [options.height] Height of the video
    *
    * @property {__list__} __supportedAttributes__ List of supported attribute names.
    *    In addition to the property names listed for DisplayObject,
@@ -32,16 +29,15 @@ define([
    * @property {number} __supportedAttributes__.width The width of the video.
    *
    */
-  function Video(loader, aRequest, callback, options) {
-    options || (options = {});
+  function Video(loader, aRequest, callback) {
 
-    Audio.call(this, loader, aRequest, callback);
+    MediaDisplayObject.call(this, loader, aRequest, callback);
 
     this.type = 'Video';
 
     Object.defineProperties(this._attributes, {
-      height: data(options.height, true, true),
-      width: data(options.width, true, true)
+      height: data(100, true, true),
+      width: data(100, true, true)
     });
 
     var rendererAttributes = this._renderAttributes;
@@ -51,15 +47,8 @@ define([
     this.request(aRequest);
   }
 
-  var parentPrototype = Audio.prototype;
-  var parentPrototypeDestroy = parentPrototype.destroy;
-
   /** @lends Video.prototype */
-  var proto = Video.prototype = Object.create(parentPrototype);
-
-  proto.request = function(aRequest) {
-    debugger;
-  };
+  var proto = Video.prototype = Object.create(MediaDisplayObject.prototype);
 
   /**
    * Clones the method
@@ -71,27 +60,6 @@ define([
     return new Video(this._loader, this._request);
   };
 
-  /**
-   * Destroys the DisplayObject and removes any references to the
-   * asset, including data held by the renderer's assetController about the
-   * source of the video
-   *
-   * @returns {this}
-   */
-  proto.destroy = function() {
-    parentPrototypeDestroy.call(this);
-    this._loader.destroyAsset(this);
-    return this;
-  };
-
-  /**
-   * Notify the video that the corresponding data has been loaded. To be used
-   * by the asset loader.
-   *
-   * @private
-   * @param {string} type Either 'load' or 'error'
-   * @param data
-   */
   proto.notify = function(type, data) {
 
     switch (type) {
