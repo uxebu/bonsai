@@ -201,7 +201,7 @@ define([
         easing: this.easing,
         isTimelineBound: this.isTimelineBound
       };
-      return new Animation(this.clock, this.duration, mixin({}, this.properties), options);
+      return new Animation(this.clock, this.duration, mixin({}, this.endValues), options);
     },
 
     /**
