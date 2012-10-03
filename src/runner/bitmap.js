@@ -12,6 +12,12 @@ define([
     this._owner.request(source);
   }
 
+  var getSpritePath = tools.getter('_spritePath');
+  function setSpritePath(path) {
+    this._spritePath = path._getRenderData();
+    this._spritePathMatrix = path.attr('matrix');
+  }
+
   /**
    * The Bitmap constructor
    *
@@ -49,7 +55,10 @@ define([
       _naturalHeight: data(0, true, true),
       source: accessor(getSource, setSource, true),
       _source: data('', true, true),
-      _absoluteUrl: data('', true, true)
+      _absoluteUrl: data('', true, true),
+      spritePath: accessor(getSpritePath, setSpritePath, true),
+      _spritePath: data(null, true, true),
+      _spritePathMatrix: data(0, true, true)
     });
 
     var rendererAttributes = this._renderAttributes;
@@ -58,6 +67,8 @@ define([
     rendererAttributes.naturalHeight = '_naturalHeight';
     rendererAttributes.naturalWidth = '_naturalWidth';
     rendererAttributes.absoluteUrl = '_absoluteUrl';
+    rendererAttributes.spritePath = '_spritePath';
+    rendererAttributes.spritePathMatrix = '_spritePathMatrix';
 
     this.attr('source', source);
   }

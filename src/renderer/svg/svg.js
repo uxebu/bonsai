@@ -539,6 +539,21 @@ define([
       img.setAttributeNS(xlink, 'href', attributes.absoluteUrl);
     }
 
+    if (attributes.spritePath && !img._root) {
+      img._root = createElement('g');
+      img._root.appendChild(img);
+      img._imgClip = this.svg.defs.appendChild(createElement('clipPath'));
+      var clipId = this._genDefUID();
+      img._imgClip.setAttribute('id', clipId);
+      img._root.setAttribute('clip-path', 'url(#' + clipId + ')');
+      img._clipPath = img._imgClip.appendChild(createElement('path'));
+      img.setAttribute('x', -attributes.spritePathMatrix.tx);
+      img.setAttribute('y', -attributes.spritePathMatrix.ty);
+      attributes.spritePathMatrix.tx = 0;
+      attributes.spritePathMatrix.ty = 0;
+      img._clipPath.setAttribute('d', exportToPath(attributes.spritePath));
+    }
+
     if (attributes.width == null && attributes.height == null) {
       attributes.width = naturalWidth;
       attributes.height = naturalHeight;
