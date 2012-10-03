@@ -85,7 +85,6 @@ define([
      * @returns {Animation} The clone
      */
     clone: function() {
-      //console.log(this.keyframes);
       return new KeyframeAnimation(this.clock, this.duration, tools.mixin({}, this.keyframes), {
         clock: this.clock,
         duration: this.duration,
@@ -130,13 +129,12 @@ define([
       if (initial && this.currentTweenIndex === 0) {
         var subjects = this.subjects;
         for (var i = 0, l = subjects.length; i < l; ++i) {
-          //console.log('Applying initial to', subjects[i], initial)
           subjects[i].subject.attr(initial);
         }
       }
 
       this.isPlaying = true;
-      this.clock.on(this.isTimelineBound ? 'advance' : 'tick', this, this.onStep);
+      this.clock.on(this.isTimelineBound ? 'advance' : 'tick', this, this._onStep);
 
       return this;
     },
@@ -145,13 +143,28 @@ define([
      * Pauses an animation
      */
     pause: function() {
-      this.clock.removeListener(this.isTimelineBound ? 'advance' : 'tick', this, this.onStep);
+      this.clock.removeListener(this.isTimelineBound ? 'advance' : 'tick', this, this._onStep);
       this.emit('pause', this);
       this.isPlaying = false;
       return this;
     },
 
-    onStep: function(_, frameNumber, timelineIsFinished) {
+    /**
+     * Resets a keyframe animation (so it's ready to begin again)
+     */
+    reset: function() {
+      this.frame = 0;
+      this.isPlaying = false;
+      this.currentTweenIndex = 0;
+      this.clock.removeListener(this.isTimelineBound ? 'advance' : 'tick', this, this._onStep);
+      return this;
+    },
+
+    /** 
+     * Event listener for the clock's tick event, delegates to _step()
+     * @private
+     */
+    _onStep: function(_, frameNumber, timelineIsFinished) {
 
       if (this.currentDelay > 0 && this.currentDelay--) {
         return;
@@ -167,7 +180,7 @@ define([
             this.frame + ((frameNumber - this.prevFrame) || 1)
           ) : this.frame + 1;
 
-      this.step(frame / duration);
+      this._step(frame / duration);
 
       if (
         (this.isTimelineBound && timelineIsFinished) ||
@@ -175,11 +188,8 @@ define([
       ) {
         this.prevFrame = 0;
         this.currentDelay = this.delay;
-        ////console.log(this, this.clock._events[':tick'].slice());
         this.reset();
         if (this.repeat === Infinity || this.repeat-- > 0) {
-          //console.log('REPLAY');
-          //console.log(this);
           this.play();
         } else {
           this.emit('end', this);
@@ -190,7 +200,12 @@ define([
       this.prevFrame = frameNumber;
     },
 
-    step: function(progress) {
+    /** 
+     * Runs a single step of the keyframe-animation, setting changed values
+     * on their respective subjects
+     * @private
+     */
+    _step: function(progress) {
 
       var realProgress = progress;
 
@@ -200,18 +215,14 @@ define([
 
       var tweensLength = this.subjects[0].tweens.length;
       var curTween = this.subjects[0].tweens[this.currentTweenIndex];
-      //console.log(progress, curTween.startProgress, curTween.endProgress, progress);
       var thisPhaseProgress = (progress - curTween.startProgress) / (curTween.endProgress-curTween.startProgress);
-      //console.log('::', thisPhaseProgress)
-      //console.log(thisPhaseProgress, progress, this.currentTweenIndex)
 
       // If there's another tween that we can move onto, we should, otherwise
       // assume that we can continue with progress > 1
       if (thisPhaseProgress > 1 && this.currentTweenIndex + 1 < tweensLength) {
         this.currentTweenIndex += 1;
-        return this.step(realProgress);
+        return this._step(realProgress);
       }
-      //console.log('$$', this.currentTweenIndex, thisPhaseProgress);
 
       var subjects = this.subjects;
       for (var s = 0, sl = subjects.length; s < sl; ++s) {
@@ -220,18 +231,6 @@ define([
           currentSubjectTween.at(thisPhaseProgress)
         );
       }
-    },
-
-    /**
-     * Resets an animation (so it's ready to begin again)
-     */
-    reset: function() {
-      this.frame = 0;
-      this.isPlaying = false;
-      this.currentTweenIndex = 0;
-      //console.log('RESETTING');
-      this.clock.removeListener(this.isTimelineBound ? 'advance' : 'tick', this, this.onStep);
-      return this;
     },
 
     /**
@@ -292,7 +291,7 @@ define([
     },
 
     /**
-     * Creates an animation for each keyframe transition
+     * Creates a PropertiesTween object for each phase of the keyframe animation
      *
      * @private
      */
