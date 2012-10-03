@@ -2,7 +2,7 @@ define(function() {
   'use strict';
 
   function createSpy(name) {
-    return jasmine.createSpy(name)
+    return jasmine.createSpy(name);
   }
 
   function createEventEmitter() {
@@ -10,7 +10,7 @@ define(function() {
       on: createSpy('on'),
       addListener: createSpy('addListener'),
       removeListener: createSpy('removeListener')
-    }
+    };
   }
 
   var displayObjectId = 0;
@@ -21,7 +21,7 @@ define(function() {
         add: createSpy('add'),
         clear: createSpy('clear'),
         remove: createSpy('remove')
-      }
+      };
     },
 
     createDisplayObject: function() {
@@ -54,7 +54,7 @@ define(function() {
           needsDraw: {},
           needsInsertion: {}
         }
-      }
+      };
     }
-  }
+  };
 });
