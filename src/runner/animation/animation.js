@@ -37,7 +37,7 @@ define([
 
     return new KeyframeAnimation(clock, duration, {
       to: endValues
-    }, options);es();
+    }, options);
 
   }
 
