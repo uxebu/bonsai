@@ -5,113 +5,97 @@ define([
 ], function(tools, filter, color) {
   'use strict';
 
-  var prefix = 'filter_';
-
-  function setupFilterValues(value, i, values) {
-
-    if (value != null) {
-
-      if (value instanceof filter.BaseFilter) {
-
-        if (tools.isArray(value.value)) {
-
-          for (var vi = 0, vl = value.value.length; vi < vl; ++vi) {
-            if (
-              (
-                value.type === 'dropShadowByOffset' ||
-                value.type === 'dropShadowByAngle'
-              ) && vi === 3
-            ) {
-              // Color
-              var c = color(value.value[vi]);
-              values[prefix + i + '_' + vi + '_r'] = c.r();
-              values[prefix + i + '_' + vi + '_g'] = c.g();
-              values[prefix + i + '_' + vi + '_b'] = c.b();
-              values[prefix + i + '_' + vi + '_a'] = c.a();
-            } else {
-              values[prefix + i + '_' + vi] = value.value[vi];
-            }
-          }
-        } else {
-          values[prefix + i] = value.value;
-        }
-      } else {
-        values[prefix + i] = value;
-      }
-    }
-  }
-
   /**
    * Animation translations for filter arrays
    * @ignore
    */
   return {
     filters: {
-      setupTo: function(values) {
+      toNumeric: function(filters, isEndValues) {
 
-        var value;
+        var numbers = [];
 
-        if (!tools.isArray(values.filters)) {
-          values.filters = [values.filters];
-        }
-        for (var i = 0, m = values.filters.length; i < m; i++) {
-          setupFilterValues(values.filters[i], i, values);
+        if (!tools.isArray(filters)) {
+          filters = [filters];
         }
 
-        // Save amount of filters that we're animating
-        this._to = values.filters;
-
-        delete values.filters;
-      },
-      setupFrom: function(values) {
-
-        for (var i = 0, m = this._to.length; i < m; i++) {
-          setupFilterValues(values.filters[i], i, values);
+        if (!isEndValues) {
+          this.filters = filters;
         }
-        this._filters = values.filters;
-        delete values.filters;
-      },
-      step: function(values) {
 
-        for (var i = 0, m = this._to.length; i < m; i++) {
+        for (var i = 0, m = filters.length; i < m; i++) {
+          var filter = filters[i];
+          if (filter != null) {
 
-          if (this._to[i] == null) {
-            continue;
-          }
+            if (typeof filter == 'number') {
+              // Allow e.g. thing.animate(.., { filters: [1,2,3]}) 
+              // i.e. passing just the args to already-declared filters
+              numbers.push(filter);
+            } else if (tools.isArray(filter.value)) {
 
-          if (values[prefix + i] != null) {
-            this._filters[i].value = values[prefix + i];
-            delete values[prefix + i];
-          } else {
-
-            for (var vi = 0, vl = this._to[i].value.length; vi < vl; ++vi) {
-
-              if (
-                (
-                  this._to[i].type === 'dropShadowByOffset' ||
-                  this._to[i].type === 'dropShadowByAngle'
-                ) && vi === 3
-              ) {
-                var c = Number(new color.RGBAColor(
-                  values[prefix + i + '_' + vi + '_r'],
-                  values[prefix + i + '_' + vi + '_g'],
-                  values[prefix + i + '_' + vi + '_b'],
-                  values[prefix + i + '_' + vi + '_a']
-                ));
-                delete values[prefix + i + '_' + vi + '_r'];
-                delete values[prefix + i + '_' + vi + '_g'];
-                delete values[prefix + i + '_' + vi + '_b'];
-                delete values[prefix + i + '_' + vi + '_a'];
-                this._filters[i].value[vi] = c;
-              } else {
-                this._filters[i].value[vi] = values[prefix + i + '_' + vi];
-                delete values[prefix + i + '_' + vi];
+              for (var vi = 0, vl = filter.value.length; vi < vl; ++vi) {
+                if (
+                  (
+                    filter.type === 'dropShadowByOffset' ||
+                    filter.type === 'dropShadowByAngle'
+                  ) && vi === 3
+                ) {
+                  // Color
+                  var c = color(filter.value[vi]);
+                  numbers.push(
+                    c.r(),
+                    c.g(),
+                    c.b(),
+                    c.a()
+                  );
+                } else {
+                  numbers.push(filter.value[vi]);
+                }
               }
+            } else {
+              numbers.push(filter.value);
             }
           }
         }
 
-        values.filters = this._filters;
+        return numbers;
+      },
+      toUnique: function(numbers) {
+
+        var filters = this.filters;
+        var n = 0;
+
+        for (var i = 0, m = filters.length; i < m; i++) {
+          var filter = filters[i];
+          if (filter != null) {
+
+            if (tools.isArray(filter.value)) {
+
+              for (var vi = 0, vl = filter.value.length; vi < vl; ++vi) {
+                if (
+                  (
+                    filter.type === 'dropShadowByOffset' ||
+                    filter.type === 'dropShadowByAngle'
+                  ) && vi === 3
+                ) {
+                  var c = Number(new color.RGBAColor(
+                    numbers[n++],
+                    numbers[n++],
+                    numbers[n++],
+                    numbers[n++]
+                  ));
+                  filter.value[vi] = c;
+                } else {
+                  filter.value[vi] = numbers[n++];
+                }
+              }
+            } else {
+              filter.value = numbers[n++];
+            }
+          }
+        }
+
+        return filters;
       }
     }
   };
