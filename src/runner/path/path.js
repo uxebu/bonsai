@@ -68,10 +68,6 @@ define([
       return;
     }
 
-    if (!(img instanceof Bitmap)) {
-      throw Error('img is not instance of Bitmap.');
-    }
-
     if (owner.stage) {
       DisplayObject.registerOffStageObj(owner, img, owner.stage, 'fillImage');
     }

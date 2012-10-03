@@ -1,6 +1,18 @@
-v0.3.9
+v0.4.1
 -------------------
 
+
+v0.4.0 / 2012-10-03
+-------------------
+
+* Provide a unified `bonsai.js` build for iframe/worker context instead
+  of providing two differing builds. The built `bonsai.js` will take care
+  to choose the right strategy for the used browser (Latest Firefox, Chrome,
+  Safari 6 and iOS 6 uses worker-environment spawned through a Blob-URL,
+  Opera 12 uses worker-environment spawned through a data-URI, all other
+  browsers will spawn an iframe through `<script>/*bonsaiCode*/</script>`).
+* A built `bonsai.js` can now be concatted with other JS-files
+* Remove instanceof check in fillImage attribute
 
 v0.3.8 / 2012-09-28
 -------------------

@@ -30,7 +30,8 @@ movieList = {
     'fill-image.js',
     'sprite.js',
     'data-url.js',
-    'bitmap-memory-check.js'
+    'bitmap-memory-check.js',
+    'sprite-ninja.js'
   ],
   'Color': [
     'color.js',
