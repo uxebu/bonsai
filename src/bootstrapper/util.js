@@ -30,7 +30,7 @@ define([
       worker = new Worker(blobUrl);
       worker.onmessage = function() {
         worker.terminate();
-        url.revokeObjectURL(createObjectURL);
+        url.revokeObjectURL(blobUrl);
       };
       worker.postMessage('');
       return true;
