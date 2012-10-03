@@ -31,9 +31,19 @@ define([
   function PropertiesTween(propertiesFrom, propertiesTo, easingFn) {
 
     this.easingFn = easingFn;
-    this.propertiesFrom = propertiesFrom;
-    this.propertiesTo = propertiesTo;
-    this.propertyNames = Object.keys(propertiesFrom);
+    this.propertiesFrom = tools.mixin({}, propertiesFrom);
+    this.propertiesTo = tools.mixin({}, propertiesTo);
+
+    // Delete values in startVals that do not exist in endVals
+    for (var i in this.propertiesFrom) {
+      if (!(i in this.propertiesTo)) {
+        delete this.propertiesFrom[i];
+      }
+    }
+
+    console.log('>>>toFrom', this.propertiesFrom, this.propertiesTo)
+
+    this.propertyNames = Object.keys(this.propertiesFrom);
     this.propertyLength = this.propertyNames.length;
     this.propertyTweens = [];
     this._setupTweens();

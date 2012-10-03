@@ -128,9 +128,9 @@ define([
         var clone = createAnimation().clone();
         expect(clone).toBeInstanceOf(Animation);
       });
-      it('should copy properties to clone', function() {
+      it('should copy endValues to clone', function() {
         var clone = createAnimation(1, {x:0}).clone();
-        expect(clone.properties.x).toBe(0);
+        expect(clone.endValues.x).toBe(0);
       });
       it('should copy options to clone', function() {
         var clone = createAnimation(100).clone();
