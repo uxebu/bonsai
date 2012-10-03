@@ -20,7 +20,9 @@ define([
 
     init: function(options) {
       var runnerUrl = URI.parse(this.runnerUrl);
-      runnerUrl.fragment = encodeURIComponent(JSON.stringify(options));
+      if ((''+runnerUrl).indexOf('blob') === -1) {
+        runnerUrl.fragment = encodeURIComponent(JSON.stringify(options));
+      }
       var worker = this._worker = new Worker(runnerUrl);
       var runnerContext = this;
       worker.onmessage = function(event) {

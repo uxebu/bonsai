@@ -10,11 +10,12 @@
 
   <div id="player"></div>
 
-  <script src="../../dist/bonsai.iframe.js"></script>
+  <script src="../../dist/bonsai.js"></script>
   <script src="assets/integration.js"></script>
 
   <script>
 
+    bonsai.setup({runnerContext: bonsai.IframeRunnerContext});
     playerInit(bonsai, {});
 
   </script>
