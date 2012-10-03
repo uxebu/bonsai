@@ -10,7 +10,7 @@ define(['../matrix'], function(Matrix) {
     matrix: {
       toNumeric: function(matrix) {
         this.animatedMatrix = new Matrix;
-        return [matrix.a, matrix.b, matrix.c, matrix.d, matrix.tc, matrix.ty];
+        return [matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx, matrix.ty];
       },
       toUnique: function(numbers) {
         var m = this.animatedMatrix;

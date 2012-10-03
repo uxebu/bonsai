@@ -23,8 +23,6 @@ define([
    * @param {String|Function} [options.easing] Easing function for each sub-animation
    *  @param {Array|Object} [options.subjects] The subject(s) (e.g. DisplayObjects) of
    *    the keyframe-animation
-   *  @param {string|Object} [options.strategy='attr'] The strategy to use to
-   *    get and set properties on the subjects.
    *  @param {Number|String} [options.delay=0] Delay before animation begins, in
    *   frames or seconds
    * @returns {KeyframeAnimation} An KeyframeAnimation instance
@@ -59,10 +57,6 @@ define([
     // Get numerical keys (frame-numbers) and sort
     this.keys = Object.keys(this.keyframes).map(Number);
     this.keys.sort(function(a, b){ return a - b; });
-
-    if (options.subjects) {
-      this.addSubjects(options.subjects, options.strategy);
-    }
   }
 
 
@@ -106,13 +100,16 @@ define([
      * Optionally changes the subjects of the animation.
      *
      * @param {Object} [subjects]
-     * @param {mixed} [strategy='attr'] The set/get strategy to use
-     *   - 'attr': The 'attr' method of the object is used (for DisplayObjects)
-     *   - 'prop': Normal property setting and getting is used
-     *   - Object with 'set(subject, values)' and 'get(subject, propertyNames)'
-     *     methods.
      */
-    play: function(subjects, strategy) {
+    play: function(subjects) {
+
+      if (subjects) {
+        this.addSubjects(subjects);
+      }
+
+      if (!this.subjects.length) {
+        throw Error('No subjects defined -- animation cannot play');
+      }
 
       if (this.isPlaying) {
         return this;
@@ -238,17 +235,10 @@ define([
     },
 
     /**
-     * Adds a subject with given strategy to the keyframe-animation
+     * Adds a subject to the keyframe-animation
      * @param {Object} subject The subject (usually a DisplayObject)
-     * @param {mixed} [strategy='attr'] The set/get strategy to use
-     *   - 'attr': The 'attr' method of the object is used (for DisplayObjects)
-     *   - 'prop': Normal property setting and getting is used
-     *   - Object with 'set(subject, values)' and 'get(subject)'
-     *     methods.
      */
-    addSubject: function(subject, strategy) {
-
-      strategy = strategy || this.strategy || 'attr';
+    addSubject: function(subject) {
 
       var initialAttributes = tools.mixin(subject.attr(), this.keyframes[0]);
 
@@ -261,31 +251,24 @@ define([
         tweens: this._createTweens(initialAttributes)
       });
 
-      //console.log('Added subject', this.subjects);
-
       return this;
     },
 
     /**
-     * Adds multiple subjects with given strategy to the animation
+     * Adds multiple subjects to the animation
      * @param {Array} subjects Array of subjects to add
-     * @param {mixed} [strategy='attr'] The set/get strategy to use
-     *   - 'attr': The 'attr' method of the object is used (for DisplayObjects)
-     *   - 'prop': Normal property setting and getting is used
-     *   - Object with 'set(subject, values)' and 'get(subject)'
-     *     methods.
      */
-    addSubjects: function(subjects, strategy) {
+    addSubjects: function(subjects) {
       var me = this;
       subjects = tools.isArray(subjects) ? subjects : [subjects];
       subjects.forEach(function(subject) {
-        me.addSubject(subject, strategy);
+        me.addSubject(subject);
       });
       return this;
     },
 
     /**
-     * Removes a subject with given strategy to the animation
+     * Removes a subject from the animation
      * @param {Object} subject The subject to remove
      */
     removeSubject: function(subject) {
@@ -300,7 +283,7 @@ define([
     },
 
     /**
-     * Removes a subject with given strategy to the animation
+     * Removes a subject from the animation
      * @param {Array} subjects Array of subjects to remove
      */
     removeSubjects: function(subjects) {

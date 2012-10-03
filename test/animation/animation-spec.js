@@ -1,5 +1,6 @@
 define([
   'bonsai/runner/animation/animation',
+  'bonsai/runner/animation/keyframe_animation',
   'bonsai/runner/display_object',
   'bonsai/runner/timeline',
   'bonsai/tools',
@@ -7,7 +8,19 @@ define([
   'bonsai/runner/path/path',
   'bonsai/color',
   'bonsai/runner/matrix'
-], function(Animation, DisplayObject, Timeline, tools, easing, Path, color, Matrix) {
+], function(Animation, KeyframeAnimation, DisplayObject, Timeline, tools, easing, Path, color, Matrix) {
+
+  function wrappedSubject(obj) {
+    return {
+      attr: function(a) {
+        if (a) {
+          for (var i in a) obj[i] = a[i];
+        } else {
+          return obj;
+        }
+      }
+    };
+  }
 
   var clock = tools.mixin({}, Timeline, {
     framerate: 30,
@@ -81,6 +94,7 @@ define([
     describe('play', function() {
       it('should emit play event', function() {
         var anim = createAnimation();
+        anim.addSubject(wrappedSubject({}));
         var listener = jasmine.createSpy('listener');
         anim.on('play', listener);
         anim.play();
@@ -89,6 +103,7 @@ define([
       });
       it('should play', function() {
         var anim = createAnimation();
+        anim.addSubject(wrappedSubject({}));
         anim.play();
         expect(anim.isPlaying).toBeTruthy();
       });
@@ -97,6 +112,7 @@ define([
     describe('pause', function() {
       it('should emit pause event', function() {
         var anim = createAnimation();
+        anim.addSubject(wrappedSubject({}));
         var listener = jasmine.createSpy('listener');
         anim.on('pause', listener);
         anim.play();
@@ -106,6 +122,7 @@ define([
       });
       it('should stop', function() {
         var anim = createAnimation();
+        anim.addSubject(wrappedSubject({}));
         anim.play();
         anim.pause();
         expect(anim.isPlaying).toBeFalsy();
@@ -115,6 +132,7 @@ define([
     describe('event order', function() {
       it('should emit beforebegin before play', function() {
         var anim = createAnimation();
+        anim.addSubject(wrappedSubject({}));
         var result = 0;
         anim.on('beforebegin', function(){ result += 1; });
         anim.on('play', function(){ result *= 2; } );
@@ -124,13 +142,13 @@ define([
     });
 
     describe('clone', function() {
-      it('should return animation instance', function() {
+      it('should return KeyframeAnimation instance', function() {
         var clone = createAnimation().clone();
-        expect(clone).toBeInstanceOf(Animation);
+        expect(clone).toBeInstanceOf(KeyframeAnimation);
       });
       it('should copy endValues to clone', function() {
-        var clone = createAnimation(1, {x:0}).clone();
-        expect(clone.endValues.x).toBe(0);
+        var clone = createAnimation(1, ({x:0})).clone();
+        expect(clone.keyframes[1].x).toBe(0);
       });
       it('should copy options to clone', function() {
         var clone = createAnimation(100).clone();
@@ -143,15 +161,15 @@ define([
     });
 
     it('should transform one value to another over time', function() {
-      var subject = {foo:0};
+      var subject = wrappedSubject({foo:0});
       var anim = new createAnimation('50ms', {
         foo: 1000
       });
-      anim.addSubject(subject, 'prop');
+      anim.addSubject(subject);
       anim.play();
       async(function(next) {
         anim.on('end', function() {
-          expect(subject.foo).toBe(1000);
+          expect(subject.attr().foo).toBe(1000);
           next();
         });
       });
@@ -159,14 +177,14 @@ define([
 
     it('should only register onEnd if it\'s a function', function() {
       var fn = function(){};
-      var animA = new createAnimation('50ms', {t:1}, { onEnd: fn });
-      var animB = new createAnimation('50ms', {t:1}, { onEnd: null });
+      var animA = new createAnimation('50ms', ({t:1}), { onEnd: fn });
+      var animB = new createAnimation('50ms', ({t:1}), { onEnd: null });
       expect(animA._events[':end'][0].listener).toBe(fn);
       expect(animB._events).toBe(undefined);
     });
 
     it('should transform one value to another over time after a specified delay', function() {
-      var subject = {foo:0};
+      var subject = wrappedSubject({foo:0});
       var anim = new createAnimation('50ms', {
         foo: 1000
       }, {
@@ -177,14 +195,14 @@ define([
       anim.play();
       async(function(next) {
         anim.on('end', function() {
-          expect(subject.foo).toBe(1000);
+          expect(subject.attr().foo).toBe(1000);
           next();
         });
       });
     });
 
     it('should animate multiple properties over time', function() {
-      var subject = {foo:0, bar:0, far:100};
+      var subject = wrappedSubject({foo:0, bar:0, far:100});
       var anim = createAnimation('50ms', {
         foo: 1000,
         bar: -777,
@@ -194,9 +212,9 @@ define([
       anim.play();
       async(function(next) {
         anim.on('end', function() {
-          expect(subject.foo).toBe(1000);
-          expect(subject.bar).toBe(-777);
-          expect(subject.far).toBeCloseTo(0.053);
+          expect(subject.attr().foo).toBe(1000);
+          expect(subject.attr().bar).toBe(-777);
+          expect(subject.attr().far).toBeCloseTo(0.053);
           next();
         });
       });
@@ -204,9 +222,9 @@ define([
 
     it('should animate multiple subjects at once', function() {
       var subjects = [
-        {x: 0, y: 0, id: 1},
-        {x: 0, y: 50, id: 2},
-        {x: 0, y: 100, id: 3}
+        wrappedSubject({x: 0, y: 0, id: 1}),
+        wrappedSubject({x: 0, y: 50, id: 2}),
+        wrappedSubject({x: 0, y: 100, id: 3})
       ];
       var anim = createAnimation('50ms', {
         x: 500
@@ -215,16 +233,16 @@ define([
       anim.play();
       async(function(next) {
         anim.on('end', function() {
-          expect(subjects[0]).toEqual({x: 500, y: 0, id: 1});
-          expect(subjects[1]).toEqual({x: 500, y: 50, id: 2});
-          expect(subjects[2]).toEqual({x: 500, y: 100, id: 3});
+          expect(subjects[0].attr()).toEqual({x: 500, y: 0, id: 1});
+          expect(subjects[1].attr()).toEqual({x: 500, y: 50, id: 2});
+          expect(subjects[2].attr()).toEqual({x: 500, y: 100, id: 3});
           next();
         });
       });
     });
 
     it('Should be able to animate a matrix', function() {
-      var subject = {matrix:new Matrix(1,0,0,1,0,0)};
+      var subject = wrappedSubject({matrix:new Matrix(1,0,0,1,0,0)});
       var anim = new createAnimation('50ms', {
         matrix: new Matrix(2,1,-1,1,150,200)
       });
@@ -232,12 +250,12 @@ define([
       anim.play();
       async(function(next) {
         anim.on('end', function() {
-          expect(subject.matrix.a).toBe(2);
-          expect(subject.matrix.b).toBe(1);
-          expect(subject.matrix.c).toBe(-1);
-          expect(subject.matrix.d).toBe(1);
-          expect(subject.matrix.tx).toBe(150);
-          expect(subject.matrix.ty).toBe(200);
+          expect(subject.attr().matrix.a).toBe(2);
+          expect(subject.attr().matrix.b).toBe(1);
+          expect(subject.attr().matrix.c).toBe(-1);
+          expect(subject.attr().matrix.d).toBe(1);
+          expect(subject.attr().matrix.tx).toBe(150);
+          expect(subject.attr().matrix.ty).toBe(200);
           next();
         });
       });
