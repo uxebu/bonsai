@@ -56,7 +56,7 @@ define([
         runnerContext: player.RunnerContext || (runnerUrl ? WorkerRunnerContext : IframeRunnerContext),
         runnerUrl: player.runnerUrl || runnerUrl || ('' + __bonsaiRunnerCode__)
       });
-      originalPlayerRun.apply(this, arguments);
+      return originalPlayerRun.apply(player, arguments);
     });
 
   }
