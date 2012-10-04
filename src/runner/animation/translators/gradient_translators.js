@@ -1,4 +1,4 @@
-define(['../../color'], function(color) {
+define(['../../../color'], function(color) {
   'use strict';
 
   /**

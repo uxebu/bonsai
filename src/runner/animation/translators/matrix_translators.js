@@ -1,4 +1,4 @@
-define(['../matrix'], function(Matrix) {
+define(['../../matrix'], function(Matrix) {
   'use strict';
 
   /**

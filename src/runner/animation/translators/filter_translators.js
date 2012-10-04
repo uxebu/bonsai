@@ -1,7 +1,7 @@
 define([
-  '../../tools',
-  '../filter/builtin',
-  '../../color'
+  '../../../tools',
+  '../../filter/builtin',
+  '../../../color'
 ], function(tools, filter, color) {
   'use strict';
 

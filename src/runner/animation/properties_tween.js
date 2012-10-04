@@ -1,12 +1,12 @@
 define([
   '../../tools',
   './property_tween',
-  './color_translators',
-  './gradient_translators',
-  './filter_translators',
-  './segment_translators',
-  './matrix_translators',
-  './corner_radius_translators'
+  './translators/color_translators',
+  './translators/gradient_translators',
+  './translators/filter_translators',
+  './translators/segment_translators',
+  './translators/matrix_translators',
+  './translators/corner_radius_translators'
 ], function(
   tools, PropertyTween,
   colorTranslators, gradientTranslators, filterTranslators,
