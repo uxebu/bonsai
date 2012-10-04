@@ -2,7 +2,18 @@ define([
   'bonsai/runner/video',
   'bonsai/runner/group'
 ], function(Video, Group) {
+
+  var mockLoader;
+
   describe('Video', function() {
+
+    beforeEach(function() {
+      mockLoader = {
+        destroyAsset: jasmine.createSpy('destroyAsset'),
+        request: function() {}
+      };
+    });
+
     describe('#getComputed()', function() {
       it('should return the bitmap width if invoked with "width"', function() {
         var width = 123;
@@ -11,45 +22,45 @@ define([
         expect(bitmap.getComputed('width')).toBe(width);
       });
       it('should return 0 for "width" if width is not set', function() {
-        var bitmap = new Video();
+        var videoInstance = new Video();
 
-        expect(bitmap.getComputed('width')).toBe(0);
+        expect(videoInstance.getComputed('width')).toBe(0);
       });
 
       it('should return the bitmap width if invoked with "right"', function() {
         var width = 123;
-        var bitmap = new Video().attr('width', width);
+        var videoInstance = new Video().attr('width', width);
 
-        expect(bitmap.getComputed('right')).toBe(width);
+        expect(videoInstance.getComputed('right')).toBe(width);
       });
       it('should return 0 for "right" if width is not set', function() {
-        var bitmap = new Video();
+        var videoInstance = new Video();
 
-        expect(bitmap.getComputed('right')).toBe(0);
+        expect(videoInstance.getComputed('right')).toBe(0);
       });
 
       it('should return the bitmap height if invoked with "height"', function() {
         var height = 123;
-        var bitmap = new Video().attr('height', height);
+        var videoInstance = new Video().attr('height', height);
 
-        expect(bitmap.getComputed('height')).toBe(height);
+        expect(videoInstance.getComputed('height')).toBe(height);
       });
       it('should return 0 for "height" if height is not set', function() {
-        var bitmap = new Video();
+        var videoInstance = new Video();
 
-        expect(bitmap.getComputed('height')).toBe(0);
+        expect(videoInstance.getComputed('height')).toBe(0);
       });
 
       it('should return the bitmap height if invoked with "bottom"', function() {
         var height = 123;
-        var bitmap = new Video().attr('height', height);
+        var videoInstance = new Video().attr('height', height);
 
-        expect(bitmap.getComputed('bottom')).toBe(height);
+        expect(videoInstance.getComputed('bottom')).toBe(height);
       });
       it('should return 0 for "bottom" if height is not set', function() {
-        var bitmap = new Video();
+        var videoInstance = new Video();
 
-        expect(bitmap.getComputed('bottom')).toBe(0);
+        expect(videoInstance.getComputed('bottom')).toBe(0);
       });
 
       it('should return 0 if invoked with "top"', function() {
@@ -93,17 +104,29 @@ define([
     });
 
     it('Provides destroy method which will remove the item from stage and call destroyAsset on its loader', function() {
-      var loader = {
-        destroyAsset: jasmine.createSpy('destroyAsset'),
-        request: function() {}
-      };
-      var d = new Video(loader, 'abc.mp4', null);
+      var d = new Video(mockLoader, 'abc.mp4', null);
       var parent = new Group();
       parent.addChild(d);
       expect(parent.children()[0]).toBe(d);
       d.destroy();
-      expect(loader.destroyAsset).toHaveBeenCalled();
+      expect(mockLoader.destroyAsset).toHaveBeenCalled();
       expect(parent.children()[0]).toBe(void 0);
+    });
+
+    describe('has a clone method', function() {
+      it('returns an Video instance', function() {
+        var d = new Video(mockLoader, 'abc.mp4', null);
+        expect(d.clone() instanceof Video).toBeTruthy();
+      });
+      it('returns a fresh/new Video instance', function() {
+        var d = new Video(mockLoader, 'abc.mp4', null);
+        expect(d.clone() !== d).toBeTruthy();
+      });
+      it('returns a clone with the same source', function() {
+        var d = new Video(mockLoader, 'abc.mp4', null);
+        var dc = d.clone();
+        expect(d.attr('source') === dc.attr('source')).toBeTruthy();
+      });
     });
 
   })
