@@ -72,6 +72,7 @@ movieList = {
     'event-bubble.js',
     'event-multi-touch.js',
     'event-multi-touch2.js',
+    'event-mouse-button.js',
     'key-events.js'
   ],
   'Filter': [
