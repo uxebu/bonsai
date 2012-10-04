@@ -50,8 +50,7 @@ define(['../../../color'], function(color) {
           c = color(stops[i][0]);
           numbers.push(c.r(), c.g(), c.b(), c.a(), stops[i][1]);
         }
-
-        console.log(numbers);
+        
         return numbers;
       },
       toUnique: function(numbers) {

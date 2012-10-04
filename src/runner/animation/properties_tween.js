@@ -19,15 +19,27 @@ define([
    * Translators, in the form of:
    * { toNumber: function(){}, toUnique: function(){} }
    */
-  var propertyTranslators = PropertiesTween.propertyTranslators = {};
+  var translators = PropertiesTween.propertyTranslators = {};
 
-  mixin(propertyTranslators, colorTranslators);
-  mixin(propertyTranslators, gradientTranslators);
-  mixin(propertyTranslators, filterTranslators);
-  mixin(propertyTranslators, segmentTranslators);
-  mixin(propertyTranslators, matrixTranslators);
-  mixin(propertyTranslators, cornerRadiusTranslators);
+  mixin(translators, colorTranslators);
+  mixin(translators, gradientTranslators);
+  mixin(translators, filterTranslators);
+  mixin(translators, segmentTranslators);
+  mixin(translators, matrixTranslators);
+  mixin(translators, cornerRadiusTranslators);
 
+  /** 
+   * Constructs an instance of PropertiesTween which takes care of tweening
+   * a set of properties from one state to another, using any necessary
+   * property translators (e.g. colors get split into r,g,b,a for tweening)
+   *
+   * @constructor
+   * @name PropertiesTween
+   * @private
+   * @param {Object} propertiesFrom Properties and their initial values
+   * @param {Object} propertiesTo Properties and their end values
+   * @param {Function} [easingFn] Easing function applied to tween
+   */
   function PropertiesTween(propertiesFrom, propertiesTo, easingFn) {
 
     this.easingFn = easingFn;
@@ -51,6 +63,11 @@ define([
 
   PropertiesTween.prototype = {
 
+    /**
+     * Returns all values at the passed progress
+     *
+     * @param progress
+     */
     at: function(progress) {
 
       var values = this._values,
@@ -65,6 +82,10 @@ define([
 
     },
 
+    /**
+     * Sets up all individual property tweens (passing the translator so that
+     * PropertyTween can take care of component pieces, e.g. color->r,g,b,a)
+      */
     _setupTweens: function() {
 
       var easingFn = this.easingFn,
@@ -79,7 +100,7 @@ define([
           new PropertyTween(
             propertiesFrom[property],
             propertiesTo[property],
-            propertyTranslators[property],
+            translators[property],
             easingFn
           )
         );
