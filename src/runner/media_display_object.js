@@ -6,7 +6,6 @@ define([
 
   var data = tools.descriptorData;
   var accessor = tools.descriptorAccessor;
-  var getter = tools.getter;
 
   /** Getters & Setters */
   function getTime() {
@@ -160,8 +159,6 @@ define([
       time: 0
     });
   };
-
-  proto.getComputed = function(key) {};
 
   return MediaDisplayObject;
 });

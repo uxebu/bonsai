@@ -36,8 +36,8 @@ define([
     this.type = 'Video';
 
     Object.defineProperties(this._attributes, {
-      height: data(100, true, true),
-      width: data(100, true, true)
+      height: data(0, true, true),
+      width: data(0, true, true)
     });
 
     var rendererAttributes = this._renderAttributes;
