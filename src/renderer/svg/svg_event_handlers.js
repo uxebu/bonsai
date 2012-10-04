@@ -219,9 +219,11 @@ define([
       event.type = type;
 
       if (rPointerEvent.test(type)) {
+        // Guide: http://unixpapa.com/js/mouse.html
         event.isRight = domEvent.which ? domEvent.which === 3 : domEvent.button === 2;
         event.isMiddle = domEvent.which ? domEvent.which === 2 : domEvent.button === 4;
-        event.isLeft = !event.isRight && !event.isMiddle;
+        event.isLeft = domEvent.which ? domEvent.which === 1 :
+          domEvent.button === 1 || domEvent.button === 0;
       }
 
       this.emit('userevent', event, targetId);
