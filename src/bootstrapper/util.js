@@ -3,30 +3,43 @@ define([
 ], function(version) {
   'use strict';
 
+  var workerCode = 'this.onmessage=function(e){postMessage(e.data)}';
+
   var supportsWorkerWithDataUri = (function() {
     try {
-      var worker = new Worker('data:application/javascript,' + encodeURIComponent('void 0;'));
-      worker.terminate();
+      var worker = new Worker('data:application/javascript,' + encodeURIComponent(workerCode));
+      worker.onmessage = function() {
+        worker.terminate();
+      };
+      worker.postMessage('');
       return true;
-    } catch(e) {}
-    return false;
+    } catch (e) {
+      return false;
+    }
   })();
 
   var supportsWorkerWithBlobUri = (function() {
     var blob, blobUrl, url, worker;
     try {
-      blob = new Blob();
+      // worker.terminate can just be executed after the worker was created
+      // and it'll stay in memory. This is why we need to wait for postMessage
+      // before we destroy it.
+      blob = new Blob([workerCode], {'type': 'text\/javascript'});
       url = window.URL || window.webkitURL;
       blobUrl = url.createObjectURL(blob);
       worker = new Worker(blobUrl);
-      worker.terminate();
+      worker.onmessage = function() {
+        worker.terminate();
+        url.revokeObjectURL(blobUrl);
+      };
+      worker.postMessage('');
       return true;
-    } catch(e) {
+    } catch (e) {
       if (blobUrl) {
         url.revokeObjectURL(blobUrl);
       }
+      return false;
     }
-    return false;
   })();
 
   return {
