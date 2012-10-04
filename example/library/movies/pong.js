@@ -4,7 +4,7 @@ var Pong, audioSprite;
  * PONG
  */
 
-Pong = (function(){
+Pong = (function() {
 
   /**
    * Setup default settings
