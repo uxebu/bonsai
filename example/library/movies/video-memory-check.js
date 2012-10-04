@@ -3,14 +3,13 @@ var resources = [
   {src: 'assets/sample.ogv', type:'video/ogg'}
 ];
 
-new bonsai.Video(resources, function() {
+var video = new Video(resources, function() {
     this.attr({
       y: 150,
       x: 150,
       width:320,
-      height:240,
-      autoplay:true
-    }).addTo(stage);
+      height:240
+    }).addTo(stage).play();
 });
 
 
