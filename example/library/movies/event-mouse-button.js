@@ -1,6 +1,7 @@
 var text = new Text().addTo(stage).attr({x: 10, y: 10});
 
-stage.disableContextMenu();
+// NOTE:
+// Go to index.html and set disableContextMenu: true
 
 stage.on('pointerup', function(e) {
   switch (true) {
