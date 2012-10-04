@@ -149,7 +149,11 @@ define([
           this.env.exports.env.emit('change', data);
           break;
         case 'message':
-          this.emit('message', data);
+          if ('category' in message) {
+            this.emit('message:' + message.category, data);
+          } else {
+            this.emit('message', data);
+          }
           break;
         case 'canRender':
           this._canRender = true;
@@ -348,11 +352,24 @@ define([
 
     /**
      * Sends a message to the renderer / stage controller
+     *
+     * @param [category=null] The message category
      * @param messageData
      * @returns {this} The instance
      */
-    sendMessage: function(messageData) {
-      return this.post({command: 'message', data: messageData});
+    sendMessage: function(category, messageData) {
+      if (arguments.length > 1) {
+        return this.post({
+          command: 'message',
+          category: category,
+          data: messageData
+        });
+      } else {
+        return this.post({
+          command: 'message',
+          data: category
+        });
+      }
     },
 
     /**

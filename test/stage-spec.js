@@ -164,6 +164,90 @@ define([
 
       });
 
+      describe('sendMessage', function() {
+        var messageProxy, stage;
+        function getFirstArg() {
+          return messageProxy.notifyRenderer.mostRecentCall.args[0];
+        }
+        beforeEach(function(argument) {
+          messageProxy = mock.createMessageProxy();
+          stage = new Stage(messageProxy);
+        });
+
+        it('should send an uncategorized message when called with one argument', function() {
+          var message = {};
+
+          stage.sendMessage(message);
+          var arg = getFirstArg();
+
+          expect(arg.command).toBe('message');
+          expect(arg.data).toBe(message);
+          expect(arg.category).toBeFalsy();
+        });
+
+        it('should send a categorized message when called with two arguments', function() {
+          var message = {};
+          var messageCategory = 'arbitrary';
+
+          stage.sendMessage(messageCategory, message);
+          var arg = getFirstArg();
+
+          expect(arg.command).toBe('message');
+          expect(arg.data).toBe(message);
+          expect(arg.category).toBe(messageCategory);
+        });
+
+      });
+
+      describe('message events', function() {
+        var messageProxy, stage;
+        beforeEach(function(argument) {
+          messageProxy = mock.createMessageProxy();
+          stage = new Stage(messageProxy);
+        });
+
+        it('should emit uncategorized messages to uncategorized listeners only', function() {
+          var uncategorizedListener = jasmine.createSpy('uncategorized');
+          var undefinedCategoryListener = jasmine.createSpy('undefined');
+          var messageData = {};
+          stage.on('message', uncategorizedListener);
+          stage.on('message:undefined', undefinedCategoryListener);
+
+          stage.handleEvent({command: 'message', data: messageData});
+
+          expect(uncategorizedListener).toHaveBeenCalledWith(messageData);
+          expect(undefinedCategoryListener).not.toHaveBeenCalled();
+        });
+
+        it('should emit messages with category "null" to categorized listeners only', function() {
+          var uncategorizedListener = jasmine.createSpy('uncategorized');
+          var nullCategoryListener = jasmine.createSpy('null');
+          var messageData = {};
+          stage.on('message', uncategorizedListener);
+          stage.on('message:null', nullCategoryListener);
+
+          stage.handleEvent({command: 'message', data: messageData, category: null});
+
+          expect(uncategorizedListener).not.toHaveBeenCalled();
+          expect(nullCategoryListener).toHaveBeenCalledWith(messageData);
+        });
+
+        it('should emit categorized messages to categorized listeners only', function() {
+          var uncategorizedListener = jasmine.createSpy('uncategorized');
+          var categorizedListener = jasmine.createSpy('categorized');
+          var messageData = {};
+          var category = 'arbitrary';
+          stage.on('message', uncategorizedListener);
+          stage.on('message:' + category, categorizedListener);
+
+          stage.handleEvent({command: 'message', data: messageData, category: category});
+
+          expect(uncategorizedListener).not.toHaveBeenCalled();
+          expect(categorizedListener).toHaveBeenCalledWith(messageData);
+        });
+
+      });
+
     });
 
   });
