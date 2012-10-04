@@ -47,6 +47,42 @@ define([
       });
     });
 
+    describe('disableContextMenu', function() {
+      var stage = makeStage();
+      stage.post = jasmine.createSpy('post');
+      it('Exists', function() {
+        expect(stage.disableContextMenu).toBeOfType('function');
+      });
+      it('Posts disableContextMenu:true to the renderer', function() {
+        stage.disableContextMenu();
+        expect(stage.post).toHaveBeenCalledWith({
+          command: 'renderConfig',
+          data: {
+            item: 'disableContextMenu',
+            value: true
+          }
+        })
+      });
+    });
+
+    describe('enableContextMenu', function() {
+      var stage = makeStage();
+      stage.post = jasmine.createSpy('post');
+      it('Exists', function() {
+        expect(stage.enableContextMenu).toBeOfType('function');
+      });
+      it('Posts enableContextMenu:true to the renderer', function() {
+        stage.enableContextMenu();
+        expect(stage.post).toHaveBeenCalledWith({
+          command: 'renderConfig',
+          data: {
+            item: 'disableContextMenu',
+            value: false
+          }
+        })
+      });
+    });
+
     describe('getSubMovieEnvironment', function() {
       it('returns an Environment instance for a new subMovie', function() {
         var subMovie = {};

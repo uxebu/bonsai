@@ -444,6 +444,32 @@ define([
     },
 
     /**
+     * Disables the native browser context menu (usually activated by right-click)
+     */
+    disableContextMenu: function() {
+      this.post({
+        command: 'renderConfig',
+        data: {
+          item: 'disableContextMenu',
+          value: true
+        }
+      });
+    },
+
+    /**
+     * Enables the native browser context menu (usually activated by right-click)
+     */
+    enableContextMenu: function() {
+      this.post({
+        command: 'renderConfig',
+        data: {
+          item: 'disableContextMenu',
+          value: false
+        }
+      });
+    },
+
+    /**
      * Unfreeze/initiate the loop
      */
     unfreeze: function() {

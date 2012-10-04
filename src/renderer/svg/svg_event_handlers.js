@@ -9,6 +9,8 @@ define([
   'use strict';
 
   var TOUCH_SUPPORT = typeof document == 'undefined' ? false : 'createTouch' in document;
+  var rMultiEvent = /drag|pointerup|pointerdown|pointermove/;
+  var rPointerEvent = /click|pointer/;
 
   function cloneBasicEvent(e) {
     return tools.mixin({}, e);
@@ -216,9 +218,15 @@ define([
       data._lastEventPos = [clientX, clientY];
       event.type = type;
 
+      if (rPointerEvent.test(type)) {
+        event.isRight = domEvent.which ? domEvent.which === 3 : domEvent.button === 2;
+        event.isMiddle = domEvent.which ? domEvent.which === 2 : domEvent.button === 4;
+        event.isLeft = !event.isRight && !event.isMiddle;
+      }
+
       this.emit('userevent', event, targetId);
 
-      if (!TOUCH_SUPPORT && /drag|pointerup|pointerdown|pointermove/.test(type)) {
+      if (!TOUCH_SUPPORT && rMultiEvent.test(type)) {
         // If we're on a non-touch platform (e.g. regular desktop)
         // then fire the mutli: event so we get cross-platform support:
         event = cloneBasicEvent(event);

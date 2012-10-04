@@ -128,7 +128,10 @@ define([
           var node = createMockNode(), width = 162, height = 100, options = {allowEventDefaults: true, fpsLog: true};
           funcSetup(node, width, height, options);
 
-          expect(MockRendererConstructor).toHaveBeenCalledWith(node, width, height, options.allowEventDefaults, options.fpsLog);
+          expect(MockRendererConstructor).toHaveBeenCalledWith(node, width, height, {
+            allowEventDefaults: options.allowEventDefaults,
+            fpsLog: options.fpsLog
+          });
         });
 
         it('passes an url and a document to the runner', function () {

@@ -204,10 +204,11 @@ define([
    *    true displays the frame rate in the rendering, a function will be called
    *    with the framerate.
    */
-  function SvgRenderer(node, width, height, allowEventDefaults, fpsLog) {
+  function SvgRenderer(node, width, height, options) {
+    options = options || {};
     this.width = width;
     this.height = height;
-    this.allowEventDefaults = !!allowEventDefaults;
+    this.allowEventDefaults = !!options.allowEventDefaults;
 
     var svg = this.svg = new Svg(node, width, height);
 
@@ -228,7 +229,13 @@ define([
     document.addEventListener('keydown', this, false);
     document.addEventListener('keypress', this, false);
 
-    this._setupFPSLog(fpsLog);
+    this._setupFPSLog(options.fpsLog);
+    if (options.disableContextMenu) {
+      this.config({
+        item: 'disableContextMenu',
+        value: true
+      });
+    }
   }
 
   var proto = SvgRenderer.prototype = tools.mixin({}, EventEmitter, eventHandlers);
@@ -255,6 +262,9 @@ define([
         break;
       case 'backgroundColor':
         this.svg.root.style.backgroundColor = color(value).rgba();
+        break;
+      case 'disableContextMenu':
+        this.svg.root.oncontextmenu = value ? function() { return false; } : null;
         break;
     }
   };
