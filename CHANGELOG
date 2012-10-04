@@ -5,6 +5,8 @@ v0.4.1
   passing
 * Add isRight/isMiddle/isLeft to Pointer events and make it possible to
   disable/enable the context menu from the `bonsai.run` configuration object.
+* Introduce MediaDisplayObject that combines the basic functionality of
+  Video and Audio.
 
 v0.4.0 / 2012-10-03
 -------------------

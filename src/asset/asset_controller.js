@@ -22,10 +22,6 @@ function(
   // save references to all assets
   AssetController.assets = {};
 
-  AssetController.hasVideoSupport = function() {
-    return !!domVideo.canPlayType;
-  };
-
   /**
   * Receiver of asset-load messages from worker.
   * Loads assets and returns an `assetLoaded` event.
