@@ -1,9 +1,8 @@
-require([
+define([
   'bonsai/renderer/renderer_controller',
   'bonsai/uri',
   'bonsai/event_emitter',
-  'bonsai/tools',
-  './runner.js'
+  'bonsai/tools'
 ], function(RendererController, URI, EventEmitter, tools) {
   var mockAssetController, mockRenderer, mockRunner, baseUri;
 
@@ -309,6 +308,88 @@ require([
 
         expect(mockRunner.notifyRunner).toHaveBeenCalledWithCommand(command, commandData);
       });
+    });
+
+    describe('sendMessage', function() {
+      var rendererController;
+      beforeEach(function() {
+        rendererController = createRendererController();
+      });
+      function getFirstArg() {
+        return mockRunner.notifyRunner.mostRecentCall.args[0];
+      }
+
+      it('should send an uncategorized message when called with one argument', function() {
+        var message = {};
+
+        rendererController.sendMessage(message);
+        var arg = getFirstArg();
+
+        expect(arg.command).toBe('message');
+        expect(arg.data).toBe(message);
+        expect(arg.category).toBeFalsy();
+      });
+
+      it('should send a categorized message when called with two arguments', function() {
+        var message = {};
+        var messageCategory = 'arbitrary';
+
+        rendererController.sendMessage(messageCategory, message);
+        var arg = getFirstArg();
+
+        expect(arg.command).toBe('message');
+        expect(arg.data).toBe(message);
+        expect(arg.category).toBe(messageCategory);
+      });
+
+    });
+
+    describe('message events', function() {
+      var rendererController;
+      beforeEach(function() {
+        rendererController = createRendererController();
+      });
+
+      it('should emit uncategorized messages to uncategorized listeners only', function() {
+        var uncategorizedListener = jasmine.createSpy('uncategorized');
+        var undefinedCategoryListener = jasmine.createSpy('undefined');
+        var messageData = {};
+        rendererController.on('message', uncategorizedListener);
+        rendererController.on('message:undefined', undefinedCategoryListener);
+
+        rendererController.handleEvent({command: 'message', data: messageData});
+
+        expect(uncategorizedListener).toHaveBeenCalledWith(messageData);
+        expect(undefinedCategoryListener).not.toHaveBeenCalled();
+      });
+
+      it('should emit a message with category "null" to categorized listeners only', function() {
+        var uncategorizedListener = jasmine.createSpy('uncategorized');
+        var nullCategoryListener = jasmine.createSpy('null');
+        var messageData = {};
+        rendererController.on('message', uncategorizedListener);
+        rendererController.on('message:null', nullCategoryListener);
+
+        rendererController.handleEvent({command: 'message', data: messageData, category: null});
+
+        expect(uncategorizedListener).not.toHaveBeenCalled();
+        expect(nullCategoryListener).toHaveBeenCalledWith(messageData);
+      });
+
+      it('should emit categorized messages to categorized listeners only', function() {
+        var uncategorizedListener = jasmine.createSpy('uncategorized');
+        var categorizedListener = jasmine.createSpy('categorized');
+        var messageData = {};
+        var category = 'arbitrary';
+        rendererController.on('message', uncategorizedListener);
+        rendererController.on('message:' + category, categorizedListener);
+
+        rendererController.handleEvent({command: 'message', data: messageData, category: category});
+
+        expect(uncategorizedListener).not.toHaveBeenCalled();
+        expect(categorizedListener).toHaveBeenCalledWith(messageData);
+      });
+
     });
   });
 

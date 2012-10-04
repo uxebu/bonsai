@@ -33,7 +33,7 @@ function(tools, EventEmitter, URI) {
 
     runnerContext.on('message', this, this.handleEvent);
 
-    // Bind to assetController, tunnel assetLoaded event through to runner:
+    // Bind to assetController, tunnel assetLoaded event through to RunnerContext:
     assetController.on('assetLoadSuccess', this, function(data) {
       this.post('assetLoadSuccess', data);
     });
@@ -41,7 +41,7 @@ function(tools, EventEmitter, URI) {
       this.post('assetLoadError', data);
     });
 
-    // Bind to renderer, tunnel user events through to runner:
+    // Bind to renderer, tunnel user events through to RunnerContext:
     this.renderer.on('userevent', this, function(event, targetId) {
       this.post('userevent', {
         event: event,
@@ -118,9 +118,9 @@ function(tools, EventEmitter, URI) {
     },
 
     /**
-     * Creates a clean set of options for the runner.
+     * Creates a clean set of options for the RunnerContext.
      *
-     * @param {Object} options Options for the runner.
+     * @param {Object} options Options for the RunnerContext.
      * @param {boolean} [options.pluginDebug] Whether to debug plugins.
      * @param {string} [options.pluginUrl] URL to lookup plugins.
      * @param {Array} [options.plugins] Array of plugins to load.
@@ -138,10 +138,10 @@ function(tools, EventEmitter, URI) {
 
 
     /**
-     * Terminates worker and renderer.
+     * Terminates RunnerContext and renderer.
      *
      * Use this before deleting references to the instance. Otherwise the
-     * worker will not be terminated and the rendering is not removed.
+     * RunnerContext will not be terminated and the rendering is not removed.
      */
     destroy: function() {
       this.renderer.destroy();
@@ -157,7 +157,7 @@ function(tools, EventEmitter, URI) {
      * @param items
      */
     debug: function (items) {
-      console.log.apply(console, ['WORKER DEBUG:'].concat(items));
+      console.log.apply(console, ['RUNNER DEBUG:'].concat(items));
     },
 
     /**
@@ -170,7 +170,7 @@ function(tools, EventEmitter, URI) {
     },
 
     /**
-     * Event handling method. Used to communicate with the worker.
+     * Event handling method. Used to communicate with the RunnerContext.
      *
      * @private
      * @param {MessageEvent} The message event to handle.
@@ -201,7 +201,11 @@ function(tools, EventEmitter, URI) {
           this.assetController.destroy(messageData.id);
           break;
         case 'message':
-          this.emit('message', messageData);
+          if ('category' in message) {
+            this.emit('message:' + message.category, messageData);
+          } else {
+            this.emit('message', messageData);
+          }
           break;
         case 'isReady':
           this.isRunnerListening = true;
@@ -239,7 +243,7 @@ function(tools, EventEmitter, URI) {
     },
 
     /**
-     * Posts a command to the runner.
+     * Posts a command to the RunnerContext.
      *
      * @param {String} command A command name
      * @param {mixed} [data] Data to post alongside the command.
@@ -252,7 +256,7 @@ function(tools, EventEmitter, URI) {
     },
 
     /**
-     * Like #post: Posts a command to the runner. Guaranteed to be asynchronous.
+     * Like #post: Posts a command to the RunnerContext. Guaranteed to be asynchronous.
      *
      * @param {String} command A command name
      * @param {mixed} [data] Data to post alongside the command.
@@ -264,7 +268,7 @@ function(tools, EventEmitter, URI) {
     },
 
     /**
-     * Setups sender and sends env data to the worker thread
+     * Setups sender and sends env data to the RunnerContext
      */
     _sendEnvData: function() {
 
@@ -298,12 +302,23 @@ function(tools, EventEmitter, URI) {
     },
 
     /**
-     * Sends a message to the runner / stage
+     * Sends a message to the RunnerContext / stage
+     *
+     * @param [category=null] The message category
      * @param messageData
      * @returns {this} The instance
      */
-    sendMessage: function(messageData) {
-      return this.post('message', messageData);
+    sendMessage: function(category, messageData) {
+      if (arguments.length < 2) {
+        this.post('message', category);
+      } else {
+        this.runnerContext.notifyRunner({
+          command: 'message',
+          category: category,
+          data: messageData
+        });
+      }
+      return this;
     },
 
     /**

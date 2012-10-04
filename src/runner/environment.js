@@ -24,8 +24,10 @@ define([
   './gradient',
   './text',
   './text_span',
+  './audio',
   './video',
   './filter/builtin',
+  './display_list',
   './dom_element',
   '../version'
 ], function(
@@ -33,8 +35,8 @@ define([
   Path, SpecialAttrPath, Rect, Polygon, Star, Ellipse, Circle, Arc,
   Bitmap, DisplayObject, Group,
   Animation, KeyframeAnimation, easing, FontFamily, Matrix,
-  Sprite, color, gradient, Text, TextSpan, Video, filter,
-  DOMElement, version
+  Sprite, color, gradient, Text, TextSpan, Audio, Video, filter,
+  displayList, DOMElement, version
 ) {
   'use strict';
 
@@ -60,11 +62,14 @@ define([
   function Environment(stage, assetLoader) {
 
     var exports = this.exports = {
+
+      // DisplayObjects
       DOMElement: DOMElement,
       DisplayObject: DisplayObject,
       Group: Group,
       Matrix: Matrix,
-      Point: Point,
+      Text: Text,
+      TextSpan: TextSpan,
 
       // Path Classes
       Path: Path,
@@ -76,8 +81,9 @@ define([
       Circle: Circle,
       Arc: Arc,
 
-      Text: Text,
-      TextSpan: TextSpan,
+      DisplayList: displayList.DisplayList,
+
+      Point: Point,
       color: color,
       tools: tools,
       gradient: gradient,
@@ -96,6 +102,7 @@ define([
     exports.Movie = bindConstructorToParameters(Movie, [stage]);
     exports.Sprite = bindConstructorToParameters(Sprite, [assetLoader]);
     exports.Video = bindConstructorToParameters(Video, [assetLoader]);
+    exports.Audio = bindConstructorToParameters(Audio, [assetLoader]);
 
     exports.bonsai = exports;
 

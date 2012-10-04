@@ -1,13 +1,11 @@
 // image
-new bonsai.Bitmap('assets/redpanda.jpg', {
-  onload: function() {
+new bonsai.Bitmap('assets/redpanda.jpg', function() {
     this.attr({
       y: 100,
       x: 100,
       filters: 'blur'
     });
     stage.addChild(this);
-  }
 });
 
 // shape

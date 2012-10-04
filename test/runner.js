@@ -1,11 +1,5 @@
-define([
-  'order!../lib/jasmine-core/jasmine.js',
-  'order!../lib/jasmine-core/jasmine-html.js',
-  'order!../lib/jasmine-core/jasmine.junit-reporter.js',
-  'order!jasmine.helper.js',
-  'order!jasmine.compare-reporter.js',
-  'order!jasmine-matchers.js'
-], function(jasmineCore, jasmineHtml, junitReporter, jasmineHelper, compareReporter) {
+define(['jasmine.helper.js'], function(jasmineHelper) {
+  // jasmineCore, jasmineHtml, junitReporter, jasmineHelper, compareReporter
   var jasmineEnv = jasmine.getEnv();
   jasmineEnv.updateInterval = 10000;
 
@@ -29,21 +23,28 @@ define([
     });
   }
 
-  var trivialReporter = new jasmine.TrivialReporter();
+  var isPhantom = (navigator && navigator.userAgent.indexOf('PhantomJS') > -1);
+  var reporter = isPhantom ? new jasmine.ConsoleReporter() : new jasmine.TrivialReporter();
 
-  jasmineEnv.addReporter(trivialReporter);
+  jasmineEnv.addReporter(reporter);
   jasmineEnv.addReporter(new jasmine.JUnitXmlReporter('', true, false));
-  // passing trivialReporter so we can access the individual DOM nodes
-  jasmineEnv.addReporter(new jasmine.CompareReporter(trivialReporter));
 
-  jasmineEnv.specFilter = function(spec) {
-    return trivialReporter.specFilter(spec);
-  };
+  if (isPhantom) {
+    // exporting this to window because phantomjs/ConsoleReporter is complaining otherwise
+    window.console_reporter = reporter;
+  } else {
+
+    // passing reporter so we can access the individual DOM nodes
+    jasmineEnv.addReporter(new jasmine.CompareReporter(reporter));
+
+    jasmineEnv.specFilter = function(spec) {
+      return reporter.specFilter(spec);
+    };
+  }
 
   function execJasmine() {
     jasmineEnv.execute();
   }
-
   if (document.body) {
     setTimeout(execJasmine, 1000);
   } else {

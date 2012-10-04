@@ -68,10 +68,6 @@ define([
       return;
     }
 
-    if (!(img instanceof Bitmap)) {
-      throw Error('img is not instance of Bitmap.');
-    }
-
     if (owner.stage) {
       DisplayObject.registerOffStageObj(owner, img, owner.stage, 'fillImage');
     }
@@ -584,7 +580,14 @@ define([
   /**
    * Appends an bezier-curve segment. Appends a segment at the end of the list of contained segments.
    *
-   * @see Path.curveBy
+   * @see http://www.w3.org/TR/SVG/paths.html#InterfaceSVGPathSegCurvetoCubicRel
+   * @param {Number} cp1x (Relative) first control point x
+   * @param {Number} cp1y (Relative) first control point y
+   * @param {Number} cp2x (Relative) second control point x
+   * @param {Number} cp2y (Relative) second control point y
+   * @param {Number} x (Relative) x-value of the point
+   * @param {Number} y (Relative) y-value of the point
+   * @returns {Path} The current Path instance
    */
   proto.curveBy = function(cp1x, cp1y, cp2x, cp2y, x, y) {
     if (arguments.length < 6) {
@@ -651,13 +654,20 @@ define([
    * Adds an arc to the list of contained segments.
    * It provides the same API like SVG does.
    *
-   * @param {Number} rx description
-   * @param {Number} ry description
-   * @param {Number} xAxisRotation description
-   * @param {Boolean} largeArcFlag description
-   * @param {Boolean} sweepFlag description
-   * @param {Number} x description
-   * @param {Number} y description
+   * @param {Number} rx The x-axis radius for the ellipse
+   * @param {Number} ry The y-axis radius for the ellipse
+   * @param {Number} xAxisRotation The rotation angle in radians for the
+   *  ellipse's x-axis relative to the x-axis of the stage's {0,0}
+   * @param {Boolean} largeArcFlag Defines the way in which the arc is drawn
+   *  from its starting point to its ending point. See
+   *  http://www.w3.org/TR/SVG/paths.html#PathDataEllipticalArcCommands for
+   *  details
+   * @param {Boolean} sweepFlag Defines the way in which the arc is drawn
+   *  from its starting point to its ending point. See
+   *  http://www.w3.org/TR/SVG/paths.html#PathDataEllipticalArcCommands for
+   *  details
+   * @param {Number} x X-axis location of the end of the arc
+   * @param {Number} y Y-axis location of the end of the arc
    * @returns {Path} The current Path instance
    */
   proto.arcTo = function(rx, ry, xAxisRotation, largeArcFlag, sweepFlag, x, y) {
@@ -671,13 +681,20 @@ define([
    * Adds an arc segment to the list of contained segments.
    * It provides the same API like SVG does.
    *
-   * @param {Number} rx description
-   * @param {Number} ry description
-   * @param {Number} xAxisRotation description
-   * @param {Boolean} largeArcFlag description
-   * @param {Boolean} sweepFlag description
-   * @param {Number} x description
-   * @param {Number} y description
+   * @param {Number} rx The relative x-axis radius for the ellipse
+   * @param {Number} ry The relative y-axis radius for the ellipse
+   * @param {Number} xAxisRotation The rotation angle in radians for the
+   *  ellipse's x-axis relative to the x-axis of the stage's {0,0}
+   * @param {Boolean} largeArcFlag Defines the way in which the arc is drawn
+   *  from its starting point to its ending point. See
+   *  http://www.w3.org/TR/SVG/paths.html#PathDataEllipticalArcCommands for
+   *  details
+   * @param {Boolean} sweepFlag Defines the way in which the arc is drawn
+   *  from its starting point to its ending point. See
+   *  http://www.w3.org/TR/SVG/paths.html#PathDataEllipticalArcCommands for
+   *  details
+   * @param {Number} x Relative X-axis location of the end of the arc
+   * @param {Number} y Relative Y-axis location of the end of the arc
    * @returns {Path} The current Path instance
    */
   proto.arcBy = function(rx, ry, xAxisRotation, largeArcFlag, sweepFlag, x, y) {
@@ -689,12 +706,13 @@ define([
   /**
    * Adds an arc segment to the list of contained segments.
    *
-   * @param {Number} x description
-   * @param {Number} y description
-   * @param {Number} r2adius description
-   * @param {deg|rad} aStartAngle description (TODO deg)
-   * @param {deg|rad} aEndAngle description (TODO deg)
-   * @param {Boolean} [anticlockwise] description
+   * @param {Number} x The x-axis radius for the ellipse
+   * @param {Number} y The y-axis radius for the ellipse
+   * @param {Number} radius The radius of the ellipse
+   * @param {deg|rad} aStartAngle Starting angle of arc in radians
+   * @param {deg|rad} aEndAngle Ending angle of arc in radians
+   * @param {Boolean} [anticlockwise] Whether you want the arc to be drawn 
+   *  anticlockwise or clockwise (Boolean)
    * @returns {Path} The current Path instance
    */
   proto.arc = function(x, y, radius, aStartAngle, aEndAngle, anticlockwise) {

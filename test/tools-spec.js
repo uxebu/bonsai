@@ -1,6 +1,5 @@
-require([
-  'bonsai/tools',
-  './runner.js'
+define([
+  'bonsai/tools'
 ], function(tools) {
   'use strict';
 

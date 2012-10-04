@@ -68,7 +68,7 @@ CLOSURE_AMD=${CLOSURE} \
   --transform_amd_modules \
   --process_common_js_modules \
   --common_js_module_path_prefix src \
-  --output_wrapper '(function(){%output%}());'
+  --output_wrapper '(function __bonsaiRunnerCode__(){%output%}());'
 CLOSURE_FINALIZE=${CLOSURE}
 CLOSURE_PRETTY=${CLOSURE} --formatting PRETTY_PRINT --compilation_level WHITESPACE_ONLY
 
@@ -85,6 +85,9 @@ test: mktemp
 	phantomjs --load-plugins=yes ${CI_TOOLS_DIR}/script/phantom_runner.js ${BASE_URL}/${TEST_RUNNER} ${TEMP_DIR} 0 jasmine
 	phantomjs --load-plugins=yes ${CI_TOOLS_DIR}/script/phantom_runner.js ${BASE_URL}/${TEST_RUNNER_COMPARE} ${TEMP_DIR} 0 jasmine
 	phantomjs --load-plugins=yes ${CI_TOOLS_DIR}/script/phantom_runner.js ${BASE_URL}/${TEST_RUNNER_QC} ${TEMP_DIR} 0 qc
+
+test-phantom: mktemp
+	phantomjs test/phantom-runner-jasmine.js test/runner.html
 
 syntux-diff: mktemp
 	${CI_TOOLS_DIR}/bin/syntux_diff.sh ${WORKSPACE}/src ${TEMP_DIR}
@@ -103,20 +106,13 @@ doc: mkjsdoc
 	jsdoc -r -d ${WORKSPACE}/jsdoc${SUB_DIR} ${WORKSPACE}/src || true
 
 build: clean mkdist
-	${CLOSURE_AMD} --common_js_entry_module bootstrapper/_build/worker.js \
-		src/bootstrapper/_build/worker.js \
-			`find src -name '*.js' -not -path 'src/bootstrapper/_dev/*' -not -path 'src/bootstrapper/_build/*' -not -path 'src/bootstrapper/context/socketio/*' -not -path 'src/bootstrapper/context/iframe/*' -not -path 'src/bootstrapper/context/node/*'` | ${CLOSURE_PRETTY} > ${DIST_DIR}/bonsai.js
+	${CLOSURE_AMD} --common_js_entry_module bootstrapper/_build/common.js \
+		src/bootstrapper/_build/common.js \
+			`find src -name '*.js' -not -path 'src/bootstrapper/_dev/*' -not -path 'src/bootstrapper/_build/*' -not -path 'src/bootstrapper/context/socketio/*' -not -path 'src/bootstrapper/context/node/*'` | ${CLOSURE_PRETTY} > ${DIST_DIR}/bonsai.js
 	echo "/*" > ${DIST_DIR}/bonsai.min.js
 	cat ${WORKSPACE}/LICENSE >> ${DIST_DIR}/bonsai.min.js
 	echo "*/" >> ${DIST_DIR}/bonsai.min.js
 	cat ${DIST_DIR}/bonsai.js | ${CLOSURE_FINALIZE} >> ${DIST_DIR}/bonsai.min.js
-	${CLOSURE_AMD} --common_js_entry_module bootstrapper/_build/iframe.js \
-		src/bootstrapper/_build/iframe.js \
-			`find src -name '*.js' -not -path 'src/bootstrapper/_dev/*' -not -path 'src/bootstrapper/_build/*' -not -path 'src/bootstrapper/context/socketio/*' -not -path 'src/bootstrapper/context/worker/*' -not -path 'src/bootstrapper/context/node/*'` | ${CLOSURE_PRETTY} > ${DIST_DIR}/bonsai.iframe.js
-	echo "/*" > ${DIST_DIR}/bonsai.iframe.min.js
-	cat ${WORKSPACE}/LICENSE >> ${DIST_DIR}/bonsai.iframe.min.js
-	echo "*/" >> ${DIST_DIR}/bonsai.iframe.min.js
-	cat ${DIST_DIR}/bonsai.iframe.js | ${CLOSURE_FINALIZE} >> ${DIST_DIR}/bonsai.iframe.min.js
 
 preview-bundle: build
 	mkdir -p ${TEMP_DIR}/preview-bundle/lib

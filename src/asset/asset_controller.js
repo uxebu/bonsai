@@ -6,25 +6,21 @@
 define([
   '../tools',
   '../event_emitter',
-  './extensions',
   './asset_request',
   './font_handler',
   './video_handler',
+  './audio_handler',
   './bitmap_handler',
   './raw_handler'
 ],
 function(
-  tools, EventEmitter, extensions, AssetRequest,
-  FontHandler, VideoHandler, BitmapHandler, RawHandler
+  tools, EventEmitter, AssetRequest,
+  FontHandler, VideoHandler, AudioHandler, BitmapHandler, RawHandler
 ) {
   'use strict';
 
-  // save references to all assets (TODO: rethink)
+  // save references to all assets
   AssetController.assets = {};
-
-  AssetController.hasVideoSupport = function() {
-    return !!domVideo.canPlayType;
-  };
 
   /**
   * Receiver of asset-load messages from worker.
@@ -53,6 +49,11 @@ function(
     Font: FontHandler,
 
     /**
+     * Type handler for audio
+     */
+    Audio: AudioHandler,
+
+    /**
      * Type handler for video
      */
     Video: VideoHandler,
@@ -68,7 +69,7 @@ function(
 
     /**
      * Destroys our reference to the asset's corresponding data/element.
-     * (<img> or <video> etc.)
+     * (<img> or <video> or <audio> etc.)
      */
     destroy: function(assetId) {
       delete AssetController.assets[assetId];
@@ -88,81 +89,28 @@ function(
       successEvent = successEvent || 'assetLoadSuccess';
       errorEvent = errorEvent || 'assetLoadError';
 
-      var type = data.type;
+      var displayObjectType = data.type;
 
-      if (type in handlers) {
+      if (displayObjectType in handlers) {
 
-        new handlers[type](data.request, data.id)
+        new handlers[displayObjectType](data.request, data.id)
           .on('registerElement', function(element) {
             AssetController.assets[data.id] = element;
           })
-          .on('load', this, function(assetData) {
-            this.emit(successEvent, tools.mixin(data, assetData));
+          .on('load', this, function(loadData) {
+            data.loadData = loadData;
+            this.emit(successEvent, data);
           })
-          .on('error', this, function(err) {
-            data.err = err;
+          .on('error', this, function(errorData) {
+            data.loadData = errorData;
             this.emit(errorEvent, data);
           })
           .load();
       } else {
-        throw new Error('Type not found in AssetController.handlers: ' + type);
-      }
-    },
-
-    /**
-     * Preloads array of assets and fires callback when ALL are loaded
-     *
-     * @param {object} data Asset data
-     * @param {string} data.source URI source for image
-     * @param {string} [data.type] source type (generic)
-     * @returns {this}
-     */
-    preload: function(sources, callback) {
-
-      sources = tools.isArray(sources) ? sources : [sources];
-
-      if (!sources.length) {
-        callback();
-      }
-
-      var i, len, request, source, type,
-          attemptedLoads = 0,
-          loaded = 0,
-          preloadID = this.preloadID ? ++this.preloadID : (this.preloadID = 1);
-
-      this.on('_preloadedAssetLoadSuccess', function(data) {
-        if (data.id.indexOf(preloadID + '__') == 0) {
-          loaded++;
-        }
-        if (loaded == attemptedLoads) {
-          callback();
-        }
-      });
-
-      this.on('_preloadedAssetLoadError', function(data) {
-        // TODO decide if loading multiple sources fails here
-        // (just because 1+ caused errors when loading)
-      });
-
-      for (i = 0, len = sources.length; i < len; i++) {
-
-        source = sources[i];
-        request = new AssetRequest(source);
-        type = request.type || source.type;
-
-        if (!type) {
-          continue;
-        }
-
-        attemptedLoads++;
-
-        this.load({
-          request: request,
-          type: type,
-          id: preloadID + '__' + i
-        }, '_preloadedAssetLoadSuccess', '_preloadedAssetLoadError');
+        throw new Error('Type not found in AssetController.handlers: ' + displayObjectType);
       }
     }
+
   };
 
   tools.mixin(AssetController.prototype, EventEmitter);

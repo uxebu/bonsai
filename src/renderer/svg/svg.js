@@ -16,7 +16,13 @@ define([
   'use strict';
 
   var elCache = {};
-  var isWebkitPatternBug = /Version\/5\.1(\.[0-4])? /.test(navigator.appVersion);
+  // this decides if a svg-pattern-bugfix is applied
+  // targets webkit based browsers from version 530.0 to 534.4
+  var isWebkitPatternBug = /AppleWebKit\/53([0-3]|4.([0-4]))/.test(navigator.appVersion);
+
+  // Math
+  var min = Math.min;
+  var max = Math.max;
 
   // svgHelper
   var cssClasses = svgHelper.cssClasses,
@@ -28,7 +34,6 @@ define([
 
   // svgFilters
   var isFEColorMatrixEnabled = svgFilters.isFEColorMatrixEnabled,
-      colorApplyColorMatrix = svgFilters.colorApplyColorMatrix,
       filterElementsFromList = svgFilters.filterElementsFromList;
 
   // AssetController
@@ -67,6 +72,9 @@ define([
     'mousewheel'
   ];
 
+  // tools
+  var isArray = tools.isArray;
+
   var xlink = 'http://www.w3.org/1999/xlink';
 
   function createElement(n, id) {
@@ -81,7 +89,15 @@ define([
   }
 
   function Svg(node, width, height) {
+
     var root = this.root = this[0] = createElement('svg', 0);
+
+    // We require an additional rootContainer div so we can accurately
+    // retrieve the position of the movie in getOffset on iOS devices.
+    var rootContainer = this.rootContainer = document.createElement('div');
+    rootContainer.style.paddingLeft = '0';
+    rootContainer.style.paddingTop = '0';
+
     if (width) {
       root.setAttribute('width', width);
     }
@@ -93,7 +109,8 @@ define([
     this.viewBox(width, height);
 
     this.defs = this.root.appendChild(createElement('defs'));
-    node.appendChild(root);
+    rootContainer.appendChild(root);
+    node.appendChild(rootContainer);
   }
 
   Svg.prototype = {
@@ -194,10 +211,11 @@ define([
    *    true displays the frame rate in the rendering, a function will be called
    *    with the framerate.
    */
-  function SvgRenderer(node, width, height, allowEventDefaults, fpsLog) {
+  function SvgRenderer(node, width, height, options) {
+    options = options || {};
     this.width = width;
     this.height = height;
-    this.allowEventDefaults = !!allowEventDefaults;
+    this.allowEventDefaults = !!options.allowEventDefaults;
 
     var svg = this.svg = new Svg(node, width, height);
 
@@ -218,7 +236,13 @@ define([
     document.addEventListener('keydown', this, false);
     document.addEventListener('keypress', this, false);
 
-    this._setupFPSLog(fpsLog);
+    this._setupFPSLog(options.fpsLog);
+    if (options.disableContextMenu) {
+      this.config({
+        item: 'disableContextMenu',
+        value: true
+      });
+    }
   }
 
   var proto = SvgRenderer.prototype = tools.mixin({}, EventEmitter, eventHandlers);
@@ -245,6 +269,9 @@ define([
         break;
       case 'backgroundColor':
         this.svg.root.style.backgroundColor = color(value).rgba();
+        break;
+      case 'disableContextMenu':
+        this.svg.root.oncontextmenu = value ? function() { return false; } : null;
         break;
     }
   };
@@ -288,6 +315,8 @@ define([
         if (type === 'DOMElement') {
           element = svg[id] = document.createElement(message.attributes.nodeName);
           element.setAttribute('data-bs-id', id);
+        } else if (type === 'Audio') {
+          element = svg[id] = AssetController.assets[id];
         } else {
           element = svg[id] = createElement(typesToTags[type], id);
         }
@@ -393,7 +422,7 @@ define([
             } while ((prev = prev.prev));
             element = fragment;
           }
-          parent.insertBefore(element, svg[message.next]);
+          parent.insertBefore(element, svg[message.next] || null);
         }
       }
     }
@@ -413,24 +442,23 @@ define([
    */
   proto.drawAll = function(type, element, message) {
 
-    var hasFilters = false;
     var attr = message.attributes;
+    var filters = attr.filters;
     var fillColor = attr.fillColor;
     var fillGradient = attr.fillGradient;
-    var filters = attr.filters || [];
-    var svg = this.svg;
 
     // when filter is applied, force fillColor change on UA w/o SVG Filter support
     if (!isFEColorMatrixEnabled && !fillColor && filters && element._fillColorSignature) {
       fillColor = element._fillColorSignature;
     }
 
-    if (filters.length) {
-      hasFilters = true;
-      this.applyFilters(element, filters);
-    } else if (filters === null) {
-      element._filterSignature &&
+    if (isArray(filters)) {
+      // modify filters
+      if (filters.length > 0) {
+        this.applyFilters(element, filters);
+      } else {
         this.removeFilters(element);
+      }
     }
 
     if (message.offStageType === 'clip') {
@@ -517,7 +545,7 @@ define([
   proto.drawBitmap = function(img, message) {
 
     var attributes = message.attributes;
-    //TODO: can't we set preserveAspectRatio only when `attributes.source != null`?
+    //TODO: can't we set preserveAspectRatio only when `attributes.absoluteUrl != null`?
     img.setAttribute('preserveAspectRatio', 'none');
 
     var naturalWidth = attributes.naturalWidth;
@@ -525,8 +553,8 @@ define([
 
     var ratio = naturalHeight / naturalWidth;
 
-    if (attributes.source != null) {
-      img.setAttributeNS(xlink, 'href', AssetController.assets[message.id].src);
+    if (attributes.absoluteUrl != null) {
+      img.setAttributeNS(xlink, 'href', attributes.absoluteUrl);
     }
 
     if (attributes.width == null && attributes.height == null) {
@@ -548,9 +576,7 @@ define([
 
   proto.drawTextSpan = function(tspan, message) {
 
-    var attributes = message.attributes,
-        fontSize = attributes.fontSize,
-        fontFamily = attributes.fontFamily;
+    var attributes = message.attributes;
 
     tspan.setAttributeNS(xlink, 'text-anchor', 'start');
     tspan.setAttribute('alignment-baseline', 'inherit');
@@ -584,14 +610,14 @@ define([
 
   proto.drawText = function(text, message) {
 
-    var attributes = message.attributes,
-        fontSize = attributes.fontSize,
-        fontFamily = attributes.fontFamily;
+    var attributes = message.attributes;
 
-    if (attributes.selectable !== false) {
-      cssClasses.add(text, 'selectable');
-    } else {
-      cssClasses.remove(text, 'selectable');
+    if (attributes.selectable !== undefined) {
+      if (attributes.selectable !== false) {
+        cssClasses.add(text, 'selectable');
+      } else {
+        cssClasses.remove(text, 'selectable');
+      }
     }
 
     text.setAttributeNS(xlink, 'text-anchor', 'start');
@@ -610,39 +636,135 @@ define([
   proto.drawVideo = function(foreignObject, message) {
 
     // assuming a valid assetId
+    var volume;
     var attributes = message.attributes;
     var id = message.id;
-    var video = AssetController.assets[id];
+    var videoElement = AssetController.assets[id];
+    var playing = attributes.playing;
 
-    if (typeof video === 'undefined') {
-      throw Error('asset <' + id + '> is unkown.');
+    if (typeof videoElement === 'undefined') {
+      throw Error('asset <' + id + '> is unknown.');
     }
-
-    var obj = this.svg[id];
-    var width = attributes.width || 100;
-    var height = attributes.height || 100;
-    var matrix = attributes.matrix || {tx: 0, ty: 0};
-
-    foreignObject.setAttribute('x', matrix.tx);
-    foreignObject.setAttribute('y', matrix.ty);
-    foreignObject.setAttribute('width', width);
-    foreignObject.setAttribute('height', height);
-    foreignObject.setAttribute('preserveAspectRatio', 'none');
 
     // work-around: some browsers cannot transform the content of a foreignObject
     // e.g. webkit: http://code.google.com/p/chromium/issues/detail?id=87072
     // check http://double.co.nz/video_test/video.svg
     foreignObject.removeAttribute('transform');
 
-    video.setAttribute('width', width);
-    video.setAttribute('height', height);
-    video.setAttribute('controls', 'controls');
-
-    if (attributes.autoplay) {
-      video.play();
+    if ('matrix' in attributes) {
+      foreignObject.setAttribute('x', attributes.matrix.tx);
+      foreignObject.setAttribute('y', attributes.matrix.ty);
     }
 
-    foreignObject.appendChild(video);
+    if ('width' in attributes) {
+      foreignObject.setAttribute('width', attributes.width);
+      videoElement.setAttribute('width', attributes.width);
+    }
+    if ('height' in attributes) {
+      foreignObject.setAttribute('height', attributes.height);
+      videoElement.setAttribute('height', attributes.height);
+    }
+
+    foreignObject.setAttribute('preserveAspectRatio', 'none');
+
+    if (attributes.prepareUserEvent && 'ontouchstart' in document) {
+      // We bind to the next touch-event and play/pause the audio to cause
+      // iOS devices to allow subsequent play/pause commands on the audio el.
+      // --
+      // (Usually, iOS Devices will only allow play/pause methods to be called
+      // after a user event. Due to bonsai's async nature, a movie programmer
+      // can never achieve this. So we setup a fake one here...)
+      var touchStartHandler = function() {
+        videoElement.play();
+        videoElement.pause();
+        document.removeEventListener('touchstart', touchStartHandler, true);
+      };
+      document.addEventListener('touchstart', touchStartHandler, true);
+    }
+
+    if ('volume' in attributes) {
+      // Value between 0-1. NaN is treated as `0`
+      videoElement.volume = min(max(+attributes.volume || 0, 0), 1);
+    }
+
+    // Time in seconds. `currentTime` throws when there's no
+    // current playback state machine
+    if ('time' in attributes) {
+      // Set volume to 0 to avoid "clicks"
+      volume = videoElement.volume;
+      videoElement.volume = 0;
+      try {
+        // Some browsers ignore `0`, that's why we set it to `0.01`
+        videoElement.currentTime = +attributes.time || 0.01;
+      } catch(e) {}
+      // Set volume back to the initial value
+      videoElement.volume = volume;
+    }
+
+    if (playing === true) {
+      videoElement.play();
+    }
+    if (playing === false) {
+      videoElement.pause();
+    }
+
+    videoElement.setAttribute('controls', 'controls');
+
+    foreignObject.appendChild(videoElement);
+  };
+
+  proto.drawAudio = function(audioElement, message) {
+
+    var volume;
+    var attributes = message.attributes;
+    var id = message.id;
+    var playing = attributes.playing;
+
+    if (typeof audioElement === 'undefined') {
+      throw Error('asset <' + id + '> is unknown.');
+    }
+
+    if (attributes.prepareUserEvent && 'ontouchstart' in document) {
+      // We bind to the next touch-event and play/pause the audio to cause
+      // iOS devices to allow subsequent play/pause commands on the audio el.
+      // --
+      // (Usually, iOS Devices will only allow play/pause methods to be called
+      // after a user event. Due to bonsai's async nature, a movie programmer
+      // can never achieve this. So we setup a fake one here...)
+      var touchStartHandler = function() {
+        audioElement.play();
+        audioElement.pause();
+        document.removeEventListener('touchstart', touchStartHandler, true);
+      };
+      document.addEventListener('touchstart', touchStartHandler, true);
+    }
+
+    if ('volume' in attributes) {
+      // Value between 0-1. NaN is treated as `0`
+      audioElement.volume = min(max(+attributes.volume || 0, 0), 1);
+    }
+
+    // Time in seconds. `currentTime` throws when there's no
+    // current playback state machine
+    if ('time' in attributes) {
+      // Set volume to 0 to avoid "clicks"
+      volume = audioElement.volume;
+      audioElement.volume = 0;
+      try {
+        // Some browsers ignore `0`, that's why we set it to `0.01`
+        audioElement.currentTime = +attributes.time || 0.01;
+      } catch(e) {}
+      // Set volume back to the initial value
+      audioElement.volume = volume;
+    }
+
+    if (playing === true) {
+      audioElement.play();
+    }
+    if (playing === false) {
+      audioElement.pause();
+    }
+
   };
 
   proto.drawDOMElement = function(element, message) {
@@ -650,11 +772,7 @@ define([
     // assuming a valid assetId
     var body,
         attributes = message.attributes,
-        css = attributes.css,
-        id = message.id,
-        parent = this.svg[message.parent],
-        width = attributes.width,
-        height = attributes.height;
+        parent = this.svg[message.parent];
 
     // Parent may not be defined if message is a NeedsDraw and *not* a NeedsInsertion
     if (parent && !element._root && !(parent instanceof HTMLElement)) {
@@ -737,9 +855,7 @@ define([
       this.removeGradient(element, 'stroke');
 
     this.removeMask(element);
-
-    element._filterSignature &&
-      this.removeFilters(element);
+    this.removeFilters(element);
   };
 
   proto.removeFilters = function(element) {
@@ -749,6 +865,7 @@ define([
     var signature = element._filterSignature,
         def = this.definitions[signature];
 
+    // return early when no filter was previously applied
     if (!def) {
       return;
     }
@@ -760,6 +877,8 @@ define([
       delete this.definitions[signature];
     }
 
+    // remove filter-attribute and internal filter-reference
+    element.removeAttribute('filter');
     delete element._filterSignature;
   };
 
@@ -1204,6 +1323,7 @@ define([
     // Use a pattern to contain fills
 
     var boundingBox,
+        elementMatrix,
         svg = this.svg,
         defs = svg.defs,
         fillRepeat = attributes.fillRepeat,
@@ -1227,27 +1347,29 @@ define([
       pattern = element._pattern = createElement('pattern');
       patternFillColor = pattern._fillColor = createElement('rect');
 
-      pattern.setAttribute('patternUnits', 'objectBoundingBox');
-      pattern.setAttribute('patternContentUnits', 'userSpaceOnUse');
-
-      pattern.setAttribute('width', 1 / fillRepeatX);
-      pattern.setAttribute('height', 1 / fillRepeatY);
+      pattern.setAttribute('patternUnits', 'userSpaceOnUse');
       pattern.setAttribute('x', 0);
       pattern.setAttribute('y', 0);
+      pattern.setAttribute('width', boundingBox.width / fillRepeatX);
+      pattern.setAttribute('height', boundingBox.height / fillRepeatY);
+      elementMatrix = tools.mixin({}, attributes.matrix);
+      elementMatrix.tx = boundingBox.x;
+      elementMatrix.ty = boundingBox.y;
+      pattern.setAttribute('patternTransform', matrixToString(elementMatrix));
 
-      patternFillColor.setAttribute('width', boundingBox.width / fillRepeatX);
-      patternFillColor.setAttribute('height', boundingBox.height / fillRepeatY);
       patternFillColor.setAttribute('x', 0);
       patternFillColor.setAttribute('y', 0);
+      patternFillColor.setAttribute('width', boundingBox.width / fillRepeatX);
+      patternFillColor.setAttribute('height', boundingBox.height / fillRepeatY);
     }
 
     if (!patternFillGradient && fillGradient) {
       boundingBox || (boundingBox = element.getBBox());
       patternFillGradient = pattern._fillGradient = createElement('rect');
-      patternFillGradient.setAttribute('width', boundingBox.width / fillRepeatX);
-      patternFillGradient.setAttribute('height', boundingBox.height / fillRepeatY);
       patternFillGradient.setAttribute('x', 0);
       patternFillGradient.setAttribute('y', 0);
+      patternFillGradient.setAttribute('width', boundingBox.width / fillRepeatX);
+      patternFillGradient.setAttribute('height', boundingBox.height / fillRepeatY);
     }
 
     if (!patternFillImage && attributes.fillImageId) {
@@ -1303,22 +1425,8 @@ define([
       return;
     }
 
-    // If the element already has an attached filter we may be able
-    // to use it (as long as it's not being used by something else)
-    if (element._filterSignature) {
-
-      filterDef = this.definitions[element._filterSignature];
-
-      if (filterDef.n > 1) {
-        // decrease retain count b/c filter is used by other elements
-        filterDef.n--;
-      } else {
-        // remove old filter
-        filterDef.element.parentNode.removeChild(filterDef.element);
-        element.removeAttribute('filter');
-        delete this.definitions[element._filterSignature];
-      }
-    }
+    // remove already applied filters
+    this.removeFilters(element);
 
     var filterContainer = createElement('filter');
 
@@ -1367,11 +1475,15 @@ define([
 
   proto.getOffset = function() {
 
+    // We query the bounding box of the rootContainer instead of the root
+    // (i.e. the parent DIV). This is due to an issue with getting the offset
+    // of an SVGElement on iOS devices (unreliable).
+
     var ctm,
-        offset = this.svg.root.getBoundingClientRect();
+        offset = this.svg.rootContainer.getBoundingClientRect();
 
     if (isNaN(offset.left) || isNaN(offset.top)) {
-      ctm = this.svg.root.getScreenCTM();
+      ctm = this.svg.rootContainer.getScreenCTM();
       offset.left = ctm.e;
       offset.top = ctm.f;
     }

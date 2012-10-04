@@ -1,7 +1,6 @@
-require([
+define([
   'bonsai/event_emitter',
-  'bonsai/tools',
-  './runner.js'
+  'bonsai/tools'
 ], function(EventEmitter, tools) {
 
   function comparableListener(context, listener, times) {

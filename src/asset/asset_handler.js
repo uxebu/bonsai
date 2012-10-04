@@ -5,7 +5,47 @@ define([
 ], function(AssetRequest, EventEmitter, tools) {
   'use strict';
 
+  var forEach = tools.forEach;
+  var slice = [].slice;
+
   AssetHandler.DEFAULT_TIMEOUT = 10000;
+
+  AssetHandler.MIME_TYPES = (function(navigatorMimeTypes) {
+
+    var mimeTypes = {
+      audio: {},
+      video: {},
+      image: {}
+    };
+
+    if (!navigatorMimeTypes) {
+      return mimeTypes;
+    }
+
+    forEach(slice.call(navigatorMimeTypes), function(navMimeType) {
+
+      // in most cases the name of the handler is part of the description
+      var handler = (navMimeType.description.match(/audio|video|image/i) || [])[0];
+
+      // return early when the mime-type is irrelevant
+      if (!handler) {
+        return;
+      }
+
+      // case insensitive, support "video" and "Video"
+      handler = handler.toLowerCase();
+
+      // store a mime-type per suffix (overwrites existing suffixes)
+      forEach(navMimeType.suffixes.split(','), function(suffix) {
+        if (suffix) {
+          mimeTypes[handler][suffix] = navMimeType.type;
+        }
+      });
+    });
+
+    return mimeTypes;
+
+  })(typeof navigator !== 'undefined' && navigator.mimeTypes);
 
   /**
    * A helper class for asset handling (different asset types: video, bitmap, etc.)
@@ -33,13 +73,15 @@ define([
 
       this.initTimeout();
 
-      tools.forEach(this.resources, function(resource) {
+      forEach(this.resources, function(resource) {
         this.loadResource(
           resource,
           this.resourceLoadSuccess,
           this.resourceLoadError
         );
       }, this);
+
+      return this;
     },
 
     initTimeout: function() {
@@ -57,19 +99,18 @@ define([
       this.emit('registerElement', element);
     },
 
-    resourceLoadSuccess: function(assetData) {
-      tools.mixin(this.assetData, assetData);
+    resourceLoadSuccess: function(loadData) {
       var resourcesLoaded = this.resourcesLoaded += 1;
       if (resourcesLoaded === this.resourcesExpectedLength) {
         clearTimeout(this._timeoutID);
         this.emit('resourcesLoaded'); // internal resourcesLoaded event
-        this.emit('load', this.assetData);
+        this.emit('load', loadData);
       }
     },
 
-    resourceLoadError: function(err) {
+    resourceLoadError: function(loadError) {
       clearTimeout(this._timeoutID);
-      this.emit('error', err);
+      this.emit('error', loadError);
     }
 
   };

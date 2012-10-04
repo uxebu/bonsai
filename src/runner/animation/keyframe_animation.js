@@ -21,11 +21,12 @@ define([
    * @param {Object} [properties] The keyframes to animate through
    * @param {Object} [options] Additional options
    * @param {String|Function} [options.easing] Easing function for each sub-animation
-   * @param {Number} [options.delay] Delay before animation begins, in ms
    *  @param {Array|Object} [options.subjects] The subject(s) (e.g. DisplayObjects) of
    *    the keyframe-animation
    *  @param {string|Object} [options.strategy='attr'] The strategy to use to
    *    get and set properties on the subjects.
+   *  @param {Number|String} [options.delay=0] Delay before animation begins, in
+   *   frames or seconds
    * @returns {KeyframeAnimation} An KeyframeAnimation instance
    *
    * @mixes EventEmitter
@@ -42,6 +43,7 @@ define([
     this.currentAnimation = -1;
 
     this.repeat = options.repeat || 0;
+    this.delay = options.delay && clock.toFrameNumber(options.delay) || 0;
     this.easing = options.easing;
 
     this.keyframes = this._convertKeysToFrames(keyframes);
@@ -50,7 +52,7 @@ define([
     this.keys.sort(function(a, b){ return a - b; });
 
     if (options.subjects) {
-      this.setSubjects(options.subjects, options.strategy);
+      this.addSubjects(options.subjects, options.strategy);
     }
   }
 
@@ -72,7 +74,7 @@ define([
     play: function(subjects, strategy) {
 
       if (subjects) {
-        this.setSubjects(subjects, strategy);
+        this.addSubjects(subjects, strategy);
       }
 
       if (this.currentAnimation < 0) {
@@ -134,8 +136,8 @@ define([
               subject.attr(initial);
               break;
             case 'prop':
-              for (var i in initial) {
-                subject[i] = initial[i];
+              for (var p in initial) {
+                subject[p] = initial[p];
               }
               break;
             default: // assume object with get/set methods
@@ -249,47 +251,6 @@ define([
     },
 
     /**
-     * Sets the subjects of the animation while wiping all current subjects
-     *
-     * @param {Object} subject
-     * @param {mixed} [strategy='attr'] The set/get strategy to use
-     *   - 'attr': The 'attr' method of the object is used (for DisplayObjects)
-     *   - 'prop': Normal property setting and getting is used
-     *   - Object with 'set(subject, values)' and 'get(subject)'
-     *     methods.
-     * @returns {this}
-     */
-    setSubjects: function(subjects, strategy) {
-
-      subjects = tools.isArray(subjects) ? subjects : [subjects];
-
-      this.removeSubjects(this.subjects.map(function(subj) {
-        return subj.subject;
-      }));
-      this.addSubjects(subjects, strategy);
-
-      return this;
-    },
-
-    /**
-     * Sets the subject of the animation while wiping all current subjects
-     *
-     * @param {Object} subject
-     * @param {mixed} [strategy='attr'] The set/get strategy to use
-     *   - 'attr': The 'attr' method of the object is used (for DisplayObjects)
-     *   - 'prop': Normal property setting and getting is used
-     *   - Object with 'set(subject, values)' and 'get(subject)'
-     *     methods.
-     */
-    setSubject: function(subject, strategy) {
-      this.removeSubjects(this.subjects.map(function(subj) {
-        return subj.subject;
-      }));
-      this.addSubject(subject, strategy);
-      return this;
-    },
-
-    /**
      * Creates an animation for each keyframe transition
      *
      * @private
@@ -318,7 +279,9 @@ define([
           keyframes[key],
           {
             easing: this.easing,
-            strategy: this.strategy
+            strategy: this.strategy,
+            // Add delay for initial animation
+            delay: i === 1 ? this.delay : null
           }
         );
 
@@ -344,7 +307,7 @@ define([
               this.reset();
               this.play();
             } else {
-              this.emit('end', this.subjects);
+              this.emit('end', this);
             }
           });
         }

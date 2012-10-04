@@ -1,6 +1,5 @@
-require([
-  'bonsai/runner/path/ellipse',
-  './runner.js'
+define([
+  'bonsai/runner/path/ellipse'
 ], function(Ellipse) {
 
   describe('Ellipse', function() {

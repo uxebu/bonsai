@@ -131,7 +131,7 @@ define([
       _miterLimit: data(4, true),
       miterLimit: accessor(getMiterLimit, setMiterLimit, true),
       text: accessor(getText, setText, true),
-      textOrigin: data(null, true, true),
+      textOrigin: data('top', true, true),
       selectable: data(true, true, true)
     });
 
@@ -152,7 +152,7 @@ define([
     rendererAttributes.selectable = 'selectable';
     rendererAttributes.textOrigin = 'textOrigin';
 
-    if (text) {
+    if (text != null) {
       this.attr('text', text);
     }
   }
