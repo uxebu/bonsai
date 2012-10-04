@@ -15,7 +15,9 @@ define([
 
     describe('allowEventDefaults', function() {
       it('should assign the constructor value as property', function() {
-        expect(new SvgRenderer(createFakeDomNode(), 1, 1, true).allowEventDefaults).toBe(true);
+        expect(new SvgRenderer(createFakeDomNode(), 1, 1, {
+          allowEventDefaults: true
+        }).allowEventDefaults).toBe(true);
       });
 
       it('should not call .preventDefault() on events when allowEventDefaults is set to true', function() {
