@@ -201,11 +201,8 @@ function(tools, EventEmitter, URI) {
           this.assetController.destroy(messageData.id);
           break;
         case 'message':
-          var category = message.category;
-          if (category) {
-            this
-              .emit('message:' + category, messageData)
-              .emit('message', messageData, category);
+          if ('category' in message) {
+            this.emit('message:' + message.category, messageData);
           } else {
             this.emit('message', messageData);
           }
@@ -313,14 +310,14 @@ function(tools, EventEmitter, URI) {
      */
     sendMessage: function(category, messageData) {
       if (arguments.length < 2) {
-        messageData = category;
-        category = null;
+        this.post('message', category);
+      } else {
+        this.runnerContext.notifyRunner({
+          command: 'message',
+          category: category,
+          data: messageData
+        });
       }
-      this.runnerContext.notifyRunner({
-        command: 'message',
-        category: category,
-        data: messageData
-      });
       return this;
     },
 

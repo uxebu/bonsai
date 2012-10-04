@@ -149,11 +149,8 @@ define([
           this.env.exports.env.emit('change', data);
           break;
         case 'message':
-          var category = message.category;
-          if (category) {
-            this
-              .emit('message:' + category, data)
-              .emit('message', data, category);
+          if ('category' in message) {
+            this.emit('message:' + message.category, data);
           } else {
             this.emit('message', data);
           }
@@ -361,13 +358,18 @@ define([
      * @returns {this} The instance
      */
     sendMessage: function(category, messageData) {
-      var hasCategory = arguments.length > 1;
-      var message = {
-        command: 'message',
-        category: hasCategory ? category : null,
-        data: hasCategory ? messageData : category
-      };
-      return this.post(message);
+      if (arguments.length > 1) {
+        return this.post({
+          command: 'message',
+          category: category,
+          data: messageData
+        });
+      } else {
+        return this.post({
+          command: 'message',
+          data: category
+        });
+      }
     },
 
     /**

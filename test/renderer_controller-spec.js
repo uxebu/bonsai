@@ -363,7 +363,7 @@ define([
         expect(undefinedCategoryListener).not.toHaveBeenCalled();
       });
 
-      it('should emit uncategorized messages to uncategorized listeners only', function() {
+      it('should emit a message with category "null" to categorized listeners only', function() {
         var uncategorizedListener = jasmine.createSpy('uncategorized');
         var nullCategoryListener = jasmine.createSpy('null');
         var messageData = {};
@@ -372,11 +372,11 @@ define([
 
         rendererController.handleEvent({command: 'message', data: messageData, category: null});
 
-        expect(uncategorizedListener).toHaveBeenCalledWith(messageData);
-        expect(nullCategoryListener).not.toHaveBeenCalled();
+        expect(uncategorizedListener).not.toHaveBeenCalled();
+        expect(nullCategoryListener).toHaveBeenCalledWith(messageData);
       });
 
-      it('should emit categorized messages to both categorized and uncategorized listenerts', function() {
+      it('should emit categorized messages to categorized listeners only', function() {
         var uncategorizedListener = jasmine.createSpy('uncategorized');
         var categorizedListener = jasmine.createSpy('categorized');
         var messageData = {};
@@ -386,7 +386,7 @@ define([
 
         rendererController.handleEvent({command: 'message', data: messageData, category: category});
 
-        expect(uncategorizedListener).toHaveBeenCalledWith(messageData, category);
+        expect(uncategorizedListener).not.toHaveBeenCalled();
         expect(categorizedListener).toHaveBeenCalledWith(messageData);
       });
 
