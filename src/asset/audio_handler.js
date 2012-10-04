@@ -77,6 +77,7 @@ define([
     audioElement.src = src;
     // Triggers partial content loading (206)
     audioElement.load();
+
     this.registerElement(audioElement);
 
     // don't send *DOM* Events to the runner
@@ -85,6 +86,10 @@ define([
     }
 
     audioElement.addEventListener(events[loadLevel], onload, false);
+
+    audioElement.addEventListener('error', function() {
+      doError('Could not load video (' + src + ').');
+    }, false);
   };
 
   return AudioHandler;

@@ -6,6 +6,8 @@ define([
 ], function(AssetHandler) {
   'use strict';
 
+  var VIDEO_MIME_TYPES = AssetHandler.MIME_TYPES.video;
+
   var domVideo;
   try {
     domVideo = document.createElement('video');
@@ -24,17 +26,44 @@ define([
     AssetHandler.apply(this, arguments);
   }
 
+  var getPlayableMimeType = VideoHandler.getPlayableMimeType = function(mimeType) {
+
+    // check environment and make sure `domVideo` is available
+    if (!domVideo) {
+      return '';
+    }
+
+    // 1) user's mimetype
+    if (domVideo.canPlayType(mimeType)) {
+      return mimeType;
+    }
+
+    // 2nd fallback - lookup browser's mimetype table
+    var vendorMimeType = VIDEO_MIME_TYPES[mimeType];
+    if (vendorMimeType && domVideo.canPlayType(vendorMimeType)) {
+      return vendorMimeType;
+    }
+
+    // 3rd fallback - prepend "video/"
+    var videoSlashMimeType = 'video/' + mimeType;
+    if (domVideo.canPlayType(videoSlashMimeType)) {
+      return videoSlashMimeType;
+    }
+
+    return '';
+  };
+
   VideoHandler.prototype = Object.create(AssetHandler.prototype);
 
   VideoHandler.prototype.loadResource = function(resource, doDone, doError) {
 
-    var video,
+    var videoElement,
         assetId = this.id,
         loadLevel = this.request.loadLevel || 'canplay',
-        mimeType = resource.type,
+        mimeType = getPlayableMimeType(resource.type),
         src = resource.src;
 
-    if (!domVideo.canPlayType(mimeType) || this.hasInitiatedLoad) {
+    if (!mimeType || this.hasInitiatedLoad) {
       this.resourcesExpectedLength--;
       return;
     }
@@ -42,37 +71,24 @@ define([
     this.hasInitiatedLoad = true;
 
     // start loading video
-    video = document.createElement('video');
-    video.setAttribute('id', assetId);
-    video.setAttribute('type', mimeType);
-    video.src = src;
+    videoElement = document.createElement('video');
+    videoElement.setAttribute('id', assetId);
+    videoElement.setAttribute('type', mimeType);
+    videoElement.src = src;
 
-    this.registerElement(video);
+    this.registerElement(videoElement);
 
     function onload() {
       doDone({
-        width: video.videoWidth,
-        height: video.videoHeight
+        width: videoElement.videoWidth,
+        height: videoElement.videoHeight
       });
     }
 
-    video.addEventListener(events[loadLevel], onload, false);
+    videoElement.addEventListener(events[loadLevel], onload, false);
 
-    video.addEventListener('error', function(e) {
-      doError('Could not load video.');
-    }, false);
-
-    // TODO: These events need to be passed to the worker somehow
-    video.addEventListener('ended', function() {
-      //console.log('ended');
-    }, false);
-
-    video.addEventListener('play', function() {
-      //console.log('play');
-    }, false);
-
-    video.addEventListener('pause', function() {
-      //console.log('paused');
+    videoElement.addEventListener('error', function() {
+      doError('Could not load video (' + src + ').');
     }, false);
   };
 

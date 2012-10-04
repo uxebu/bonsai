@@ -3,69 +3,43 @@ require([
   'bonsai/runner/group',
   './runner.js'
 ], function(Audio, Group) {
+
+  var mockLoader;
+
   describe('Audio', function() {
 
-    it('Provides destroy method which will remove the item from stage and call destroyAsset on its loader', function() {
-      var loader = {
+    beforeEach(function() {
+      mockLoader = {
         destroyAsset: jasmine.createSpy('destroyAsset'),
         request: function() {}
       };
-      var d = new Audio(loader, 'abc.mp3', null);
+    });
+
+    it('Provides destroy method which will remove the item from stage and call destroyAsset on its loader', function() {
+      var d = new Audio(mockLoader, 'abc.mp3', null);
       var parent = new Group();
       parent.addChild(d);
       expect(parent.children()[0]).toBe(d);
       d.destroy();
-      expect(loader.destroyAsset).toHaveBeenCalled();
+      expect(mockLoader.destroyAsset).toHaveBeenCalled();
       expect(parent.children()[0]).toBe(void 0);
     });
 
-    describe('attr', function() {
-      it('Can get and set the volume (0..1)', function() {
-        var a = new Audio();
-        expect(a.attr('volume')).toBe(1);
-        a.attr('volume', 0.98);
-        expect(a.attr('volume')).toBe(0.98);
-        a.attr('volume', null);
-        expect(a.attr('volume')).toBe(0.98); // unchanged
-        a.attr('volume', -1);
-        expect(a.attr('volume')).toBe(0); // nearest acceptable value
-        a.attr('volume', 99);
-        expect(a.attr('volume')).toBe(1); // nearest acceptable value
+    describe('has a clone method', function() {
+      it('returns an Audio instance', function() {
+        var d = new Audio(mockLoader, 'abc.mp4', null);
+        expect(d.clone() instanceof Audio).toBeTruthy();
+      });
+      it('returns a fresh/new Audio instance', function() {
+        var d = new Audio(mockLoader, 'abc.mp4', null);
+        expect(d.clone() !== d).toBeTruthy();
+      });
+      it('returns a clone with the same source', function() {
+        var d = new Audio(mockLoader, 'abc.mp4', null);
+        var dc = d.clone();
+        expect(d.attr('source') === dc.attr('source')).toBeTruthy();
       });
     });
 
-    it('Can play()', function() {
-      var a = new Audio();
-      expect(a.attr('playing')).toBe(false);
-      a.play();
-      expect(a.attr('playing')).toBe(true);
-      expect(a.play()).toBe(a);
-    });
-
-    it('play(undefined) does not send `time` to the renderer', function() {
-      var a = new Audio();
-      a.play(0);
-      expect(a.composeRenderMessage().attributes.time).toBe(0);
-      a.play();
-      expect(a.composeRenderMessage().attributes.time).not.toBeDefined();
-    });
-
-    it('Can play(time)', function() {
-      var a = new Audio();
-      expect(a.attr('playing')).toBe(false);
-      expect(a.attr('time')).toBe(0);
-      a.play(5.17);
-      expect(a.attr('playing')).toBe(true);
-      expect(a.attr('time')).toBe(5.17);
-    });
-
-    it('Can stop()', function() {
-      var a = new Audio();
-      expect(a.attr('playing')).toBe(false);
-      a.attr('playing', true);
-      a.stop();
-      expect(a.attr('playing')).toBe(false);
-    });
-
-  })
+  });
 });
