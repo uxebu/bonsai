@@ -1,10 +1,11 @@
 define([
   'bonsai/runner/display_object',
   'bonsai/event_emitter',
+  'bonsai/runner/matrix',
   'bonsai/tools',
   'common/mock',
   'common/displayobject-lifecycle'
-], function(DisplayObject, EventEmitter, tools, mock, testLifeCycle) {
+], function(DisplayObject, EventEmitter, Matrix, tools, mock, testLifeCycle) {
   describe('DisplayObject', function() {
     testLifeCycle(function() {
       return new DisplayObject();
@@ -175,41 +176,92 @@ define([
     });
 
     describe('#getComputed()', function() {
-      it('should return 0 if invoked with "width"', function() {
-        expect(new DisplayObject().getComputed('width')).toBe(0);
+      describe('without transform parameter', function() {
+        it('should return 0 if invoked with "width"', function() {
+          expect(new DisplayObject().getComputed('width')).toBe(0);
+        });
+
+        it('should return 0 if invoked with "height"', function() {
+          expect(new DisplayObject().getComputed('height')).toBe(0);
+        });
+
+        it('should return 0 if invoked with "top"', function() {
+          expect(new DisplayObject().getComputed('top')).toBe(0);
+        });
+
+        it('should return 0 if invoked with "right"', function() {
+          expect(new DisplayObject().getComputed('right')).toBe(0);
+        });
+
+        it('should return 0 if invoked with "bottom"', function() {
+          expect(new DisplayObject().getComputed('bottom')).toBe(0);
+        });
+
+        it('should return 0 if invoked with "left"', function() {
+          expect(new DisplayObject().getComputed('left')).toBe(0);
+        });
+
+        it('should return an object with "top", "right", "bottom", "left", ' +
+          '"width" and "height" properties of 0 when invoked with "size"', function() {
+          expect(
+            new DisplayObject().getComputed('size')
+          ).toEqual({top: 0, right: 0, bottom: 0, left: 0, width: 0, height: 0});
+        });
+
+        it('should return undefined for arbitrary parameters', function() {
+          expect(new DisplayObject().getComputed('arbitrary')).toBe();
+          expect(new DisplayObject().getComputed(12)).toBe();
+          expect(new DisplayObject().getComputed({})).toBe();
+        });
       });
 
-      it('should return 0 if invoked with "height"', function() {
-        expect(new DisplayObject().getComputed('height')).toBe(0);
-      });
+      describe('with transform parameter', function() {
+        var outerTransform = new Matrix(0.313, 1.527, -0.429, 0.240, 145.25, 234.75);
+        var zeroTransformed = outerTransform.transformPoint({x: 0, y: 0});
 
-      it('should return 0 if invoked with "top"', function() {
-        expect(new DisplayObject().getComputed('top')).toBe(0);
-      });
+        it('should return 0 if invoked with "width"', function() {
+          expect(new DisplayObject().getComputed('width', outerTransform)).toBe(0);
+        });
 
-      it('should return 0 if invoked with "right"', function() {
-        expect(new DisplayObject().getComputed('right')).toBe(0);
-      });
+        it('should return 0 if invoked with "height"', function() {
+          expect(new DisplayObject().getComputed('height', outerTransform)).toBe(0);
+        });
 
-      it('should return 0 if invoked with "bottom"', function() {
-        expect(new DisplayObject().getComputed('bottom')).toBe(0);
-      });
+        it('should return the right value if invoked with "top"', function() {
+          expect(new DisplayObject().getComputed('top', outerTransform)).toBe(zeroTransformed.y);
+        });
 
-      it('should return 0 if invoked with "left"', function() {
-        expect(new DisplayObject().getComputed('left')).toBe(0);
-      });
+        it('should return the right value if if invoked with "right"', function() {
+          expect(new DisplayObject().getComputed('right', outerTransform)).toBe(zeroTransformed.x);
+        });
 
-      it('should return an object with "top", "right", "bottom", "left", ' +
-        '"width" and "height" properties of 0 when invoked with "size"', function() {
-        expect(
-          new DisplayObject().getComputed('size')
-        ).toEqual({top: 0, right: 0, bottom: 0, left: 0, width: 0, height: 0});
-      });
+        it('should return 0 if invoked with "bottom"', function() {
+          expect(new DisplayObject().getComputed('bottom', outerTransform)).toBe(zeroTransformed.y);
+        });
 
-      it('should return undefined for arbitrary parameters', function() {
-        expect(new DisplayObject().getComputed('arbitrary')).toBe();
-        expect(new DisplayObject().getComputed(12)).toBe();
-        expect(new DisplayObject().getComputed({})).toBe();
+        it('should return 0 if invoked with "left"', function() {
+          expect(new DisplayObject().getComputed('left', outerTransform)).toBe(zeroTransformed.x);
+        });
+
+        it('should return an object with "top", "right", "bottom", "left", ' +
+          '"width" and "height" properties of 0 when invoked with "size"', function() {
+          expect(
+            new DisplayObject().getComputed('size', outerTransform)
+          ).toEqual({
+              top: zeroTransformed.y,
+              right: zeroTransformed.x,
+              bottom: zeroTransformed.y,
+              left: zeroTransformed.x,
+              width: 0,
+              height: 0
+            });
+        });
+
+        xit('should return undefined for arbitrary parameters', function() {
+          expect(new DisplayObject().getComputed('arbitrary')).toBe();
+          expect(new DisplayObject().getComputed(12)).toBe();
+          expect(new DisplayObject().getComputed({})).toBe();
+        });
       });
     });
 

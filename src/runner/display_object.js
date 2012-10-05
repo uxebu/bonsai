@@ -577,8 +577,23 @@ define([
       return this;
     },
 
-    getComputed: function(thing) {
-      var size = {top: 0, right: 0, bottom: 0, left: 0, width: 0, height: 0};
+    /**
+     * Computes bounding boxes and single data points of a display object.
+     *
+     * @param {String} thing What to compute. One of "top", "right", "bottom",
+     *    "left", "width" and "height"
+     * @param {Matrix} [transform=null] A transform to apply to all points
+     *    before computation.
+     * @return {Object}
+     */
+    getComputed: function(thing, transform) {
+      var x = 0, y = 0;
+      if (transform) {
+        var transformed = transform.transformPoint({x: 0, y: 0});
+        x = transformed.x;
+        y = transformed.y;
+      }
+      var size = {top: y, right: x, bottom: y, left: x, width: 0, height: 0};
       return thing === 'size' ? size : size[thing];
     },
 
