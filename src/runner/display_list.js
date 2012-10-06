@@ -229,7 +229,16 @@ define([
       return this;
     },
 
-    getComputed: function(key) {
+    /**
+     * Computes bounding boxes and single data points of a display object.
+     *
+     * @param {String} key What to compute. One of "top", "right", "bottom",
+     *    "left", "width" and "height"
+     * @param {Matrix} [transform=null] A transform to apply to all points
+     *    before computation.
+     * @return {Object}
+     */
+    getComputed: function(key, transform) {
       var children = this.displayList.children;
       var isOffsetKey =
         key === 'top' ||
