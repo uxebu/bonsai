@@ -604,10 +604,12 @@ define([
 
     var attributes = message.attributes;
 
-    if (attributes.selectable !== false) {
-      cssClasses.add(text, 'selectable');
-    } else {
-      cssClasses.remove(text, 'selectable');
+    if (attributes.selectable !== undefined) {
+      if (attributes.selectable !== false) {
+        cssClasses.add(text, 'selectable');
+      } else {
+        cssClasses.remove(text, 'selectable');
+      }
     }
 
     text.setAttributeNS(xlink, 'text-anchor', 'start');
