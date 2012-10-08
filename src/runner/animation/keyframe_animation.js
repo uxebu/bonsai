@@ -6,9 +6,7 @@ define([
 ], function(easing, tools, EventEmitter, PropertiesTween) {
   'use strict';
 
-  var max = Math.max,
-      round = Math.round,
-      hasOwn = {}.hasOwnProperty,
+  var hasOwn = {}.hasOwnProperty,
       forEach = tools.forEach;
 
   /**
@@ -352,7 +350,7 @@ define([
         keyframe = keyframes[key];
 
         for (var p in keyframe) {
-          if (keyframe.hasOwnProperty(p)) {
+          if (hasOwn.call(keyframe, p)) {
             properties[p] = true;
           }
         }

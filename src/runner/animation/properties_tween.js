@@ -14,6 +14,7 @@ define([
 ) {
 
   var mixin = tools.mixin;
+  var forEach = tools.forEach;
 
   /**
    * Translators, in the form of:
@@ -43,8 +44,8 @@ define([
   function PropertiesTween(propertiesFrom, propertiesTo, easingFn) {
 
     this.easingFn = easingFn;
-    this.propertiesFrom = tools.mixin({}, propertiesFrom);
-    this.propertiesTo = tools.mixin({}, propertiesTo);
+    this.propertiesFrom = mixin({}, propertiesFrom);
+    this.propertiesTo = mixin({}, propertiesTo);
 
     // Delete values in startVals that do not exist in endVals
     for (var i in this.propertiesFrom) {
@@ -94,8 +95,8 @@ define([
           propertyNames = this.propertyNames,
           propertyTweens = this.propertyTweens;
 
-      for (var i = 0, l = this.propertyLength; i < l; ++i) {
-        var property = propertyNames[i];
+
+      forEach(propertyNames, function(property) {
         propertyTweens.push(
           new PropertyTween(
             propertiesFrom[property],
@@ -104,7 +105,7 @@ define([
             easingFn
           )
         );
-      }
+      });
 
     }
   };
