@@ -39,11 +39,9 @@ define([
    * @private
    * @param {Object} propertiesFrom Properties and their initial values
    * @param {Object} propertiesTo Properties and their end values
-   * @param {Function} [easingFn] Easing function applied to tween
    */
-  function PropertiesTween(propertiesFrom, propertiesTo, easingFn) {
+  function PropertiesTween(propertiesFrom, propertiesTo) {
 
-    this.easingFn = easingFn;
     this.propertiesFrom = mixin({}, propertiesFrom);
     this.propertiesTo = mixin({}, propertiesTo);
 
@@ -89,20 +87,17 @@ define([
       */
     _setupTweens: function() {
 
-      var easingFn = this.easingFn,
-          propertiesFrom = this.propertiesFrom,
+      var propertiesFrom = this.propertiesFrom,
           propertiesTo = this.propertiesTo,
           propertyNames = this.propertyNames,
           propertyTweens = this.propertyTweens;
-
 
       forEach(propertyNames, function(property) {
         propertyTweens.push(
           new PropertyTween(
             propertiesFrom[property],
             propertiesTo[property],
-            translators[property],
-            easingFn
+            translators[property]
           )
         );
       });

@@ -56,6 +56,10 @@ define([
     // Get numerical keys (frame-numbers) and sort
     this.keys = Object.keys(this.keyframes).map(Number);
     this.keys.sort(function(a, b){ return a - b; });
+
+    if (options.subjects) {
+      this.addSubjects(options.subjects);
+    }
   }
 
 
@@ -214,20 +218,26 @@ define([
 
       var tweensLength = this.subjects[0].tweens.length;
       var curTween = this.subjects[0].tweens[this.currentTweenIndex];
-      var thisPhaseProgress = (progress - curTween.startProgress) / (curTween.endProgress-curTween.startProgress);
+      var phaseProgress = (progress - curTween.startProgress) / (curTween.endProgress-curTween.startProgress);
 
       // If there's another tween that we can move onto, we should, otherwise
       // assume that we can continue with progress > 1
-      if (thisPhaseProgress > 1 && this.currentTweenIndex + 1 < tweensLength) {
+      if (phaseProgress > 1 && this.currentTweenIndex + 1 < tweensLength) {
         this.currentTweenIndex += 1;
         return this._step(realProgress);
       }
 
       var subjects = this.subjects;
       for (var s = 0, sl = subjects.length; s < sl; ++s) {
-        var currentSubjectTween = subjects[s].tweens[this.currentTweenIndex];
+        var currentSubjectTween = subjects[s].tweens[this.currentTweenIndex],
+            currentSubjectTweenEasing = currentSubjectTween.easing;
         subjects[s].subject.attr(
-          currentSubjectTween.at(thisPhaseProgress)
+          currentSubjectTween.at(
+            // Apply easing for this tween:
+            currentSubjectTweenEasing ?
+              currentSubjectTweenEasing(phaseProgress) :
+              phaseProgress
+          )
         );
       }
     },
@@ -305,14 +315,17 @@ define([
 
       forEach(this.keys, function(key, i) {
 
-        var tween;
-
         if (key === 0) { return; } // Don't animate to initial
+
+        var tween, easingFunc = keyframes[key].easing;
 
         tween = new PropertiesTween(
           prevValues,
           keyframes[key]
         );
+
+        // Save easing function to tween so it can be retrieved on each step:
+        tween.easing = typeof easingFunc == 'function' ? easingFunc : easing[easingFunc];
 
         // Calculate duration of this individual tween:
         animationDuration = key - totalDuration;
@@ -371,6 +384,11 @@ define([
         for (var p in properties) {
           if (!hasOwn.call(keyframe, p)) {
 
+            if (p === 'easing') {
+              // Ignore 'easing' keyword -- it's used to define per-tween easing
+              continue;
+            }
+
             prevFrame = getFrameOfLastDefinedProperty(p, i);
             nextFrame = getFrameOfNextDefinedProperty(p, i);
             prevValue = prevFrame && keyframes[prevFrame][p] || initialValues[p];
@@ -395,7 +413,7 @@ define([
             fromValues[p] = prevValue;
             toValues = {};
             toValues[p] = nextValue;
-            keyframe[p] = new PropertiesTween(fromValues, toValues, this.easing).at(
+            keyframe[p] = new PropertiesTween(fromValues, toValues).at(
               (frame - prevFrame) / (nextFrame - prevFrame)
             )[p];
           }

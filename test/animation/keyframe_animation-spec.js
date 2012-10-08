@@ -78,6 +78,43 @@ define([
       });
     });
 
+    it('Should apply easing', function() {
+
+      var subject = wrappedSubject({ y: 0 });
+      var animation = createKeyframes('1s', {
+        to: {
+          y: -20,
+          // static easing function -- always returns .5 (for testing)
+          easing: function() { return .5; }
+        }
+      }, { subjects: subject });
+      // Regardless of progress passed, our custom easing function always
+      // returns .5, meaning that y should always be half way between 0 and -20
+      animation._step(0);
+      expect(subject.attr().y).toBe(-10);
+      animation._step(1);
+      expect(subject.attr().y).toBe(-10);
+      animation._step(.8);
+      expect(subject.attr().y).toBe(-10);
+
+      var subject = wrappedSubject({ y: 0 });
+      var animation = createKeyframes('1s', {
+        to: {
+          y: 50,
+          // custom easing -- always adds .2 to progress:
+          easing: function(p) { return p + .2; }
+        }
+      }, { subjects: subject });
+      // Regardless of progress passed, our custom easing function always
+      // returns .5, meaning that y should always be half way between 0 and -20
+      animation._step(0);
+      expect(subject.attr().y).toBe(10);
+      animation._step(1);
+      expect(subject.attr().y).toBe(60);
+      animation._step(.8);
+      expect(subject.attr().y).toBe(50);
+    });
+
     it('Will play transitions in sequence', function() {
 
       var k = createKeyframes('500ms', {
