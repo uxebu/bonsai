@@ -8,7 +8,8 @@ define([
 
   var max = Math.max,
       round = Math.round,
-      hasOwn = {}.hasOwnProperty;
+      hasOwn = {}.hasOwnProperty,
+      forEach = tools.forEach;
 
   /**
    * Creates a KeyframeAnimation instance
@@ -189,7 +190,7 @@ define([
         this.prevFrame = 0;
         this.currentDelay = this.delay;
         this.reset();
-        if (this.repeat === Infinity || this.repeat-- > 0) {
+        if (this.repeat-- > 0) {
           this.play();
         } else {
           this.emit('end', this);
@@ -260,7 +261,7 @@ define([
     addSubjects: function(subjects) {
       var me = this;
       subjects = tools.isArray(subjects) ? subjects : [subjects];
-      subjects.forEach(function(subject) {
+      forEach(subjects, function(subject) {
         me.addSubject(subject);
       });
       return this;
@@ -286,7 +287,7 @@ define([
      * @param {Array} subjects Array of subjects to remove
      */
     removeSubjects: function(subjects) {
-      subjects.forEach(tools.hitch(this, 'removeSubject'));
+      forEach(subjects, tools.hitch(this, 'removeSubject'));
       return this;
     },
 
@@ -304,7 +305,7 @@ define([
           keyframes = this.keyframes,
           prevValues = startValues;
 
-      this.keys.forEach(function(key, i) {
+      forEach(this.keys, function(key, i) {
 
         var tween;
 
@@ -346,7 +347,7 @@ define([
           properties = {};
 
       // Gather property names:
-      keys.forEach(function(key) {
+      forEach(keys, function(key) {
 
         keyframe = keyframes[key];
 
@@ -358,17 +359,18 @@ define([
       });
 
       // Fill in (missing) properties:
-      tools.forEach(keys, function(frame, i) {
+      forEach(keys, function(frame, i) {
 
         var prevFrame,
             nextFrame,
             prevValue,
             nextValue,
-            p;
+            fromValues,
+            toValues;
 
         keyframe = keyframes[frame];
 
-        for (p in properties) {
+        for (var p in properties) {
           if (!hasOwn.call(keyframe, p)) {
 
             prevFrame = getFrameOfLastDefinedProperty(p, i);
@@ -379,7 +381,7 @@ define([
             if (prevValue == null) {
               // TODO: throw this only when the 0th frame does not specify props
               // Ideally, though, initialValues will have the value specified
-              throw new Error('No initial value specified for property: ' + p);
+              throw Error('No initial value specified for property: ' + p);
             }
 
             if (nextValue == null) {
@@ -391,9 +393,11 @@ define([
               nextFrame = lastFrame;
             }
 
-            var _from = {}; _from[p] = prevValue;
-            var _to = {}; _to[p] = nextValue;
-            keyframe[p] = new PropertiesTween(_from, _to, this.easing).at(
+            fromValues = {};
+            fromValues[p] = prevValue;
+            toValues = {};
+            toValues[p] = nextValue;
+            keyframe[p] = new PropertiesTween(fromValues, toValues, this.easing).at(
               (frame - prevFrame) / (nextFrame - prevFrame)
             )[p];
           }
