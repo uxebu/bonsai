@@ -115,6 +115,21 @@ define([
       expect(subject.attr().y).toBe(50);
     });
 
+    it('Should fill in undefined keyframe properties', function() {
+      var subject = wrappedSubject({});
+      var animation = createKeyframes(1000, {
+        0: { a: 0, b: 0, c: 0 },
+        500: { a: 20 },
+        750: { b: 60 },
+        1000: { a: 100, b: 80, c: 60 }
+      }).addSubject(subject);
+      expect(animation.keyframes[500].a).toBe(20);
+      expect(animation.keyframes[500].b).toBe(40);
+      expect(animation.keyframes[500].c).toBe(30);
+      expect(animation.keyframes[750].a).toBe(60);
+      expect(animation.keyframes[750].c).toBe(45);
+    });
+
     it('Will play transitions in sequence', function() {
 
       var k = createKeyframes('500ms', {

@@ -9,6 +9,11 @@ define([
   var hasOwn = {}.hasOwnProperty,
       forEach = tools.forEach;
 
+  function getEasingFunction(easingFunc) {
+    return typeof easingFunc == 'function' ?
+      easingFunc : easing[easingFunc]
+  }
+
   /**
    * Creates a KeyframeAnimation instance
    *
@@ -44,8 +49,7 @@ define([
     this.isTimelineBound = options.isTimelineBound !== false;
 
     var easingFunc = options.easing;
-    this.easing = typeof easingFunc == 'function' ?
-      easingFunc : easing[easingFunc];
+    this.easing = getEasingFunction(easingFunc);
 
     this.prevFrame = 0;
     this.frame = 0;
@@ -325,7 +329,7 @@ define([
         );
 
         // Save easing function to tween so it can be retrieved on each step:
-        tween.easing = typeof easingFunc == 'function' ? easingFunc : easing[easingFunc];
+        tween.easing = getEasingFunction(easingFunc);
 
         // Calculate duration of this individual tween:
         animationDuration = key - totalDuration;
@@ -351,7 +355,9 @@ define([
      * @private
      */
     _fillInProperties: function(initialValues) {
-      var lastFrame = this.duration,
+
+      var easingFn = this.easingFn,
+          lastFrame = this.duration,
           keys = this.keys,
           keyframes = this.keyframes,
           keyframe,
@@ -372,7 +378,8 @@ define([
       // Fill in (missing) properties:
       forEach(keys, function(frame, i) {
 
-        var prevFrame,
+        var progress,
+            prevFrame,
             nextFrame,
             prevValue,
             nextValue,
@@ -382,6 +389,8 @@ define([
         keyframe = keyframes[frame];
 
         for (var p in properties) {
+          // Is the keyframe does not have a property of the name `p`
+          // then we must define it:
           if (!hasOwn.call(keyframe, p)) {
 
             if (p === 'easing') {
@@ -413,8 +422,22 @@ define([
             fromValues[p] = prevValue;
             toValues = {};
             toValues[p] = nextValue;
+
+            // Calculate would-be progress of keyframe:
+            progress = (frame - prevFrame) / (nextFrame - prevFrame);
+
+            if (easingFn) {
+              progress = easingFn(progress);
+            }
+
+            if (nextFrame.easing) {
+              progress = getEasingFunction(nextFrame.easing)(progress);
+            }
+
+            // Get intermediary value by creating a new PropertiesTween and
+            // grabbing the value of the property at the would-be progress:
             keyframe[p] = new PropertiesTween(fromValues, toValues).at(
-              (frame - prevFrame) / (nextFrame - prevFrame)
+              progress
             )[p];
           }
         }
