@@ -7,17 +7,17 @@
  * Fourth box should disappear after another second.
  */
 
-var group = new bonsai.Group();
+var group = new Group();
 
-var shape1 = new bonsai.Path.rect(10,10,100,100).attr({fillColor: 'red'});
+var shape1 = new Rect(10,10,100,100).attr({fillColor: 'red'});
 group.addChild(shape1);
 
 
-var group2 = new bonsai.Group();
+var group2 = new Group();
 [
-  bonsai.Path.rect(20,20,100,100).attr({fillColor:'green'}),
-  bonsai.Path.rect(30,30,100,100).attr({fillColor:'yellow'}),
-  bonsai.Path.rect(40,40,100,100).attr({fillColor:'gray'})
+  new Rect(20,20,100,100).attr({fillColor:'green'}),
+  new Rect(30,30,100,100).attr({fillColor:'yellow'}),
+  new Rect(40,40,100,100).attr({fillColor:'gray'})
 ].forEach(function(obj){
   group2.addChild(obj);
 });
@@ -29,7 +29,7 @@ setTimeout(function(){
 }, 1000);
 
 setTimeout(function(){
-  var shape2 = new bonsai.Path.rect(50,50,100,100).attr({fillColor: 'blue'});
+  var shape2 = new Rect(50,50,100,100).attr({fillColor: 'blue'});
   group.addChild(shape2);
 }, 2000);
 

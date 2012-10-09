@@ -12,6 +12,6 @@ new Path(lines.join()).attr({
 
 // ---- movie ----
 
-Path.rect(100,100,100,100)
+new Rect(100,100,100,100)
   .addTo(stage)
   .attr({fillColor:"red"});

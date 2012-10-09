@@ -3,7 +3,7 @@
 var color = bonsai.color('#14AFE3');
 
 function draw(fill, r, c) {
-  var rect = new bonsai.Path.rect(c * 50, r * 50, 50, 50);
+  var rect = new Rect(c * 50, r * 50, 50, 50);
   stage.addChild(rect);
   return rect.attr({
     fillColor: fill,

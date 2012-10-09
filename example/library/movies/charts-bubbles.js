@@ -2,11 +2,11 @@
 var bs = bonsai;
 
 function bubble(color, x, y, size){
-  var group = new bs.Group();
-  bs.Path.circle(x, y, size)
+  var group = new Group();
+  new Circle(x, y, size)
     .attr({fillColor: color, scaleY: 0.3})
     .addTo(group);
-  bs.Path.arc(x, y, size/2, Math.PI, Math.PI*2)
+  new Arc(x, y, size/2, Math.PI, Math.PI*2)
     .attr({strokeWidth: size, strokeColor: color, opacity:0.5})
     .addTo(group);
   stage.addChild(group);

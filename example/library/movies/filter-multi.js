@@ -1,5 +1,5 @@
 // shorthands, defaults
-new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
+new Bitmap('assets/redpanda.jpg', function(err) {
   if (err) return;
   this.attr({
     y: 10,
@@ -11,7 +11,7 @@ new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
 });
 
 // shorthand methods
-new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
+new Bitmap('assets/redpanda.jpg', function(err) {
   if (err) return;
   this.attr({
     y: 10,
@@ -26,7 +26,7 @@ new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
 var blurFilter = new filter.Blur(10);
 var saturationFilter = new filter.Saturate(100);
 
-new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
+new Bitmap('assets/redpanda.jpg', function(err) {
   if (err) return;
   this.attr({
     y: 10,

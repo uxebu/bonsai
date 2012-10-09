@@ -1,24 +1,22 @@
-var bs = bonsai;
-
 function draw() {
 
-  var color = bs.color('red').randomize('hue');
+  var color = bonsai.color('red').randomize('hue');
 
-  var circle = bs.Path.circle(
+  var circle = new Circle(
     0,
     0,
     Math.random() * 20 + 20
   ).attr({
     opacity: 0,
     fillColor: color,
-    fillGradient: bonsai.gradient.linear(0, ['#000000AA', '#00000000']),
+    fillGradient: gradient.linear(0, ['#000000AA', '#00000000']),
     strokeWidth: 7,
     strokeColor: color.lighter(.2),
     x: Math.random() * 500,
     y: Math.random() * 500
   }).addTo(stage);
 
-  var k = new bs.KeyframeAnimation('1s', {
+  var k = new KeyframeAnimation('1s', {
     '50%': {
        scaleX: 4,
        scaleY: 4,

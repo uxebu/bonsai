@@ -7,6 +7,7 @@ v0.4.1
   disable/enable the context menu from the `bonsai.run` configuration object.
 * Introduce MediaDisplayObject that combines the basic functionality of
   Video and Audio.
+* Fixed examples to be in line with the documentation.
 
 v0.4.0 / 2012-10-03
 -------------------

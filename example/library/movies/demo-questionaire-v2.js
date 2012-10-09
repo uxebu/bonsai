@@ -18,7 +18,7 @@ function renderButton(buttonObj, idx){
   var bgColor = buttonObj.bgColor;
   var fgColor = buttonObj.color;
   var x = 10;
-  var shape1 = new bonsai.Path.rect(x, y, 120, 35);
+  var shape1 = new Rect(x, y, 120, 35);
   shape1.attr({fillColor: bgColor, filters:new filter.DropShadow([2,2,2,'black']),
     strokeColor:bs.color(bgColor).darker(0.1), strokeWidth: 5
   });
@@ -54,12 +54,12 @@ var background = {};
   var width = 13;
   var height = 25;
   var bg = new bs.Group();
-  new bonsai.Bitmap('assets/paperbg.png', function() {
+  new Bitmap('assets/paperbg.png', function() {
     this.attr({y: 0, x: 0, scaleX:1.7, scaleY:2, opacity: 0.5});
     bg.addChild(this, 0);
   });
   stage.addChild(bg);
-  bs.Path.rect(0, 0, stageWidth, stageHeight)
+  new Rect(0, 0, stageWidth, stageHeight)
     .attr({strokeColor:'black', strokeWidth: 1})
     .addTo(bg);
   var counterText = new bs.Text(buttons.length)
@@ -107,7 +107,7 @@ var timeGraph = {};
     var group = buttonObj.graphics.timeGraph;
     var attrs = {fillColor: buttonObj.bgColor};
     var text = buttonObj.text;
-    var line = bs.Path.rect(group.__lastDraw, 110, counter-group.__lastDraw, -results[text]);
+    var line = new Rect(group.__lastDraw, 110, counter-group.__lastDraw, -results[text]);
     line.attr(attrs);
     group.addChild(line);
     group.__lastDraw = counter;
@@ -121,7 +121,7 @@ var pieChart = {};
   var group = new bs.Group();
   pieChart.init = function(){
     // Add a circle with a drop shadow behind the pie chart, so it looks like the pie chart has a dropshadow
-    bonsai.Path.circle(pos.x, pos.y, 59)
+    new Circle(pos.x, pos.y, 59)
       .attr({fillColor:'black', strokeWidth:1, strokeColor: 'white',
              filters: new filter.DropShadow([5,5,5,'grey'])})
       .addTo(group);
@@ -152,7 +152,7 @@ var barChart = {};
   function bar3d(color, x, y, width, height){
     var darker = bs.color(color).darker(0.1);
     var group = new Group();
-    bs.Path.rect(x, y, width, height)
+    new Rect(x, y, width, height)
       .attr({fillColor: color,
         fillGradient: bs.gradient.linear('right', [
           [darker.darker(0.05), 0],
@@ -163,7 +163,7 @@ var barChart = {};
         ])
       })
       .addTo(group);
-    bs.Path.rect(x + width*0.2, y, width*0.1, height)
+    new Rect(x + width*0.2, y, width*0.1, height)
       .attr({fillColor: 'white', opacity: 0.6,
         filters: new filter.Blur(2)})
       .addTo(group);
@@ -195,7 +195,7 @@ var barChart = {};
 (function(){
   var maxWidth = stageWidth;
   var group = new Group()
-    .attr({x:0, y:0, clip:Path.rect(0, 0, maxWidth, 50)})
+    .attr({x:0, y:0, clip:new Rect(0, 0, maxWidth, 50)})
     .addTo(stage);
   var line = new Path().moveTo(0, 50)
     .addTo(group)

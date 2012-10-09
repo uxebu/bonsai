@@ -61,25 +61,25 @@ function stats(){
 
 /* states */
 function stateInit(){
-  var clip = Path.rect(0,0,setup.stageWidth,setup.stageHeight).attr({fillColor:'#333333'}).addTo(groups[0]);
+  var clip = new Rect(0,0,setup.stageWidth,setup.stageHeight).attr({fillColor:'#333333'}).addTo(groups[0]);
   groups[1].attr('clip',clip.clone());
-  Path.rect(setup.stageCenter.x-70,setup.stageHeight-120, 140, 40, 5).attr({fillColor:'#666666',strokeColor:'#999999',strokeWidth:2}).addTo(groups[2]);
+  new Rect(setup.stageCenter.x-70,setup.stageHeight-120, 140, 40, 5).attr({fillColor:'#666666',strokeColor:'#999999',strokeWidth:2}).addTo(groups[2]);
   new Text('Pause').attr({x:setup.stageCenter.x-24,y:setup.stageHeight-108,fontSize: '20px',textFillColor: 'white'}).addTo(groups[2]);
   groups[2].on('click', pauseHandler);
-  Path.rect(setup.stageCenter.x-120,setup.stageHeight-120, 40, 40, 5).attr({fillColor:'#666666',strokeColor:'#999999',strokeWidth:2}).addTo(groups[3]);
+  new Rect(setup.stageCenter.x-120,setup.stageHeight-120, 40, 40, 5).attr({fillColor:'#666666',strokeColor:'#999999',strokeWidth:2}).addTo(groups[3]);
   new Text('-').attr({x:setup.stageCenter.x-103,y:setup.stageHeight-108,fontSize: '20px',textFillColor: 'white'}).addTo(groups[3]);
   groups[3].on('click', minusHandler);
-  Path.rect(setup.stageCenter.x+80,setup.stageHeight-120, 40, 40, 5).attr({fillColor:'#666666',strokeColor:'#999999',strokeWidth:2}).addTo(groups[4]);
+  new Rect(setup.stageCenter.x+80,setup.stageHeight-120, 40, 40, 5).attr({fillColor:'#666666',strokeColor:'#999999',strokeWidth:2}).addTo(groups[4]);
   new Text('+').attr({x:setup.stageCenter.x+94,y:setup.stageHeight-108,fontSize: '20px',textFillColor: 'white'}).addTo(groups[4]);
   groups[4].on('click', plusHandler);
   new Text("Calculating...").attr({x:10,y:10,fontFamily: 'Arial',fontSize: '12px',textFillColor: 'white'}).addTo(groups[5]);
-  Path.rect(setup.stageWidth-100,10, 80, 20, 0).attr({fillColor:'#666666'}).addTo(groups[6]);
+  new Rect(setup.stageWidth-100,10, 80, 20, 0).attr({fillColor:'#666666'}).addTo(groups[6]);
   new Text('Scale').attr({x:setup.stageWidth-74,y:14,textFillColor: '#ffffff'}).addTo(groups[6]);
   groups[6].on('click', scaleHandler);
-  Path.rect(setup.stageWidth-100,30, 80, 20, 0).attr({fillColor:'#666666'}).addTo(groups[7]);
+  new Rect(setup.stageWidth-100,30, 80, 20, 0).attr({fillColor:'#666666'}).addTo(groups[7]);
   new Text('Blur').attr({x:setup.stageWidth-70,y:34,textFillColor: '#333333'}).addTo(groups[7]);
   groups[7].on('click', blurHandler);
-  Path.rect(setup.stageWidth-100,50, 80, 20, 0).attr({fillColor:'#666666'}).addTo(groups[8]);
+  new Rect(setup.stageWidth-100,50, 80, 20, 0).attr({fillColor:'#666666'}).addTo(groups[8]);
   new Text('Opacity').attr({x:setup.stageWidth-80,y:54,textFillColor: '#ffffff'}).addTo(groups[8]);
   groups[8].on('click', opacityHandler);
   setInterval(stats,1000);

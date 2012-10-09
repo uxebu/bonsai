@@ -61,12 +61,12 @@ for (var i = 0; i < exampleArcs.length; i++) {
   attr('strokeColor', 'black').attr('strokeWidth', 1).addTo(stage);
 
   // convert segments to absolute and strip of the numbers
-  var a = (bonsai.Path.toAbsolute(shape.segments()).join(",").split(",")).filter(function(e) {
+  var a = (Path.toAbsolute(shape.segments()).join(",").split(",")).filter(function(e) {
    return !isNaN(+e);
   });
 
 // calc center of an arc
   var c = centerFromArc(+a[0], +a[1], +a[2], +a[3], +a[4], +a[5], +a[6], +a[7], +a[8]);
   // draw center of an arc
-  Path.circle(c.x, c.y, 5).attr('fillColor', 'red').addTo(stage);
+  new Circle(c.x, c.y, 5).attr('fillColor', 'red').addTo(stage);
 }

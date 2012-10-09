@@ -3,7 +3,7 @@
 
 var rad = 0;
 var distance = 5;
-var text = new bonsai.Text('hello').addTo(stage).attr({x:50, y:50});
+var text = new Text('hello').addTo(stage).attr({x:50, y:50});
 
 (function loop(){
   setTimeout(loop, 16);

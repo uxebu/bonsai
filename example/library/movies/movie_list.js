@@ -89,7 +89,6 @@ movieList = {
   'Games': [
     'pong.js',
     'asteroids.js',
-    'breakout.js',
     'pacman.js'
   ],
   'Grouping and Layering': [

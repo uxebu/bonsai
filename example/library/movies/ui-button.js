@@ -1,7 +1,7 @@
-var button = new bonsai.Group().addTo(stage);
+var button = new Group().addTo(stage);
 
-button.bg = bonsai.Path.rect(50, 50, 100, 40, 5).attr({
-	fillGradient: bonsai.gradient.radial(['#19D600', '#0F8000'], 100, 50, -20),
+button.bg = new Rect(50, 50, 100, 40, 5).attr({
+	fillGradient: gradient.radial(['#19D600', '#0F8000'], 100, 50, -20),
 	strokeColor: '#CCC',
 	strokeWidth: 0
 }).addTo(button);
@@ -9,13 +9,13 @@ button.bg = bonsai.Path.rect(50, 50, 100, 40, 5).attr({
 button
 	.on('mouseover', function() {
 		button.bg.animate('.2s', {
-			fillGradient: bonsai.gradient.radial(['#9CFF8F', '#0F8000'], 100, 50, -20),
+			fillGradient: gradient.radial(['#9CFF8F', '#0F8000'], 100, 50, -20),
 			strokeWidth: 3
 		})
 	})
 	.on('mouseout', function() {
 		button.bg.animate('.2s', {
-			fillGradient: bonsai.gradient.radial(['#19D600', '#0F8000'], 100, 50, -20),
+			fillGradient: gradient.radial(['#19D600', '#0F8000'], 100, 50, -20),
 			strokeWidth: 0
 		})
 	})
@@ -23,7 +23,7 @@ button
 		alert('Thanks for clicking me.');
 	})
 
-button.text = new bonsai.Text('Button').attr({
+button.text = new Text('Button').attr({
   x: 70,
   y: 63,
   fontFamily: 'Arial',

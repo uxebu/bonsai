@@ -15,12 +15,12 @@ for (var i = 0; i < circles; ++i) {
         y = centerY + distance * -Math.cos(f*2*Math.PI),
         radius = random() * radiusVar + radiusMin;
 
-    circle = bonsai.Path.
-      circle(x, y, radius).
-//      attr({fillColor: 'hsl(' + (i / circles * 360) + ', 100%, 50%)'});
+    circle = new Circle(x, y, radius).
       attr({fillColor: 'random', fillGradient: bonsai.gradient.radial(['#FFFFFF88', '#FFFFFF00'])});
+
     circle.x = x;
     circle.y = y;
+
     stage.addChild(circle);
 }
 
@@ -29,7 +29,6 @@ stage.length(frames);
 var spread = 80;
 stage.on(0, function() {
   for (var i = 0, circle; (circle = c[i++]); ) {
-
     circle.animate(frames, {
       x: circle.x + spread * random() - spread / 2,
       y: circle.y + spread * random() - spread / 2
