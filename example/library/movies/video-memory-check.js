@@ -3,7 +3,7 @@ var resources = [
   {src: 'assets/sample.ogv', type:'video/ogg'}
 ];
 
-var video = new bonsai.Video(resources, function() {
+var video = new Video(resources, function() {
     this.attr({
       y: 150,
       x: 150,
