@@ -1,10 +1,10 @@
-var movie = new bonsai.Movie();
+var movie = new Movie();
 var movieName = "root";
 
 var dictionary = {
 
   "3": function Sprite_3() {
-    var movie = new bonsai.Movie();
+    var movie = new Movie();
     var movieName = "Sprite_3";
 
     var frames = {
