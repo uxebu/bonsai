@@ -8,7 +8,6 @@ new Video(resources, function() {
       y: 150,
       x: 150,
       width:320,
-      height:240,
-      autoplay:true
+      height:240
     }).addTo(stage);
 });

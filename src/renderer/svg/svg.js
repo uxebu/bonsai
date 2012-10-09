@@ -204,10 +204,11 @@ define([
    *    true displays the frame rate in the rendering, a function will be called
    *    with the framerate.
    */
-  function SvgRenderer(node, width, height, allowEventDefaults, fpsLog) {
+  function SvgRenderer(node, width, height, options) {
+    options = options || {};
     this.width = width;
     this.height = height;
-    this.allowEventDefaults = !!allowEventDefaults;
+    this.allowEventDefaults = !!options.allowEventDefaults;
 
     var svg = this.svg = new Svg(node, width, height);
 
@@ -228,7 +229,13 @@ define([
     document.addEventListener('keydown', this, false);
     document.addEventListener('keypress', this, false);
 
-    this._setupFPSLog(fpsLog);
+    this._setupFPSLog(options.fpsLog);
+    if (options.disableContextMenu) {
+      this.config({
+        item: 'disableContextMenu',
+        value: true
+      });
+    }
   }
 
   var proto = SvgRenderer.prototype = tools.mixin({}, EventEmitter, eventHandlers);
@@ -255,6 +262,9 @@ define([
         break;
       case 'backgroundColor':
         this.svg.root.style.backgroundColor = color(value).rgba();
+        break;
+      case 'disableContextMenu':
+        this.svg.root.oncontextmenu = value ? function() { return false; } : null;
         break;
     }
   };
@@ -594,10 +604,12 @@ define([
 
     var attributes = message.attributes;
 
-    if (attributes.selectable !== false) {
-      cssClasses.add(text, 'selectable');
-    } else {
-      cssClasses.remove(text, 'selectable');
+    if (attributes.selectable !== undefined) {
+      if (attributes.selectable !== false) {
+        cssClasses.add(text, 'selectable');
+      } else {
+        cssClasses.remove(text, 'selectable');
+      }
     }
 
     text.setAttributeNS(xlink, 'text-anchor', 'start');
@@ -616,38 +628,81 @@ define([
   proto.drawVideo = function(foreignObject, message) {
 
     // assuming a valid assetId
+    var volume;
     var attributes = message.attributes;
     var id = message.id;
-    var video = AssetController.assets[id];
+    var videoElement = AssetController.assets[id];
+    var playing = attributes.playing;
 
-    if (typeof video === 'undefined') {
+    if (typeof videoElement === 'undefined') {
       throw Error('asset <' + id + '> is unknown.');
     }
-
-    var width = attributes.width || 100;
-    var height = attributes.height || 100;
-    var matrix = attributes.matrix || {tx: 0, ty: 0};
-
-    foreignObject.setAttribute('x', matrix.tx);
-    foreignObject.setAttribute('y', matrix.ty);
-    foreignObject.setAttribute('width', width);
-    foreignObject.setAttribute('height', height);
-    foreignObject.setAttribute('preserveAspectRatio', 'none');
 
     // work-around: some browsers cannot transform the content of a foreignObject
     // e.g. webkit: http://code.google.com/p/chromium/issues/detail?id=87072
     // check http://double.co.nz/video_test/video.svg
     foreignObject.removeAttribute('transform');
 
-    video.setAttribute('width', width);
-    video.setAttribute('height', height);
-    video.setAttribute('controls', 'controls');
-
-    if (attributes.autoplay) {
-      video.play();
+    if ('matrix' in attributes) {
+      foreignObject.setAttribute('x', attributes.matrix.tx);
+      foreignObject.setAttribute('y', attributes.matrix.ty);
     }
 
-    foreignObject.appendChild(video);
+    if ('width' in attributes) {
+      foreignObject.setAttribute('width', attributes.width);
+      videoElement.setAttribute('width', attributes.width);
+    }
+    if ('height' in attributes) {
+      foreignObject.setAttribute('height', attributes.height);
+      videoElement.setAttribute('height', attributes.height);
+    }
+
+    foreignObject.setAttribute('preserveAspectRatio', 'none');
+
+    if (attributes.prepareUserEvent && 'ontouchstart' in document) {
+      // We bind to the next touch-event and play/pause the audio to cause
+      // iOS devices to allow subsequent play/pause commands on the audio el.
+      // --
+      // (Usually, iOS Devices will only allow play/pause methods to be called
+      // after a user event. Due to bonsai's async nature, a movie programmer
+      // can never achieve this. So we setup a fake one here...)
+      var touchStartHandler = function() {
+        videoElement.play();
+        videoElement.pause();
+        document.removeEventListener('touchstart', touchStartHandler, true);
+      };
+      document.addEventListener('touchstart', touchStartHandler, true);
+    }
+
+    if ('volume' in attributes) {
+      // Value between 0-1. NaN is treated as `0`
+      videoElement.volume = min(max(+attributes.volume || 0, 0), 1);
+    }
+
+    // Time in seconds. `currentTime` throws when there's no
+    // current playback state machine
+    if ('time' in attributes) {
+      // Set volume to 0 to avoid "clicks"
+      volume = videoElement.volume;
+      videoElement.volume = 0;
+      try {
+        // Some browsers ignore `0`, that's why we set it to `0.01`
+        videoElement.currentTime = +attributes.time || 0.01;
+      } catch(e) {}
+      // Set volume back to the initial value
+      videoElement.volume = volume;
+    }
+
+    if (playing === true) {
+      videoElement.play();
+    }
+    if (playing === false) {
+      videoElement.pause();
+    }
+
+    videoElement.setAttribute('controls', 'controls');
+
+    foreignObject.appendChild(videoElement);
   };
 
   proto.drawAudio = function(audioElement, message) {
