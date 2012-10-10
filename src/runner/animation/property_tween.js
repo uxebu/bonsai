@@ -1,6 +1,4 @@
-define([
-  './easing'
-], function(easing) {
+define(function() {
 
   /** 
    * Constructs an instance of PropertyTween which takes care of tweening an
