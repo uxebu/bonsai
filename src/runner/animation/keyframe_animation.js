@@ -134,10 +134,9 @@ define([
       */
       var initial = this.keyframes[0];
       if (initial && this.currentTweenIndex === 0) {
-        var subjects = this.subjects;
-        for (var i = 0, l = subjects.length; i < l; ++i) {
-          subjects[i].subject.attr(initial);
-        }
+        forEach(this.subjects, function(subj) {
+          subj.subject.attr(initial);
+        });
       }
 
       this.isPlaying = true;
