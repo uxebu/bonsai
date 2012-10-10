@@ -35,7 +35,7 @@ define([
           toNumeric: function(colorObj) {
             return [colorObj.r, colorObj.g, colorObj.b];
           },
-          toUnique: function(numericVals) {
+          toAttr: function(numericVals) {
             return {
               r: ~~numericVals[0],
               g: ~~numericVals[1],

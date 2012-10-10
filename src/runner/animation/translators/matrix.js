@@ -12,7 +12,7 @@ define(['../../matrix'], function(Matrix) {
         this.animatedMatrix = new Matrix;
         return [matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx, matrix.ty];
       },
-      toUnique: function(numbers) {
+      toAttr: function(numbers) {
         var m = this.animatedMatrix;
         m.a = numbers[0];
         m.b = numbers[1];

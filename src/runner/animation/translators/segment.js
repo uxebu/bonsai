@@ -23,7 +23,7 @@ define(['../../../color'], function(color) {
         }
         return numbers;
       },
-      toUnique: function(numbers) {
+      toAttr: function(numbers) {
 
         var segments = this.segments;
         var n = 0;

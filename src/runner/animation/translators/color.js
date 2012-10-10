@@ -17,7 +17,7 @@ define(['../../../color'], function(color) {
         c = color(c);
         return [c.r(), c.g(), c.b(), c.a()];
       },
-      toUnique: function(values) {
+      toAttr: function(values) {
         return '' + new color.RGBAColor(
           values[0],
           values[1],

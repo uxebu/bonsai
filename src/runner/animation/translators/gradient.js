@@ -53,7 +53,7 @@ define(['../../../color'], function(color) {
         
         return numbers;
       },
-      toUnique: function(numbers) {
+      toAttr: function(numbers) {
 
         var mutableGradient = this.mutableGradient;
         var n = 0;

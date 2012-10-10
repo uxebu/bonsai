@@ -60,7 +60,7 @@ define([
 
         return numbers;
       },
-      toUnique: function(numbers) {
+      toAttr: function(numbers) {
 
         var filters = this.filters;
         var n = 0;

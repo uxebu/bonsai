@@ -18,7 +18,7 @@ define([
    * @param {Object} [translator] The translator to be applied to values
    * @param {Function} [translator.toNumeric] Is passed a raw start or end
    *  value and returns an array of numbers that can be tweened.
-   * @param {Function} [translator.toUnique] Is passed an array of numbers and
+   * @param {Function} [translator.toAttr] Is passed an array of numbers and
    *  returns a value that can be returned by `at()`. This is usually the 
    *  custom value like a color or matrix instance which will be composed from
    *  the tweened numbers in the array.
@@ -49,7 +49,7 @@ define([
     }
 
     return this.translator ?
-      this.translator.toUnique.call(this.translationData, numericCurrentValues) :
+      this.translator.toAttr.call(this.translationData, numericCurrentValues) :
       numericCurrentValues[0];
 
   };

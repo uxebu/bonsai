@@ -18,7 +18,7 @@ define([
 
   /**
    * Translators, in the form of:
-   * { toNumber: function(){}, toUnique: function(){} }
+   * { toNumber: function(){}, toAttr: function(){} }
    */
   var translators = PropertiesTween.propertyTranslators = {};
 

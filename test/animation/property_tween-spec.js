@@ -14,7 +14,7 @@ define([
     describe('With translator', function() {
       it('Should delegate to translator before returning result from at()', function() {
         var t = new PropertyTween('foo:0', 'foo:120', {
-          toUnique: function(numbers) {
+          toAttr: function(numbers) {
             return 'foo:' + numbers[0];
           },
           toNumeric: function(val) {

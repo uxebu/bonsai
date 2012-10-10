@@ -17,7 +17,7 @@ define([], function() {
           cornerRadius[3] || cornerRadius
         ];
       },
-      toUnique: function(numbers) {
+      toAttr: function(numbers) {
         return numbers;
       }
     }
