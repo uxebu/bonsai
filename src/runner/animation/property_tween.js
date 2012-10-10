@@ -24,7 +24,11 @@ define([
    *  the tweened numbers in the array.
    */
   function PropertyTween(startValue, endValue, translator) {
+
+    // translationData enables the translator methods to store data relating
+    // to a single propertyTween somewhere:
     this.translationData = {};
+
     this.numericStartValues = translator ? translator.toNumeric.call(this.translationData, startValue, false) : [startValue];
     this.numericEndValues = translator ? translator.toNumeric.call(this.translationData, endValue, true) : [endValue];
     this.length = this.numericStartValues.length;
