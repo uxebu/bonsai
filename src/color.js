@@ -10,8 +10,7 @@ function(tools, colorMap) {
    * @module color
    */
 
-  var abs = Math.abs,
-      max = Math.max,
+  var max = Math.max,
       min = Math.min,
       rand = Math.random,
       round = Math.round;
@@ -100,8 +99,7 @@ function(tools, colorMap) {
    */
   proto.set = function(prop, val) {
 
-    var hsl, rgb,
-        props = this._properties;
+    var rgb, props = this._properties;
 
     if (val == null) {
       // Assume hash-map of props/vals
@@ -128,11 +126,9 @@ function(tools, colorMap) {
       case 's':
       case 'l':
 
-        if (val > 1 || val < 0) {
-          throw Error('Property: ' + prop + ' must be from 0 to 1');
-        }
+        // consider out-of-range values (allowed range: 0-1)
+        props[prop] = max(0, min(1, val));
 
-        props[prop] = val;
         rgb = hslToRgb(props.h, props.s, props.l);
         props.r = rgb >> 24 & 0xff;
         props.g = rgb >> 16 & 0xff;
@@ -284,9 +280,7 @@ function(tools, colorMap) {
       props = props ? [props] : ['r', 'g', 'b'];
     }
 
-    var clone = this.clone(),
-        prop,
-        current;
+    var clone = this.clone();
 
     for (var l = props.length; l--;) {
       clone._setPointAlongRange(props[l], rand(), range);
@@ -403,7 +397,7 @@ function(tools, colorMap) {
    * @returns {number} A 3 byte integer, byte 3 is r, byte 2 is g, byte 1 is b
    */
   function hslToRgb(h, s, l) {
-    var m2 = l <= .5 ? l * (s + 1) : l + s - l * s;
+    var m2 = l <= 0.5 ? l * (s + 1) : l + s - l * s;
     var m1 = l * 2 - m2;
     var r = hueToRgb(m1, m2, h + 1/3) * 255,
         g = hueToRgb(m1, m2, h) * 255,
@@ -424,7 +418,7 @@ function(tools, colorMap) {
       h = s = 0;
     } else {
       diff = mmax - mmin;
-      s = l > .5 ? diff / (2 - mmax - mmin) : diff / (mmax + mmin);
+      s = l > 0.5 ? diff / (2 - mmax - mmin) : diff / (mmax + mmin);
       switch (mmax) {
         case r: h = (g - b) / diff + (g < b ? 6 : 0); break;
         case g: h = (b - r) / diff + 2; break;
