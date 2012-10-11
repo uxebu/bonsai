@@ -8,6 +8,7 @@ v0.4.1
 * Introduce MediaDisplayObject that combines the basic functionality of
   Video and Audio.
 * Fixed examples to be in line with the documentation.
+* Fix out-of-range hsl color values
 
 v0.4.0 / 2012-10-03
 -------------------
