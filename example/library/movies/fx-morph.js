@@ -36,7 +36,7 @@ var animation = new Animation('3s', {
   filters: new filter.Blur(5)
 });
 
-animation.setSubject(a);
+animation.addSubject(a);
 a.addTo(stage);
 
 animation.play();
