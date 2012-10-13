@@ -7,9 +7,9 @@ for (var a = 0; a < 3; ++a) {
     (function() {
 
       var x, y,
-          fill = bonsai.color('red').darker(.1).randomize('hue');
+          fill = color('red').darker(.1).randomize('hue');
 
-      bonsai.Path.rect(
+      new Rect(
         a * 150 + 50, b * 150 + 50, 100, 100
       ).attr({
         fillColor: fill

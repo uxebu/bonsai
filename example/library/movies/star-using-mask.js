@@ -2,7 +2,7 @@ stage = new Group().addTo(stage);
 
 stage.attr({x:240, y:240});
 
-var star = Path.star(25, 25, 10,5).attr({
+var star = new Star(25, 25, 10,5).attr({
   fillColor:'white'
 });
 

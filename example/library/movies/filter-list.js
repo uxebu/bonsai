@@ -1,7 +1,7 @@
 
 /* ============ ROW 1 ============ */
 
-new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
+new Bitmap('assets/redpanda.jpg', function(err) {
   if (err) return;
   this.attr({
     y: 10,
@@ -12,7 +12,7 @@ new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
   stage.addChild(this);
 });
 
-new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
+new Bitmap('assets/redpanda.jpg', function(err) {
   if (err) return;
   this.attr({
     y: 10,
@@ -23,7 +23,7 @@ new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
   stage.addChild(this);
 });
 
-new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
+new Bitmap('assets/redpanda.jpg', function(err) {
   if (err) return;
   this.attr({
     y: 10,
@@ -36,7 +36,7 @@ new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
 
 /* ============ ROW 2 ============ */
 
-new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
+new Bitmap('assets/redpanda.jpg', function(err) {
   if (err) return;
   this.attr({
     y: 150,
@@ -47,7 +47,7 @@ new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
   stage.addChild(this);
 });
 
-new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
+new Bitmap('assets/redpanda.jpg', function(err) {
   if (err) return;
   this.attr({
     y: 150,
@@ -58,7 +58,7 @@ new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
   stage.addChild(this);
 });
 
-new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
+new Bitmap('assets/redpanda.jpg', function(err) {
   if (err) return;
   this.attr({
     y: 150,
@@ -71,7 +71,7 @@ new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
 
 /* ============ ROW 3 ============ */
 
-new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
+new Bitmap('assets/redpanda.jpg', function(err) {
   if (err) return;
   this.attr({
     y: 290,
@@ -82,7 +82,7 @@ new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
   stage.addChild(this);
 });
 
-new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
+new Bitmap('assets/redpanda.jpg', function(err) {
   if (err) return;
   this.attr({
     y: 290,
@@ -93,7 +93,7 @@ new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
   stage.addChild(this);
 });
 
-new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
+new Bitmap('assets/redpanda.jpg', function(err) {
   if (err) return;
   this.attr({
     y: 290,
@@ -106,7 +106,7 @@ new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
 
 /* ============ ROW 4 ============ */
 
-new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
+new Bitmap('assets/redpanda.jpg', function(err) {
   if (err) return;
   this.attr({
     y: 430,
@@ -117,7 +117,7 @@ new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
   stage.addChild(this);
 });
 
-new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
+new Bitmap('assets/redpanda.jpg', function(err) {
   if (err) return;
   this.attr({
     y: 430,

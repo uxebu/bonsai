@@ -220,10 +220,10 @@ define([
     describe('lightness', function() {
 
       it('is mutable', function(){
-        expect(toRGBA(color('red').set('lightness', .3))).toBe('rgba(153,0,0,1)');
-        expect(toRGBA(color('red').set('lightness', .99))).toBe('rgba(255,250,250,1)');
+        expect(toRGBA(color('red').set('lightness', 0.3))).toBe('rgba(153,0,0,1)');
+        expect(toRGBA(color('red').set('lightness', 0.99))).toBe('rgba(255,250,250,1)');
         expect(
-          toRGBA(color('red').set('lightness', .22))
+          toRGBA(color('red').set('lightness', 0.22))
         ).toBe(
           toRGBA('hsla(0,100%,22%,1)')
         );
@@ -237,15 +237,19 @@ define([
       precision.PRECISION = +precision;
 
       describe('lighter', function() {
-        expect(color('hsl(200,50%,50%)').lighter(.1).l()).toBeCloseTo(0.6, precision);
-        expect(color('hsl(100,10%,70%)').lighter(.2).l()).toBeCloseTo(0.9, precision);
-        expect(color('hsl(150,64%,95%)').lighter(-.2).l()).toBeCloseTo(0.75, precision);
+        expect(color('hsl(200,50%,50%)').lighter(0.1).l()).toBeCloseTo(0.6, precision);
+        expect(color('hsl(100,10%,70%)').lighter(0.2).l()).toBeCloseTo(0.9, precision);
+        expect(color('hsl(150,64%,95%)').lighter(-0.2).l()).toBeCloseTo(0.75, precision);
+        expect(color('hsl(200,50%,50%)').lighter(0.6).l()).toBeCloseTo(1, precision);
+        expect(color('hsl(200,50%,50%)').lighter(-0.6).l()).toBeCloseTo(0, precision);
       });
 
       describe('darker', function() {
-        expect(color('hsl(200,50%,50%)').darker(.1).l()).toBeCloseTo(0.4, precision);
-        expect(color('hsl(100,10%,70%)').darker(.2).l()).toBeCloseTo(0.5, precision);
-        expect(color('hsl(150,64%,15%)').darker(-.2).l()).toBeCloseTo(0.35, precision);
+        expect(color('hsl(200,50%,50%)').darker(0.1).l()).toBeCloseTo(0.4, precision);
+        expect(color('hsl(100,10%,70%)').darker(0.2).l()).toBeCloseTo(0.5, precision);
+        expect(color('hsl(150,64%,15%)').darker(-0.2).l()).toBeCloseTo(0.35, precision);
+        expect(color('hsl(200,50%,50%)').darker(0.6).l()).toBeCloseTo(0, precision);
+        expect(color('hsl(200,50%,50%)').darker(-0.6).l()).toBeCloseTo(1, precision);
       });
 
     });
