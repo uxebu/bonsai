@@ -761,7 +761,7 @@ define([
      */
     animate: function(duration, properties, options) {
       var animation = duration;
-      if (!(animation instanceof Animation || animation instanceof KeyframeAnimation)) {
+      if (/number|string/.test(typeof duration) || !(animation instanceof Animation || animation instanceof KeyframeAnimation)) {
         var clock = options && options.clock || this.stage;
         options || (options = {});
         if (!clock) { // not in the display list -- try to find parent timeline
