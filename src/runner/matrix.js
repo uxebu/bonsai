@@ -1,9 +1,3 @@
-/**
- * This module contains the Matrix class.
- *
- * @exports matrix
- * @requires module:point
- */
 define([
   '../point'
 ], function(Point) {
@@ -15,6 +9,7 @@ define([
    * The Matrix class.
    *
    * @constructor
+   * @name Matrix
    *
    * @param {number} a Horizontal/x scale
    * @param {number} b Vertical/y skew
@@ -32,7 +27,7 @@ define([
     this.ty = ty || 0;
   }
 
-  Matrix.prototype = {
+  Matrix.prototype = /** @lends Matrix.prototype */ {
     /**
      * Returns a clone of the matrix
      *
