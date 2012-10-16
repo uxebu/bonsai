@@ -25,7 +25,7 @@ define([
       expect(matrix.ty).toBe(0);
     });
 
-    it('should set a, b, c, d, tx, ty defaults for undefineds', function(){
+    it('should set a, b, c, d, tx, ty defaults for nulls', function(){
       var matrix = new Matrix(null, null, null, null, null, null);
       expect(matrix.a).toBe(1);
       expect(matrix.b).toBe(0);
@@ -33,6 +33,16 @@ define([
       expect(matrix.d).toBe(1);
       expect(matrix.tx).toBe(0);
       expect(matrix.ty).toBe(0);
+    });
+
+    it('should set a, b, c, d, tx, ty for a matrix string', function(){
+      var matrix = new Matrix('matrix(4,2,1,6,5,4)');
+      expect(matrix.a).toBe(4);
+      expect(matrix.b).toBe(2);
+      expect(matrix.c).toBe(1);
+      expect(matrix.d).toBe(6);
+      expect(matrix.tx).toBe(5);
+      expect(matrix.ty).toBe(4);
     });
 
   });
