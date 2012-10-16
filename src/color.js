@@ -479,7 +479,7 @@ function(tools, colorMap) {
               (values[0] & 0xff) << 24 |
               (values[1] & 0xff) << 16 |
               (values[2] & 0xff) << 8 |
-              (alpha || values[3] * 0xff & 0xff)
+              (alpha || min(1, max(0, values[3])) * 0xff & 0xff)
             ) >>> 0;
           }
           break;

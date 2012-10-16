@@ -9,6 +9,7 @@ v0.4.1
   Video and Audio.
 * Fixed examples to be in line with the documentation.
 * Fix out-of-range hsl color values
+* Fix out-of-range alpha values when parsing rgba() strings
 
 v0.4.0 / 2012-10-03
 -------------------

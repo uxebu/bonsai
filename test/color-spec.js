@@ -86,6 +86,11 @@ define([
         expect(toRGBA('rgba(1,99,233,0)')).toBe('rgba(1,99,233,0)');
         expect(toRGBA('rgba(1, 99, 233, 0)')).toBe('rgba(1,99,233,0)');
         expect(toRGBA('rgba(1, 99,  233,   0)')).toBe('rgba(1,99,233,0)');
+        // Forces bounds of 0..1 for alpha:
+        expect(toRGBA('rgba(1,2,3,4444)')).toBe('rgba(1,2,3,1)');
+        expect(toRGBA('rgba(1,2,3,255)')).toBe('rgba(1,2,3,1)');
+        expect(toRGBA('rgba(1,2,3,-1)')).toBe('rgba(1,2,3,0)');
+        expect(toRGBA('rgba(1,2,3,1.101)')).toBe('rgba(1,2,3,1)');
       });
 
       it('Can handle hsl()', function() {
