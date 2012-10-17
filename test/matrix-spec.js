@@ -47,4 +47,33 @@ define([
 
   });
 
+  describe('Matrix.fromString', function () {
+
+    it('should return a new Matrix with a, b, c, d, tx, ty from `matrix(a,b,c,d,e,f)`', function(){
+      var matrix = Matrix.fromString('4,2,1,6,5,4');
+      expect(matrix.a).toBe(4);
+      expect(matrix.b).toBe(2);
+      expect(matrix.c).toBe(1);
+      expect(matrix.d).toBe(6);
+      expect(matrix.tx).toBe(5);
+      expect(matrix.ty).toBe(4);
+    });
+
+    it('should return a new Matrix with a, b, c, d, tx, ty for a string of `"a, b, c, d, tx, ty"`', function(){
+      var matrix = Matrix.fromString('matrix(4,2,1,6,5,4)');
+      expect(matrix.a).toBe(4);
+      expect(matrix.b).toBe(2);
+      expect(matrix.c).toBe(1);
+      expect(matrix.d).toBe(6);
+      expect(matrix.tx).toBe(5);
+      expect(matrix.ty).toBe(4);
+    });
+
+    it('should return an instance of a Matrix', function(){
+      var matrix = Matrix.fromString('matrix(4,2,1,6,5,4)');
+      expect(matrix).toBeInstanceOf(Matrix);
+    })
+
+  })
+  
 });

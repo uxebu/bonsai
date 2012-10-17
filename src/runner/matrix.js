@@ -241,5 +241,9 @@ define([
     }
   };
 
+  Matrix.fromString = function (matrixString) {
+    return new Matrix(matrixString.match(/[^matrix(,)]+/g).map(Number));
+  }
+
   return Matrix;
 });
