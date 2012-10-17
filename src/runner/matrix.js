@@ -241,6 +241,12 @@ define([
     }
   };
 
+  /**
+   * Creates a new Matrix from a matrix string: `'matrix(1,1,0,0,1,1)'`
+   *
+   * @param {string} matrixString The matrix string.
+   * @returns {Matrix} The instance.
+   */
   Matrix.fromString = function (matrixString) {
     return new Matrix(matrixString.match(/[^matrix(,)]+/g).map(Number));
   }
