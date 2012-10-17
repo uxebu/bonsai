@@ -35,8 +35,8 @@ define([
       expect(matrix.ty).toBe(0);
     });
 
-    it('should set a, b, c, d, tx, ty for a matrix string', function(){
-      var matrix = new Matrix('matrix(4,2,1,6,5,4)');
+    it('should set a, b, c, d, tx, ty for an array', function(){
+      var matrix = new Matrix([4,2,1,6,5,4]);
       expect(matrix.a).toBe(4);
       expect(matrix.b).toBe(2);
       expect(matrix.c).toBe(1);
@@ -46,5 +46,5 @@ define([
     });
 
   });
-  
+
 });

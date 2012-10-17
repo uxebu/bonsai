@@ -11,7 +11,7 @@ define([
    * @constructor
    * @name Matrix
    *
-   * @param {number|string} a Horizontal/x scale or matrix string "matrix(0,1,0,0,1,1)"
+   * @param {number|array} a Horizontal/x scale or array of a, b, c, d, tx, ty
    * @param {number} b Vertical/y skew
    * @param {number} c Horizontal/x skew
    * @param {number} d Vertical/y scale
@@ -19,9 +19,8 @@ define([
    * @param {number} ty Vertical/y translation
    */
   function Matrix(a, b, c, d, tx, ty) {
-    if ('string' === typeof a && a.match(/^matrix/)) {
-      var args = a.match(/[^a-z(),]+/g).map(function(i) { return +i });
-      return Matrix.apply(this, args);
+    if (a instanceof Array) {
+      return Matrix.apply(this, a);
     }
 
     this.a = a != null ? a : 1;
