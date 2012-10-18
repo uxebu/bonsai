@@ -1,6 +1,7 @@
 define([
-  '../point'
-], function(Point) {
+  '../point',
+  '../tools'
+], function(Point, tools) {
   'use strict';
 
   var cos = Math.cos, sin = Math.sin;
@@ -19,7 +20,7 @@ define([
    * @param {number} ty Vertical/y translation
    */
   function Matrix(a, b, c, d, tx, ty) {
-    if (a instanceof Array) {
+    if (tools.isArray(a)) {
       return Matrix.apply(this, a);
     }
 
