@@ -174,14 +174,16 @@ define([
    *    these are the attribute names you can pass to the attr() method. Note
    *    that this property is not available in your code, it's just here for
    *    documentation purposes.
-   * @property {string} __supportedAttributes__.cap The shape to be used at the end of open Path items, when they have a stroke. Can be one of 'round', 'square', 'butt'. Default: 'butt'
-   * @property {string} __supportedAttributes__.fillColor The fill color. Default: black.
-   * @property {string} __supportedAttributes__.fill Alias for fillColor
-   * @property {string} __supportedAttributes__.fillGradient The fill gradient. Defaults: nothing
-   * @property {string} __supportedAttributes__.join The shape to be used at the corners of paths. Can be one of 'miter', 'round', 'bevel'. Default: 'miter'
-   * @property {string} __supportedAttributes__.line The line color. Default: transparent
-   * @property {number} __supportedAttributes__.strokeWidth The line width. Default: 0
-   * @property {number} __supportedAttributes__.miterLimit The miter limit of the stroke. Default: 4
+   * @property {String} __supportedAttributes__.cap The shape to be used at the end of open Path items, when they have a stroke. Can be one of 'round', 'square', 'butt'. Default: 'butt'
+   * @property {String} __supportedAttributes__.fillColor The fill color. Default: black.
+   * @property {gradient.LinearGradient|gradient.RadialGradient} __supportedAttributes__.fillGradient The fill gradient. Defaults: nothing\
+   * @property {Bitmap} __supportedAttributes__.fillImage The fill image. Default: nothing
+   * @property {Array|Number} __supportedAttributes__.fillRepeat Number of times to repeat the fill-image/gradient both horizontally and vertically. Default: [1,1]
+   * @property {String} __supportedAttributes__.join The shape to be used at the corners of paths. Can be one of 'miter', 'round', 'bevel'. Default: 'miter'
+   * @property {String} __supportedAttributes__.strokeColor The line color. Default: transparent
+   * @property {gradient.LinearGradient|gradient.RadialGradient} __supportedAttributes__.strokeGradient The line gradient. Default: nothing
+   * @property {Number} __supportedAttributes__.strokeWidth The line width. Default: 0
+   * @property {Number} __supportedAttributes__.miterLimit The miter limit of the stroke. Default: 4
    *
    */
    function Path(param) {

@@ -2,7 +2,7 @@
  * Tests a simple group
  */
 
-var displayObject = new bonsai.Path.rect(10,10,100,100).attr({fillColor: 'red'});
+var displayObject = new Rect(10,10,100,100).attr({fillColor: 'red'});
 stage.addChild(displayObject);
 
 setTimeout(function() {

@@ -6,14 +6,14 @@ that don't do anything, but can be animated by the Animation class
 (via the segments translations)
 */
 
-var a = Path.rect(10, 10, 600, 450).attr('fillColor', 'red');
-var b = Path.star(250, 250, 250, 5).attr('fillColor', 'blue');
+var a = new Rect(10, 10, 600, 450).attr('fillColor', 'red');
+var b = new Star(250, 250, 250, 5).attr('fillColor', 'blue');
 // Create a bg image of which we animate the opacity to visible.
 var img = new Bitmap('assets/redpanda.jpg')
   .attr({width: 100, height: 100, opacity:0});
 a.attr({
   fillGradient: gradient.radial(['green', 'black'], 100),
-  filters: new filter.Blur(0),
+  filters: filter.blur(0),
   fillImage: img, fillRepeat: 6
 });
 var anim = new Animation('3s', {opacity:1}, {clock:stage});
@@ -36,7 +36,7 @@ var animation = new Animation('3s', {
   filters: new filter.Blur(5)
 });
 
-animation.setSubject(a);
+animation.addSubject(a);
 a.addTo(stage);
 
 animation.play();
