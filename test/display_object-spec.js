@@ -175,43 +175,37 @@ define([
       });
     });
 
-    describe('#getComputed()', function() {
+    describe('#getBoundingBox()', function() {
       describe('without transform parameter', function() {
         it('should return 0 if invoked with "width"', function() {
-          expect(new DisplayObject().getComputed('width')).toBe(0);
+          expect(new DisplayObject().getBoundingBox().width).toBe(0);
         });
 
         it('should return 0 if invoked with "height"', function() {
-          expect(new DisplayObject().getComputed('height')).toBe(0);
+          expect(new DisplayObject().getBoundingBox().height).toBe(0);
         });
 
         it('should return 0 if invoked with "top"', function() {
-          expect(new DisplayObject().getComputed('top')).toBe(0);
+          expect(new DisplayObject().getBoundingBox().top).toBe(0);
         });
 
         it('should return 0 if invoked with "right"', function() {
-          expect(new DisplayObject().getComputed('right')).toBe(0);
+          expect(new DisplayObject().getBoundingBox().right).toBe(0);
         });
 
         it('should return 0 if invoked with "bottom"', function() {
-          expect(new DisplayObject().getComputed('bottom')).toBe(0);
+          expect(new DisplayObject().getBoundingBox().bottom).toBe(0);
         });
 
         it('should return 0 if invoked with "left"', function() {
-          expect(new DisplayObject().getComputed('left')).toBe(0);
+          expect(new DisplayObject().getBoundingBox().left).toBe(0);
         });
 
         it('should return an object with "top", "right", "bottom", "left", ' +
           '"width" and "height" properties of 0 when invoked with "size"', function() {
           expect(
-            new DisplayObject().getComputed('size')
+            new DisplayObject().getBoundingBox()
           ).toEqual({top: 0, right: 0, bottom: 0, left: 0, width: 0, height: 0});
-        });
-
-        it('should return undefined for arbitrary parameters', function() {
-          expect(new DisplayObject().getComputed('arbitrary')).toBe();
-          expect(new DisplayObject().getComputed(12)).toBe();
-          expect(new DisplayObject().getComputed({})).toBe();
         });
       });
 
@@ -220,33 +214,33 @@ define([
         var zeroTransformed = outerTransform.transformPoint({x: 0, y: 0});
 
         it('should return 0 if invoked with "width"', function() {
-          expect(new DisplayObject().getComputed('width', outerTransform)).toBe(0);
+          expect(new DisplayObject().getBoundingBox(outerTransform).width).toBe(0);
         });
 
         it('should return 0 if invoked with "height"', function() {
-          expect(new DisplayObject().getComputed('height', outerTransform)).toBe(0);
+          expect(new DisplayObject().getBoundingBox(outerTransform).height).toBe(0);
         });
 
         it('should return the right value if invoked with "top"', function() {
-          expect(new DisplayObject().getComputed('top', outerTransform)).toBe(zeroTransformed.y);
+          expect(new DisplayObject().getBoundingBox(outerTransform).top).toBe(zeroTransformed.y);
         });
 
         it('should return the right value if if invoked with "right"', function() {
-          expect(new DisplayObject().getComputed('right', outerTransform)).toBe(zeroTransformed.x);
+          expect(new DisplayObject().getBoundingBox(outerTransform).right).toBe(zeroTransformed.x);
         });
 
         it('should return 0 if invoked with "bottom"', function() {
-          expect(new DisplayObject().getComputed('bottom', outerTransform)).toBe(zeroTransformed.y);
+          expect(new DisplayObject().getBoundingBox(outerTransform).bottom).toBe(zeroTransformed.y);
         });
 
         it('should return 0 if invoked with "left"', function() {
-          expect(new DisplayObject().getComputed('left', outerTransform)).toBe(zeroTransformed.x);
+          expect(new DisplayObject().getBoundingBox(outerTransform).left).toBe(zeroTransformed.x);
         });
 
         it('should return an object with "top", "right", "bottom", "left", ' +
           '"width" and "height" properties of 0 when invoked with "size"', function() {
           expect(
-            new DisplayObject().getComputed('size', outerTransform)
+            new DisplayObject().getBoundingBox(outerTransform)
           ).toEqual({
               top: zeroTransformed.y,
               right: zeroTransformed.x,
@@ -255,12 +249,6 @@ define([
               width: 0,
               height: 0
             });
-        });
-
-        xit('should return undefined for arbitrary parameters', function() {
-          expect(new DisplayObject().getComputed('arbitrary')).toBe();
-          expect(new DisplayObject().getComputed(12)).toBe();
-          expect(new DisplayObject().getComputed({})).toBe();
         });
       });
     });

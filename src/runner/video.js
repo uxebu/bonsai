@@ -82,23 +82,19 @@ define([
     return this;
   };
 
-  proto.getComputed = function(key) {
-    var value, size = key === 'size' && {top: 0, right: 0, bottom: 0, left: 0};
-    if (key === 'width' || key === 'right') {
-      value = this.attr('width') || 0;
-    } else if (size) {
-      size.right = size.width = this.attr('width') || 0;
+  proto.getBoundingBox = function(transform) {
+    var box = {top: 0, right: 0, bottom: 0, left: 0};
+    box.right = box.width = this.attr('width') || 0;
+    box.bottom = box.height = this.attr('height') || 0;
+    if (transform) {
+      var topLeft = transform.transformPoint({x:0,y:0});
+      var bottomRight = transform.transformPoint({x:box.right, y:box.bottom});
+      box.top = topLeft.y;
+      box.left = topLeft.x;
+      box.right = bottomRight.x;
+      box.bottom = bottomRight.y;
     }
-    if (key === 'height' || key === 'bottom') {
-      value = this.attr('height') || 0;
-    } else if (size) {
-      size.bottom = size.height = this.attr('height') || 0;
-    }
-    if (key === 'top' || key === 'left') {
-      value = 0;
-    }
-
-    return size || value;
+    return box;
   };
 
   return Video;

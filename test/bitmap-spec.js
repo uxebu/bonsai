@@ -62,76 +62,79 @@ define([
         });
       });
     });
-    describe('#getComputed()', function() {
+    describe('#getBoundingBox()', function() {
       it('should return the bitmap width if invoked with "width"', function() {
         var width = 123;
         var bitmap = new Bitmap().attr('width', width);
 
-        expect(bitmap.getComputed('width')).toBe(width);
+        expect(bitmap.getBoundingBox().width).toBe(width);
       });
       it('should return 0 for "width" if width is not set', function() {
         var bitmap = new Bitmap();
 
-        expect(bitmap.getComputed('width')).toBe(0);
+        expect(bitmap.getBoundingBox().width).toBe(0);
       });
 
       it('should return the bitmap width if invoked with "right"', function() {
         var width = 123;
         var bitmap = new Bitmap().attr('width', width);
 
-        expect(bitmap.getComputed('right')).toBe(width);
+        expect(bitmap.getBoundingBox().right).toBe(width);
       });
       it('should return 0 for "right" if width is not set', function() {
         var bitmap = new Bitmap();
 
-        expect(bitmap.getComputed('right')).toBe(0);
+        expect(bitmap.getBoundingBox().right).toBe(0);
       });
 
       it('should return the bitmap height if invoked with "height"', function() {
         var height = 123;
         var bitmap = new Bitmap().attr('height', height);
 
-        expect(bitmap.getComputed('height')).toBe(height);
+        expect(bitmap.getBoundingBox().height).toBe(height);
       });
       it('should return 0 for "height" if height is not set', function() {
         var bitmap = new Bitmap();
 
-        expect(bitmap.getComputed('height')).toBe(0);
+        expect(bitmap.getBoundingBox().height).toBe(0);
       });
 
       it('should return the bitmap height if invoked with "bottom"', function() {
         var height = 123;
         var bitmap = new Bitmap().attr('height', height);
 
-        expect(bitmap.getComputed('bottom')).toBe(height);
+        expect(bitmap.getBoundingBox().bottom).toBe(height);
       });
       it('should return 0 for "bottom" if height is not set', function() {
         var bitmap = new Bitmap();
 
-        expect(bitmap.getComputed('bottom')).toBe(0);
+        expect(bitmap.getBoundingBox().bottom).toBe(0);
       });
 
       it('should return 0 if invoked with "top"', function() {
-        expect(new Bitmap().getComputed('top')).toBe(0);
+        expect(new Bitmap().getBoundingBox().top).toBe(0);
       });
 
       it('should return 0 if invoked with "left"', function() {
-        expect(new Bitmap().getComputed('left')).toBe(0);
+        expect(new Bitmap().getBoundingBox().left).toBe(0);
       });
 
       it('Should calculate width from width/height ratio if not specified and vice-versa', function() {
         var b = new Bitmap();
         b._attributes._naturalWidth = 400;
         b._attributes._naturalHeight = 200;
-        expect(b.getComputed('width')).toBe(400);
-        expect(b.getComputed('height')).toBe(200);
+        var bbox = b.getBoundingBox();
+        expect(bbox.width).toBe(400);
+        expect(bbox.height).toBe(200);
         b.attr('width', 500);
-        expect(b.getComputed('width')).toBe(500);
-        expect(b.getComputed('height')).toBe(250); // <- calculated from ratio
+        bbox = b.getBoundingBox();
+        expect(bbox.width).toBe(500);
+        expect(bbox.height).toBe(250); // <- calculated from ratio
         b.attr('width', null);
         b.attr('height', 10);
-        expect(b.getComputed('width')).toBe(20); // <- calculated from ratio
-        expect(b.getComputed('height')).toBe(10);
+        bbox = b.getBoundingBox();
+        expect(bbox.width).toBe(20); // <- calculated from ratio
+        expect(bbox.height).toBe(10);
       });
 
       it('should return an object with "top", "right", "bottom", "left", ' +
@@ -141,7 +144,7 @@ define([
         expect(
           new Bitmap()
             .attr({width: width, height: height})
-            .getComputed('size')
+            .getBoundingBox()
         ).toEqual({
             top: 0,
             right: width,
@@ -154,7 +157,7 @@ define([
 
       it('should return an object with "top", "right", "bottom", "left", ' +
         '"width" and "height" properties of 0 when invoked with "size"', function() {
-        expect(new Bitmap().getComputed('size'))
+        expect(new Bitmap().getBoundingBox())
           .toEqual({
             top: 0,
             right: 0,
