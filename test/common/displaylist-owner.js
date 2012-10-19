@@ -49,7 +49,7 @@ define([
       it('forwards a single argument to this.displayList.add', function() {
         var child = mock.createDisplayObject();
         owner.addChild(child);
-        expect(displayList.add).toHaveBeenCalledWith(child);
+        expect(displayList.add).toHaveBeenCalledWith(child, void 0);
       });
 
       it('forwards both arguments to this.displayList.add', function() {
