@@ -230,17 +230,19 @@ define([
     },
 
     /**
-     * Computes bounding boxes and single data points of a display object.
+     * Returns dimensions/location of the DisplayList, calculated from its children
      *
-     * @param {String} key What to compute. One of "top", "right", "bottom",
-     *    "left", "width" and "height"
      * @param {Matrix} [transform=null] A transform to apply to all points
      *    before computation.
-     * @return {Object}
+     * @returns {Object} an object with all box properties
      */
     getBoundingBox: function(transform) {
 
       var children = this.displayList.children;
+
+      if (!children.length) {
+        return DisplayObject.prototype.getBoundingBox.call(this, transform);
+      }
 
       var size = tools.reduce(children, function(size, child, i) {
         var childMatrix = child.attr('matrix').clone();
