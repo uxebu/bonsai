@@ -28,6 +28,7 @@ External libraries (each with their own license):
   - phantom-jasmine: Apache 2 - https://github.com/jcarver989/phantom-jasmine/issues/8
   - closure: http://code.google.com/p/closure-compiler/source/browse/trunk/COPYING
   - qc.js: https://github.com/darrint/qc.js/blob/master/COPYING
+  - calc_box: http://blog.hackers-cafe.net/2009/06/how-to-calculate-bezier-curves-bounding.html
 
 External resources (each with their own license):
 
