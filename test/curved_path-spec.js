@@ -784,6 +784,72 @@ define([
 
     });
 
+    describe('getBoundsOfCurve', function() {
+      it('Returns bounds of cubic bezier where curves to not exceed start or end points', function() {
+        expect(
+          CurvedPath.getBoundsOfCurve(
+            10, 10,
+            300, 20,
+            0, 200,
+            200, 200
+          )
+        ).toEqual({
+          top: 10,
+          left: 10,
+          right: 200,
+          bottom: 200
+        });
+      });
+      it('Returns bounds of cubic bezier where curves exceed the start point', function() {
+        expect(
+          CurvedPath.getBoundsOfCurve(
+            10, 10,
+            -100, -20,
+            0, 200,
+            200, 200
+          )
+        ).toEqual({
+          // Verified visually
+          top: 7.188773200543233,
+          left: -35.42711114040688,
+          right: 200,
+          bottom: 200
+        });
+      });
+      it('Returns bounds of cubic bezier where curves exceed the end point', function() {
+        expect(
+          CurvedPath.getBoundsOfCurve(
+            10, 10,
+            100, 20,
+            300, 650,
+            200, 200
+          )
+        ).toEqual({
+          // Verified visually
+          top: 10,
+          left: 10,
+          right: 227.32435900508673,
+          bottom: 361.86818746765124
+        });
+      });
+      it('Returns bounds of cubic bezier where curves exceed both start and end points', function() {
+        expect(
+          CurvedPath.getBoundsOfCurve(
+            20, 20,
+            -200, -120,
+            300, 650,
+            200, 200
+          )
+        ).toEqual({
+          // Verified visually
+          top: 2.7156747405887716,
+          left: -36.5340999118199,
+          right: 213.3936040440513,
+          bottom: 342.8039531991939
+        });
+      });
+    });
+
   });
 
 });
