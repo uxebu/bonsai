@@ -66,8 +66,8 @@ define([
 
       var children = this.children;
       var numExistingChildren = children.length;
-      insertAt = arguments.length > 1 ?
-        min(insertAt >>> 0, numExistingChildren) : numExistingChildren;
+      insertAt = insertAt === void 0 ?
+        numExistingChildren : min(insertAt >>> 0, numExistingChildren);
 
       if (isChildArray) {
         children.splice.apply(children, [insertAt, 0].concat(child));
@@ -198,11 +198,7 @@ define([
      * @return {this}
      */
     addChild: function(child, index) {
-      if (arguments.length === 1) {
-        this.displayList.add(child);
-      } else {
-        this.displayList.add(child, index);
-      }
+      this.displayList.add(child, index);
       return this;
     },
     /**
