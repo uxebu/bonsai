@@ -30,7 +30,9 @@ define([
       PI = Math.PI,
       PI2 = PI * 2, // full circle
       sin = Math.sin,
-      sqrt = Math.sqrt;
+      sqrt = Math.sqrt,
+      min = Math.min,
+      max = Math.max;
 
   // attributes section needs documentation
 
@@ -983,7 +985,7 @@ define([
     this.toCurves();
     that.toCurves();
 
-    var maxSegments = Math.max(that._segments.length, this._segments.length);
+    var maxSegments = max(that._segments.length, this._segments.length);
 
     // We need both shapes to be of equal segment-length, so each segment
     // can animate to its corresponding segment in the target shape
@@ -1091,65 +1093,62 @@ define([
     return res;
   };
 
-
-  /************************* Factories & Abstractions *************************/
-
   /**
    * Returns dimensions/location of the shape
    *
-   * @param {String} key "size" for the full dimensions object or one of "top",
-   *  "bottom", "left", "right", "width", "height"
-   * @returns {Object|Number} If you passed "size" as the key then an object
-   *  will be returned, otherwise a number
+   * @param {Matrix} [transform=null] A transform to apply to all points
+   *    before computation.
+   * @returns {Object} an object with all box properties
    */
-  proto.getComputed = function(key) {
-    /*
-      TODO: this is an extremely simplified algorithm that might yield incorrect
-      results.
+  proto.getBoundingBox = function(transform) {
 
-      It loops over all segments (normalized to cubic bezier curves) and simply
-      uses all points.
+    function transformPoint(x, y) {
+      var point = new Point(x, y);
+      return transform ? transform.transformPoint(point) : point;
+    }
 
-      To achieve correct results, the extrema of those curves need to be
-      calculated.
+    var xBounds = [],
+        yBounds = [],
+        curvedSegments = CurvedPath.toCurves(this.attr('segments').slice()),
+        startPoint = new Point(0, 0);
 
-      This may be achieved by converting the curves to their polynomial form
-      and computing the derivative.
+    for (var i = 0, segment; (segment = curvedSegments[i++]);) {
 
-      More information:
-      http://stackoverflow.com/questions/2587751/an-algorithm-to-find-bounding-box-of-closed-bezier-curves
-      https://www.google.com/search?q=derivative+cubic+bezier
-     */
-    // results
-    var size = {top: 0, right: 0, bottom: 0, left: 0, width: 0, height: 0};
-    var curves = CurvedPath.toCurves(this.attr('segments').slice());
-    var isFirst = true;
-    var max = Math.max, min = Math.min;
-    for (var i = 0, curve; (curve = curves[i]); i += 1) {
-      if (curve[0] !== 'closePath') {
-        for (var j = 1, len = curve.length; j < len; j += 2) {
-          var x = curve[j], y = curve[j + 1];
-          size.top = isFirst ? y : min(size.top, y);
-          size.right = isFirst ? x : max(size.right, x);
-          size.bottom = isFirst ? y : max(size.bottom, y);
-          size.left = isFirst ? x : min(size.left, x);
-
-          isFirst = false;
-        }
+      switch (segment[0]) {
+        case 'moveTo':
+          var point = transformPoint(segment[1], segment[2]);
+          startPoint = point;
+          xBounds.push(point.x);
+          yBounds.push(point.y);
+          break;
+        case 'curveTo':
+          var cp1Point = transformPoint(segment[1], segment[2]);
+          var cp2Point = transformPoint(segment[3], segment[4]);
+          var endPoint = transformPoint(segment[5], segment[6]);
+          var thisBounds = CurvedPath.getBoundsOfCurve(
+            startPoint.x, startPoint.y,
+            cp1Point.x, cp1Point.y,
+            cp2Point.x, cp2Point.y,
+            endPoint.x, endPoint.y
+          );
+          // Append bounds to those collected thus far:
+          xBounds.push(thisBounds.left, thisBounds.right);
+          yBounds.push(thisBounds.top, thisBounds.bottom);
+          startPoint = endPoint;
       }
     }
 
-    x = this.attr('x');
-    y = this.attr('y');
+    var box = {};
 
-    size.top += y;
-    size.right += x;
-    size.bottom += y;
-    size.left += x;
-    size.width = size.right - size.left;
-    size.height = size.bottom - size.top;
+    box.left = min.apply(null, xBounds);
+    box.right = max.apply(null, xBounds);
+    box.top = min.apply(null, yBounds);
+    box.bottom = max.apply(null, yBounds);
+    box.width = box.right - box.left;
+    box.height = box.bottom - box.top;
 
-    return key === 'size' ? size : size[key];
+    return box;
+    
   };
 
   return Path;

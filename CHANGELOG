@@ -12,6 +12,8 @@ v0.4.1
 * Fix out-of-range alpha values when parsing rgba() strings
 * Add additional method signature for new Matrix([a, b, c, d, tx, ty]) 
 * Add Matrix.fromString() method to create new Matrix instance from a string.
+* Rename DisplayObject#getComputed to DisplayObject#getBoundingBox and improve
+  implementation for calculating the bounding box of paths
 
 v0.4.0 / 2012-10-03
 -------------------

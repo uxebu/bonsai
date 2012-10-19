@@ -1,6 +1,8 @@
 define([
-  './mock'
-],function(mock) {
+  './mock',
+  'bonsai/runner/matrix',
+  'bonsai/runner/path/path'
+],function(mock, Matrix, Path) {
   'use strict';
 
   return function(createOwner, skipDisplayObjectTests) {
@@ -111,59 +113,25 @@ define([
         });
       });
 
-      describe('#getComputed()', function() {
+      describe('#getBoundingBox()', function() {
         function createChild(x, y, top, right, bottom, left) {
-          var child = mock.createDisplayObject();
-          child.getComputed = function(key) {
-            var size = {
-              top: top,
-              right: right,
-              bottom: bottom,
-              left: left,
-              height: bottom - top,
-              width: right - left
-            };
-
-            return key === 'size' ? size : size[key];
-          };
-
-          child.attr = function(key) {
-            return key === 'x' ? x : y;
-          };
-
-          return child;
+          return new Path()
+            .moveTo(left, top)
+            .lineTo(right, top)
+            .lineTo(right, bottom)
+            .lineTo(left, bottom)
+            .attr({
+              x: x,
+              y: y
+            });
         }
 
         var createDisplayList = createOwner;
         describe('without children', function() {
           var displayList = createDisplayList();
 
-          it('computes the correct value for "top"', function() {
-            expect(displayList.getComputed('top')).toBe(0);
-          });
-
-          it('computes the correct value for "right"', function() {
-            expect(displayList.getComputed('right')).toBe(0);
-          });
-
-          it('computes the correct value for "bottom"', function() {
-            expect(displayList.getComputed('bottom')).toBe(0);
-          });
-
-          it('computes the correct value for "left"', function() {
-            expect(displayList.getComputed('left')).toBe(0);
-          });
-
-          it('computes the correct value for "width"', function() {
-            expect(displayList.getComputed('width')).toBe(0);
-          });
-
-          it('computes the correct value for "height"', function() {
-            expect(displayList.getComputed('height')).toBe(0);
-          });
-
           it('computes the correct size object', function() {
-            expect(displayList.getComputed('size')).toEqual({
+            expect(displayList.getBoundingBox()).toEqual({
               top: 0,
               right: 0,
               bottom: 0,
@@ -186,32 +154,8 @@ define([
             expectedWidth = expectedRight - expectedLeft,
             expectedHeight = expectedBottom - expectedTop;
 
-          it('computes the correct value for "top"', function() {
-            expect(displayList.getComputed('top')).toBe(expectedTop);
-          });
-
-          it('computes the correct value for "right"', function() {
-            expect(displayList.getComputed('right')).toBe(expectedRight);
-          });
-
-          it('computes the correct value for "bottom"', function() {
-            expect(displayList.getComputed('bottom')).toBe(expectedBottom);
-          });
-
-          it('computes the correct value for "left"', function() {
-            expect(displayList.getComputed('left')).toBe(expectedLeft);
-          });
-
-          it('computes the correct value for "width"', function() {
-            expect(displayList.getComputed('width')).toBe(expectedWidth);
-          });
-
-          it('computes the correct value for "height"', function() {
-            expect(displayList.getComputed('height')).toBe(expectedHeight);
-          });
-
           it('computes the correct size object', function() {
-            expect(displayList.getComputed('size')).toEqual({
+            expect(displayList.getBoundingBox()).toEqual({
               top: expectedTop,
               right: expectedRight,
               bottom: expectedBottom,
@@ -238,32 +182,8 @@ define([
             expectedWidth = expectedRight - expectedLeft,
             expectedHeight = expectedBottom - expectedTop;
 
-          it('computes the correct value for "top"', function() {
-            expect(displayList.getComputed('top')).toBe(expectedTop);
-          });
-
-          it('computes the correct value for "right"', function() {
-            expect(displayList.getComputed('right')).toBe(expectedRight);
-          });
-
-          it('computes the correct value for "bottom"', function() {
-            expect(displayList.getComputed('bottom')).toBe(expectedBottom);
-          });
-
-          it('computes the correct value for "left"', function() {
-            expect(displayList.getComputed('left')).toBe(expectedLeft);
-          });
-
-          it('computes the correct value for "width"', function() {
-            expect(displayList.getComputed('width')).toBe(expectedWidth);
-          });
-
-          it('computes the correct value for "height"', function() {
-            expect(displayList.getComputed('height')).toBe(expectedHeight);
-          });
-
           it('computes the correct size object', function() {
-            expect(displayList.getComputed('size')).toEqual({
+            expect(displayList.getBoundingBox()).toEqual({
               top: expectedTop,
               right: expectedRight,
               bottom: expectedBottom,

@@ -136,7 +136,8 @@ movieList = {
     'shape-getPointAtLength.js',
     'shape-center-of-arc.js',
     'shape-fill-rule.js',
-    'overlapping-paths.js'
+    'overlapping-paths.js',
+    'bounding-box.js'
   ],
   'Test': [
     'text.js',
