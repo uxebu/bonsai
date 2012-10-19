@@ -287,6 +287,19 @@ define([
           expect(newChild.next).toBe(existingChild);
         });
 
+        it('should treat an undefined (but given) index parameter as if only one argument was passed and append the child', function() {
+          var displayList = createDisplayList();
+          displayList.add([
+            createArbitraryDisplayObject(),
+            createArbitraryDisplayObject(),
+            createArbitraryDisplayObject()]
+          );
+
+          var newChild = createArbitraryDisplayObject();
+          displayList.add(newChild, void 0);
+          expect(displayList.children.indexOf(newChild)).toBe(3);
+        });
+
         it('should avoid adding the owner of a display list to the display list', function() {
           var owner = createArbitraryDisplayObject();
           var displayList = createDisplayList(owner);
