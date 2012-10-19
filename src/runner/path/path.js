@@ -1107,7 +1107,8 @@ define([
       return transform ? transform.transformPoint(point) : point;
     }
 
-    var bounds = [[/*x*/], [/*y*/]],
+    var xBounds = [],
+        yBounds = [],
         curvedSegments = CurvedPath.toCurves(this.attr('segments').slice()),
         startPoint = new Point(0, 0);
 
@@ -1117,32 +1118,32 @@ define([
         case 'moveTo':
           var point = transformPoint(segment[1], segment[2]);
           startPoint = point;
-          bounds[0].push(point.x);
-          bounds[1].push(point.y);
+          xBounds.push(point.x);
+          yBounds.push(point.y);
           break;
         case 'curveTo':
           var cp1Point = transformPoint(segment[1], segment[2]);
           var cp2Point = transformPoint(segment[3], segment[4]);
           var endPoint = transformPoint(segment[5], segment[6]);
-          var thisBounds = CurvedPath.getPotentialBoundsOfCurve(
+          var thisBounds = CurvedPath.getBoundsOfCurve(
             startPoint.x, startPoint.y,
             cp1Point.x, cp1Point.y,
             cp2Point.x, cp2Point.y,
             endPoint.x, endPoint.y
           );
           // Append bounds to those collected thus far:
-          [].push.apply(bounds[0], thisBounds[0]);
-          [].push.apply(bounds[1], thisBounds[1]);
+          xBounds.push(thisBounds.left, thisBounds.right);
+          yBounds.push(thisBounds.top, thisBounds.bottom);
           startPoint = endPoint;
       }
     }
 
     var box = {};
 
-    box.left = min.apply(null, bounds[0]);
-    box.right = max.apply(null, bounds[0]);
-    box.top = min.apply(null, bounds[1]);
-    box.bottom = max.apply(null, bounds[1]);
+    box.left = min.apply(null, xBounds);
+    box.right = max.apply(null, xBounds);
+    box.top = min.apply(null, yBounds);
+    box.bottom = max.apply(null, yBounds);
     box.width = box.right - box.left;
     box.height = box.bottom - box.top;
 

@@ -575,7 +575,7 @@ define([
    * @param {Array} p0 The starting point of the curve in the form [x, y]
    * @param {Array} curve A curveTo segment (e.g. `['curveTo',n,n,n,n,n,n]`)
    */
-  CurvedPath.getPotentialBoundsOfCurve = function(p0x, p0y, cp1x, cp1y, cp2x, cp2y, p1x, p1y) {
+  CurvedPath.getBoundsOfCurve = function(p0x, p0y, cp1x, cp1y, cp2x, cp2y, p1x, p1y) {
 
     var p0 = [p0x, p0y];
     var p1 = [cp1x, cp1y];
@@ -583,6 +583,8 @@ define([
     var p3 = [p1x, p1y];
     var bounds = [[], []];
 
+    bounds[0].push(p0x);
+    bounds[1].push(p0y);
     bounds[0].push(p3[0]);
     bounds[1].push(p3[1]);
 
@@ -600,24 +602,29 @@ define([
         }
         continue;
       }
-      var b2ac = Math.pow(b, 2) - 4 * c * a;
+      var b2ac = pow(b, 2) - 4 * c * a;
       if (b2ac < 0) {
         continue;
       }
-      var t1 = (-b + Math.sqrt(b2ac))/(2 * a);
+      var t1 = (-b + sqrt(b2ac))/(2 * a);
       if (0 < t1 && t1 < 1) bounds[i].push(f(t1));
-      var t2 = (-b - Math.sqrt(b2ac))/(2 * a);
+      var t2 = (-b - sqrt(b2ac))/(2 * a);
       if (0 < t2 && t2 < 1) bounds[i].push(f(t2));
     }
 
     // Return bounds in the form `[ xBoundsArray, yBoundsArray ]`
-    return bounds;
+    return {
+      left: min.apply(null, bounds[0]),
+      top: min.apply(null, bounds[1]),
+      right: max.apply(null, bounds[0]),
+      bottom: max.apply(null, bounds[1])
+    };
 
     function f(t) {
-      return Math.pow(1-t, 3) * p0[i] 
-        + 3 * Math.pow(1-t, 2) * t * p1[i] 
-        + 3 * (1-t) * Math.pow(t, 2) * p2[i]
-        + Math.pow(t, 3) * p3[i];
+      return pow(1-t, 3) * p0[i] 
+        + 3 * pow(1-t, 2) * t * p1[i] 
+        + 3 * (1-t) * pow(t, 2) * p2[i]
+        + pow(t, 3) * p3[i];
     }
   };
 
