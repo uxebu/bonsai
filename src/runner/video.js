@@ -93,6 +93,8 @@ define([
       box.left = topLeft.x;
       box.right = bottomRight.x;
       box.bottom = bottomRight.y;
+      box.width = box.right - box.left;
+      box.height = box.bottom - box.top;
     }
     return box;
   };
