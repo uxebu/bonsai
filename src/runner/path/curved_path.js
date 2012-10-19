@@ -591,13 +591,19 @@ define([
       var a = -3 * p0[i] + 9 * p1[i] - 9 * p2[i] + 3 * p3[i];
       var c = 3 * p1[i] - 3 * p0[i];
       if (a == 0) {
-        if (b == 0) continue;
+        if (b == 0) {
+          continue;
+        }
         var t = -c / b;
-        if (0 < t && t < 1) bounds[i].push(f(t))
+        if (0 < t && t < 1) {
+          bounds[i].push(f(t));
+        }
         continue;
       }
       var b2ac = Math.pow(b, 2) - 4 * c * a;
-      if (b2ac < 0) continue;
+      if (b2ac < 0) {
+        continue;
+      }
       var t1 = (-b + Math.sqrt(b2ac))/(2 * a);
       if (0 < t1 && t1 < 1) bounds[i].push(f(t1));
       var t2 = (-b - Math.sqrt(b2ac))/(2 * a);
