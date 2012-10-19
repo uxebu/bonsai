@@ -142,8 +142,6 @@ define([
     this._owner.markUpdate('shapeData');
   }
 
-  Path.CurvedPath = CurvedPath;
-
   /*
   What is a Segment:
   - Segment is an Array (implemented)
