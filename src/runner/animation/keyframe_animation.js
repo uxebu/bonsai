@@ -1,14 +1,18 @@
 define([
-  './animation',
   './easing',
   '../../tools',
-  '../../event_emitter'
-], function(Animation, easing, tools, EventEmitter) {
+  '../../event_emitter',
+  './properties_tween'
+], function(easing, tools, EventEmitter, PropertiesTween) {
   'use strict';
 
-  var max = Math.max,
-      round = Math.round,
-      hasOwn = {}.hasOwnProperty;
+  var hasOwn = {}.hasOwnProperty,
+      forEach = tools.forEach;
+
+  function getEasingFunction(easingFunc) {
+    return typeof easingFunc == 'function' ?
+      easingFunc : easing[easingFunc]
+  }
 
   /**
    * Creates a KeyframeAnimation instance
@@ -23,8 +27,6 @@ define([
    * @param {String|Function} [options.easing] Easing function for each sub-animation
    *  @param {Array|Object} [options.subjects] The subject(s) (e.g. DisplayObjects) of
    *    the keyframe-animation
-   *  @param {string|Object} [options.strategy='attr'] The strategy to use to
-   *    get and set properties on the subjects.
    *  @param {Number|String} [options.delay=0] Delay before animation begins, in
    *   frames or seconds
    * @returns {KeyframeAnimation} An KeyframeAnimation instance
@@ -37,14 +39,22 @@ define([
     this.clock = clock;
     duration = this.duration = +duration || clock.toFrameNumber(duration);
 
-    this.subjects = [];
-    this.animations = [];
-    this.initialValues = null;
-    this.currentAnimation = -1;
+    this._parseEventProps(options);
 
-    this.repeat = options.repeat || 0;
+    this.subjects = [];
+    this.initialValues = null;
+
+    this.repeat = (options.repeat || 0) - (options.repeat % 1 || 0);
     this.delay = options.delay && clock.toFrameNumber(options.delay) || 0;
-    this.easing = options.easing;
+    this.isTimelineBound = options.isTimelineBound !== false;
+
+    var easingFunc = options.easing;
+    this.easing = getEasingFunction(easingFunc);
+
+    this.prevFrame = 0;
+    this.frame = 0;
+    this.currentDelay = this.delay;
+    this.currentTweenIndex = 0;
 
     this.keyframes = this._convertKeysToFrames(keyframes);
     // Get numerical keys (frame-numbers) and sort
@@ -52,7 +62,7 @@ define([
     this.keys.sort(function(a, b){ return a - b; });
 
     if (options.subjects) {
-      this.addSubjects(options.subjects, options.strategy);
+      this.addSubjects(options.subjects);
     }
   }
 
@@ -60,29 +70,77 @@ define([
   KeyframeAnimation.prototype = /** @lends module:animation.KeyframeAnimation.prototype */ {
 
     /**
+     * Parses and connects event listeners
+     * passed via the options object.
+     *
+     * @private
+     */
+    _parseEventProps: function(options) {
+      var propName, evtName;
+      for (propName in options) {
+        if (typeof options[propName] === 'function' && propName.indexOf('on') === 0) {
+          evtName = propName.slice(2).toLowerCase();
+          this.on(evtName, options[propName]);
+          delete options[propName];
+        }
+      }
+    },
+
+    /**
+     * Clones the KeyframeAnimation instance.
+     *
+     * @returns {Animation} The clone
+     */
+    clone: function() {
+      return new KeyframeAnimation(this.clock, this.duration, tools.mixin({}, this.keyframes), {
+        clock: this.clock,
+        duration: this.duration,
+        easing: this.easing,
+        isTimelineBound: this.isTimelineBound
+      });
+    },
+
+    /**
      * Starts or resumes an animation
      *
      * Optionally changes the subjects of the animation.
      *
      * @param {Object} [subjects]
-     * @param {mixed} [strategy='attr'] The set/get strategy to use
-     *   - 'attr': The 'attr' method of the object is used (for DisplayObjects)
-     *   - 'prop': Normal property setting and getting is used
-     *   - Object with 'set(subject, values)' and 'get(subject, propertyNames)'
-     *     methods.
      */
-    play: function(subjects, strategy) {
+    play: function(subjects) {
 
       if (subjects) {
-        this.addSubjects(subjects, strategy);
+        this.addSubjects(subjects);
       }
 
-      if (this.currentAnimation < 0) {
-        this.begin();
-        return;
+      if (!this.subjects.length) {
+        throw Error('No subjects defined -- animation cannot play');
       }
 
-      this.animations[this.currentAnimation].isPlaying = true;
+      if (this.isPlaying) {
+        return this;
+      }
+
+      if (this.frame === 0) {
+        this.emit('beforebegin', this);
+      }
+
+      this.emit('play', this);
+
+      /*
+        Handle the case where initial values are specified and are
+        different from the subject's values. We need to set these
+        `from` properties manually: (FRAME 0)
+      */
+      var initial = this.keyframes[0];
+      if (initial && this.currentTweenIndex === 0) {
+        forEach(this.subjects, function(subj) {
+          subj.subject.attr(initial);
+        });
+      }
+
+      this.isPlaying = true;
+      this.clock.on(this.isTimelineBound ? 'advance' : 'tick', this, this._onStep);
 
       return this;
     },
@@ -91,143 +149,137 @@ define([
      * Pauses an animation
      */
     pause: function() {
-      if (this.currentAnimation > -1) {
-        this.animations[this.currentAnimation].isPlaying = false;
-      }
-
+      this.clock.removeListener(this.isTimelineBound ? 'advance' : 'tick', this, this._onStep);
+      this.emit('pause', this);
+      this.isPlaying = false;
       return this;
     },
 
     /**
-     * Resets an animation (so it's ready to begin again)
+     * Resets a keyframe animation (so it's ready to begin again)
      */
     reset: function() {
-      this.animations.forEach(function(animation) {
-        animation.reset();
-      });
-      this.currentAnimation = -1;
-
+      this.frame = 0;
+      this.isPlaying = false;
+      this.currentTweenIndex = 0;
+      this.clock.removeListener(this.isTimelineBound ? 'advance' : 'tick', this, this._onStep);
       return this;
     },
 
-    /**
-     * Begins the animation
+    /** 
+     * Event listener for the clock's tick event, delegates to _step()
+     * @private
      */
-    begin: function() {
+    _onStep: function(_, frameNumber, timelineIsFinished) {
 
-      var initial = this.keyframes[0],
-          subjects = this.subjects,
-          strategy,
-          subject;
-
-      if (initial && subjects.length) {
-        for (var i = 0, l = subjects.length; i < l; ++i) {
-
-          subject = subjects[i];
-          strategy = subject.strategy;
-          subject = subject.subject;
-          /*
-            Handle the case where initial values are specified and are
-            different from the subject's values. We need to set these
-            `from` properties manually: (FRAME 0)
-          */
-          switch (strategy) {
-            case 'attr':
-              subject.attr(initial);
-              break;
-            case 'prop':
-              for (var p in initial) {
-                subject[p] = initial[p];
-              }
-              break;
-            default: // assume object with get/set methods
-              strategy.set(subject, initial);
-              break;
-          }
-        }
+      if (this.currentDelay > 0 && this.currentDelay--) {
+        return;
       }
 
-      this.currentAnimation = 0;
+      // lastFrame defaults to the current frame
+      // (this'll be at the start of an animation)
+      this.prevFrame = this.prevFrame || frameNumber;
 
-      this.subjects.forEach(function(subj) {
-        this.animations[0].addSubject(subj.subject, subj.strategy);
-      }, this);
-      this.animations[0].play();
+      var duration = this.duration,
+          frame = this.frame = this.isTimelineBound ? (
+            // Increment by how many missing frames there were
+            this.frame + ((frameNumber - this.prevFrame) || 1)
+          ) : this.frame + 1;
 
-      return this;
+      this._step(frame / duration);
+
+      if (
+        (this.isTimelineBound && timelineIsFinished) ||
+        frame === duration
+      ) {
+        this.prevFrame = 0;
+        this.currentDelay = this.delay;
+        this.reset();
+        if (this.repeat-- > 0) {
+          this.play();
+        } else {
+          this.emit('end', this);
+        }
+        return;
+      }
+      
+      this.prevFrame = frameNumber;
+    },
+
+    /** 
+     * Runs a single step of the keyframe-animation, setting changed values
+     * on their respective subjects
+     * @private
+     */
+    _step: function(progress) {
+
+      var realProgress = progress;
+
+      if (this.easing) {
+        progress = this.easing(progress);
+      }
+
+      var tweensLength = this.subjects[0].tweens.length;
+      var curTween = this.subjects[0].tweens[this.currentTweenIndex];
+      var phaseProgress = (progress - curTween.startProgress) / (curTween.endProgress-curTween.startProgress);
+
+      // If there's another tween that we can move onto, we should, otherwise
+      // assume that we can continue with progress > 1
+      if (phaseProgress > 1 && this.currentTweenIndex + 1 < tweensLength) {
+        this.currentTweenIndex += 1;
+        return this._step(realProgress);
+      }
+
+      var subjects = this.subjects;
+      for (var s = 0, sl = subjects.length; s < sl; ++s) {
+        var currentSubjectTween = subjects[s].tweens[this.currentTweenIndex],
+            currentSubjectTweenEasing = currentSubjectTween.easing;
+        subjects[s].subject.attr(
+          currentSubjectTween.at(
+            // Apply easing for this tween:
+            currentSubjectTweenEasing ?
+              currentSubjectTweenEasing(phaseProgress) :
+              phaseProgress
+          )
+        );
+      }
     },
 
     /**
-     * Adds a subject with given strategy to the keyframe-animation
+     * Adds a subject to the keyframe-animation
      * @param {Object} subject The subject (usually a DisplayObject)
-     * @param {mixed} [strategy='attr'] The set/get strategy to use
-     *   - 'attr': The 'attr' method of the object is used (for DisplayObjects)
-     *   - 'prop': Normal property setting and getting is used
-     *   - Object with 'set(subject, values)' and 'get(subject)'
-     *     methods.
      */
-    addSubject: function(subject, strategy) {
+    addSubject: function(subject) {
 
-      strategy = strategy || this.strategy || 'attr';
+      var initialAttributes = tools.mixin(subject.attr(), this.keyframes[0]);
 
-      if (this.initialValues == null) {
-
-        switch (strategy) {
-          case 'attr':
-            this.initialValues = subject.attr();
-            break;
-          case 'prop':
-            var propertyNames = Object.keys(subject);
-            this.initialValues = {};
-            for (var i = 0, key; (key = propertyNames[i++]); ) {
-              this.initialValues[key] = subject[key];
-            }
-            break;
-          default: // assume object with get/set methods
-            this.initialValues = strategy.get(subject, this.propertyNames);
-            break;
-        }
+      if (!this.subjects.length) { // Not yet added subjects?
+        this._fillInProperties(initialAttributes);
       }
 
       this.subjects.push({
         subject: subject,
-        strategy: strategy
+        tweens: this._createTweens(initialAttributes)
       });
-
-      if (this.animations.length) {
-        // Animations have already been created: add subject to all animations
-        // so it has effect immediately:
-        for (var a = 0, l = this.animations.length; a < l; ++a) {
-          this.animations[a].addSubject(subject, strategy);
-        }
-      } else {
-        this._fillInProperties();
-        this._createAnimations();
-      }
 
       return this;
     },
 
     /**
-     * Adds multiple subjects with given strategy to the animation
+     * Adds multiple subjects to the animation
      * @param {Array} subjects Array of subjects to add
-     * @param {mixed} [strategy='attr'] The set/get strategy to use
-     *   - 'attr': The 'attr' method of the object is used (for DisplayObjects)
-     *   - 'prop': Normal property setting and getting is used
-     *   - Object with 'set(subject, values)' and 'get(subject)'
-     *     methods.
      */
-    addSubjects: function(subjects, strategy) {
+    addSubjects: function(subjects) {
       var me = this;
       subjects = tools.isArray(subjects) ? subjects : [subjects];
-      subjects.forEach(function(subject) {
-        me.addSubject(subject, strategy);
+      forEach(subjects, function(subject) {
+        me.addSubject(subject);
       });
       return this;
     },
 
     /**
-     * Removes a subject with given strategy to the animation
+     * Removes a subject from the animation
      * @param {Object} subject The subject to remove
      */
     removeSubject: function(subject) {
@@ -242,76 +294,57 @@ define([
     },
 
     /**
-     * Removes a subject with given strategy to the animation
+     * Removes a subject from the animation
      * @param {Array} subjects Array of subjects to remove
      */
     removeSubjects: function(subjects) {
-      subjects.forEach(tools.hitch(this, 'removeSubject'));
+      forEach(subjects, tools.hitch(this, 'removeSubject'));
       return this;
     },
 
     /**
-     * Creates an animation for each keyframe transition
+     * Creates a PropertiesTween object for each phase of the keyframe animation
      *
      * @private
      */
-    _createAnimations: function() {
+    _createTweens: function(startValues) {
 
       var animationDuration,
           totalDuration = 0,
           prevAnimation,
-          animations = this.animations,
-          keyframes = this.keyframes;
+          tweens = [],
+          keyframes = this.keyframes,
+          prevValues = startValues;
 
-      this.keys.forEach(function(key, i) {
-
-        var animation;
+      forEach(this.keys, function(key, i) {
 
         if (key === 0) { return; } // Don't animate to initial
 
-        // Calculate duration of this individual animation:
-        animationDuration = key - totalDuration;
-        totalDuration += animationDuration;
+        var tween, easingFunc = keyframes[key].easing;
 
-        animation = new Animation(
-          this.clock,
-          animationDuration,
-          keyframes[key],
-          {
-            easing: this.easing,
-            strategy: this.strategy,
-            // Add delay for initial animation
-            delay: i === 1 ? this.delay : null
-          }
+        tween = new PropertiesTween(
+          prevValues,
+          keyframes[key]
         );
 
-        if (prevAnimation) {
-          prevAnimation.on('end', this, function() {
-            // Play next animation
-            this.currentAnimation++;
-            this.subjects.forEach(function(subj) {
-              animation.addSubject(subj.subject, subj.strategy);
-            }, this);
-            animation.play();
-          });
-        }
+        // Save easing function to tween so it can be retrieved on each step:
+        tween.easing = getEasingFunction(easingFunc);
 
-        animations.push(animation);
+        // Calculate duration of this individual tween:
+        animationDuration = key - totalDuration;
 
-        prevAnimation = animation;
+        tween.startProgress = totalDuration / this.duration;
+        tween.endProgress = tween.startProgress + animationDuration / this.duration;
 
-        if (i == this.keys.length - 1) {
-          animation.on('end', this, function() {
-            // Emit 'end' on KeyframeAnimation instance
-            if (this.repeat === Infinity || --this.repeat > 0) {
-              this.reset();
-              this.play();
-            } else {
-              this.emit('end', this);
-            }
-          });
-        }
+        totalDuration += animationDuration;
+
+        prevValues = keyframes[key];
+
+        tweens.push(tween);
+
       }, this);
+
+      return tweens;
     },
 
     /**
@@ -320,8 +353,9 @@ define([
      *
      * @private
      */
-    _fillInProperties: function() {
-      var initialValues = this.initialValues,
+    _fillInProperties: function(initialValues) {
+
+      var easingFn = this.easingFn,
           lastFrame = this.duration,
           keys = this.keys,
           keyframes = this.keyframes,
@@ -329,30 +363,39 @@ define([
           properties = {};
 
       // Gather property names:
-      keys.forEach(function(key) {
+      forEach(keys, function(key) {
 
         keyframe = keyframes[key];
 
         for (var p in keyframe) {
-          if (keyframe.hasOwnProperty(p)) {
+          if (hasOwn.call(keyframe, p)) {
             properties[p] = true;
           }
         }
       });
 
       // Fill in (missing) properties:
-      keys.forEach(function(frame, i) {
+      forEach(keys, function(frame, i) {
 
-        var prevFrame,
+        var progress,
+            prevFrame,
             nextFrame,
             prevValue,
             nextValue,
-            p;
+            fromValues,
+            toValues;
 
         keyframe = keyframes[frame];
 
-        for (p in properties) {
+        for (var p in properties) {
+          // Is the keyframe does not have a property of the name `p`
+          // then we must define it:
           if (!hasOwn.call(keyframe, p)) {
+
+            if (p === 'easing') {
+              // Ignore 'easing' keyword -- it's used to define per-tween easing
+              continue;
+            }
 
             prevFrame = getFrameOfLastDefinedProperty(p, i);
             nextFrame = getFrameOfNextDefinedProperty(p, i);
@@ -362,7 +405,7 @@ define([
             if (prevValue == null) {
               // TODO: throw this only when the 0th frame does not specify props
               // Ideally, though, initialValues will have the value specified
-              throw new Error('No initial value specified for property: ' + p);
+              throw Error('No initial value specified for property: ' + p);
             }
 
             if (nextValue == null) {
@@ -374,11 +417,30 @@ define([
               nextFrame = lastFrame;
             }
 
-            keyframe[p] = nextValue *
-                            (frame - prevFrame) / (nextFrame - prevFrame);
+            fromValues = {};
+            fromValues[p] = prevValue;
+            toValues = {};
+            toValues[p] = nextValue;
+
+            // Calculate would-be progress of keyframe:
+            progress = (frame - prevFrame) / (nextFrame - prevFrame);
+
+            if (easingFn) {
+              progress = easingFn(progress);
+            }
+
+            if (nextFrame.easing) {
+              progress = getEasingFunction(nextFrame.easing)(progress);
+            }
+
+            // Get intermediary value by creating a new PropertiesTween and
+            // grabbing the value of the property at the would-be progress:
+            keyframe[p] = new PropertiesTween(fromValues, toValues).at(
+              progress
+            )[p];
           }
         }
-      });
+      }, this);
 
       function getFrameOfLastDefinedProperty(prop, keysIndex) {
         // Find last occurance of property within keyframes

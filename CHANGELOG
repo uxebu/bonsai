@@ -7,6 +7,13 @@ v0.4.1
   disable/enable the context menu from the `bonsai.run` configuration object.
 * Introduce MediaDisplayObject that combines the basic functionality of
   Video and Audio.
+* Fixed examples to be in line with the documentation.
+* Fix out-of-range hsl color values
+* Fix out-of-range alpha values when parsing rgba() strings
+* Add additional method signature for new Matrix([a, b, c, d, tx, ty]) 
+* Add Matrix.fromString() method to create new Matrix instance from a string.
+* Rename DisplayObject#getComputed to DisplayObject#getBoundingBox and improve
+  implementation for calculating the bounding box of paths
 
 v0.4.0 / 2012-10-03
 -------------------

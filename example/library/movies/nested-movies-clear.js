@@ -5,7 +5,7 @@ var frames = {};
 var texts = {};
 
 function createMovie(name, length, parent, addStop){
-  var _movie = movies[name] = new Movie()
+  var _movie = movies[name] = new Movie();
   parent && _movie.addTo(parent);
 
   var _frames = frames[name] = [];

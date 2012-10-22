@@ -6,12 +6,12 @@ var attr = {
 };
 
 // arc test (smiley)
-bonsai.Path.arc(150, 150, 100, 0, 2*Math.PI, 0).attr(attr).addTo(stage);
-bonsai.Path.arc(150, 150, 80, 0, Math.PI, 0).attr(attr).addTo(stage);
-bonsai.Path.arc(110, 100, 20, 0, Math.PI / 2, 1).attr(attr).addTo(stage);
-bonsai.Path.arc(190, 100, 20, 0, Math.PI / (2/3), 0).attr(attr).addTo(stage);
-bonsai.Path.arc(150, 150, 30, 0, Math.PI, 0).attr(attr).addTo(stage);
-bonsai.Path.arc(150, 150, 150, 0, 0, 0).attr(attr).addTo(stage);
+new Arc(150, 150, 100, 0, 2*Math.PI, 0).attr(attr).addTo(stage);
+new Arc(150, 150, 80, 0, Math.PI, 0).attr(attr).addTo(stage);
+new Arc(110, 100, 20, 0, Math.PI / 2, 1).attr(attr).addTo(stage);
+new Arc(190, 100, 20, 0, Math.PI / (2/3), 0).attr(attr).addTo(stage);
+new Arc(150, 150, 30, 0, Math.PI, 0).attr(attr).addTo(stage);
+new Arc(150, 150, 150, 0, 0, 0).attr(attr).addTo(stage);
 
 // compare to canvas api
 // http://jsbin.com/canvas/86/edit#preview
@@ -33,11 +33,11 @@ var antiAttr = {
   setTimeout(donatChart, 30);
 
   stage.removeChild(donat);
-  donat = bonsai.Path.arc(400, 150, 60, 0, i+=0.1, 0).attr(attr);
+  donat = new Arc(400, 150, 60, 0, i+=0.1, 0).attr(attr);
   stage.addChild(donat);
 
   stage.removeChild(anti);
-  anti = bonsai.Path.arc(400, 150, 60, 0, i, 1).attr(antiAttr);
+  anti = new Arc(400, 150, 60, 0, i, 1).attr(antiAttr);
   stage.addChild(anti);
 
   if (i >= Math.PI*2) {
@@ -47,21 +47,21 @@ var antiAttr = {
   }
 })();
 
-bonsai.Path.arc(400, 350, 60, 0, 1)
+new Arc(400, 350, 60, 0, 1)
   .attr({strokeWidth: 20, strokeColor: 'red'}) // should be strokeColor!
   .addTo(stage);
-bonsai.Path.arc(400, 350, 60, 1.1, 3)
+new Arc(400, 350, 60, 1.1, 3)
   .attr({strokeWidth: 40, strokeColor: 'blue'}) // should be strokeColor!
   .addTo(stage);
-bonsai.Path.arc(400, 350, 80, Math.PI, 4)
+new Arc(400, 350, 80, Math.PI, 4)
   .attr({strokeWidth: 1, strokeColor: 'green'}) // should be strokeColor!
   .addTo(stage);
-bonsai.Path.arc(400, 350, 90, 0, Math.PI*2 - 0.1)
+new Arc(400, 350, 90, 0, Math.PI*2 - 0.1)
   .attr({strokeWidth: 1, strokeColor: 'grey'}) // should be strokeColor!
   .addTo(stage);
 
 // pizza slice
-new bonsai.Path(550,150)
+new Path(550,150)
   .lineBy(60, 0)
   .arc(550, 150, 60, 0, Math.PI*0.3)
   .closePath()

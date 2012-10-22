@@ -9,7 +9,6 @@ define([
    *
    * @param {string} runnerUrl The url to the bootstrap file.
    * @param {HTMLDocument} [doc=document] The document to append the iframe to.
-   * @param {
    */
   function IFrameContext(runnerUrl, doc) {
     this.runnerUrl = runnerUrl;

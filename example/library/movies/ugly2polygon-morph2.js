@@ -1,4 +1,4 @@
-var shape = new bonsai.Path();
+var shape = new Path();
 shape.moveTo(469.95, 196.45);
 shape.quadraticCurveBy(94.45, 220.10, 5.10, 184.80);
 shape.quadraticCurveBy(-89.40, -35.30, -131.65, -5.10);
@@ -16,7 +16,7 @@ shape.attr({
 });
 stage.addChild(shape);
 
-var targetPath = Path.star(400,400,300,5,1);
+var targetPath = new Star(400,400,300,5,1);
 //  .addTo(stage);
 targetPath.attr({
   strokeWidth: 444 / 20,
