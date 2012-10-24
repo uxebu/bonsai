@@ -1,3 +1,6 @@
+/**
+ * animation circles
+ */
 var centerX = 250,
     centerY = 250,
     circles = 180,

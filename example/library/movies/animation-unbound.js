@@ -1,4 +1,6 @@
 /**
+ * animation unbound
+ *
  * Demonstrating the animation's independence of the timeline.
  */
 var shape1 = new Rect(0, 50, 100, 100).attr({fillColor: 'red'});

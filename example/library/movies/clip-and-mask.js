@@ -1,3 +1,7 @@
+/**
+ * combine clip and mask
+ */
+
 // combine clip and mask
 
 var group = new Group()

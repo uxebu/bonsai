@@ -1,3 +1,7 @@
+/**
+ * demo questionair
+ **/
+
 var bs = bonsai;
 var buttons = [
   {text: 'JavaScript', bgColor:'blue', color: 'white', graphics:{}},
@@ -7,7 +11,7 @@ var buttons = [
 ];
 var stageWidth = 750; // Should be: stage.attr('width');
 var stageHeight = 600; // Should be: stage.attr('height');
-bs.Path.rect(0, 0, stageWidth, stageHeight)
+new Rect(0, 0, stageWidth, stageHeight)
   .attr({strokeColor:'black', strokeWidth: 1})
   .addTo(stage);
 
@@ -17,7 +21,7 @@ function renderButton(buttonObj, idx){
   var bgColor = buttonObj.bgColor;
   var fgColor = buttonObj.color;
   var x = 300;
-  var shape1 = new bonsai.Path.rect(x, y, 120, 35, 5);
+  var shape1 = new Rect(x, y, 120, 35, 5);
   shape1.attr({fillColor: bgColor, filters:filter.dropShadow(2,2,2,'black'),
     strokeColor:bs.color(bgColor).lighter(.2), strokeWidth: 2
   });
@@ -53,7 +57,7 @@ var background = {};
   var height = 20;
   var gap = 1;
   background.update = function(buttonObj){
-    var bg = new bonsai.Path.rect(lastX, lastY, 1, height).attr({fillColor: buttonObj.bgColor, opacity: 0.2});
+    var bg = new Rect(lastX, lastY, 1, height).attr({fillColor: buttonObj.bgColor, opacity: 0.2});
     stage.addChild(bg, 0);
     // should be: bg.animate('0.2s', {width: width-1});
     bg.animate('0.2s', {scaleX: width-gap, x: lastX+gap});
@@ -71,7 +75,7 @@ var barChart = {};
   var numCharts = 0;
   var oneHeight = 10;
   barChart.init = function(buttonObj){
-    var bar = bs.Path.rect(110 * numCharts, stageHeight-10, 100, oneHeight);
+    var bar = new Rect(110 * numCharts, stageHeight-10, 100, oneHeight);
     var gradient = bs.gradient.linear('left', [buttonObj.bgColor, buttonObj.color, buttonObj.bgColor]);
     bar.attr({fillGradient: gradient, opacity: 0.7});
     var text = new bs.Text(buttonObj.text);
@@ -110,9 +114,9 @@ var pieChart = {};
   var group = new bs.Group();
   pieChart.init = function(buttonObj){
     // Add a circle with a drop shadow behind the pie chart, so it looks like the pie chart has a dropshadow
-    bonsai.Path.circle(pos.x, pos.y, 119)
+    new Circle(pos.x, pos.y, 119)
       .attr({fillColor:'black', strokeWidth:1, strokeColor: 'white',
-             filters: filter.dropShadow(5,5,5,'grey')})
+             filters: new filter.DropShadow(5,5,5,'grey')})
       .addTo(group);
     stage.addChild(group);
   };
@@ -127,7 +131,7 @@ var pieChart = {};
       var count = results[b.text];
       if (!count) return;
       var endAngle = startAngle+count/sum * Math.PI*2;
-      arcs.push(bs.Path.arc(pos.x, pos.y, 60, startAngle, endAngle)
+      arcs.push(new Arc(pos.x, pos.y, 60, startAngle, endAngle)
         .attr({strokeWidth:120, strokeColor:b.bgColor})
         .addTo(group)
       );

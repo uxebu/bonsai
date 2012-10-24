@@ -1,3 +1,7 @@
+/**
+ * filter blur
+ */
+
 // image
 new Bitmap('assets/redpanda.jpg', function() {
     this.attr({

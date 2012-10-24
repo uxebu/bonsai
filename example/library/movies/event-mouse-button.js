@@ -1,3 +1,7 @@
+/**
+ * event mouse button
+ */
+
 var text = new Text().addTo(stage).attr({x: 10, y: 10});
 
 // NOTE:

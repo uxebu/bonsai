@@ -1,4 +1,5 @@
 /*
+  movie frames
 
   This movie shows a simple test case, where we jump straight from
   frame 3 to frame 0, which means frames 4 and 5 will never be played.

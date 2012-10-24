@@ -1,3 +1,7 @@
+/**
+ * radial gradient
+ */
+
 new Rect(0, 0, 250, 250).attr({
   fillGradient: gradient.radial(['red', 'black'], 100)
 }).addTo(stage);

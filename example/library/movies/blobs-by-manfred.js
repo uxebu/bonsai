@@ -1,3 +1,6 @@
+/**
+ * blobs by manfred
+ */
 var groups = [];
 groups.push( new Group().addTo(stage) );
 groups.push( new Group().addTo(stage) );
@@ -51,7 +54,7 @@ function newBlob(){
     xSpeed:Math.random()*10-5,
     ySpeed:Math.random()*10-5
   };
-  blob.shape = Path.circle(blob.x,blob.y,blob.width).attr({fillColor:newColor(),opacity:blob.opacity});
+  blob.shape = new Circle(blob.x,blob.y,blob.width).attr({fillColor:newColor(),opacity:blob.opacity});
   return blob;
 }
 function stats(){

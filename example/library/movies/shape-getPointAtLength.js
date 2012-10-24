@@ -1,3 +1,7 @@
+/**
+ * shape getPointAtLength
+ */
+
 function getXYAtLength(percent, a, b, c, d) {
  var pow = Math.pow;
  var t = percent;

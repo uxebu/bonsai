@@ -1,3 +1,7 @@
+/**
+ * shape center of arc
+ */
+
 // http://www.w3.org/TR/SVG11/implnote.html#ArcSyntax
 
 var abs = Math.abs;

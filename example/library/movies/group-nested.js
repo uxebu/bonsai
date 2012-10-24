@@ -1,4 +1,6 @@
 /**
+ * group nested
+ *
  * Tests nested groups with late addition of children
  */
 

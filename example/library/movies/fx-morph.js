@@ -1,4 +1,6 @@
 /*
+fx morph
+
 This is a demonstration of morphing between two shapes originally
 of different segment lengths. The toCurves method is passed the intended
 number of curves. We insert NULL curves to satisfy this -- i.e. curves
@@ -12,8 +14,8 @@ var b = new Star(250, 250, 250, 5).attr('fillColor', 'blue');
 var img = new Bitmap('assets/redpanda.jpg')
   .attr({width: 100, height: 100, opacity:0});
 a.attr({
-  fillGradient: gradient.radial(['green', 'black'], 100),
-  filters: filter.blur(0),
+  fillGradient: new gradient.Radial(['green', 'black'], 100),
+  filters: new filter.Blur(0),
   fillImage: img, fillRepeat: 6
 });
 var anim = new Animation('3s', {opacity:1}, {clock:stage});

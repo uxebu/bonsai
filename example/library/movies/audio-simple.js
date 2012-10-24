@@ -1,3 +1,6 @@
+/**
+ * audio simple
+ */
 new Audio([
   { src: 'assets/cinematicBoomNorm.m4a' },
   { src: 'assets/cinematicBoomNorm.ogg' }

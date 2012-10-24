@@ -1,3 +1,6 @@
+/**
+ * shape arc
+ */
 
 // x, y, radius, aStartAngle, aEndAngle, anticlockwise
 
@@ -71,5 +74,5 @@ new Path(550,150)
 
 
 // whould be cool to have sth like
-// var donat = bonsai.Path.arc(400, 150, 60, 0, 0, 0).attr(attr);
+// var donat = new Arc(400, 150, 60, 0, 0, 0).attr(attr);
 // donat.animate('1sec', { angle2:'100%' }, { easing:xx})

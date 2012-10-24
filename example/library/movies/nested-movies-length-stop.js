@@ -1,3 +1,7 @@
+/**
+ * nested movies length stop
+ */
+
 stage.root.setFramerate(1);
 
 var movies = {};

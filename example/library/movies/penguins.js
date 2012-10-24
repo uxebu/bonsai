@@ -1,4 +1,6 @@
-/*
+/**
+ * penguin
+ *
  * A more complex movie example.
  *
  * Contains multiple "layers", different drag handling,
@@ -35,7 +37,7 @@ var app = {
     var controlLayer = new bonsai.Group();
 
     // background
-    bonsai.Path.rect(0,0,400,35).attr({
+    new Rect(0,0,400,35).attr({
       fillColor: 'rgba(0,0,0,0.2)',
       filters: 'blur',
       strokeWidth: 1
@@ -93,7 +95,7 @@ var app = {
   setupCanvas: function(){
     var canvas = new bonsai.Group();
 
-    var background = this.background = bonsai.Path.rect(0,0, 500, 500).attr({
+    var background = this.background = new Rect(0,0, 500, 500).attr({
       x: 0,
       y: 0,
       //filters: 'dropShadow', // massive perf impact :(

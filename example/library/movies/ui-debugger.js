@@ -1,3 +1,7 @@
+/**
+ * ui debugger
+ */
+
 stage.root.setBackgroundColor('rgba(46,92,135,1)');
 
 var lines = [];

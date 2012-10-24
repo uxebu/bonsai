@@ -1,3 +1,7 @@
+/**
+ * charts bars 3d
+ */
+
 new Rect(0, 0, 600, 600)
   .attr({fillColor: 'grey'})
   .addTo(stage)

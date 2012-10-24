@@ -1,3 +1,7 @@
+/**
+ * tr dropshadow
+ */
+
 // flash dropshadow to bonsai dropshadow
 // distance + rad = offset[X,Y]
 

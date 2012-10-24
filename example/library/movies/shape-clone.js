@@ -1,3 +1,7 @@
+/**
+ * shape clone
+ */
+
 Path.prototype.clone = function() {
   return new Path().
       segments(this.segments()).

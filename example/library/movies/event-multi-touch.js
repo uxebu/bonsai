@@ -1,5 +1,9 @@
+/**
+ * event multi touch
+ */
+
 stage.on('multi:pointerdown', function(e) {
-  var s = Path.circle(e.stageX, e.stageY, Math.random() * 50 + 50)
+  var s = new Circle(e.stageX, e.stageY, Math.random() * 50 + 50)
     .attr({
       fillColor: 'random'
     })

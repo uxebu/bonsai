@@ -1,5 +1,7 @@
 /*
 
+animation morph2
+
 This is a demonstration of morphing between two shapes originally
 of different segment lengths. The toCurves method is passed the intended
 number of curves. We insert NULL curves to satisfy this -- i.e. curves

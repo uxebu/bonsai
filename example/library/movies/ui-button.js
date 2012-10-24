@@ -1,3 +1,7 @@
+/**
+ * ui button
+ */
+
 var button = new Group().addTo(stage);
 
 button.bg = new Rect(50, 50, 100, 40, 5).attr({

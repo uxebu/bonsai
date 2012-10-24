@@ -1,4 +1,6 @@
 /**
+ * group
+ *
  * Tests a simple group
  */
 

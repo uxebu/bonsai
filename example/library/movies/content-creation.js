@@ -1,9 +1,13 @@
+/**
+ * content creation
+ */
+
 // Used in the bonsai slides (initially for BBDEvCon)
 
-Path.rect(50, 50, 350, 350)
+new Rect(50, 50, 350, 350)
   .addTo(stage)
   .attr({strokeColor: 'black', strokeWidth: 4})
-  .attr({fillGradient: gradient.linear('bottom', ['red', 'yellow'])})
+  .attr({fillGradient: new gradient.LinearGradient('bottom', ['red', 'yellow'])})
 
 
 new Bitmap('assets/redpanda.jpg')

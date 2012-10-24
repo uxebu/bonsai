@@ -1,3 +1,7 @@
+/**
+ * raining rainbows
+ */
+
 function draw() {
 
   var color = bonsai.color('red').randomize('hue');
