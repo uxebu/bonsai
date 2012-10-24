@@ -25,7 +25,7 @@ function bar3d(color, x, y, width, height){
       filters: new filter.Blur(2)})
     .addTo(stage);
 
-  new Arc(x + width*0.5, y, width/2, 0, Math.PI)
+  new Arc(x + width*0.5, y*0.2, width/2, 0, Math.PI)
     .attr({fillColor: 'white', opacity: 0.3, scaleY: 0.2, origin: {x:0, y:y}})
     .addTo(stage);
 }

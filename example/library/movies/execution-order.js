@@ -2,6 +2,8 @@
  * execution order
  */
 
+// see console ;)
+
 var movie = new Movie();
 var movieName = "root";
 

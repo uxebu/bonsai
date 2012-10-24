@@ -5,7 +5,7 @@
  *
  * Should show a red square, then turn to blue, then to green.
  */
-var rectPath = Rect(150, 150, 150, 150).attr({fillColor: 'red', strokeColor: 'green', strokeWidth: 5});
+var rectPath = new Rect(150, 150, 150, 150).attr({fillColor: 'red', strokeColor: 'green', strokeWidth: 5});
 
 stage.addChild(rectPath);
 

@@ -7,7 +7,7 @@ function draw(fill, r, c) {
   stage.addChild(rect);
   return rect.attr({
     fillColor: fill,
-    fillGradient: new gradient.LinearGradient(0, ['#000000AA', '#00000000'])
+    fillGradient: gradient.linear(0, ['#000000AA', '#00000000'])
   });
 }
 
