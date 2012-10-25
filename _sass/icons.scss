@@ -2,92 +2,29 @@
 
 i {
     display: inline-block;
+    @include icon;
 
-    &.drag-drop {
-      @include icon-drag-drop;
+    &.safari {
+      @include icon-safari;
     }
 
-    &.quote {
-      @include icon-quote;
+    &.chrome {
+      @include icon-chrome;
     }
 
-    &.agree {
-      @include icon-agree;
+    &.ff {
+      @include icon-ff;
     }
 
-    &.convert {
-      @include icon-convert;
+    &.heart {
+      @include icon-heart;
     }
 
-    &.happy {
-      @include icon-happy;
+    &.ie {
+      @include icon-ie;
     }
 
-    &.apple {
-      @include icon-apple;
-    }
-
-    &.blackberry {
-      @include icon-blackberry;
-    }
-
-    &.android {
-      @include icon-android;
-    }
-
-    &.desktop {
-      @include icon-desktop;
-    }
-
-    &.error {
-      @include icon-error;
-    }
-
-    &.ok {
-      @include icon-ok;
-    }
-
-    &.ok-white {
-      @include icon-ok-white;
-    }
-
-    &.twitter {
-      @include icon-twitter;
-    }
-
-    &.facebook {
-      @include icon-facebook;
-    }
-
-    &.technology {
-      @include icon-technology;
-    }
-
-    &.reach {
-      @include icon-reach;
-    }
-
-    &.money-back {
-      @include icon-money-back;
-    }
-
-    &.oss {
-      @include icon-oss;
-    }
-
-    &.plus {
-      @include icon-plus;
-    }
-
-    &.grab {
-      @include icon-grab;
-    }
-
-    &.close {
-      @include icon-close;
-    }
-
-    &.other {
-
+    &.opera {
+      @include icon-opera;
     }
   }

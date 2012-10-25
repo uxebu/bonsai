@@ -16,7 +16,7 @@ body {
   min-width: 960px;
   font-family: "freight-sans-pro", sans-serif;
   font-weight: 400;
-  color:rgb(172, 178, 187);
+  color: #acb2bb;
   @include page-background;
 }
 
@@ -45,6 +45,13 @@ a {
 }
 a:hover {
   text-decoration:underline;
+}
+
+h3 {
+  text-align:center;
+  font-size:$fontSizeLarge;
+  font-weight: 500; /* medium */
+  margin-bottom:$marginLarge;
 }
 
 .code {
@@ -160,17 +167,36 @@ header {
 
   h5 {
     margin-top:$marginSmall;
+    font-weight: bold;
   }
 
   ul {
     margin-top:$marginExtraSmall;
-    margin-bottom:$marginMedium;
+    margin-bottom:$marginSmall;
 
     li {
       line-height:$lineHeightLarge;
       list-style:disc inside;
       padding-left:$paddingSmall;
     }
+  }
+
+  .community {
+    margin-top: $marginSmall;
+  }
+
+  .featured {
+    margin-top: $marginSmall;
+
+    i {
+      width: 20px;
+      height: 20px;
+      vertical-align: middle
+    }
+  }
+
+  .testdrive {
+    margin-top: 29px; // Custom
   }
 }
 
@@ -199,14 +225,6 @@ header {
   .rounded-rects-right {
     margin-left: 490px;
     left: 50%;
-  }
-
-  h3 {
-    color: white;
-    text-align:center;
-    font-size:$fontSizeLarge;
-    font-weight: 500; /* medium */
-    margin-bottom:$marginLarge;
   }
 
   li {
@@ -246,6 +264,38 @@ header {
 
   .ring-demo {
     @include ring-demo-background;
+  }
+}
+
+#browser-support {
+  margin:$marginExtraLarge auto 0 auto;
+  position:relative;
+
+  i {
+    vertical-align: middle;
+    width: 45px;
+    height: 45px;
+  }
+
+  table {
+    border-collapse: separate;
+    margin: 0 auto;
+
+    td {
+      border: 1px solid #2f3643;
+      border-right: none;
+
+      padding: 15px;
+    }
+
+    td:first-child {
+      @include border-radius(6px 0 0 6px);
+    }
+
+    td:last-child {
+      @include border-radius(0 6px 6px 0);
+      border-right: 1px solid #2f3643;
+    }
   }
 }
 
