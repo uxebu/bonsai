@@ -1,3 +1,7 @@
+/**
+ * overlapping paths
+ */
+
 // http://jsbin.com/ociyiw/24/edit
 
 new Rect(100, 100, 100, 100).fill("yellow").attr({opacity:0.5}).addTo(stage);

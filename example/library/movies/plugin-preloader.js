@@ -1,3 +1,7 @@
+/**
+ * plugin preloader
+ */
+
 var failingPanda = new Bitmap('assets/redpandaa.jpg');
 var paperbg = new Bitmap('assets/paperbg.png');
 var redpanda = new Bitmap('assets/redpanda.jpg');

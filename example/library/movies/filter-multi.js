@@ -1,3 +1,7 @@
+/**
+ * filter multi
+ */
+
 // shorthands, defaults
 new Bitmap('assets/redpanda.jpg', function(err) {
   if (err) return;
@@ -17,7 +21,7 @@ new Bitmap('assets/redpanda.jpg', function(err) {
     y: 10,
     x: 150,
     scale: 0.5,
-    filters: [filter.blur(1), filter.saturate(1)]
+    filters: [new filter.Blur(1), new filter.Saturate(1)]
   });
   stage.addChild(this);
 });

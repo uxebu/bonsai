@@ -1,3 +1,7 @@
+/**
+ * clip animated
+ */
+
 // animated clipping object
 // expected behaviour: a small blue rect at the left, top corner that animates
 

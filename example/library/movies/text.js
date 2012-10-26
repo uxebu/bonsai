@@ -1,3 +1,7 @@
+/**
+ * text
+ */
+
 // The explicit version to create a text on the screen.
 // That has a gradient fill style.
 var text = new Text('Say hello Text 1');

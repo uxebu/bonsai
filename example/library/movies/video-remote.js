@@ -1,3 +1,7 @@
+/**
+ * video remote
+ */
+
 var resources = [
   {src: 'http://content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm'},
   {src: 'http://content.bitsontherun.com/videos/bkaovAYt-injeKYZS.mp4'}

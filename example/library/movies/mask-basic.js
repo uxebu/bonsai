@@ -1,11 +1,15 @@
-var rainbow = Path.rect(0, 0, 480, 480).attr({
+/**
+ * mask basic
+ */
+
+var rainbow = new Rect(0, 0, 480, 480).attr({
   strokeWidth: 1,
   fillGradient: gradient.linear(90,
     ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
   )
 }).addTo(stage);
 
-var mask = Path.circle(240, 240, 100).attr({
+var mask = new Circle(240, 240, 100).attr({
   fillGradient: gradient.radial([['#FFF', 50],'#000'], 50)
 });
 

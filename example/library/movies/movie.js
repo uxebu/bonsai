@@ -1,3 +1,7 @@
+/**
+ * movie
+ */
+
 /* create rect and add it to the stage immediately */
 var rect1 = new Rect(0,0,100,100).attr({ fillColor: 'red' });
 stage.addChild(rect1);

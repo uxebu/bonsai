@@ -1,4 +1,9 @@
-var a = new Star(100, 100, 100, 5).attr({
+/**
+ * animation morph
+ */
+
+// note: in the current api you cant use new Star as the starting shape...
+var a = Path.star(100, 100, 100, 5).attr({
   fillColor: 'red',
   opacity: .5
 });

@@ -1,3 +1,7 @@
+/**
+ * tr line
+ */
+
 var movie = new Movie();
 
 stage.addChild(movie);

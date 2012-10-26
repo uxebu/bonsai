@@ -1,4 +1,6 @@
-
+/**
+ * audio boom
+ */
 new Rect(145, 290, 1000, 60).fill('black').addTo(stage);
 
 var teamText = new Text('loading...').attr({

@@ -1,4 +1,6 @@
 /**
+ * display object delete
+ *
  * Tests a simple group
  */
 

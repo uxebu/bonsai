@@ -1,3 +1,6 @@
+/**
+ * bitmap move rotation
+ */
 new Bitmap('assets/redpanda.jpg', function(err) {
   if (err) return;
   this.attr({

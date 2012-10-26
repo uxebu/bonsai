@@ -1007,7 +1007,7 @@ define([
    * @param {DOMElement} element A DOM Element
    * @param {String} styleAttribute "fill" or "stroke"
    * @param {Number} aColor Color with 32-bit int repr.
-   * @param {String} filterSignature [optional]
+   * @param {String} [filterSignature]
    */
   proto.applyColor = function(styleAttribute, element, aColor, filterSignature) {
 

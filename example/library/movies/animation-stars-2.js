@@ -1,3 +1,6 @@
+/**
+ * animation stars2
+ */
 var numStars = 7;
 var width = 500;
 var height = 500;

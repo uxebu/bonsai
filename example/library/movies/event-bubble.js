@@ -1,3 +1,6 @@
+/**
+ * event buble
+ */
 
 var shape = new Rect(10,10,100,100).attr({fillColor: 'red'});
 var group = new Group();

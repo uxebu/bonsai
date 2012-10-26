@@ -1,3 +1,7 @@
+/**
+ * key event
+ */
+
 stage.on('key', function(e) {
   var t = new Text(String.fromCharCode(e.keyCode)).addTo(stage).attr({
     x: 10,

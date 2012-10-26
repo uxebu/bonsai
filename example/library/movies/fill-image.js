@@ -1,3 +1,7 @@
+/**
+ * fill image
+ */
+
 new Bitmap('assets/redpanda.jpg', function(err) {
   if (err) return;
   new Rect(0, 0, 400, 400).attr({

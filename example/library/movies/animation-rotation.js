@@ -1,4 +1,5 @@
 /**
+ * animation rotation
  * Animated attributes
  */
 var rectPath = new Rect(0, 0, 150, 150).attr({

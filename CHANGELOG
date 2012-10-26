@@ -14,6 +14,7 @@ v0.4.1
 * Add Matrix.fromString() method to create new Matrix instance from a string.
 * Rename DisplayObject#getComputed to DisplayObject#getBoundingBox and improve
   implementation for calculating the bounding box of paths
+* Make the example movie list (previously movie_list.js) a proper JSON file
 
 v0.4.0 / 2012-10-03
 -------------------

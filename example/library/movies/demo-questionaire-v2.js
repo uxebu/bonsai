@@ -1,3 +1,7 @@
+/**
+ * demo questionaire v2
+ **/
+
 var bs = bonsai;
 // colors from http://modernl.com/article/web-2.0-colour-palette
 var buttons = [
@@ -137,7 +141,7 @@ var pieChart = {};
       var count = results[b.text];
       if (!count) return;
       var endAngle = startAngle+count/sum * Math.PI*2;
-      arcs.push(bs.Path.arc(pos.x, pos.y, 30, startAngle, endAngle)
+      arcs.push(new Arc(pos.x, pos.y, 30, startAngle, endAngle)
         .attr({strokeWidth:60, strokeColor:b.bgColor})
         .addTo(group)
       );
@@ -167,7 +171,7 @@ var barChart = {};
       .attr({fillColor: 'white', opacity: 0.6,
         filters: new filter.Blur(2)})
       .addTo(group);
-    bs.Path.arc(x + width*0.5, y, width/2, 0, Math.PI)
+    new Arc(x + width*0.5, y, width/2, 0, Math.PI)
       .attr({fillColor: 'white', opacity: 0.3, scaleY: 0.2, origin: {x:0, y:y}})
       .addTo(group);
     return group;

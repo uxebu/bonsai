@@ -1,4 +1,8 @@
 /**
+ * layering
+ */
+
+/**
  * Tests layering. The yellow box should appear below the green box.
  */
 var example1  = new Group().addTo(stage).attr({x: 10, y: 10});

@@ -1,4 +1,8 @@
-var testPath = Path.rect(100,100,100,100)
+/**
+ * filter color matrix shim 2
+ */
+
+var testPath = new Rect(100,100,100,100)
   .addTo(stage)
   .attr({
     fillColor:"red"
@@ -12,7 +16,7 @@ setTimeout(function(){
 
 setTimeout(function(){
   testPath.attr({
-    filters: filter.colorMatrix([
+    filters: new filter.ColorMatrix([
         1, 1, 1, 0, 0,
         1, 0.7, -1, 0, 0,
         -1, -1, -1, 0, 0,

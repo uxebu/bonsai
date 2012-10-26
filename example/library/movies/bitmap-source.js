@@ -1,3 +1,6 @@
+/**
+ * bitmap source
+ */
 var bitmap = new Bitmap('assets/redpanda.jpg').addTo(stage);
 
 stage.frames({

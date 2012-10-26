@@ -1,3 +1,7 @@
+/**
+ * charts bubbles
+ */
+
 // Inspired by http://morph.com.au/blog/wp-content/uploads/2010/08/Infographic-The-Geosocial-Universe-Hi-Res.jpg
 var bs = bonsai;
 
