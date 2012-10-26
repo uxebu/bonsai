@@ -26,18 +26,18 @@ movieList = {
   ],
   'Bitmaps and Sprites': [
     'bitmap.js',
+    'bitmap-memory-check.js',
     'bitmap-source.js',
+    'data-url.js',
     'fill-image.js',
     'sprite.js',
-    'data-url.js',
-    'bitmap-memory-check.js',
     'sprite-ninja.js'
   ],
   'Color': [
     'color.js',
+    'color-gradient-knight-rider.js',
     'linear-gradients.js',
-    'radial-gradients.js',
-    'color-gradient-knight-rider.js'
+    'radial-gradients.js'
   ],
   'Clipping & Masking': [
     'clip-simple.js',
@@ -87,9 +87,10 @@ movieList = {
     'sprite-properties.js'
   ],
   'Games': [
-    'pong.js',
     'asteroids.js',
-    'pacman.js'
+    'pacman.js',
+    'pong.js',
+    'set.js'
   ],
   'Grouping and Layering': [
     'group.js',
@@ -108,11 +109,15 @@ movieList = {
     'raining-rainbows.js',
     '10000-objects.js',
     'env.js',
-    'connect-two-points.js'
+    'connect-two-points.js',
+    'collision-detection-line.js',
+    'collision-detection-moving.js',
+    'collision-detection-both.js',
   ],
   'Morph': [
     'animation-morph.js',
     'animation-morph-2.js',
+		'bounding-box.js',
     'fx-morph.js',
     'ugly2polygon-morph.js',
     'ugly2polygon-morph2.js'
