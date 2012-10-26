@@ -1,4 +1,6 @@
 /**
+ * group add and remove
+ *
  * Tests a simple group with late addition / subtraction of children.
  *
  * First box should become visible after a second,

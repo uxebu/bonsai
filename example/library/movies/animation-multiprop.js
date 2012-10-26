@@ -1,4 +1,5 @@
 /**
+ * animation multiprop
  * Animated attributes
  */
 var rectPath = new Rect(50, 50, 100, 100).attr({

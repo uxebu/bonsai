@@ -1,15 +1,15 @@
 /**
+ * sprite ninja
+ */
+
+/**
  * Sprited Bitmap Implementation
  *
  * @param {String} src Source URL of Sprite image
- * @param {Number} imgWithinSpriteX Location of the target bitmap within the entire
- *  sprite (X)
- * @param {Number} imgWithinSpriteX Location of the target bitmap within the entire
- *  sprite (Y)
- * @param {Number} imgWithinSpriteWidth Width of the target bitmap within the entire
- *  sprite
- * @param {Number} imgWithinSpriteHeight Height of the target bitmap within the entire
- *  sprite
+ * @param {Number} imgWithinSpriteX Location of the target bitmap within the entire sprite (X)
+ * @param {Number} imgWithinSpriteY Location of the target bitmap within the entire sprite (Y)
+ * @param {Number} imgWithinSpriteWidth Width of the target bitmap within the entire sprite
+ * @param {Number} imgWithinSpriteHeight Height of the target bitmap within the entire sprite
  */
 function SpritedBitmap(src, imgWithinSpriteX, imgWithinSpriteY, imgWithinSpriteWidth, imgWithinSpriteHeight) {
   Group.call(this);

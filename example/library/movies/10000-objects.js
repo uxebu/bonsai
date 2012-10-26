@@ -1,3 +1,4 @@
+/** 10000 objects */
 stage.addChild(new Rect(500, 0, 100, 100).attr('fillColor', 'random'));
 setTimeout(function() {
   for (var i = 0; i < 10000; i++) {

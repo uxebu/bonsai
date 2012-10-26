@@ -1,4 +1,6 @@
 /**
+ * assets loading image simple
+ *
  * Tests a simple image creation.
  */
 

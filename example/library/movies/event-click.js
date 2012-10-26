@@ -1,7 +1,9 @@
 /**
+ * event click
+ *
  * Path w/ events.
  */
-var rectPath = bonsai.Path.rect(150, 150, 150, 150).attr({fillColor: 'red'});
+var rectPath = new Rect(150, 150, 150, 150).attr({fillColor: 'red'});
 var colors = [
   'green',
   'blue',

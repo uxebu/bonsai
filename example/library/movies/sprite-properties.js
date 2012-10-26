@@ -1,3 +1,7 @@
+/**
+ * sprite properties
+ */
+
 // This reproduces what is done in Flash in
 // assets/swf/with-actionscript/no-swf/Sprite-properties/
 // and it tries to "fix" or adapt the values so that they work in bs
@@ -121,7 +125,7 @@ function writeInfo(textString, x, y){
 
 
 
-var square = Path.rect(0, 0, 10, 10).attr({fillColor:'0x0000FF'});
+var square = new Rect(0, 0, 10, 10).attr({fillColor:'0x0000FF'});
 
 [
   			[['blendMode', 'flash.display.BlendMode.SUBTRACT']],

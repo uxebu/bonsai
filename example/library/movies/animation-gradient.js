@@ -1,4 +1,5 @@
 /**
+ * animation gradient
  * Animated Color
  */
 var rect = new Rect(10, 10, 500, 500).attr({

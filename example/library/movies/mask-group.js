@@ -1,4 +1,8 @@
-var rainbow = Path.rect(0, 0, 480, 480).attr({
+/**
+ * mask group
+ */
+
+var rainbow = new Rect(0, 0, 480, 480).attr({
   strokeWidth: 1,
   fillGradient: gradient.linear(90,
     ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
@@ -7,19 +11,19 @@ var rainbow = Path.rect(0, 0, 480, 480).attr({
 
 var mask = new Group();
 
-Path.circle(-50, -50, 50).attr({
+new Circle(-50, -50, 50).attr({
   fillGradient: gradient.radial([['#FFF', 50],'#000'], 50)
 }).addTo(mask);
 
-Path.circle(50, -50, 50).attr({
+new Circle(50, -50, 50).attr({
   fillGradient: gradient.radial([['#FFF', 50],'#000'], 50)
 }).addTo(mask);
 
-Path.circle(-50, 50, 50).attr({
+new Circle(-50, 50, 50).attr({
   fillGradient: gradient.radial([['#FFF', 50],'#000'], 50)
 }).addTo(mask);
 
-Path.circle(50, 50, 50).attr({
+new Circle(50, 50, 50).attr({
   fillGradient: gradient.radial([['#FFF', 50],'#000'], 50)
 }).addTo(mask);
 

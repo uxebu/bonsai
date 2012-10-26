@@ -1,4 +1,6 @@
 /**
+ * animation shared
+ *
  * Shared animations
  */
 var shape1 = new Rect(0, 50, 100, 100).attr({fillColor: 'red'});

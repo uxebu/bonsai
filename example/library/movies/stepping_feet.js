@@ -1,3 +1,7 @@
+/**
+ * stepping feet
+ */
+
 var bs = bonsai,
     lines = new Path(),
     darkFoot = new Path(),

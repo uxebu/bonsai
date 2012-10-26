@@ -1,5 +1,8 @@
-// bs.Path.rect returns a {DisplayObject}
-var rectPath = bonsai.Path.rect(0, 0, 150, 150).attr({x:150,y:150});
+/**
+ * shape interval
+ */
+
+var rectPath = new Rect(0, 0, 150, 150).attr({x:150,y:150});
 rectPath.attr({fillColor:'red', strokeWidth:1});
 
 var counter = 1;

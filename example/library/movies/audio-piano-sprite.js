@@ -1,3 +1,6 @@
+/**
+ * audio piano sprite
+ */
 var pianoSprite = [], changePianoSprite = 0;
 
 function aSound(atTime) {

@@ -1,3 +1,7 @@
+/**
+ * connect two points
+ */
+
 // sth to discuss:
 // 1) how can I change the mouse cursor?
 // 2) how can I access my parent display object in an event-callback like ´drag´
@@ -9,7 +13,7 @@ var pointStyle = {
   fillColor:'#ccc',
   strokeColor:'#aaa',
   strokeWidth:1,
-  filters:filter.DropShadow(1,1,2, '#ccc')
+  filters: new filter.DropShadow(1,1,2, '#ccc')
 };
 var lineStyle = {
   strokeWidth:1,
@@ -27,7 +31,7 @@ function drawPointAtOrigin(x, y) {
 
   var line = new Path().attr(lineStyle).addTo(group);
 
-  var circle = Path.circle(50, 50, 7).attr(pointStyle).attr({
+  var circle = new Circle(50, 50, 7).attr(pointStyle).attr({
     x:0,
     y:0
   }).on('drag', function(data) {

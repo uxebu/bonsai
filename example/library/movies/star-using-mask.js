@@ -1,3 +1,7 @@
+/**
+ * star using mask
+ */
+
 stage = new Group().addTo(stage);
 
 stage.attr({x:240, y:240});

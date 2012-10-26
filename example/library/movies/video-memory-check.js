@@ -1,3 +1,7 @@
+/**
+ * video memory check
+ */
+
 var resources = [
   {src: 'assets/sample_iPod.m4v'},
   {src: 'assets/sample.ogv', type:'video/ogg'}

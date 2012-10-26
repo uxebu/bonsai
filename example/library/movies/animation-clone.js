@@ -1,4 +1,5 @@
 /**
+ * animation clone
  * Cloned animations. Note how the cloned animation does not pause along with the original one.
  */
 var shape1 = new Rect(0, 50, 100, 100).attr({fillColor: 'red'});

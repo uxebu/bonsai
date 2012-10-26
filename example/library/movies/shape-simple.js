@@ -1,4 +1,6 @@
 /**
+ * shape simple
+ *
  * Tests a simple shape creation.
  */
 

@@ -1,3 +1,6 @@
+/**
+ * bounding box
+ */
 function Tracker(path) {
   this.trackee = path;
   this.group = new Group().addTo(path.parent);
@@ -19,7 +22,7 @@ Tracker.prototype = {
   }
 }
 
-var star = new Path.star(100, 100, 50, 5, 3);
+var star = new Star(100, 100, 50, 5, 3);
 
 star.fill('yellow').stroke('black', 1);
 star.addTo(stage);
@@ -30,7 +33,7 @@ anim();
 
 function anim() {
   star.morphTo(
-    new Path.star(
+    new Star(
       Math.random() * 400 + 200,
       Math.random() * 400 + 200,
       Math.random() * 80 + 20,

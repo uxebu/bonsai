@@ -1,10 +1,14 @@
+/**
+ * filter frames
+ */
+
 // one
-var _red = Path.rect(30,30,50,50).attr({
+var _red = new Rect(30,30,50,50).attr({
   fillColor:'red'
 }).addTo(stage);
 
 // two
-var _orange = Path.rect(130,30,50,50).attr({
+var _orange = new Rect(130,30,50,50).attr({
   fillColor:'orange'
 }).addTo(stage);
 

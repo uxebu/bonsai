@@ -1,4 +1,6 @@
 /**
+ * event drag
+ *
  * Paths w/ drag events.
  */
 

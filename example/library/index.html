@@ -4,7 +4,6 @@
   <meta name=viewport content=width=device-width,initial-scale=1>
   <script src=../../lib/requirejs/require.js></script>
   <!--<script src="http://localhost:8080/socket.io/socket.io.js"></script>-->
-  <script src="movies/movie_list.js"></script>
   <style type="text/css">
     body, html { margin: 0; font-family: sans-serif; font-size: 14px; }
     #head {
@@ -32,6 +31,14 @@
   </div>
   <div id="bs"></div>
   <script>
+
+    var movieList = (function() {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', 'movies/movie_list.json', false);
+      xhr.send(null);
+      return eval('(' + xhr.responseText + ')');
+    }());
+
     require.config({
       baseUrl: '../../src',
       paths: {

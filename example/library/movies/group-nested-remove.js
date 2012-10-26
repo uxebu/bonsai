@@ -1,4 +1,6 @@
 /**
+ * group nested remove
+ *
  * Tests nested groups with late addition / subtraction of children.
  *
  * First three boxes should become visible after a second,
