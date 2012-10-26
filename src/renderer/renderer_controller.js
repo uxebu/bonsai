@@ -96,6 +96,7 @@ function(tools, EventEmitter, URI) {
         });
       } else if (options.code) {
         runnerContext.run(options.code);
+        rendererController.emit('load');
       }
 
       function loadAll(urls, cb) {
