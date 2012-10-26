@@ -141,9 +141,9 @@ define([
         switch (i) {
           case 'data':
             if (value !== null) {
-              el.setAttribute('data-extended-id', value);
+              el.setAttribute('data-custom-id', value);
             } else {
-              el.removeAttribute('data-extended-id');
+              el.removeAttribute('data-custom-id');
             }
             break;
           case 'fontFamily':
