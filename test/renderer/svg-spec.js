@@ -15,7 +15,9 @@ define([
 
     describe('allowEventDefaults', function() {
       it('should assign the constructor value as property', function() {
-        expect(new SvgRenderer(createFakeDomNode(), 1, 1, true).allowEventDefaults).toBe(true);
+        expect(new SvgRenderer(createFakeDomNode(), 1, 1, {
+          allowEventDefaults: true
+        }).allowEventDefaults).toBe(true);
       });
 
       it('should not call .preventDefault() on events when allowEventDefaults is set to true', function() {
@@ -81,5 +83,56 @@ define([
         expect(node._filterSignature).toBe('filter:colorMatrix()');
       });
     });
+
+    describe('drawAudio', function() {
+      it('is a function', function() {
+        expect(typeof createSvgRenderer().drawAudio).toBe('function');
+      });
+      describe('handles a Video Object depending on `message.attributes`', function() {
+        it('attributes.playing=true', function() {
+          var audioElement = { play: jasmine.createSpy('play') };
+          var message = { attributes: { playing: true } };
+          createSvgRenderer().drawAudio(audioElement, message);
+          expect(audioElement.play).toHaveBeenCalled();
+        });
+        it('attributes.playing=false', function() {
+          var audioElement = { pause: jasmine.createSpy('pause') };
+          var message = { attributes: { playing: false } };
+          createSvgRenderer().drawAudio(audioElement, message);
+          expect(audioElement.pause).toHaveBeenCalled();
+        });
+        it('volume is not changed w/o attributes.volume', function() {
+          var audioElement = { volume: 0.123 };
+          var message = { attributes: {} };
+          createSvgRenderer().drawAudio(audioElement, message);
+          expect(audioElement.volume).toBe(0.123);
+        });
+        it('attributes.volume=0', function() {
+          var audioElement = { volume: -1 };
+          var message = { attributes: { volume: 0 } };
+          createSvgRenderer().drawAudio(audioElement, message);
+          expect(audioElement.volume).toBe(0);
+        });
+        it('attributes.volume=0.5', function() {
+          var audioElement = { volume: -1 };
+          var message = { attributes: { volume: 0.5 } };
+          createSvgRenderer().drawAudio(audioElement, message);
+          expect(audioElement.volume).toBe(0.5);
+        });
+        it('attributes.volume=1', function() {
+          var audioElement = { volume: -1 };
+          var message = { attributes: { volume: 1.0 } };
+          createSvgRenderer().drawAudio(audioElement, message);
+          expect(audioElement.volume).toBe(1.0);
+        });
+        it('attributes.volume=NaN (casted to `0`)', function() {
+          var audioElement = { volume: -1 };
+          var message = { attributes: { volume: NaN } };
+          createSvgRenderer().drawAudio(audioElement, message);
+          expect(audioElement.volume).toBe(0.0);
+        });
+      });
+    });
+
   });
 });

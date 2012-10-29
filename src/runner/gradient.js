@@ -47,8 +47,8 @@ function(tools, color, Matrix) {
    * @param {Number} direction The direction of the gradient in degrees
    * @param {Array} stops An array of arrays, each sub-array in the form:
    *  `[color, percentageOffset]`
-   * @param {Matrix} matrix The transformation matrix for the gradient.
-   * @param {String} units Either "boundingBox" or "userSpace"
+   * @param {Matrix} [matrix] The transformation matrix for the gradient.
+   * @param {String} [units=userSpace] Either "boundingBox" or "userSpace"
    */
   gradient.LinearGradient = function LinearGradient(direction, stops, matrix, units) {
     this.type = 'linear-gradient';

@@ -101,6 +101,20 @@ define([
         expect(player.runnerUrl).toBe(currentUrl);
         expect(player.RunnerContext).toBe(RunnerContext);
       });
+
+      it('sets the Renderer property of the player from the renderer option', function() {
+        var Renderer = function() {};
+        player.setup({renderer: Renderer});
+
+        expect(player.Renderer).toBe(Renderer);
+      });
+
+      it('does not set the Renderer when it is not passed as option', function() {
+        var currentRenderer = player.Renderer;
+        player.setup({});
+
+        expect(player.Renderer).toBe(currentRenderer);
+      });
     });
 
     // Helper function to test `createStage`, `run`, and `runCode`
@@ -114,7 +128,10 @@ define([
           var node = createMockNode(), width = 162, height = 100, options = {allowEventDefaults: true, fpsLog: true};
           funcSetup(node, width, height, options);
 
-          expect(MockRendererConstructor).toHaveBeenCalledWith(node, width, height, options.allowEventDefaults, options.fpsLog);
+          expect(MockRendererConstructor).toHaveBeenCalledWith(node, width, height, {
+            allowEventDefaults: options.allowEventDefaults,
+            fpsLog: options.fpsLog
+          });
         });
 
         it('passes an url and a document to the runner', function () {
@@ -202,6 +219,18 @@ define([
             funcSetup(createMockNode(), 50, 60, {url: url});
             var optionsPassedToController = MockRendererControllerConstructor.mostRecentCall.args[3];
             expect(optionsPassedToController.url).toBe(String(player.baseUrl().resolveUri(url)));
+          });
+
+          it('should convert a function passed as "code" option to a self invoking function expression', function() {
+            var func = function() {
+              some.arbitrary.code();
+              var located = here in this.func.tion;
+            }
+            funcSetup(createMockNode(), 50, 60, {code: func});
+            var optionsPassedToController = MockRendererControllerConstructor.mostRecentCall.args[3];
+
+            var code = optionsPassedToController.code;
+            expect(code).toBe('(' + func.toString() + '());');
           });
 
           it('should resolve a passed array of urls against the base url of the player and forward it as an array of strings', function() {

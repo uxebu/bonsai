@@ -96,6 +96,7 @@ function(tools, EventEmitter, URI) {
         });
       } else if (options.code) {
         runnerContext.run(options.code);
+        rendererController.emit('load');
       }
 
       function loadAll(urls, cb) {
@@ -201,7 +202,11 @@ function(tools, EventEmitter, URI) {
           this.assetController.destroy(messageData.id);
           break;
         case 'message':
-          this.emit('message', messageData);
+          if ('category' in message) {
+            this.emit('message:' + message.category, messageData);
+          } else {
+            this.emit('message', messageData);
+          }
           break;
         case 'isReady':
           this.isRunnerListening = true;
@@ -299,11 +304,22 @@ function(tools, EventEmitter, URI) {
 
     /**
      * Sends a message to the RunnerContext / stage
+     *
+     * @param [category=null] The message category
      * @param messageData
      * @returns {this} The instance
      */
-    sendMessage: function(messageData) {
-      return this.post('message', messageData);
+    sendMessage: function(category, messageData) {
+      if (arguments.length < 2) {
+        this.post('message', category);
+      } else {
+        this.runnerContext.notifyRunner({
+          command: 'message',
+          category: category,
+          data: messageData
+        });
+      }
+      return this;
     },
 
     /**

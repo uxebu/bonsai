@@ -1,4 +1,5 @@
 /**
+ * animation rotation
  * Animated attributes
  */
 var rectPath = new Rect(0, 0, 150, 150).attr({
@@ -11,4 +12,8 @@ var rectPath = new Rect(0, 0, 150, 150).attr({
 
 stage.addChild(rectPath);
 
-rectPath.animate('2s', {rotation: Math.PI*2}, {easing: 'elasticInOut'});
+rectPath.animate('2s', {
+  rotation: Math.PI*2
+}, {
+  easing: 'elasticInOut'
+});

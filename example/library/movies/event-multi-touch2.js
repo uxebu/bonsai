@@ -1,10 +1,14 @@
+/**
+ * event multi touch 2
+ */
+
 stage.on('multi:pointerdown', function(e) {
 
   var id = e.touchId,
       removed = false,
       fadedIn = false;
 
-  var s = Path.circle(e.stageX, e.stageY, Math.random() * 50 + 50).attr({
+  var s = new Circle(e.stageX, e.stageY, Math.random() * 50 + 50).attr({
     scale: 0,
     opacity: 0
   });

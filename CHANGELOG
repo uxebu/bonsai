@@ -1,16 +1,64 @@
-v0.3.7
+v0.4.2
 -------------------
+
+
+v0.4.1 / 2012-10-26
+-------------------
+
+* Add optional category to sendMessage() to allow for more specific message
+  passing
+* Add isRight/isMiddle/isLeft to Pointer events and make it possible to
+  disable/enable the context menu from the `bonsai.run` configuration object.
+* Introduce MediaDisplayObject that combines the basic functionality of
+  Video and Audio.
+* Fixed examples to be in line with the documentation.
+* Fix out-of-range hsl color values
+* Fix out-of-range alpha values when parsing rgba() strings
+* Add additional method signature for new Matrix([a, b, c, d, tx, ty]) 
+* Add Matrix.fromString() method to create new Matrix instance from a string.
+* Rename DisplayObject#getComputed to DisplayObject#getBoundingBox and improve
+  implementation for calculating the bounding box of paths
+* Make the example movie list (previously movie_list.js) a proper JSON file
+
+v0.4.0 / 2012-10-03
+-------------------
+
+* Provide a unified `bonsai.js` build for iframe/worker context instead
+  of providing two differing builds. The built `bonsai.js` will take care
+  to choose the right strategy for the used browser (Latest Firefox, Chrome,
+  Safari 6 and iOS 6 uses worker-environment spawned through a Blob-URL,
+  Opera 12 uses worker-environment spawned through a data-URI, all other
+  browsers will spawn an iframe through `<script>/*bonsaiCode*/</script>`).
+* A built `bonsai.js` can now be concatted with other JS-files
+* Remove instanceof check in fillImage attribute
+
+v0.3.8 / 2012-09-28
+-------------------
+
+* Add `Audio` a new DisplayObject including new API
+* Add `drawAudio` method and according tests in renderer
+* Add `AudioHandler` a new AssetHandler for Audio resources
+
+v0.3.7 / 2012-09-26
+-------------------
+
 * Fix issue where click event would be fired twice on touch devices (#60)
 * Change display list implementation from mixin to composition
 * Make the default textOrigin in the Text class 'top'
-* Cleanup KeyframeAnimation and remove setSubject(s) methods to bring inline with current Animation class
-* Fix internal asset messaging so that assetData (loadData) is correctly sent to the runner (AssetLoader)
+* Cleanup KeyframeAnimation and remove setSubject(s) methods
+  to bring inline with current Animation class
+* Fix internal asset messaging so that assetData (loadData) is
+  correctly sent to the runner (AssetLoader)
 * Add missing `delay` option to KeyframeAnimation
-* Fix issue where TextSpan child default strokeWidth took precedence over parent (Text instance) strokeWidth
+* Fix issue where TextSpan child default strokeWidth took
+  precedence over parent (Text instance) strokeWidth
 * Add the ability to execute tests via commandline: `make test-phantom`
+* Allow to pass a function within `code` in `bonsai.run`
+* Make `player.Renderer` configurable via `player.setup()`
 
 v0.3.6 / 2012-09-12
 -------------------
+
 * Add additional container DIV in renderer to fix `getOffset` on iOS devices
 * Make sure Bitmap does not ignore manually set dimensions if the source is changed
 

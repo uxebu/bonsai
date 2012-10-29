@@ -9,7 +9,6 @@ define([
    *
    * @param {string} runnerUrl The url to the bootstrap file.
    * @param {HTMLDocument} [doc=document] The document to append the iframe to.
-   * @param {
    */
   function IFrameContext(runnerUrl, doc) {
     this.runnerUrl = runnerUrl;
@@ -60,7 +59,15 @@ define([
         }
       });
 
-      frameDoc.write('<script src="' + this.runnerUrl + '"></script>');//TODO: could we append the script here? Also: escaping
+      if (this.runnerUrl.indexOf('function __bonsaiRunnerCode__') > -1) {
+        var runnerCode = this.runnerUrl.substring(
+          this.runnerUrl.indexOf("{") + 1,
+          this.runnerUrl.lastIndexOf("}")
+        );
+        frameDoc.write('<script>' + runnerCode + '</script>');
+      } else {
+        frameDoc.write('<script src="' + this.runnerUrl + '"></script>');
+      }
 
       // TODO: y on first load fails in /library
       frameDoc.close();

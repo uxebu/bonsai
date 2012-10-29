@@ -1,4 +1,7 @@
-var bitmap = new bonsai.Bitmap('assets/redpanda.jpg').addTo(stage);
+/**
+ * bitmap source
+ */
+var bitmap = new Bitmap('assets/redpanda.jpg').addTo(stage);
 
 stage.frames({
  "2s": function() {

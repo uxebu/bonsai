@@ -1,3 +1,7 @@
+/**
+ * data url
+ */
+
 new Bitmap(
   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAuCAYAAADjs904AAAAGXRF' +
   'WHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAACJFJREFUeNrsXGlsFVUUvoUWi4iAaK' +

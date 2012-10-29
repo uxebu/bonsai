@@ -1,12 +1,10 @@
 define([
-  './asset_display_object',
+  './media_display_object',
   '../tools'
-], function(AssetDisplayObject, tools) {
+], function(MediaDisplayObject, tools) {
   'use strict';
 
   var data = tools.descriptorData;
-  var accessor = tools.descriptorAccessor;
-  var getter = tools.getter;
 
   /**
    * The Video constructor
@@ -20,10 +18,6 @@ define([
    *  loaded (only called if you passed a `aRequest`). The callback will be called
    *  with it's first argument signifying an error. So, if the first argument
    *  is `null` you can assume the movie was loaded successfully.
-   * @param {Object} [options]
-   * @param {Number} [options.width] Width of the video
-   * @param {Number} [options.height] Height of the video
-   * @param {Boolean} [options.autoplay] Whether the video should auto-play
    *
    * @property {__list__} __supportedAttributes__ List of supported attribute names.
    *    In addition to the property names listed for DisplayObject,
@@ -35,32 +29,26 @@ define([
    * @property {number} __supportedAttributes__.width The width of the video.
    *
    */
-  function Video(loader, aRequest, callback, options) {
-    options || (options = {});
+  function Video(loader, aRequest, callback) {
 
-    AssetDisplayObject.call(this, loader, aRequest, callback);
+    MediaDisplayObject.call(this, loader, aRequest, callback);
 
     this.type = 'Video';
 
     Object.defineProperties(this._attributes, {
-      height: data(options.height, true, true),
-      width: data(options.width, true, true),
-      autoplay: data(options.autoplay || false, true, true)
+      height: data(0, true, true),
+      width: data(0, true, true)
     });
 
     var rendererAttributes = this._renderAttributes;
     rendererAttributes.height = 'height';
     rendererAttributes.width = 'width';
-    rendererAttributes.autoplay = 'autoplay';
 
     this.request(aRequest);
   }
 
-  var parentPrototype = AssetDisplayObject.prototype;
-  var parentPrototypeDestroy = parentPrototype.destroy;
-
   /** @lends Video.prototype */
-  var proto = Video.prototype = Object.create(parentPrototype);
+  var proto = Video.prototype = Object.create(MediaDisplayObject.prototype);
 
   /**
    * Clones the method
@@ -72,34 +60,15 @@ define([
     return new Video(this._loader, this._request);
   };
 
-  /**
-   * Destroys the DisplayObject and removes any references to the
-   * asset, including data held by the renderer's assetController about the
-   * source of the video
-   *
-   * @returns {this}
-   */
-  proto.destroy = function() {
-    parentPrototypeDestroy.call(this);
-    this._loader.destroyAsset(this);
-    return this;
-  };
-
-  /**
-   * Notify the video that the corresponding data has been loaded. To be used
-   * by the asset loader.
-   *
-   * @private
-   * @param {string} type Either 'load' or 'error'
-   * @param data
-   */
   proto.notify = function(type, data) {
 
     switch (type) {
       case 'load':
         // TODO: videoWidth vs attr.width
         // TODO: send onload some infos about the target
-        this.attr({width: data.width, height: data.height});
+        if (typeof data !== 'undefined') {
+          this.attr({width: data.width, height: data.height});
+        }
         // We trigger the event asynchronously so as to ensure that any events
         // bound after instantiation are still triggered:
         this.emitAsync('load', this);
@@ -113,23 +82,21 @@ define([
     return this;
   };
 
-  proto.getComputed = function(key) {
-    var value, size = key === 'size' && {top: 0, right: 0, bottom: 0, left: 0};
-    if (key === 'width' || key === 'right') {
-      value = this.attr('width') || 0;
-    } else if (size) {
-      size.right = size.width = this.attr('width') || 0;
+  proto.getBoundingBox = function(transform) {
+    var box = {top: 0, right: 0, bottom: 0, left: 0};
+    box.right = box.width = this.attr('width') || 0;
+    box.bottom = box.height = this.attr('height') || 0;
+    if (transform) {
+      var topLeft = transform.transformPoint({x:0,y:0});
+      var bottomRight = transform.transformPoint({x:box.right, y:box.bottom});
+      box.top = topLeft.y;
+      box.left = topLeft.x;
+      box.right = bottomRight.x;
+      box.bottom = bottomRight.y;
+      box.width = box.right - box.left;
+      box.height = box.bottom - box.top;
     }
-    if (key === 'height' || key === 'bottom') {
-      value = this.attr('height') || 0;
-    } else if (size) {
-      size.bottom = size.height = this.attr('height') || 0;
-    }
-    if (key === 'top' || key === 'left') {
-      value = 0;
-    }
-
-    return size || value;
+    return box;
   };
 
   return Video;

@@ -1,7 +1,8 @@
 define([
   './asset_display_object',
-  '../tools'
-], function(AssetDisplayObject, tools) {
+  '../tools',
+  '../point'
+], function(AssetDisplayObject, tools, Point) {
   'use strict';
 
   var data = tools.descriptorData, accessor = tools.descriptorAccessor;
@@ -140,14 +141,14 @@ define([
   /**
    * Get computed dimensions of the bitmap
    *
-   * @param {String} key any of 'size', 'width', 'height', 'top', 'right', 'left', 'bottom'
-   * @returns {Object|Number} For the key 'size' it'll return an object with all
-   *  properties, otherwise it'll return a single number for the key specified.
+   * @param {Matrix} [transform=null] A transform to apply to all points
+   *    before computation.
+   * @returns {Object} an object with all box properties
    */
-  proto.getComputed = function(key) {
+  proto.getBoundingBox = function(transform) {
 
     var value,
-        size = key === 'size' && {top: 0, right: 0, bottom: 0, left: 0},
+        box = {top: 0, right: 0, bottom: 0, left: 0},
         naturalWidth = this._attributes._naturalWidth,
         naturalHeight = this._attributes._naturalHeight,
         attrWidth = this.attr('width'),
@@ -155,29 +156,31 @@ define([
         naturalRatio = naturalWidth / naturalHeight,
 
         // If one dimensions is not specified, then we use the other dimension
-        // and the ratio to calculate its size:
+        // and the ratio to calculate its box:
         width = attrWidth || (
           attrHeight != null ? naturalRatio * attrHeight : naturalWidth
         ) || 0,
         height = attrHeight || (
           attrWidth != null ? attrWidth / naturalRatio : naturalHeight
-        ) || 0;
+        ) || 0,
 
-    if (key === 'width' || key === 'right') {
-      value = width;
-    } else if (size) {
-      size.right = size.width = width;
-    }
-    if (key === 'height' || key === 'bottom') {
-      value = height;
-    } else if (size) {
-      size.bottom = size.height = height;
-    }
-    if (key === 'top' || key === 'left') {
-      value = 0;
+        topLeft,
+        bottomRight,
+        dimensions;
+
+    box.right = box.width = width;
+    box.bottom = box.height = height;
+
+    if (transform) {
+      topLeft = transform.transformPoint(new Point(0, 0));
+      bottomRight = transform.transformPoint(new Point(width, height));
+      box.top = topLeft.y;
+      box.left = topLeft.x;
+      box.right = bottomRight.x;
+      box.bottom = bottomRight.y;
     }
 
-    return size || value;
+    return box;
   };
 
   return Bitmap;

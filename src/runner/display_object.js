@@ -577,9 +577,28 @@ define([
       return this;
     },
 
-    getComputed: function(thing) {
-      var size = {top: 0, right: 0, bottom: 0, left: 0, width: 0, height: 0};
-      return thing === 'size' ? size : size[thing];
+    /**
+     * Computes bounding boxes and single data points of a display object.
+     *
+     * @param {Matrix} [transform=null] A transform to apply to all points
+     *    before computation.
+     * @returns {Object} an object with all box properties
+     */
+    getBoundingBox: function(transform) {
+      var x = 0, y = 0;
+      if (transform) {
+        var transformed = transform.transformPoint({x: 0, y: 0});
+        x = transformed.x;
+        y = transformed.y;
+      }
+      return {
+        top: y,
+        right: x,
+        bottom: y,
+        left: x,
+        width: 0,
+        height: 0
+      };
     },
 
     /**
@@ -761,7 +780,7 @@ define([
      */
     animate: function(duration, properties, options) {
       var animation = duration;
-      if (!(animation instanceof Animation || animation instanceof KeyframeAnimation)) {
+      if (/number|string/.test(typeof duration) || !(animation instanceof Animation || animation instanceof KeyframeAnimation)) {
         var clock = options && options.clock || this.stage;
         options || (options = {});
         if (!clock) { // not in the display list -- try to find parent timeline

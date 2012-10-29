@@ -34,7 +34,7 @@ define([
    * @param {Number} radius The arc's circle's radius
    * @param {Number} startAngle Start angle (radians) of the arc
    * @param {Number} endAngle End angle (radians) of the arc
-   * @param {Boolean} [false] antiClockwise Whether or not to progress in an
+   * @param {Boolean} [antiClockwise=false] Whether or not to progress in an
    *  anti-clockwise fashion
    */
   function Arc(x, y, radius, startAngle, endAngle, antiClockwise) {

@@ -66,8 +66,8 @@ define([
 
       var children = this.children;
       var numExistingChildren = children.length;
-      insertAt = arguments.length > 1 ?
-        min(insertAt >>> 0, numExistingChildren) : numExistingChildren;
+      insertAt = insertAt === void 0 ?
+        numExistingChildren : min(insertAt >>> 0, numExistingChildren);
 
       if (isChildArray) {
         children.splice.apply(children, [insertAt, 0].concat(child));
@@ -170,9 +170,10 @@ define([
    * Ready made methods that can be used by / mixed into objects owning a
    * display list and inherit from DisplayObject
    *
-   * @name display_list.methods
+   * @name DisplayList
+   * @mixin
    */
-  var methods = {
+  var methods = /** @lends DisplayList */ {
     /**
      * Activates the object and all of its children.
      *
@@ -198,11 +199,7 @@ define([
      * @return {this}
      */
     addChild: function(child, index) {
-      if (arguments.length === 1) {
-        this.displayList.add(child);
-      } else {
-        this.displayList.add(child, index);
-      }
+      this.displayList.add(child, index);
       return this;
     },
     /**
@@ -229,53 +226,51 @@ define([
       return this;
     },
 
-    getComputed: function(key) {
+    /**
+     * Returns dimensions/location of the DisplayList, calculated from its children
+     *
+     * @param {Matrix} [transform=null] A transform to apply to all points
+     *    before computation.
+     * @returns {Object} an object with all box properties
+     */
+    getBoundingBox: function(transform) {
+
       var children = this.displayList.children;
-      var isOffsetKey =
-        key === 'top' ||
-        key === 'right' ||
-        key === 'bottom' ||
-        key === 'left';
 
-      if (isOffsetKey) {
-        var attributeName = (key === 'top' || key === 'bottom') ? 'y' : 'x';
-        var compare = (key === 'top' || key === 'left') ? min : max;
-
-        return tools.reduce(children, function(current, child, i) {
-          var childValue = child.attr(attributeName) + child.getComputed(key);
-          if (i === 0) {
-            return childValue;
-          }
-          return compare(current, childValue);
-        }, 0);
-      } else {
-        var size = tools.reduce(children, function(size, child, i) {
-          var childSize = child.getComputed('size');
-          var childX = child.attr('x');
-          var childY = child.attr('y');
-
-          var isFirst = i === 0;
-
-          var childTop = childY + childSize.top;
-          size.top = isFirst ? childTop : min(size.top, childTop);
-
-          var childRight = childX + childSize.right;
-          size.right = isFirst ? childRight : max(size.right, childRight);
-
-          var childBottom = childY + childSize.bottom;
-          size.bottom = isFirst ? childBottom : max(size.bottom, childBottom);
-
-          var childLeft = childX + childSize.left;
-          size.left = isFirst ? childLeft : min(size.left, childLeft);
-
-          return size;
-        }, {top: 0, right: 0, bottom: 0, left: 0, width: 0, height: 0});
-
-        size.height = size.bottom - size.top;
-        size.width = size.right - size.left;
-
-        return key === 'size' ? size : size[key];
+      if (!children.length) {
+        return DisplayObject.prototype.getBoundingBox.call(this, transform);
       }
+
+      var size = tools.reduce(children, function(size, child, i) {
+        var childMatrix = child.attr('matrix').clone();
+        var childSize = child.getBoundingBox(
+          transform ? childMatrix.concat(transform) : childMatrix
+        );
+        var childX = child.attr('x');
+        var childY = child.attr('y');
+        childX = childY = 0;
+
+        var isFirst = i === 0;
+
+        var childTop = childY + childSize.top;
+        size.top = isFirst ? childTop : min(size.top, childTop);
+
+        var childRight = childX + childSize.right;
+        size.right = isFirst ? childRight : max(size.right, childRight);
+
+        var childBottom = childY + childSize.bottom;
+        size.bottom = isFirst ? childBottom : max(size.bottom, childBottom);
+
+        var childLeft = childX + childSize.left;
+        size.left = isFirst ? childLeft : min(size.left, childLeft);
+
+        return size;
+      }, {top: 0, right: 0, bottom: 0, left: 0, width: 0, height: 0});
+
+      size.height = size.bottom - size.top;
+      size.width = size.right - size.left;
+
+      return size;
     },
     getIndexOfChild: function(displayObject) {
       return this.displayList.children.indexOf(displayObject);

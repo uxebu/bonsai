@@ -78,6 +78,6 @@ function playerInit(player, config) {
       if (window.parent !== window) {
         window.parent.iframeDone();
       }
-    })
+    });
 
 }

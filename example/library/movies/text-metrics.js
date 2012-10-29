@@ -1,3 +1,7 @@
+/**
+ * text metrics
+ */
+
 
 function drawText(x, y, origin, text) {
   var t = new Text(text).attr({

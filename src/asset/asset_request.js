@@ -17,7 +17,7 @@ define([
    */
   function AssetRequest(request) {
 
-    var i, len, source, loadLevel, resources, loadLevel;
+    var resources, loadLevel;
 
     if (!request) {
       throw Error('AssetRequest needs at least a valid url.');

@@ -51,10 +51,17 @@ function(RendererController, AssetController, tools, URI, version) {
           urls[i] = baseUrl.resolveUri(url).toString();
         });
       }
+      if (typeof options.code === 'function') {
+        options.code = '(' + options.code.toString() + '());';
+      }
 
       var doc = typeof document === 'undefined' ? null : document;
       var context = new this.RunnerContext(this.runnerUrl, doc, options.baseUrl);
-      var renderer = new this.Renderer(node, width, height, options.allowEventDefaults, options.fpsLog);
+      var renderer = new this.Renderer(node, width, height, {
+        allowEventDefaults: options.allowEventDefaults,
+        fpsLog: options.fpsLog,
+        disableContextMenu: options.disableContextMenu
+      });
       var assetController = new this.AssetController();
 
       return new this.RendererController(renderer, assetController, context, options);
@@ -108,6 +115,9 @@ function(RendererController, AssetController, tools, URI, version) {
       }
       if ('baseUrl' in options) {
         this._baseUrl = URI.parse(options.baseUrl);
+      }
+      if ('renderer' in options) {
+        this.Renderer = options.renderer;
       }
       return this;
     },

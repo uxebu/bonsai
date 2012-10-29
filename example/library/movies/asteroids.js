@@ -1,4 +1,7 @@
-var player = new bonsai.Path()
+/**
+ * asteroids
+ */
+var player = new Path()
     .moveTo(0,-20)
     .lineBy(10,30)
     .lineBy(-20,0)
@@ -35,7 +38,7 @@ function move(object, speed, direction) {
 
 function fireBullet () {
     var rotation = Math.PI * direction / 180 + Math.PI / 2;
-    var bulletPath = new bonsai.Path()
+    var bulletPath = new Path()
         .moveTo(0,0)
         .lineTo(0,10)
         .attr({

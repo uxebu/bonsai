@@ -1,5 +1,7 @@
 /*
 
+animation morph2
+
 This is a demonstration of morphing between two shapes originally
 of different segment lengths. The toCurves method is passed the intended
 number of curves. We insert NULL curves to satisfy this -- i.e. curves
@@ -9,8 +11,8 @@ that don't do anything, but can be animated by the Animation class
 
 */
 
-var a = Path.rect(10, 10, 400, 150).attr('fillColor', 'red');
-var b = Path.star(100, 100, 100, 5).attr('fillColor', 'blue');
+var a = new Rect(10, 10, 400, 150).attr('fillColor', 'red');
+var b = new Star(100, 100, 100, 5).attr('fillColor', 'blue');
 
 var numberOfCurves = Math.max(
   a.attr('segments').length,
@@ -28,7 +30,7 @@ var animation = new Animation('3s', {
   y: b.attr('y')
 });
 
-animation.setSubject(a);
+animation.addSubject(a);
 a.addTo(stage);
 
 animation.play();
