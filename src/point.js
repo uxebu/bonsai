@@ -58,7 +58,6 @@ define(function() {
    * @returns {Point} The current Point instance
    */
   proto.normalize = function(length) {
-    var curlen = sqrt(this.x * this.x + this.y * this.y);
     var fact = length / this.length;
     this.x = this.x * fact;
     this.y = this.y * fact;
