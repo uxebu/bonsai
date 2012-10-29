@@ -1,6 +1,7 @@
 v0.4.2
 -------------------
-
+ * Add support for an `interactive` attribute on all DisplayObjects which allows
+ pointer-events to be received (true) or to pass through (false)
 
 v0.4.1 / 2012-10-26
 -------------------

@@ -285,6 +285,7 @@ define([
       matrix: accessor(getMatrix, setMatrix, true),
       _filters: data([], true),
       filters: accessor(getFilters,setFilters, true),
+      interactive: data(true, true),
       _opacity: data(1, true),
       opacity: accessor(getOpacity, setOpacity, true),
       _origin: data(new Point()),
@@ -319,7 +320,8 @@ define([
       maskId: '_maskId',
       cursor: '_cursor',
       fillRule: 'fillRule',
-      visible: 'visible'
+      visible: 'visible',
+      interactive: 'interactive'
     };
 
     /*
