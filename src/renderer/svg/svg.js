@@ -810,7 +810,7 @@ define([
         } else {
           element.setAttribute(i.slice(4), attributes[i]);
         }
-      } else if(/^css_/.test(i) && typeof attributes[i] !== 'undefined') {
+      } else if(/^css_/.test(i) && attributes[i] != null) {
         element.style[i.slice(4)] = attributes[i].toString().replace(/\{\{prefix\}\}/g, fontPrefix);
       }
     }

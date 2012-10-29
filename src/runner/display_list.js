@@ -170,9 +170,10 @@ define([
    * Ready made methods that can be used by / mixed into objects owning a
    * display list and inherit from DisplayObject
    *
-   * @name display_list.methods
+   * @name DisplayList
+   * @mixin
    */
-  var methods = {
+  var methods = /** @lends DisplayList */ {
     /**
      * Activates the object and all of its children.
      *
