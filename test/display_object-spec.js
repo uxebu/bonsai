@@ -1,11 +1,12 @@
 define([
   'bonsai/runner/display_object',
+  'bonsai/runner/group',
   'bonsai/event_emitter',
   'bonsai/runner/matrix',
   'bonsai/tools',
   'common/mock',
   'common/displayobject-lifecycle'
-], function(DisplayObject, EventEmitter, Matrix, tools, mock, testLifeCycle) {
+], function(DisplayObject, Group, EventEmitter, Matrix, tools, mock, testLifeCycle) {
   describe('DisplayObject', function() {
     testLifeCycle(function() {
       return new DisplayObject();
@@ -206,6 +207,44 @@ define([
           expect(
             new DisplayObject().getBoundingBox()
           ).toEqual({top: 0, right: 0, bottom: 0, left: 0, width: 0, height: 0});
+        });
+      });
+
+      describe('getAbsoluteBoundingBox', function() {
+        it('Gets absolute bbox relative to top-most ancestor', function() {
+          var a = new Group().attr('scaleX', 2);
+          var b = new Group().attr('scaleY', 1.5).attr('scaleX', 2).attr('x', 20);
+          var obj = new DisplayObject();
+          b.addTo(a);
+          obj.addTo(b);
+          obj.attr({
+            x: 100,
+            y: 100
+          });
+          expect(obj.getAbsoluteBoundingBox()).toEqual({
+            top: 150,
+            left: 440,
+            bottom: 150,
+            right: 440,
+            width: 0,
+            height: 0
+          });
+        });
+      });
+
+      describe('getAbsoluteMatrix', function() {
+        it('Gets the matrix of the DisplayObject concat\'d with all ancestors\' matrices', function() {
+          var a = new Group().attr('scaleX', 2);
+          var b = new Group().attr('scaleY', 1.5).attr('scaleX', 2).attr('x', 20);
+          var obj = new DisplayObject();
+          b.addTo(a);
+          obj.addTo(b);
+          obj.attr({
+            x: 100,
+            y: 100
+          });
+          var m = obj.getAbsoluteMatrix();
+          expect(m).toEqual(new Matrix(4, 0, 0, 1.5, 440, 150));
         });
       });
 
