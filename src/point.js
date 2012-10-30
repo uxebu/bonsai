@@ -159,6 +159,23 @@ define(function() {
     return sqrt(hside * hside + vside * vside);
   };
 
+
+  /**
+   * Returns the angle in radians or degrees between pt1 and pt2
+   *
+   * @param {Point} toPoint
+   * @param {Boolean} [asDegrees=false]
+   * @returns {Number} angle
+   */
+  proto.angle = function(toPoint, asDegrees) {
+    var radians = Math.atan2(this.y - toPoint.y, this.x - toPoint.x);
+    if (asDegrees) {
+      return radians * 180 / Math.PI;
+    } else {
+      return radians;
+    }
+  };
+
   // static methods
 
   /**
