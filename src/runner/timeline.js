@@ -31,11 +31,10 @@ define([
      * Increments the frame
      */
     incrementFrame: function() {
-      if (this.isPlaying) {
-        // If length if not defined, we we assume an infinite length.
-        var length = this._length == null ? Infinity : this._length;
-        this.currentFrame = (this.currentFrame + 1) % length || 0;
-      }
+      // If length if not defined, we we assume an infinite length.
+      var length = this._length == null ? Infinity : this._length;
+      this.currentFrame = (this.currentFrame + 1) % length || 0;
+      return this;
     },
 
     /**
