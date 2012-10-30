@@ -34,6 +34,10 @@ define([
     return dom;
   };
 
+  /** 
+   * Creates a new layer for resources (containing a Defs element)
+   * Also marks that layer as the resources layer with a `isResourcesSVG` flag
+   */
   proto.getResourcesSVGLayer = function() {
     var defs = createSVGElement('defs');
     var svgLayer = this.getSVGLayer();
@@ -112,16 +116,25 @@ define([
     return this.insertLayerBefore(newLayer, null);
   };
 
+  /** 
+   * Adds a new layer before another layer
+   */
   proto.addLayerBefore = function(type, layer) {
     var newLayer = this.createLayer(type);
     return this.insertLayerBefore(newLayer, layer);
   };
 
+  /** 
+   * Adds a new layer after another layer
+   */
   proto.addLayerAfter = function(type, layer) {
     var index = this.layers.indexOf(layer);
     return this.addLayerBefore(type, this.layers[index + 1]);
   };
 
+  /** 
+   * Creates a layer of the specified type
+   */
   proto.createLayer = function(type) {
     if (type === 'dom') {
       return new DOMLayer(this);
@@ -130,6 +143,9 @@ define([
     }
   };
 
+  /** 
+   * Inserts a layer before another layer
+   */
   proto.insertLayerBefore = function(layer, refLayer) {
 
     if (refLayer) {
@@ -145,6 +161,9 @@ define([
 
   };
 
+  /** 
+   * Inserts a layer after another layer
+   */
   proto.insertLayerAfter = function(layer, refLayer) {
     var index = this.layers.indexOf(refLayer);
     return this.insertLayerBefore(layer, this.layers[index + 1]);
