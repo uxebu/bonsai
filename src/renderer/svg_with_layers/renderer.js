@@ -189,9 +189,9 @@ define([
                 var matrix = tools.mixin({}, value);
 
                 // Apply origin of @ top-left of the group/movie:
-                dom.style.transformOrigin =
+                /*dom.style.transformOrigin =
                   dom.style[vendorPrefix + 'TransformOrigin'] = 
-                    value.tx + 'px ' + value.ty + 'px';
+                    value.tx + 'px ' + value.ty + 'px';*/
 
                 // Make matrix properties accurate to 7 decimal places.
                 // This is to avoid numbers being so small that they use 
@@ -344,7 +344,6 @@ define([
           element.dom.setAttribute('data-bs-id', id);
         } else if (type === 'Group' || type === 'Movie') {
           element = display[id] = new DisplayGroup(null, id);
-          //element.dom.displayG
         } else {
           element = display[id] = new SVGElement(
             createSVGElement(typesToTags[type], id)
@@ -499,10 +498,8 @@ define([
           el.parentDisplayLayer = parent;
 
           if (parent.isDisplayGroup) {
-              console.log(':>', parent.tx, parent.ty);
             parent.insertLayerBefore(el, null);
           } else {
-            console.log('^:', parent, el)
             parent.appendee.appendChild( el.dom );
           }
         }
@@ -518,8 +515,6 @@ define([
 
       }
     }
-
-    //this._logFrame();
 
     this.emit('canRender');
 
@@ -782,20 +777,6 @@ define([
         css = attributes.css,
         id = message.id,
         parent = this.display[message.parent];
-
-    //if (element._root) {
-      // Make sure top-level DOM element's width and height are applied
-      // to the containing <foreignObject>. We don't want the <foreignObject>
-      // to be any bigger than it has to be.
-      if ('css_width' in attributes && /px$/.test(attributes.css_width)) {
-        element.setAttribute('width', attributes.css_width);
-      }
-      if ('css_height' in attributes && /px$/.test(attributes.css_height)) {
-        element.setAttribute('height', attributes.css_height);
-        // Save height for the forced repaint below:
-        element._height = attributes.css_height;
-      }
-    //}
 
     // Mark the element as one with a corresponding BS DOMElement object
     element._isBSDOMElement = true;
