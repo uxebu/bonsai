@@ -90,11 +90,11 @@ define([
       }, { subjects: subject });
       // Regardless of progress passed, our custom easing function always
       // returns .5, meaning that y should always be half way between 0 and -20
-      animation._step(0);
+      animation.step(0);
       expect(subject.attr().y).toBe(-10);
-      animation._step(1);
+      animation.step(1);
       expect(subject.attr().y).toBe(-10);
-      animation._step(.8);
+      animation.step(.8);
       expect(subject.attr().y).toBe(-10);
 
       var subject = wrappedSubject({ y: 0 });
@@ -107,11 +107,11 @@ define([
       }, { subjects: subject });
       // Regardless of progress passed, our custom easing function always
       // returns .5, meaning that y should always be half way between 0 and -20
-      animation._step(0);
+      animation.step(0);
       expect(subject.attr().y).toBe(10);
-      animation._step(1);
+      animation.step(1);
       expect(subject.attr().y).toBe(60);
-      animation._step(.8);
+      animation.step(.8);
       expect(subject.attr().y).toBe(50);
     });
 

@@ -166,8 +166,8 @@ define([
       return this;
     },
 
-    /** 
-     * Event listener for the clock's tick event, delegates to _step()
+    /**
+     * Event listener for the clock's tick event, delegates to step()
      * @private
      */
     _onStep: function(_, frameNumber, timelineIsFinished) {
@@ -186,7 +186,7 @@ define([
             this.frame + ((frameNumber - this.prevFrame) || 1)
           ) : this.frame + 1;
 
-      this._step(frame / duration);
+      this.step(frame / duration);
 
       if (
         (this.isTimelineBound && timelineIsFinished) ||
@@ -202,16 +202,16 @@ define([
         }
         return;
       }
-      
+
       this.prevFrame = frameNumber;
     },
 
-    /** 
+    /**
      * Runs a single step of the keyframe-animation, setting changed values
      * on their respective subjects
      * @private
      */
-    _step: function(progress) {
+    step: function(progress) {
 
       var realProgress = progress;
 
@@ -227,7 +227,7 @@ define([
       // assume that we can continue with progress > 1
       if (phaseProgress > 1 && this.currentTweenIndex + 1 < tweensLength) {
         this.currentTweenIndex += 1;
-        return this._step(realProgress);
+        return this.step(realProgress);
       }
 
       var subjects = this.subjects;
