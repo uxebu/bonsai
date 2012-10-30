@@ -164,7 +164,7 @@ define(function() {
    * Returns the angle in radians or degrees between pt1 and pt2
    *
    * @param {Point} toPoint
-   * @param {asDegrees} [boolean=false]
+   * @param {Boolean} [asDegrees=false]
    * @returns {Number} angle
    */
   proto.angle = function(toPoint, asDegrees) {
