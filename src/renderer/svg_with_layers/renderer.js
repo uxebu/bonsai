@@ -465,12 +465,13 @@ define([
                 // If el is not the only child of its current layer then we
                 // create a new layer at the right position and insert el
                 // into that
-                var newLayer = el.parentDisplayGroup.addLayerBefore(
+                var newLayer = nextEl.parentDisplayGroup.addLayerBefore(
                   isDOM ? 'dom' : 'svg',
                   nextLayer
                 );
 
                 el.parentDisplayLayer = newLayer;
+                el.parentDisplayGroup = nextEl.parentDisplayGroup;
 
                 // Now insert el into new DOMLayer/SVGLayer:
                 newLayer.appendee.appendChild(el.dom);

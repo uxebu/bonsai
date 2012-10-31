@@ -465,6 +465,35 @@ define([
 
       });
 
+      it('Inserts DOMElement between two paths', function() {
+        testStructure(
+          [
+            { type: 'Path', id: 1, attributes: {}, parent: 0 },
+            { type: 'Path', id: 2, attributes: {}, parent: 0 },
+            { type: 'DOMElement', id: 3, next: 2, parent: 0, attributes: {nodeName:'p'} }
+          ],
+          _DisplayGroup([
+            _SVGLayer([
+              _SVGGroup(),
+              _SVGDefs()
+            ]),
+            _SVGLayer([
+              _SVGGroup([
+                _SVGPath({id: 1})
+              ])
+            ]),
+            _DOMLayer([
+              _DOMElement({id: 3})
+            ]),
+            _SVGLayer([
+              _SVGGroup([
+                _SVGPath({id: 2})
+              ])
+            ])
+          ])
+        );
+      });
+
     });
 
     describe('Moving objects', function() {
