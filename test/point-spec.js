@@ -103,6 +103,24 @@ define([
       });
     });
 
+    describe('angle', function() {
+
+      it('Returns the radians between two points', function() {
+        var a = new Point(0, 0),
+            b = new Point(180, 180),
+            radians = Math.atan2(0 - 180, 0 - 180);
+        expect(a.angle(b)).toBe(radians);
+      });
+
+      it('Returns the angle between two points', function() {
+        var a = new Point(0, 0),
+            b = new Point(-180, -180),
+            degrees = Math.atan2(0 - -180, 0 - -180)*180/Math.PI;
+        expect(a.angle(b, true)).toBe(degrees);
+      });
+
+    });
+
     // Linear Interpolation between two points a and b
     describe('lerp', function() {
       it('it is a class method', function() {
