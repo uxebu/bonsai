@@ -41,6 +41,14 @@ require([
       expect(a.composeRenderMessage().attributes.time).not.toBeDefined();
     });
 
+    it('should send `time` to the renderer for `play(0)`', function() {
+      var a = new MediaDisplayObject();
+      a.attr('time', 2); // needs to be different from 0;
+
+      a.play(0);
+      expect(a.composeRenderMessage().attributes.time).toBe(0);
+    });
+
     it('Can play(time)', function() {
       var a = new MediaDisplayObject();
       expect(a.attr('playing')).toBe(false);
