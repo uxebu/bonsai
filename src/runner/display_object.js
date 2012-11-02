@@ -86,13 +86,15 @@ define([
   }
 
   function setX(x) {
-    var s = this._scaleX;
-    if (s === 1) {
-      this._matrix.tx = x;
-    } else {
-      this._matrix.tx += x - this.matrix.tx;
+    if (isfinite(x)) {
+      var s = this._scaleX;
+      if (s === 1) {
+        this._matrix.tx = x;
+      } else {
+        this._matrix.tx += x - this.matrix.tx;
+      }
+      this._owner._mutatedAttributes.matrix = true;
     }
-    this._owner._mutatedAttributes.matrix = true;
   }
 
   function getY() {
@@ -100,13 +102,15 @@ define([
   }
 
   function setY(y) {
-    var s = this._scaleY;
-    if (s === 1) {
-      this._matrix.ty = y;
-    } else {
-      this._matrix.ty += y - this.matrix.ty;
+    if (isfinite(y)) {
+      var s = this._scaleY;
+      if (s === 1) {
+        this._matrix.ty = y;
+      } else {
+        this._matrix.ty += y - this.matrix.ty;
+      }
+      this._owner._mutatedAttributes.matrix = true;
     }
-    this._owner._mutatedAttributes.matrix = true;
   }
 
   function getScaleX() {
