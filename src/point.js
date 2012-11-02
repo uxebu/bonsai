@@ -159,6 +159,17 @@ define(function() {
     return sqrt(hside * hside + vside * vside);
   };
 
+
+  /**
+   * Returns the angle in radians of the slope between pt1 and pt2
+   *
+   * @param {Point} toPoint
+   * @returns {Number} angle
+   */
+  proto.angle = function(toPoint) {
+    return Math.atan2(this.y - toPoint.y, this.x - toPoint.x);
+  };
+
   // static methods
 
   /**
