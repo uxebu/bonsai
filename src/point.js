@@ -161,19 +161,13 @@ define(function() {
 
 
   /**
-   * Returns the angle in radians or degrees between pt1 and pt2
+   * Returns the angle in radians of the slope between pt1 and pt2
    *
    * @param {Point} toPoint
-   * @param {Boolean} [asDegrees=false]
    * @returns {Number} angle
    */
-  proto.angle = function(toPoint, asDegrees) {
-    var radians = Math.atan2(this.y - toPoint.y, this.x - toPoint.x);
-    if (asDegrees) {
-      return radians * 180 / Math.PI;
-    } else {
-      return radians;
-    }
+  proto.angle = function(toPoint) {
+    return Math.atan2(this.y - toPoint.y, this.x - toPoint.x);
   };
 
   // static methods
