@@ -134,5 +134,32 @@ define([
       });
     });
 
+    function createTouchEvent(which) {
+      var evt = document.createEvent('UIEvent');
+      evt.initEvent(which, true, true);
+      evt.view = window;
+      evt.altKey = false;
+      evt.ctrlKey = false;
+      evt.shiftKey = false;
+      evt.metaKey = false;
+      evt.touches = [{identifier:1}];
+      evt.changedTouches = evt.touches;
+      return evt;
+    }
+
+    describe('handleEvent', function() {
+      it('should only fire one `click` for touchstart+touchend', function() {
+        var numCalls = 0;
+        var listener = function(e) { if (e.type=='click') numCalls++; };
+        var renderer = createSvgRenderer();
+        renderer.on('userevent', listener);
+        renderer.svg.root.dispatchEvent(createTouchEvent('touchstart'));
+        renderer.svg.root.dispatchEvent(createTouchEvent('touchend'));
+        expect(numCalls)
+          .toBe(1);
+        renderer.removeListener('userevent', listener);
+      });
+    });
+
   });
 });
