@@ -587,7 +587,7 @@ define([
       return this;
     },
 
-    /** 
+    /**
      * Gets the matrix of the DisplayObject combined with all ancestor matrices
      *
      * @returns {Matrix} The resulting matrix
@@ -601,7 +601,7 @@ define([
       return matrix;
     },
 
-    /** 
+    /**
      * Computed the absolute bounding box relative to the top-most ancestor
      *
      * @returns {Object} an object with all box properties
@@ -643,6 +643,7 @@ define([
      */
     destroy: function() {
       return this.
+        emit('destroy', this). // do before removing the listeners ;)
         removeAllListeners().
         remove();
     },
