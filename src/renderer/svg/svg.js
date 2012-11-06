@@ -146,6 +146,9 @@ define([
               el.removeAttribute('data-custom');
             }
             break;
+          case 'interactive':
+            el.style.pointerEvents = value ? 'inherit' : 'none';
+            break;
           case 'fontFamily':
             value = fontIDs[value] || value;
             if (value != null) {

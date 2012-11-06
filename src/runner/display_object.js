@@ -289,6 +289,7 @@ define([
       matrix: accessor(getMatrix, setMatrix, true),
       _filters: data([], true),
       filters: accessor(getFilters,setFilters, true),
+      interactive: data(true, true),
       _opacity: data(1, true),
       opacity: accessor(getOpacity, setOpacity, true),
       _origin: data(new Point()),
@@ -325,6 +326,7 @@ define([
       cursor: '_cursor',
       fillRule: 'fillRule',
       visible: 'visible',
+      interactive: 'interactive',
       data: 'data'
     };
 
@@ -588,11 +590,36 @@ define([
     },
 
     /**
+     * Gets the matrix of the DisplayObject combined with all ancestor matrices
+     *
+     * @returns {Matrix} The resulting matrix
+     */
+    getAbsoluteMatrix: function() {
+      var matrix = this.attr('matrix').clone();
+      var parent = this;
+      while ((parent = parent.parent) && parent.id !== 0) {
+        matrix.concat(parent.attr('matrix'));
+      }
+      return matrix;
+    },
+
+    /**
+     * Computed the absolute bounding box relative to the top-most ancestor
+     *
+     * @returns {Object} an object with all box properties
+     *  (left, top, right, bottom, width, height)
+     */
+    getAbsoluteBoundingBox: function() {
+      return this.getBoundingBox( this.getAbsoluteMatrix() );
+    },
+
+    /**
      * Computes bounding boxes and single data points of a display object.
      *
      * @param {Matrix} [transform=null] A transform to apply to all points
      *    before computation.
      * @returns {Object} an object with all box properties
+     *  (left, top, right, bottom, width, height)
      */
     getBoundingBox: function(transform) {
       var x = 0, y = 0;
