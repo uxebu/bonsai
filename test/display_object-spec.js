@@ -328,5 +328,30 @@ define([
         expect(parent.addChild).toHaveBeenCalledWith(displayObject, index);
       });
     });
+
+    describe('destroy', function(){
+      var displayObject, parent;
+      beforeEach(function() {
+        parent = new DisplayObject();
+        displayObject= new DisplayObject().addTo(parent);
+      });
+
+      it('removes the displayobject from its parent', function(){
+        displayObject.destroy();
+        expect(displayObject.parent).toBeOfType(null);
+      });
+
+      it('removes the displayobject from its parent', function(){
+        displayObject.destroy();
+        expect(displayObject.parent).toBeOfType(null);
+      });
+
+      it('removes the displayobject from its parent', function(){
+        var spy = jasmine.createSpy();
+        displayObject.on('destroy', this, spy);
+        displayObject.destroy();
+        expect(spy).toHaveBeenCalledWith(this);
+      });
+    });
   });
 });
