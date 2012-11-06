@@ -174,6 +174,20 @@ define([
           expect(m[p]).toBeCloseTo(m2[p], 10);
         });
       });
+
+      describe('interactive', function() {
+        it('should be set to true by default', function() {
+          var d = new DisplayObject();
+          expect(d.attr('interactive')).toBe(true);
+        });
+        it('should be settable/gettable', function() {
+          var d = new DisplayObject();
+          d.attr('interactive', true);
+          expect(d.attr('interactive')).toBe(true);
+          d.attr('interactive', false);
+          expect(d.attr('interactive')).toBe(false);
+        });
+      });
     });
 
     describe('#getBoundingBox()', function() {

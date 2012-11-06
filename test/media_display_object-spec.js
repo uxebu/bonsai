@@ -28,12 +28,25 @@ require([
       expect(a.play()).toBe(a);
     });
 
+    it('play(time) sends `time` to the renderer', function() {
+      var a = new MediaDisplayObject();
+      var time = 2; // cannot be 0, that's the initial value
+      a.play(time);
+      expect(a.composeRenderMessage().attributes.time).toBe(time);
+    });
+
     it('play(undefined) does not send `time` to the renderer', function() {
       var a = new MediaDisplayObject();
-      a.play(0);
-      expect(a.composeRenderMessage().attributes.time).toBe(0);
       a.play();
       expect(a.composeRenderMessage().attributes.time).not.toBeDefined();
+    });
+
+    it('should send `time` to the renderer for `play(0)`', function() {
+      var a = new MediaDisplayObject();
+      a.attr('time', 2); // needs to be different from 0;
+
+      a.play(0);
+      expect(a.composeRenderMessage().attributes.time).toBe(0);
     });
 
     it('Can play(time)', function() {

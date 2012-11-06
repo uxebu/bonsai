@@ -253,8 +253,10 @@ define([
 
         movie = movies[i];
         if (movie) {
+          if (movie.isPlaying) {
+            moviesToIncrement.push(movie);
+          }
           movie.emitFrame();
-          moviesToIncrement.push(movie);
         }
 
         i += 1;
