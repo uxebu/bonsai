@@ -86,13 +86,15 @@ define([
   }
 
   function setX(x) {
-    var s = this._scaleX;
-    if (s === 1) {
-      this._matrix.tx = x;
-    } else {
-      this._matrix.tx += x - this.matrix.tx;
+    if (isfinite(x)) {
+      var s = this._scaleX;
+      if (s === 1) {
+        this._matrix.tx = x;
+      } else {
+        this._matrix.tx += x - this.matrix.tx;
+      }
+      this._owner._mutatedAttributes.matrix = true;
     }
-    this._owner._mutatedAttributes.matrix = true;
   }
 
   function getY() {
@@ -100,13 +102,15 @@ define([
   }
 
   function setY(y) {
-    var s = this._scaleY;
-    if (s === 1) {
-      this._matrix.ty = y;
-    } else {
-      this._matrix.ty += y - this.matrix.ty;
+    if (isfinite(y)) {
+      var s = this._scaleY;
+      if (s === 1) {
+        this._matrix.ty = y;
+      } else {
+        this._matrix.ty += y - this.matrix.ty;
+      }
+      this._owner._mutatedAttributes.matrix = true;
     }
-    this._owner._mutatedAttributes.matrix = true;
   }
 
   function getScaleX() {
@@ -543,6 +547,7 @@ define([
     attr: function(attr, value) {
       var copy,
           name,
+          hasChange = false,
           attributes = this._attributes;
 
       switch (arguments.length) {
@@ -561,21 +566,24 @@ define([
               attributes[attr] : void 0;
           }
           for (name in attr) {
-            if (name in attributes && name.charAt(0) != '_') {
-              attributes[name] = attr[name];
-              this._mutatedAttributes[name] = true;
+            value = attr[name]; // value parameter is unused in this branch
+            if (name in attributes && name.charAt(0) != '_' && attributes[name] !== value) {
+              attributes[name] = value;
+              hasChange = this._mutatedAttributes[name] = true;
             }
           }
           break;
 
         case 2: // set at single attribute
-          if (attr in attributes && attr.charAt(0) != '_') {
+          if (attr in attributes && attr.charAt(0) != '_' && attributes[attr] !== value) {
             attributes[attr] = value;
-            this._mutatedAttributes[attr] = true;
+            hasChange = this._mutatedAttributes[attr] = true;
           }
           break;
       }
-      this.markUpdate();
+      if (hasChange) {
+        this.markUpdate();
+      }
       return this;
     },
 
