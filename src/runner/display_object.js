@@ -645,6 +645,7 @@ define([
      */
     destroy: function() {
       return this.
+        emit('destroy', this). // do before removing the listeners ;)
         removeAllListeners().
         remove();
     },

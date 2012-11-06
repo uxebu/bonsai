@@ -64,7 +64,7 @@ movieList = {
     'content-creation.js',
     'business-card.js',
     'blobs-by-manfred.js',
-    'svg-lion.js'
+    'svg-tiger.js'
   ],
   'Events': [
     'event-click.js',
