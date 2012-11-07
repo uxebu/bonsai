@@ -82,6 +82,7 @@ define([
       Arc: Arc,
 
       DisplayList: displayList.DisplayList,
+      EventEmitter: EventEmitter,
 
       Point: Point,
       color: color,

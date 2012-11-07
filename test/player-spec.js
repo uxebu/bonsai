@@ -1,7 +1,9 @@
 define([
   'bonsai/bootstrapper/player',
+  'bonsai/event_emitter',
+  'bonsai/tools',
   'bonsai/uri'
-], function (player, URI) {
+], function (player, EventEmitter, tools, URI) {
   'use strict';
 
   var MockAssetControllerConstructor,
@@ -56,6 +58,14 @@ define([
 
     it('has a defaultRunnerOptions property which is an object', function() {
       expect(player.defaultRunnerOptions).toBeInstanceOf(Object);
+    });
+
+    it('exposes the EventEmiiter', function() {
+      expect(player.EventEmitter).toBe(EventEmitter);
+    });
+
+    it('exposes tools', function() {
+      expect(player.tools).toBe(tools);
     });
 
     describe('.baseUrl()', function () {

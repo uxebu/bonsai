@@ -1,18 +1,21 @@
 define([
+  '../event_emitter',
   '../renderer/renderer_controller',
   '../asset/asset_controller',
   '../tools',
   '../uri',
   '../version'
 ],
-function(RendererController, AssetController, tools, URI, version) {
+function(EventEmitter, RendererController, AssetController, tools, URI, version) {
   'use strict';
 
   var player = {
     version: version,
 
     AssetController: AssetController,
+    EventEmitter: EventEmitter,
     RendererController: RendererController,
+    tools: tools,
 
     defaultRunnerOptions: {},
     _addDefaultRunnerOptions: function(options) {
