@@ -1,7 +1,12 @@
 v0.4.2
 -------------------
-
-* Setting an attribute to the actual value won't trigger a render message.
+ * Add support for an `interactive` attribute on all DisplayObjects which allows
+   pointer-events to be received (true) or to pass through (false)
+ * Setting an attribute to the actual value won't trigger a render message.
+ * Added support for getAbsoluteBoundingBox and getAbsoluteMatrix on
+   DisplayObject
+ * Added an destroy event for DisplayObjects, which is fired on a displayobject when
+   destroy is called on it.
 
 v0.4.1 / 2012-10-26
 -------------------

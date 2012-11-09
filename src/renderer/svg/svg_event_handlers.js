@@ -64,8 +64,8 @@ define([
             event = cloneBasicEvent(event);
             this.emit('userevent', event, trueTargetId);
           }
-          if (!touchData.touchMoveHappened) {
-            // If the touch hasn't moved then it is a click:
+          if (!isMulti && !touchData.touchMoveHappened) {
+            // If the touch hasn't moved then it is a click (only for the first finger):
             event = cloneBasicEvent(event);
             event.type = 'click';
             this.emit('userevent', event, targetId);
