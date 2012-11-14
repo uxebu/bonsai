@@ -33,6 +33,10 @@ function(EventEmitter, RendererController, AssetController, tools, URI, version)
     },
 
     createRenderer: function(node, width, height, options) {
+      if (!(node instanceof Element)) {
+        node = document.getElementById(node);
+      }
+
       if (!options) {
         options = {};
       }
