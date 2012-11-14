@@ -33,7 +33,7 @@ function(EventEmitter, RendererController, AssetController, tools, URI, version)
     },
 
     createRenderer: function(node, width, height, options) {
-      if (!(node instanceof Element)) {
+      if (typeof node === 'string') {
         node = document.getElementById(node);
       }
 

@@ -144,13 +144,18 @@ define([
           });
         });
 
-        it('node when given a DOM id to the renderer', function () {
+        it('passes a node when given a DOM id to the renderer', function () {
           var el = document.createElement('div'), node = 'node', width = 100, height = 100, options = {};
+
+          // create fixture
           el.setAttribute('id', node);
+          document.body.appendChild(el);
 
-          funcSetup(node);
+          funcSetup(node, width, height, options);
 
-          expect(MockRendererConstructor).toHaveBeenCalledWith(node, width, height, { });
+          expect(MockRendererConstructor).toHaveBeenCalledWith(el, width, height, { });
+          // cleanup
+          document.body.removeChild(el);
         })
 
         it('passes an url and a document to the runner', function () {
