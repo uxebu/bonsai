@@ -144,6 +144,15 @@ define([
           });
         });
 
+        it('node when given a DOM id to the renderer', function () {
+          var el = document.createElement('div'), node = 'node', width = 100, height = 100, options = {};
+          el.setAttribute('id', node);
+
+          funcSetup(node);
+
+          expect(MockRendererConstructor).toHaveBeenCalledWith(node, width, height, { });
+        })
+
         it('passes an url and a document to the runner', function () {
           var runnerUrl = 'an/arbitrary/url';
           player.setup({runnerUrl:runnerUrl});
@@ -166,6 +175,7 @@ define([
           expect(args[3]).toBeInstanceOf(Object /* these are the options */);
           expect(args[3]).toHaveProperties('baseUrl');
         });
+
 
         describe('defaultRunnerOptions', function() {
           var originalOptions;
