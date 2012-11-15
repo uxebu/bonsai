@@ -7,6 +7,7 @@ v0.4.2
    DisplayObject
  * Added an destroy event for DisplayObjects, which is fired on a displayobject when
    destroy is called on it.
+ * Allow for an ID string to be passed to as the first argument to `run`
 
 v0.4.1 / 2012-10-26
 -------------------
