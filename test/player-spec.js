@@ -144,20 +144,6 @@ define([
           });
         });
 
-        it('passes a node when given a DOM id to the renderer', function () {
-          var el = document.createElement('div'), node = 'node', width = 100, height = 100, options = {};
-
-          // create fixture
-          el.setAttribute('id', node);
-          document.body.appendChild(el);
-
-          funcSetup(node, width, height, options);
-
-          expect(MockRendererConstructor).toHaveBeenCalledWith(el, width, height, { });
-          // cleanup
-          document.body.removeChild(el);
-        })
-
         it('passes an url and a document to the runner', function () {
           var runnerUrl = 'an/arbitrary/url';
           player.setup({runnerUrl:runnerUrl});
@@ -285,6 +271,21 @@ define([
 
         return player.run(node, options);
       })();
+
+
+      it('passes a node when given a DOM id to the renderer', function () {
+        var el = document.createElement('div'), node = 'node', width = 100, height = 100, options = { width: width, height: height };
+
+        // create fixture
+        el.setAttribute('id', node);
+        document.body.appendChild(el);
+
+        player.run(node, options);
+
+        expect(MockRendererConstructor).toHaveBeenCalledWith(el, width, height, {});
+        // cleanup
+        document.body.removeChild(el);
+      });
 
     });
 

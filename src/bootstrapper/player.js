@@ -77,7 +77,7 @@ function(EventEmitter, RendererController, AssetController, tools, URI, version)
     /**
      * Loads a bonsai movie and embeds it into a HTML document.
      *
-     * @param {HTMLElement} node The html element to replace with the movie
+     * @param {HTMLElement|String} node The html element or DOM id to inject the movie into
      * @param {string} url The URL to the bonsai script to load
      * @param {Number} [options.width] The width of the movie
      * @param {Number} [options.height] The height of the movie
@@ -88,6 +88,9 @@ function(EventEmitter, RendererController, AssetController, tools, URI, version)
      * @returns {Movie}
      */
     run: function(node, url, options) {
+      if (typeof node === 'string') {
+        node = document.getElementById(node);
+      }
 
       if (url && typeof url != 'string') {
         options = url;
