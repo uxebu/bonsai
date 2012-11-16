@@ -47,6 +47,7 @@ define([
     opacity: 'opacity',
     fillOpacity: 'fill-opacity',
     strokeOpacity: 'stroke-opacity',
+    strokeDashArray: 'stroke-dasharray',
     fontSize: 'font-size',
     fontWeight: 'font-weight',
     fontStyle: 'font-style',

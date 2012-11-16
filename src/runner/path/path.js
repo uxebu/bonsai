@@ -101,6 +101,19 @@ define([
     this._strokeColor = parseColor(color, this._strokeColor);
   }
 
+  var getStrokeDashArray = getter('_strokeDashArray');
+
+  function setStrokeDashArray(dashArray) {
+    if (dashArray) {
+      if (dashArray.join) {
+        dashArray = dashArray.join(', ');
+      }
+      this._strokeDashArray = dashArray;
+    } else {
+      this._strokeDashArray = null;
+    }
+  }
+
   function getStrokeGradient() {
     return this._strokeGradient;
   }
@@ -180,6 +193,7 @@ define([
    * @property {String} __supportedAttributes__.join The shape to be used at the corners of paths. Can be one of 'miter', 'round', 'bevel'. Default: 'miter'
    * @property {String} __supportedAttributes__.strokeColor The line color. Default: transparent
    * @property {gradient.LinearGradient|gradient.RadialGradient} __supportedAttributes__.strokeGradient The line gradient. Default: nothing
+   * @property {String} __supportedAttributes__.strokeDashArray The stroke dasharray. Default: nothing
    * @property {Number} __supportedAttributes__.strokeWidth The line width. Default: 0
    * @property {Number} __supportedAttributes__.miterLimit The miter limit of the stroke. Default: 4
    *
@@ -210,6 +224,9 @@ define([
       strokeColor: accessor(getStrokeColor, setStrokeColor, true),
       _strokeGradient: data(undefined, true),
       strokeGradient: accessor(getStrokeGradient, setStrokeGradient, true),
+      _strokeDashArray: data(null, true),
+      strokeDashArray: accessor(getStrokeDashArray, setStrokeDashArray, true),
+
       strokeWidth: data(0, true, true),
       _miterLimit: data(4, true),
       miterLimit: accessor(getMiterLimit, setMiterLimit, true),

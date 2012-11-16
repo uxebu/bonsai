@@ -323,6 +323,15 @@ define([
         expect(s.attr('strokeColor')).toBe(0xff0000ff);
       });
 
+      it('Sets & Gets strokeDashArray', function(){
+        var s = new Path();
+        expect(s.attr('strokeDashArray')).toBe(null);
+        s.attr('strokeDashArray', '5, 5');
+        expect(s.attr('strokeDashArray')).toBe('5, 5');
+        s.attr('strokeDashArray', [5, 5]);
+        expect(s.attr('strokeDashArray')).toBe('5, 5');
+      });
+
       it('Sets & Gets opacity', function(){
         var s = new Path();
         expect(s.attr('opacity')).toBe(1);
