@@ -4,7 +4,6 @@
   "description": "Bonsai runtime and node server",
   "main": "src/bootstrapper/_dev/node.js",
   "version": "0.4.1",
-  "private": true,
   "homepage": "https://github.com/uxebu/bonsai/",
   "maintainers": [],
   "repository": {
