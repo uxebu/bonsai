@@ -31,11 +31,12 @@ define([
    * @mixes EventEmitter
    * @memberOf module:animation
    *
-   * @param {?} clock (pz: TOFIX: what is this?)
+   * @param {EventEmitter} clock An object that emits a 'tick' event and
+   *    has a `toFrameNumber` method.
    * @param {number|string} duration The duration, either as frames (number)
    *    or as seconds (e.g. '1s', '1ms')
    * @param {Object} [keyframes] The keyframes to animate through
-   * @param {Object} [options] Additional options
+   * @param {Object} [options={}] Additional options
    * @property {String|Function} [options.easing] Easing function for each sub-animation
    * @property {Array|Object} [options.subjects] The subject(s) (e.g. DisplayObjects) of
    *    the keyframe-animation
@@ -53,7 +54,10 @@ define([
     this.subjects = [];
     this.initialValues = null;
 
+    // Looks wonky, but because repeat allows Infinity, combining it into
+    // `(repeat-(repeat%1))||0` would result in 0, rather than Infinity.
     this.repeat = (options.repeat || 0) - (options.repeat % 1 || 0);
+
     this.delay = options.delay && clock.toFrameNumber(options.delay) || 0;
     this.isTimelineBound = options.isTimelineBound !== false;
 
@@ -75,26 +79,83 @@ define([
     }
   }
 
-
   KeyframeAnimation.prototype = /** @lends module:animation.KeyframeAnimation.prototype */ {
 
     /**
      * @private
-     * @property {Array} animations TOFIX: annotation needed
+     * @property {number} clock Frame interval in milliseconds
      */
-    animations: null,
+    clock: null,
+
     /**
      * @private
-     * @property {Array} keyframes TOFIX: annotation needed
+     * @property {number} currentDelay Number of frames we are _still_ waiting before starting animation
      */
-    keyframes: null,
+    currentDelay: -1,
     /**
-     * @property {number} keys Explicitly defined key frames for this animation
+     * @private
+     * @property {number} currentTweenIndex Basically the animation progress
+     */
+    currentTweenIndex: -1,
+    /**
+     * @private
+     * @property {number} delay Initial number of frames to wait for this animation to begin
+     */
+    delay: -1,
+    /**
+     * @private
+     * @property {number} duration Number of entire animation in frames
+     */
+    duration: -1,
+    /**
+     * depricated
+     */
+    easing: null,
+    /**
+     * @private
+     * @property {Function} easingFn The easing function which transforms the actual progress
+     */
+    easingFn: null,
+    /**
+     * @private
+     * @property {number} frame depricated?
+     */
+    frame: -1,
+    /** depricated **/
+    initialValues: null,
+    /**
+     * @private
+     * @property {boolean} isPlaying Is this animation currently applying changes?
+     */
+    isPlaying: false,
+    /**
+     * @private
+     * @property {boolean} isTimelineBound Does this animation sync progress with the timeline? So
+     *    listen to 'tick' or 'advance'?
+     */
+    isTimelineBound: false,
+    /**
+     * @private
+     * @property {number} keys Explicitly defined key frames (normalized progress) for this animation
      */
     keys: null,
     /**
      * @private
-     * @property {Array} subjects TOFIX: annotation needed
+     * @property {Object} keyframes Each key is the proper animation progress for its (key)frame value
+     */
+    keyframes: null,
+    /**
+     * @private
+     * @property {number} prevFrame Frame number of the first frame of the animation (TOFIX: rename it!)
+     */
+    prevFrame: -1,
+    /**
+     * @property {number} repeat Number of times this animation should repeat. Use Infinity for infinite loop.
+     */
+    repeat: -1,
+    /**
+     * @private
+     * @property {Object[]} subjects The objects that are animated (usually display objects)
      */
     subjects: null,
 
@@ -132,9 +193,9 @@ define([
     },
 
     /**
-     * Starts or resumes an animation
-     *
+     * Starts or resumes an animation.
      * Optionally changes the subjects of the animation.
+     * Does nothing (except optionally update subjects) if already playing.
      *
      * @param {Object} [subjects]
      * @return {KeyframeAnimation}
@@ -215,7 +276,7 @@ define([
         return;
       }
 
-      // lastFrame defaults to the current frame
+      // prevFrame defaults to the current frame
       // (this'll be at the start of an animation)
       this.prevFrame = this.prevFrame || frameNumber;
 

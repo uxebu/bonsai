@@ -1,3 +1,8 @@
+* Updated KeyframeAnimation.js documentation
+* Added all instance properties of KeyframeAnimation to the prototype and documented them
+* Removed unused KeyframeAnimation#removeSubject and #removeSubjects
+* Fixed an issue with KeyframeAnimation where it would trip over certain undefined values
+
 v0.4.2
 -------------------
  * Add support for an `interactive` attribute on all DisplayObjects which allows
