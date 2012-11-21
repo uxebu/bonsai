@@ -381,6 +381,7 @@ define([
      */
     removeSubject: function(subject) {
       var subjects = this.subjects;
+      // Reverse search order to make splicing safe
       for (var i = subjects.length; i >= 0; i -= 1) {
         if (subjects[i].subject === subject) {
           subjects.splice(i, 1);
