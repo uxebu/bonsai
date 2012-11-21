@@ -38,9 +38,6 @@ define([
   function Animation(clock, duration, endValues, options) {
 
     return new KeyframeAnimation(clock, duration, {
-      // `to` will be interpreted as setting 100%
-      // so at 100% of the animation, this object
-      // should look like endValues
       to: endValues
     }, options);
 
