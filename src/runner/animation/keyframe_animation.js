@@ -380,9 +380,10 @@ define([
      * @param {Object} subject The subject to remove
      */
     removeSubject: function(subject) {
-      for (var i = 0, l = this.subjects.length; i < l; ++i) {
-        if (this.subjects[i].subject === subject) {
-          this.subjects.splice(i, 1);
+      var subjects = this.subjects;
+      for (var i = subjects.length; i >= 0; i -= 1) {
+        if (subjects[i].subject === subject) {
+          subjects.splice(i, 1);
         }
       }
     },
