@@ -383,9 +383,6 @@ define([
       for (var i = 0, l = this.subjects.length; i < l; ++i) {
         if (this.subjects[i].subject === subject) {
           this.subjects.splice(i, 1);
-          for (var a = 0, al = this.animations.length; a < al; ++a) {
-            this.animations[a].removeSubject(subject);
-          }
         }
       }
     },
