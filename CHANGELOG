@@ -2,7 +2,6 @@
 * Added all instance properties of KeyframeAnimation to the prototype and documented them
 * Removed unused KeyframeAnimation#removeSubject and #removeSubjects
 * Fixed an issue with KeyframeAnimation where it would trip over certain undefined values
-* Fixed a bug in _fillInProperties where it would refer to the wrong instance property easingFn (-> easing)
 
 v0.4.2
 -------------------

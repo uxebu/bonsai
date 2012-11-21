@@ -44,7 +44,7 @@ define([
    *    frames or seconds
    */
   function KeyframeAnimation(clock, duration, keyframes, options) {
-    if (!options) options = {};
+    options || (options = {});
 
     this.clock = clock;
     duration = this.duration = +duration || clock.toFrameNumber(duration);
@@ -52,15 +52,17 @@ define([
     this._parseEventProps(options);
 
     this.subjects = [];
+    this.initialValues = null;
 
     // Looks wonky, but because repeat allows Infinity, combining it into
     // `(repeat-(repeat%1))||0` would result in 0, rather than Infinity.
     this.repeat = (options.repeat || 0) - (options.repeat % 1 || 0);
 
-    this.delay = (options.delay && clock.toFrameNumber(options.delay)) || 0;
+    this.delay = options.delay && clock.toFrameNumber(options.delay) || 0;
     this.isTimelineBound = options.isTimelineBound !== false;
 
-    this.easing = getEasingFunction(options.easing);
+    var easingFunc = options.easing;
+    this.easing = getEasingFunction(easingFunc);
 
     this.prevFrame = 0;
     this.frame = 0;
@@ -106,15 +108,21 @@ define([
      */
     duration: -1,
     /**
-     * @private
-     * @property {Function} easing The easing function which transforms the actual progress
+     * depricated
      */
     easing: null,
     /**
      * @private
-     * @property {number} frame Current frame position (=> relates to progress of animation)
+     * @property {Function} easingFn The easing function which transforms the actual progress
+     */
+    easingFn: null,
+    /**
+     * @private
+     * @property {number} frame depricated?
      */
     frame: -1,
+    /** depricated **/
+    initialValues: null,
     /**
      * @private
      * @property {boolean} isPlaying Is this animation currently applying changes?
@@ -378,6 +386,33 @@ define([
     },
 
     /**
+     * Removes a subject from the animation
+     *
+     * @param {Object} subject The subject to remove
+     */
+    removeSubject: function(subject) {
+      for (var i = 0, l = this.subjects.length; i < l; ++i) {
+        if (this.subjects[i].subject === subject) {
+          this.subjects.splice(i, 1);
+          for (var a = 0, al = this.animations.length; a < al; ++a) {
+            this.animations[a].removeSubject(subject);
+          }
+        }
+      }
+    },
+
+    /**
+     * Removes a subject from the animation
+     *
+     * @param {Object[]} subjects Array of subjects to remove (usually display objects)
+     * @return {KeyframeAnimation}
+     */
+    removeSubjects: function(subjects) {
+      forEach(subjects, tools.hitch(this, 'removeSubject'));
+      return this;
+    },
+
+    /**
      * Creates a PropertiesTween object for each phase of the keyframe animation.
      * Note that the startValues may have undefined properties, these need to be
      * ignored.
@@ -437,7 +472,7 @@ define([
      */
     _fillInProperties: function(initialValues) {
 
-      var easingFn = this.easing,
+      var easingFn = this.easingFn,
           lastFrame = this.duration,
           keys = this.keys,
           keyframes = this.keyframes,
