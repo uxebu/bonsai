@@ -378,6 +378,33 @@ define([
     },
 
     /**
+     * Removes a subject from the animation
+     *
+     * @param {Object} subject The subject to remove
+     */
+    removeSubject: function(subject) {
+      for (var i = 0, l = this.subjects.length; i < l; ++i) {
+        if (this.subjects[i].subject === subject) {
+          this.subjects.splice(i, 1);
+          for (var a = 0, al = this.animations.length; a < al; ++a) {
+            this.animations[a].removeSubject(subject);
+          }
+        }
+      }
+    },
+
+    /**
+     * Removes a subject from the animation
+     *
+     * @param {Object[]} subjects Array of subjects to remove (usually display objects)
+     * @return {KeyframeAnimation}
+     */
+    removeSubjects: function(subjects) {
+      forEach(subjects, tools.hitch(this, 'removeSubject'));
+      return this;
+    },
+
+    /**
      * Creates a PropertiesTween object for each phase of the keyframe animation.
      * Note that the startValues may have undefined properties, these need to be
      * ignored.
