@@ -369,11 +369,8 @@ define([
      * @return {KeyframeAnimation}
      */
     addSubjects: function(subjects) {
-      var me = this;
       subjects = tools.isArray(subjects) ? subjects : [subjects];
-      forEach(subjects, function(subject) {
-        me.addSubject(subject);
-      });
+      forEach(subjects, this.addSubject, this);
       return this;
     },
 
@@ -400,7 +397,7 @@ define([
      * @return {KeyframeAnimation}
      */
     removeSubjects: function(subjects) {
-      forEach(subjects, tools.hitch(this, 'removeSubject'));
+      forEach(subjects, this.removeSubject, this);
       return this;
     },
 
