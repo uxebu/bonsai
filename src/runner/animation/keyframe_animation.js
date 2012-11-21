@@ -459,8 +459,8 @@ define([
      */
     _fillInProperties: function(initialValues) {
 
-      var easingFn = this.easing,
-          lastFrame = this.duration,
+      var easing = this.easing,
+          duration = this.duration,
           keys = this.keys,
           keyframes = this.keyframes,
           keyframe,
@@ -518,7 +518,7 @@ define([
                 must be the last occurance and thus the end-point
               */
               nextValue = prevValue;
-              nextFrame = lastFrame;
+              nextFrame = duration;
             }
 
             fromValues = {};
@@ -529,8 +529,8 @@ define([
             // Calculate would-be progress of keyframe:
             progress = (frame - prevFrame) / (nextFrame - prevFrame);
 
-            if (easingFn) {
-              progress = easingFn(progress);
+            if (easing) {
+              progress = easing(progress);
             }
 
             if (nextFrame.easing) {
