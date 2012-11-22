@@ -30,9 +30,19 @@ define([
     global.load = function(url, callback) { return loader.load() };
   */
 
-    global.run = function(node, url, options) {
+    global.run = function(options) {
+      var code;
+      if (typeof options.code == 'function') {
+        code = '(' + options.code.toString() + '());';
+      } else {
+        code = options.code;
+      }
+      stage.setFramerate(options.framerate || 30);
+      stage.width = +options.width || Infinity;
+      stage.height = +options.height || Infinity;
+
       //TODO: run all the things here with runCode
-      runCode(options.code, exports);
+      runCode(code, exports);
 
       //TODO: make run unusable after the first call?
 

@@ -1,4 +1,4 @@
-require(['bonsai/bootstrapper/context/pender/bootstrap'], function(bootstrapPender) {
+define(['../context/pender/bootstrap'], function(bootstrapPender) {
   /**
    * @type {Object}
    * @method on(type, callback) Takes a callback for an event type string.

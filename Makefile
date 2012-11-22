@@ -105,6 +105,11 @@ profile: mktemp
 doc: mkjsdoc
 	jsdoc -r -d ${WORKSPACE}/jsdoc${SUB_DIR} ${WORKSPACE}/src || true
 
+build-pender: clean mkdist
+	${CLOSURE_AMD} --common_js_entry_module bootstrapper/_build/pender.js \
+		src/bootstrapper/_build/pender.js \
+			`find src -name '*.js' -not -path 'src/bootstrapper/_dev/*' -not -path 'src/bootstrapper/_build/*' -not -path 'src/bootstrapper/context/socketio/*' -not -path 'src/bootstrapper/context/node/*'` | ${CLOSURE_PRETTY} > ${DIST_DIR}/bonsai.js
+
 build: clean mkdist
 	${CLOSURE_AMD} --common_js_entry_module bootstrapper/_build/common.js \
 		src/bootstrapper/_build/common.js \
