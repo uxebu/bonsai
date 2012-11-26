@@ -23,6 +23,21 @@ define([
   var atan2 = Math.atan2, PI = Math.PI;
   var isfinite = isFinite; // local reference for faster lookup
 
+  /**
+   * Determines whether an attribute update is valid effectual.
+   *
+   * @param {Object} attributes An attributes object.
+   * @param {string} name The name of the attribute
+   * @param oldValue
+   * @param newValue
+   * @return {Boolean}
+   */
+  function isAttributeChange(attributes, name, oldValue, newValue) {
+    return name in attributes &&
+      name.charAt(0) !== '_' &&
+      (oldValue !== newValue || typeof oldValue === 'object');
+  }
+
   function getRotation() {
     var matrix = this._matrix;
     var a = atan2(matrix.b, matrix.a);
@@ -569,7 +584,7 @@ define([
           }
           for (name in attr) {
             value = attr[name]; // value parameter is unused in this branch
-            if (name in attributes && name.charAt(0) != '_' && attributes[name] !== value) {
+            if (isAttributeChange(attributes, name, attributes[name], value)) {
               attributes[name] = value;
               hasChange = this._mutatedAttributes[name] = true;
             }
@@ -577,7 +592,7 @@ define([
           break;
 
         case 2: // set at single attribute
-          if (attr in attributes && attr.charAt(0) != '_' && attributes[attr] !== value) {
+          if (isAttributeChange(attributes, attr, attributes[attr], value)) {
             attributes[attr] = value;
             hasChange = this._mutatedAttributes[attr] = true;
           }
