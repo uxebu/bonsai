@@ -427,7 +427,9 @@ define([
       }
     }
 
-    this._logFrame();
+    if (this._isLoggingFps) {
+      this._logFrame();
+    }
 
     this.emit('canRender');
   };
@@ -1495,7 +1497,10 @@ define([
 
   proto._setupFPSLog = function(fpsLog) {
     var isFunction = typeof fpsLog === 'function';
-    if (fpsLog !== true && !isFunction) {
+    var hasLog = fpsLog === true && !isFunction;
+    this._isLoggingFps = hasLog;
+    clearInterval(this._fpsInterval);
+    if (hasLog) {
       return;
     }
 
