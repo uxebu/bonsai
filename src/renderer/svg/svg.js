@@ -827,6 +827,8 @@ define([
 
   };
 
+  proto.getTime = Date.now || function() { return new Date().getTime() };
+
   proto.removeObject = function(element) {
 
     var rootElement = element._root || element,
@@ -1535,14 +1537,14 @@ define([
   };
 
   proto._logFrame = function() {
-    (this._frameTimes || (this._frameTimes = [])).push(+new Date);
+    (this._frameTimes || (this._frameTimes = [])).push(this.getTime());
   };
 
   proto.getFPS = function() {
 
     var frames = this._frameTimes,
         fps = 0,
-        time = +new Date - 1000;
+        time = this.getTime() - 1000;
 
     for (var l = frames.length; l--;) {
       if (frames[l] < time) break;
