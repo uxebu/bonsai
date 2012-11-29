@@ -1495,7 +1495,7 @@ define([
 
   proto._setupFPSLog = function(fpsLog) {
     var isFunction = typeof fpsLog === 'function';
-    if (fpsLog !== true || isFunction) {
+    if (fpsLog !== true && !isFunction) {
       return;
     }
 
