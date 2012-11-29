@@ -450,10 +450,15 @@ define([
 
           runnerContextIsReady();
 
+          var category3 = 'arbitrary 2', message3 = {};
+          rendererController.sendMessage(category3, message3);
+
           expect(runnerContext.notifyRunner)
             .toHaveReceivedMessage(message1);
           expect(runnerContext.notifyRunner)
             .toHaveReceivedMessage(category2, message2);
+          expect(runnerContext.notifyRunner)
+            .toHaveReceivedMessage(category3, message3);
         }
 
         it('should defer sending messages if initialized with just an url', function() {
