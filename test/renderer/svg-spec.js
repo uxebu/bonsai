@@ -134,5 +134,45 @@ define([
       });
     });
 
+    describe('Frame logging', function() {
+      function createSvgRenderer(fpsLog, getTime) {
+        var renderer = new SvgRenderer(createFakeDomNode(), 1, 1, {fpsLog: fpsLog});
+        renderer.getTime = getTime;
+        return renderer;
+      }
+
+      function createClock(fps) {
+        var lastTime = 0, interval = 1000 / fps;
+        return function() {
+          return Math.round(lastTime += interval);
+        }
+      }
+
+      it('should not collect frame times that are older than one second, even if fps logging is disabled', function() {
+        /*
+          Motivation for this test:
+
+          The renderer truncated the frames array when logging out fps. But
+          without an fps log, the array was filled and never truncated.
+
+          This test makes sure we don't leak memory and get slow.
+         */
+
+
+        var frameRate = 60, seconds = 3;
+        var renderer = createSvgRenderer(false, createClock(frameRate));
+
+        for (var i = frameRate * seconds; i > 0; i -= 1) {
+          renderer.render([]);
+        }
+
+        var frameTimes = renderer._frameTimes || [];
+        var lastTime = frameTimes[frameTimes.length - 1];
+
+        expect(frameTimes.every(function(time) {
+          return (lastTime - time) < 1000;
+        })).toBe(true);
+      });
+    });
   });
 });
