@@ -72,7 +72,7 @@ define([
      * Applies parameters for scaling, rotation, and translation.
      *
      * Using the createBox() method lets you obtain the same matrix as you
-     * would if you applied the identify(), rotate(), scale(), and translate()
+     * would if you applied the identity(), rotate(), scale(), and translate()
      * methods in succession.
      *
      * @param {number} scaleX The horizontal scale
@@ -84,7 +84,7 @@ define([
      */
     createBox: function(scaleX, scaleY, rotation, tx, ty) {
       return this.
-        identify().
+        identity().
         rotate(rotation).
         scale(scaleX, scaleY).
         translate(tx, ty);
@@ -134,12 +134,12 @@ define([
     /**
      * Sets each matrix property to a value that causes a null transformation.
      *
-     * An object transformed by applying an identify matrix will be identical
+     * An object transformed by applying an identity matrix will be identical
      * to the original.
      *
      * @returns {Matrix} The instance
      */
-    identify: function() {
+    identity: function() {
       this.a = this.d = 1;
       this.b = this.c = this.tx = this.ty = 0;
       return this;
