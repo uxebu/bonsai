@@ -273,18 +273,12 @@ define([
       })();
 
 
-      it('passes a node when given a DOM id to the renderer', function () {
-        var el = document.createElement('div'), node = 'node', width = 100, height = 100, options = { width: width, height: height };
-
-        // create fixture
-        el.setAttribute('id', node);
-        document.body.appendChild(el);
+      it('passes a string when given a DOM id to the renderer', function () {
+        var node = 'node', width = 100, height = 100, options = { width: width, height: height };
 
         player.run(node, options);
 
-        expect(MockRendererConstructor).toHaveBeenCalledWith(el, width, height, {});
-        // cleanup
-        document.body.removeChild(el);
+        expect(MockRendererConstructor).toHaveBeenCalledWith(node, width, height, {});
       });
 
     });

@@ -13,6 +13,16 @@ define([
       return new SvgRenderer(createFakeDomNode(), 1, 1);
     }
 
+    it('should accept a dom id for the node argument', function () {
+      spyOn(document, 'getElementById').andReturn(createFakeDomNode());
+      spyOn(SvgRenderer, 'Svg');
+
+      new SvgRenderer('thing', 1, 1);
+
+      expect( SvgRenderer.Svg ).toHaveBeenCalledWith( createFakeDomNode(), 1, 1);
+    });
+
+
     describe('allowEventDefaults', function() {
       it('should assign the constructor value as property', function() {
         expect(new SvgRenderer(createFakeDomNode(), 1, 1, {
