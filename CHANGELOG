@@ -14,6 +14,7 @@ v0.4.2
    DisplayObject
  * Added an destroy event for DisplayObjects, which is fired on a displayobject when
    destroy is called on it.
+ * Sending of user messages to runner contexts is deferred until context startup
 
 v0.4.1 / 2012-10-26
 -------------------
