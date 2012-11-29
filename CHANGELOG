@@ -1,19 +1,17 @@
+v0.4.2
+-------------------
+* Add support for an `interactive` attribute on all DisplayObjects which allows
+  pointer-events to be received (true) or to pass through (false)
+* Setting an attribute to the actual value won't trigger a render message.
+* Added support for getAbsoluteBoundingBox and getAbsoluteMatrix on
+  DisplayObject
+* Added an destroy event for DisplayObjects, which is fired on a displayobject when
+  destroy is called on it.
 * Updated KeyframeAnimation.js documentation
 * Added all instance properties of KeyframeAnimation to the prototype and documented them
-* Removed unused KeyframeAnimation#removeSubject and #removeSubjects
 * Fixed an issue with KeyframeAnimation where it would trip over certain undefined values
 * Fixed a bug in KeyframeAnimation#_fillInProperties where it would refer to the wrong
   instance property easingFn (-> easing)
-
-v0.4.2
--------------------
- * Add support for an `interactive` attribute on all DisplayObjects which allows
-   pointer-events to be received (true) or to pass through (false)
- * Setting an attribute to the actual value won't trigger a render message.
- * Added support for getAbsoluteBoundingBox and getAbsoluteMatrix on
-   DisplayObject
- * Added an destroy event for DisplayObjects, which is fired on a displayobject when
-   destroy is called on it.
 
 v0.4.1 / 2012-10-26
 -------------------
