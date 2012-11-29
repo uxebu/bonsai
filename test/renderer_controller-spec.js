@@ -37,7 +37,10 @@ define([
   }
 
   function createRendererController() {
-    return new RendererController(mockRenderer, mockAssetController, mockRunner, baseUri);
+    return new RendererController(mockRenderer, mockAssetController, mockRunner, {
+      baseUri: baseUri,
+      code: 'arbitrary(code)'
+    });
   }
 
   describe('RendererController', function () {
