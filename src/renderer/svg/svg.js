@@ -196,7 +196,7 @@ define([
    * The SvgRenderer constructor
    *
    * @constructor
-   * @param {HTMLElement} node The element to append the svg root node to.
+   * @param {HTMLElement|String} node The element or element id to append the svg root node to.
    * @param {number} width The width to apply to the svg root node.
    *    Falsy means 'no width applied'.
    * @param {number} height The height to apply to the svg root node.
@@ -208,6 +208,11 @@ define([
    *    with the framerate.
    */
   function SvgRenderer(node, width, height, options) {
+
+    if (typeof node === 'string') {
+      node = document.getElementById(node);
+    }
+
     options = options || {};
     this.width = width;
     this.height = height;

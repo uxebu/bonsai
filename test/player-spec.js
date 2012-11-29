@@ -167,6 +167,7 @@ define([
           expect(args[3]).toHaveProperties('baseUrl');
         });
 
+
         describe('defaultRunnerOptions', function() {
           var originalOptions;
           beforeEach(function() {
@@ -270,6 +271,15 @@ define([
 
         return player.run(node, options);
       })();
+
+
+      it('passes a string when given a DOM id to the renderer', function () {
+        var node = 'node', width = 100, height = 100, options = { width: width, height: height };
+
+        player.run(node, options);
+
+        expect(MockRendererConstructor).toHaveBeenCalledWith(node, width, height, {});
+      });
 
     });
 
