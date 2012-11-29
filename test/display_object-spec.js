@@ -137,7 +137,7 @@ define([
         d.attr('rotation', rotation);
         m = d.attr('matrix');
 
-        m2 = m.clone().identify().rotate(rotation);
+        m2 = m.clone().identity().rotate(rotation);
         p = m2.transformPoint(origin);
 
         expect(m.a).toBe(m2.a);
@@ -169,7 +169,7 @@ define([
         }
 
         m = d.attr('matrix');
-        m2 = m.clone().identify().rotate(rotation).scale(scale, scale);
+        m2 = m.clone().identity().rotate(rotation).scale(scale, scale);
         ['a', 'b', 'c', 'd', 'tx', 'ty'].forEach(function(p) {
           expect(m[p]).toBeCloseTo(m2[p], 10);
         });
