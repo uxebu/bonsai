@@ -8,7 +8,6 @@ v0.4.2
 * Added an destroy event for DisplayObjects, which is fired on a displayobject when
   destroy is called on it.
 * Updated KeyframeAnimation.js documentation
-* Added all instance properties of KeyframeAnimation to the prototype and documented them
 * Fixed an issue with KeyframeAnimation where it would trip over certain undefined values
 * Fixed a bug in KeyframeAnimation#_fillInProperties where it would refer to the wrong
   instance property easingFn (-> easing)
