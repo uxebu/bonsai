@@ -116,10 +116,10 @@ define([
   );
 
   qc.declare(
-    '`identify()` should reset each matrix to identity',
+    '`identity()` should reset each matrix to identity',
     [matrixGenerator(10)],
     function(testCase, m) {
-      var matrix = toMatrix(m).identify();
+      var matrix = toMatrix(m).identity();
       testCase.assert(equals(matrix, IDENTITY_MATRIX));
     }
   );
@@ -194,7 +194,7 @@ define([
   );
 
   qc.declare(
-    '`createBox()` should work like calling identify(), rotation(), scale() ' +
+    '`createBox()` should work like calling identity(), rotation(), scale() ' +
     'and translate() in succession',
     [
       scaleGenerator,
@@ -206,7 +206,7 @@ define([
     function(testCase, scaleX, scaleY, rotation, tx, ty) {
       var matrix = new Matrix().createBox(scaleX, scaleY, rotation, tx, ty);
       var refMatrix = new Matrix().
-        identify().
+        identity().
         rotate(rotation).
         scale(scaleX, scaleY).
         translate(tx, ty);
