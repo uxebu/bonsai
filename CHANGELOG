@@ -11,6 +11,7 @@ v0.4.2
 * Fixed an issue with KeyframeAnimation where it would trip over certain undefined values
 * Fixed a bug in KeyframeAnimation#_fillInProperties where it would refer to the wrong
   instance property easingFn (-> easing)
+* Allow for an ID string to be passed to as the first argument to `run`
 
 v0.4.1 / 2012-10-26
 -------------------
