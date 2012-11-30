@@ -1498,14 +1498,14 @@ define([
 
   proto._setupFPSLog = function(fpsLog) {
     var isFunction = typeof fpsLog === 'function';
-    var hasLog = fpsLog === true && !isFunction;
+    var hasLog = fpsLog === true || isFunction;
     this._isLoggingFps = hasLog;
     clearInterval(this._fpsInterval);
-    if (hasLog) {
+    if (!hasLog) {
       return;
     }
 
-    if (!isFunction) {
+    if (fpsLog === true) { // draw a fps counter on the stage
       this.render([
         {
           parent:0,
