@@ -238,6 +238,7 @@ define([
     document.addEventListener('keypress', this, false);
 
     this._isLoggingFps = false;
+    this._fpsInterval = null;
     this._setupFPSLog(options.fpsLog);
     if (options.disableContextMenu) {
       this.config({
