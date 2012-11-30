@@ -13,6 +13,7 @@ v0.4.2
   instance property easingFn (-> easing)
 * Sending of user messages to runner contexts is deferred until context startup
 * Allow for an ID string to be passed to as the first argument to `run`
+* Fix a memory leak with frame rate logging
 
 
 
