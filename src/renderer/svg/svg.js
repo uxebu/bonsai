@@ -203,7 +203,7 @@ define([
    * The SvgRenderer constructor
    *
    * @constructor
-   * @param {HTMLElement} node The element to append the svg root node to.
+   * @param {HTMLElement|String} node The element or element id to append the svg root node to.
    * @param {number} width The width to apply to the svg root node.
    *    Falsy means 'no width applied'.
    * @param {number} height The height to apply to the svg root node.
@@ -215,6 +215,11 @@ define([
    *    with the framerate.
    */
   function SvgRenderer(node, width, height, options) {
+
+    if (typeof node === 'string') {
+      node = document.getElementById(node);
+    }
+
     options = options || {};
     this.width = width;
     this.height = height;
@@ -239,6 +244,8 @@ define([
     document.addEventListener('keydown', this, false);
     document.addEventListener('keypress', this, false);
 
+    this._isLoggingFps = false;
+    this._fpsInterval = null;
     this._setupFPSLog(options.fpsLog);
     if (options.disableContextMenu) {
       this.config({
@@ -430,7 +437,9 @@ define([
       }
     }
 
-    this._logFrame();
+    if (this._isLoggingFps) {
+      this._logFrame();
+    }
 
     this.emit('canRender');
   };
@@ -834,6 +843,8 @@ define([
     }
 
   };
+
+  proto.getTime = Date.now || function() { return new Date().getTime() };
 
   proto.removeObject = function(element) {
 
@@ -1496,11 +1507,14 @@ define([
 
   proto._setupFPSLog = function(fpsLog) {
     var isFunction = typeof fpsLog === 'function';
-    if (fpsLog !== true || isFunction) {
+    var hasLog = fpsLog === true || isFunction;
+    this._isLoggingFps = hasLog;
+    clearInterval(this._fpsInterval);
+    if (!hasLog) {
       return;
     }
 
-    if (!isFunction) {
+    if (fpsLog === true) { // draw a fps counter on the stage
       this.render([
         {
           parent:0,
@@ -1543,14 +1557,14 @@ define([
   };
 
   proto._logFrame = function() {
-    (this._frameTimes || (this._frameTimes = [])).push(+new Date);
+    (this._frameTimes || (this._frameTimes = [])).push(this.getTime());
   };
 
   proto.getFPS = function() {
 
     var frames = this._frameTimes,
         fps = 0,
-        time = +new Date - 1000;
+        time = this.getTime() - 1000;
 
     for (var l = frames.length; l--;) {
       if (frames[l] < time) break;
