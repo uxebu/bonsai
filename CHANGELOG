@@ -12,6 +12,8 @@ v0.4.2
 * Fixed a bug in KeyframeAnimation#_fillInProperties where it would refer to the wrong
   instance property easingFn (-> easing)
 * Sending of user messages to runner contexts is deferred until context startup
+* Allow for an ID string to be passed to as the first argument to `run`
+
 
 
 v0.4.1 / 2012-10-26
