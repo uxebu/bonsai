@@ -237,6 +237,7 @@ define([
     document.addEventListener('keydown', this, false);
     document.addEventListener('keypress', this, false);
 
+    this._isLoggingFps = false;
     this._setupFPSLog(options.fpsLog);
     if (options.disableContextMenu) {
       this.config({
