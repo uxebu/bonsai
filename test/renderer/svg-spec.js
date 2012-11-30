@@ -159,7 +159,7 @@ define([
         }
       }
 
-      it('should not collect frame times that are older than one second, even if fps logging is disabled', function() {
+      it('should not collect frame times at all when fps logging is disabled', function() {
         /*
           Motivation for this test:
 
@@ -178,11 +178,7 @@ define([
         }
 
         var frameTimes = renderer._frameTimes || [];
-        var lastTime = frameTimes[frameTimes.length - 1];
-
-        expect(frameTimes.every(function(time) {
-          return (lastTime - time) < 1000;
-        })).toBe(true);
+        expect(frameTimes).toEqual([]);
       });
     });
   });
