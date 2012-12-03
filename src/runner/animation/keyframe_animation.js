@@ -410,7 +410,6 @@ define([
      * @return {PropertiesTween[]}
      */
     _createTweens: function(startValues) {
-
       var animationDuration,
           totalDuration = 0,
           prevAnimation,
