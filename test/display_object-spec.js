@@ -157,6 +157,18 @@ define([
           expect(d.attr('scale')).toBe((2 + 3) / 2);
         });
 
+        it('should return the an equivalent matrix when setting the matrix attribute', function() {
+          var scaleX = 2;
+          var scaleY = 3;
+          var d = new DisplayObject(), m = new Matrix(scaleX, 0, 0, scaleY);
+
+          // scale up, then set the matrix
+          d.attr('scaleX', 1.5);
+          d.attr('scaleY', 2);
+          d.attr('matrix', m);
+
+          expect(d.attr('matrix')).toEqual(new Matrix(scaleX, 0, 0, scaleY));
+        });
       });
 
       it('should mark the object for update when the matrix is updated', function() {
