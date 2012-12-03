@@ -43,18 +43,23 @@ define([
   } else {
     window['bonsai'] = player;
 
-    var runnerUrl = bootstrapUtil.getUrl(__bonsaiRunnerCode__);
-
     player.Renderer = SvgRenderer;
     player.IframeRunnerContext = IframeRunnerContext;
     player.WorkerRunnerContext = WorkerRunnerContext;
 
     var originalPlayerRun = player.run;
     player.run = tools.hitch(player, function(node, url, options) {
+      var baseUrl = player._baseUrl || tools.baseUri(document);
+      var iife = [
+        '(function(baseUrl, requireConfig){this.baseUrl = baseUrl;this.requireConfig=requireConfig;', 
+        '(' + __bonsaiRunnerCode__ + ')();})',
+        '("' + baseUrl +'", ' + JSON.stringify(require.s.contexts._.config) + ');'
+      ].join('');
+      var runnerUrl = player.runnerUrl || bootstrapUtil.getUrl(iife);
       player.setup({
-        baseUrl: player._baseUrl || tools.baseUri(document),
+        baseUrl: baseUrl,
         runnerContext: player.RunnerContext || (runnerUrl ? WorkerRunnerContext : IframeRunnerContext),
-        runnerUrl: player.runnerUrl || runnerUrl || ('' + __bonsaiRunnerCode__)
+        runnerUrl: runnerUrl || iife
       });
       return originalPlayerRun.apply(player, arguments);
     });

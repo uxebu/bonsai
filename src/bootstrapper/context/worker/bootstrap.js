@@ -1,8 +1,9 @@
 define([
   '../../../runner/stage',
   '../script_loader',
-  '../../../tools'
-], function(Stage, makeScriptLoader, tools) {
+  '../../../tools',
+  '../../../runner/require_wrapper'
+], function(Stage, makeScriptLoader, tools, requireWrapper) {
   'use strict';
 
   function loadUrl(url, successCallback, errorCallback) {
@@ -58,6 +59,10 @@ define([
     var env = stage.env.exports;
     // Expose bonsai API in iframe window
     tools.mixin(self, env);
+
+    // wrap AMD loader
+    Object.defineProperty(self, 'require', requireWrapper);
+
     self.exports = {}; // for plugins
 
     messageChannel.on('message', function(message) {

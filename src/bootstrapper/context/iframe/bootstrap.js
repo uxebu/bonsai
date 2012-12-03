@@ -1,8 +1,9 @@
 define([
   '../../../runner/stage',
   '../script_loader',
-  '../../../tools'
-], function(Stage, makeScriptLoader, tools) {
+  '../../../tools',
+  '../../../runner/require_wrapper'
+], function(Stage, makeScriptLoader, tools, requireWrapper) {
   'use strict';
 
   return function(messageChannel, iframeWindow) {
@@ -26,6 +27,10 @@ define([
 
     // Expose bonsai API in iframe window
     tools.mixin(iframeWindow, env);
+
+    // wrap AMD loader
+    Object.defineProperty(iframeWindow, 'require', requireWrapper);
+
     var globalExports = iframeWindow.exports = {}; // for plugins
 
     // As per the boostrap's contract, it must provide stage.loadSubMovie
