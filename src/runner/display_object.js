@@ -88,10 +88,10 @@ define([
 
   function setMatrix(matrix) {
     var m = this._matrix;
-    m.a = this._scaleX = matrix.a;
+    m.a = matrix.a;
     m.b = matrix.b;
     m.c = matrix.c;
-    m.d = this._scaleY = matrix.d;
+    m.d = matrix.d;
     m.tx = matrix.tx;
     m.ty = matrix.ty;
   }
