@@ -11,6 +11,22 @@ define([
 function(tools, EventEmitter, URI) {
   'use strict';
 
+  function onContextLoad(rendererController) {
+    var pendingMessages = rendererController._pendingMessages;
+
+    // set to null first, so that further calls to sendMessage are not queued
+    rendererController._pendingMessages = null;
+
+    // send all queued messages again
+    var sendMessage = rendererController.sendMessage;
+    tools.forEach(pendingMessages, function(messageArguments) {
+      sendMessage.apply(rendererController, messageArguments);
+    });
+
+    // emit load event
+    rendererController.emit('load');
+  }
+
   var hitch = tools.hitch;
 
   /**
@@ -30,6 +46,12 @@ function(tools, EventEmitter, URI) {
     this.runnerContext = runnerContext;
     this._movieOptions = this._cleanOptions(options);
     this.baseUrl = URI.parse(options.baseUrl);
+
+    /*
+      All user messages sent via `sendMessage()` are queued until the runner has
+      loaded completely. This ensures that a listener can be registered in time.
+     */
+    this._pendingMessages = [];
 
     runnerContext.on('message', this, this.handleEvent);
 
@@ -79,7 +101,7 @@ function(tools, EventEmitter, URI) {
               if (options.code) {
                 runnerContext.run(options.code);
               }
-              rendererController.emit('load');
+              onContextLoad(rendererController);
             });
           } else {
             if (options.code) {
@@ -92,23 +114,23 @@ function(tools, EventEmitter, URI) {
           if (options.code) {
             runnerContext.run(options.code);
           }
-          rendererController.emit('load');
+          onContextLoad(rendererController);
         });
       } else if (options.code) {
         runnerContext.run(options.code);
-        rendererController.emit('load');
+        onContextLoad(rendererController);
       }
 
       function loadAll(urls, cb) {
         var nUrls = urls.length,
             nLoaded = 0;
-        tools.forEach(urls, function(url) {
-          runnerContext.load(rendererController.baseUrl.resolveUri(url).toString());
-        });
         runnerContext.on('scriptLoaded', function(url) {
           if (++nLoaded === nUrls) {
             cb();
           }
+        });
+        tools.forEach(urls, function(url) {
+          runnerContext.load(rendererController.baseUrl.resolveUri(url).toString());
         });
       }
     },
@@ -310,6 +332,19 @@ function(tools, EventEmitter, URI) {
      * @returns {this} The instance
      */
     sendMessage: function(category, messageData) {
+      var pendingMessages = this._pendingMessages;
+
+      /*
+        Before the runner context has loaded and is ready, pendingMessage is an
+        array. Afterwards, pendingMessage is set to null and the test will fail.
+      */
+      if (pendingMessages) {
+        // the context is not ready yet, queue all messages;
+        // pendingMessages is set to null as soon as the context can receive
+        pendingMessages.push(arguments);
+        return this;
+      }
+
       if (arguments.length < 2) {
         this.post('message', category);
       } else {
