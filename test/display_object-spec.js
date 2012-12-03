@@ -159,6 +159,14 @@ define([
 
       });
 
+      it('should mark the object for update when the matrix is updated', function() {
+        var d = new DisplayObject();
+        d.stage = {registry: {needsDraw: {}}};
+
+        d.attr('matrix', new Matrix());
+        expect(d.stage.registry.needsDraw).toHaveOwnProperties(d.id);
+      });
+
       it('should use the origin attribute for rotation', function() {
         var d, m, m2, p;
 
