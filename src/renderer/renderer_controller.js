@@ -46,6 +46,11 @@ function(tools, EventEmitter, URI) {
     this.runnerContext = runnerContext;
     this._movieOptions = this._cleanOptions(options);
     this.baseUrl = URI.parse(options.baseUrl);
+
+    /*
+      All user messages sent via `sendMessage()` are queued until the runner has
+      loaded completely. This ensures that a listener can be registered in time.
+     */
     this._pendingMessages = [];
 
     runnerContext.on('message', this, this.handleEvent);
@@ -328,6 +333,11 @@ function(tools, EventEmitter, URI) {
      */
     sendMessage: function(category, messageData) {
       var pendingMessages = this._pendingMessages;
+
+      /*
+        Before the runner context has loaded and is ready, pendingMessage is an
+        array. Afterwards, pendingMessage is set to null and the test will fail.
+      */
       if (pendingMessages) {
         // the context is not ready yet, queue all messages;
         // pendingMessages is set to null as soon as the context can receive
