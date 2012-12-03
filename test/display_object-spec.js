@@ -124,6 +124,47 @@ define([
           expect(m.ty).toBe(-100);
         });
 
+        it('should set the scale properties when a matrix is updated', function () {
+          var d, m;
+          d = new DisplayObject();
+          m = new Matrix(2, 0, 0, 2, 0, 0);
+          d.attr('matrix', m);
+          expect(d.attr('scaleX')).toBe(2);
+          expect(d.attr('scaleY')).toBe(2);
+          expect(d.attr('scale')).toBe(2);
+
+          // reset
+          d.attr('scaleX', 1);
+          d.attr('scaleY', 1);
+          expect(d.attr('scaleX')).toBe(1);
+          expect(d.attr('scaleY')).toBe(1);
+          expect(d.attr('scale')).toBe(1);
+        });
+
+        it('should allow the matrix to be updated after setting a scale', function () {
+          var d, m;
+          d = new DisplayObject();
+          m = new Matrix(2, 0, 0, 3, 0, 0);
+
+          // scale up, then set the matrix
+          d.attr('scaleX', 1.5);
+          d.attr('scaleY', 2);
+          d.attr('matrix', m);
+
+          expect(d.attr('scaleX')).toBe(2);
+          expect(d.attr('scaleY')).toBe(3);
+
+          expect(d.attr('scale')).toBe((2 + 3) / 2);
+        });
+
+      });
+
+      it('should mark the object for update when the matrix is updated', function() {
+        var d = new DisplayObject();
+        d.stage = {registry: {needsDraw: {}}};
+
+        d.attr('matrix', new Matrix());
+        expect(d.stage.registry.needsDraw).toHaveOwnProperties(d.id);
       });
 
       it('should use the origin attribute for rotation', function() {
@@ -137,7 +178,7 @@ define([
         d.attr('rotation', rotation);
         m = d.attr('matrix');
 
-        m2 = m.clone().identify().rotate(rotation);
+        m2 = m.clone().identity().rotate(rotation);
         p = m2.transformPoint(origin);
 
         expect(m.a).toBe(m2.a);
@@ -169,7 +210,7 @@ define([
         }
 
         m = d.attr('matrix');
-        m2 = m.clone().identify().rotate(rotation).scale(scale, scale);
+        m2 = m.clone().identity().rotate(rotation).scale(scale, scale);
         ['a', 'b', 'c', 'd', 'tx', 'ty'].forEach(function(p) {
           expect(m[p]).toBeCloseTo(m2[p], 10);
         });

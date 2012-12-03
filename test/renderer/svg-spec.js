@@ -13,6 +13,17 @@ define([
       return new SvgRenderer(createFakeDomNode(), 1, 1);
     }
 
+    it('should accept a dom id for the node argument', function () {
+      var targetNode = createFakeDomNode();
+      spyOn(targetNode, 'appendChild');
+      spyOn(document, 'getElementById').andReturn(targetNode);
+      var renderer = new SvgRenderer('thing', 1, 1);
+
+      expect(document.getElementById).toHaveBeenCalledWith('thing');
+      expect(targetNode.appendChild).toHaveBeenCalledWith(renderer.svg.rootContainer);
+    });
+
+
     describe('allowEventDefaults', function() {
       it('should assign the constructor value as property', function() {
         expect(new SvgRenderer(createFakeDomNode(), 1, 1, {
@@ -134,5 +145,41 @@ define([
       });
     });
 
+    describe('Frame logging', function() {
+      function createSvgRenderer(fpsLog, getTime) {
+        var renderer = new SvgRenderer(createFakeDomNode(), 1, 1, {fpsLog: fpsLog});
+        renderer.getTime = getTime;
+        return renderer;
+      }
+
+      function createClock(fps) {
+        var lastTime = 0, interval = 1000 / fps;
+        return function() {
+          return Math.round(lastTime += interval);
+        }
+      }
+
+      it('should not collect frame times at all when fps logging is disabled', function() {
+        /*
+          Motivation for this test:
+
+          The renderer truncated the frames array when logging out fps. But
+          without an fps log, the array was filled and never truncated.
+
+          This test makes sure we don't leak memory and get slow.
+         */
+
+
+        var frameRate = 60, seconds = 3;
+        var renderer = createSvgRenderer(false, createClock(frameRate));
+
+        for (var i = frameRate * seconds; i > 0; i -= 1) {
+          renderer.render([]);
+        }
+
+        var frameTimes = renderer._frameTimes || [];
+        expect(frameTimes).toEqual([]);
+      });
+    });
   });
 });

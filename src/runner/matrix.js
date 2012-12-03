@@ -84,7 +84,7 @@ define([
      */
     createBox: function(scaleX, scaleY, rotation, tx, ty) {
       return this.
-        identify().
+        identity().
         rotate(rotation).
         scale(scaleX, scaleY).
         translate(tx, ty);
@@ -139,7 +139,7 @@ define([
      *
      * @returns {Matrix} The instance
      */
-    identify: function() {
+    identity: function() {
       this.a = this.d = 1;
       this.b = this.c = this.tx = this.ty = 0;
       return this;
