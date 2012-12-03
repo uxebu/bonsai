@@ -20,7 +20,7 @@ define([
    */
   var uid = 1;
 
-  var atan2 = Math.atan2, PI = Math.PI;
+  var atan2 = Math.atan2, sqrt = Math.sqrt, PI = Math.PI;
   var isfinite = isFinite; // local reference for faster lookup
 
   /**
@@ -87,6 +87,18 @@ define([
   }
 
   function setMatrix(matrix) {
+    /*
+      The internally stored matrix is 'unscaled', and scale is
+      stored seperately. This approach allows for non-destructive scaling to 0.
+
+      When setting the matrix, we need to convert it to the unscaled form, i.e.
+      extracting the scale, storing it into the respective internal variables,
+      and apply the reverse scale to the matrix.
+     */
+
+    var scaleX = this._scaleX = sqrt(matrix.a * matrix.a + matrix.b * matrix.b);
+    var scaleY = this._scaleY = sqrt(matrix.d * matrix.d + matrix.c * matrix.c);
+
     var m = this._matrix;
     m.a = matrix.a;
     m.b = matrix.b;
@@ -94,6 +106,16 @@ define([
     m.d = matrix.d;
     m.tx = matrix.tx;
     m.ty = matrix.ty;
+
+    if (scaleX !== 1 || scaleY !== 1) {
+      // Make sure we rotate around the chosen origin
+      var origin = m.transformPoint(this._origin);
+      m.tx -= origin.x;
+      m.ty -= origin.y;
+      m.scale( 1/scaleX || 1, 1/scaleY || 1); // avoid scaling by NaN
+      m.tx += origin.x;
+      m.ty += origin.y;
+    }
   }
 
   function getX() {
