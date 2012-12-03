@@ -88,12 +88,16 @@ define([
 
   function setMatrix(matrix) {
     var m = this._matrix;
-    m.a = matrix.a;
+    m.a = this._scaleX = matrix.a;
     m.b = matrix.b;
     m.c = matrix.c;
-    m.d = matrix.d;
+    m.d = this._scaleY = matrix.d;
     m.tx = matrix.tx;
     m.ty = matrix.ty;
+
+    // this does not need to be set here since updating the
+    // _scaleX and _scaleY setters will do it
+    // this._owner._mutatedAttributes.matrix = true;
   }
 
   function getX() {
