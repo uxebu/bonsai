@@ -160,14 +160,15 @@ define([
         it('should return the an equivalent matrix when setting the matrix attribute', function() {
           var scaleX = 2;
           var scaleY = 3;
-          var d = new DisplayObject(), m = new Matrix(scaleX, 0, 0, scaleY);
+          var tx = 123, ty = 654;
+          var d = new DisplayObject(), m = new Matrix(scaleX, 0, 0, scaleY, tx, ty);
 
           // scale up, then set the matrix
           d.attr('scaleX', 1.5);
           d.attr('scaleY', 2);
           d.attr('matrix', m);
 
-          expect(d.attr('matrix')).toEqual(new Matrix(scaleX, 0, 0, scaleY));
+          expect(d.attr('matrix')).toEqual(new Matrix(scaleX, 0, 0, scaleY, tx, ty));
         });
       });
 

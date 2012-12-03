@@ -106,7 +106,16 @@ define([
     m.d = matrix.d;
     m.tx = matrix.tx;
     m.ty = matrix.ty;
-    m.scale( 1/scaleX || 1, 1/scaleY || 1); // avoid scaling by NaN
+
+    if (scaleX !== 1 || scaleY !== 1) {
+      // Make sure we rotate around the chosen origin
+      var origin = m.transformPoint(this._origin);
+      m.tx -= origin.x;
+      m.ty -= origin.y;
+      m.scale( 1/scaleX || 1, 1/scaleY || 1); // avoid scaling by NaN
+      m.tx += origin.x;
+      m.ty += origin.y;
+    }
   }
 
   function getX() {
