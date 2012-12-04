@@ -1,6 +1,7 @@
 v0.4.2
 -------------------
 
+* Add `degFromRad` and `radFromDeg` tool helpers
 * Add support for an `interactive` attribute on all DisplayObjects which allows
   pointer-events to be received (true) or to pass through (false)
 * Setting an attribute to the actual value won't trigger a render message.

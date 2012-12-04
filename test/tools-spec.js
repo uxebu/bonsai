@@ -284,4 +284,53 @@ define([
     });
   });
 
+  /*--------------------------------------------------------------------------*/
+
+  describe('radFromDeg', function () {
+    var radFromDeg = tools.radFromDeg;
+
+    function toRadians(degrees) {
+      return degrees * Math.PI / 180;
+    }
+
+    it('converts degrees to radians', function () {
+      var degrees = 45;
+      var expected = toRadians(degrees);
+
+      expect( radFromDeg(degrees) ).toBeCloseTo(expected, 10);
+    });
+
+    it('converts `ndeg` to radians', function () {
+      var degrees = 45;
+      var expected = toRadians(degrees);
+
+      expect( radFromDeg(degrees + 'deg') ).toBeCloseTo(expected, 10);
+    });
+
+  });
+
+  describe('degFromRad', function () {
+    var degFromRad = tools.degFromRad;
+
+    function toDegrees(radians) {
+      return radians * 180 / Math.PI;
+    }
+
+    it('converts radians to ndegrees', function () {
+      var radians = 0.785398163; // 45 degrees
+      var expected = toDegrees(radians) + 'deg';
+
+      expect(degFromRad(radians)).toBe(expected);
+    });
+
+    it('converts radians to ndegrees with a precision of 0', function () {
+      var radians = 0.785398163; // 45 degrees
+      var expected = toDegrees(radians).toFixed(0) + 'deg';
+      console.log('expected', expected);
+
+      expect(degFromRad(radians, 0)).toBe(expected);
+    });
+
+  });
+
 });

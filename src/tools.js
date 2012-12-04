@@ -6,7 +6,8 @@ define([], function() {
       noop = function() {},
       push = [].push,
       slice = [].slice,
-      toString = {}.toString;
+      toString = {}.toString,
+      PI = Math.PI;
 
   /**
    *
@@ -339,7 +340,34 @@ define([], function() {
       array.length -= numRemoved;
 
       return array;
+    },
+
+    /**
+     * Get degrees value from a radian.
+     *
+     * @param {Number} rad radians
+     * @param {Number} [precision] Floating point precision
+     * @returns {String} degrees
+     */
+    degFromRad: function (rad, precision) {
+      var degrees = rad * 180 / PI;
+      if (typeof precision === 'number') {
+        degrees = degrees.toFixed(precision);
+      }
+
+      return degrees + 'deg';
+    },
+
+    /**
+     * Calculates the radians of a degree string
+     *
+     * @param {String|Number} deg degrees
+     * @returns {Number} radians
+     */
+    radFromDeg: function (deg) {
+      return parseFloat(deg) * PI / 180;
     }
+
   };
 
   return tools;
