@@ -80,59 +80,7 @@ function(tools, EventEmitter, URI) {
   var proto = RendererController.prototype = {
 
     _onRunnerContextReady: function() {
-
-      var options = this._movieOptions,
-          rendererController = this,
-          runnerContext = this.runnerContext;
-
-      // Runs/Loads the scripts within the RunnerContext (iframe/worker/..)
-
-      if (options.url) {
-        (options.urls || (options.urls = [])).push(options.url);
-      }
-
-      if (options.plugins && options.plugins.length) {
-        loadAll(options.plugins, function() {
-          runnerContext.notifyRunner({
-            command: 'exposePluginExports'
-          });
-          if (options.urls) {
-            loadAll(options.urls, function() {
-              if (options.code) {
-                runnerContext.run(options.code);
-              }
-              onContextLoad(rendererController);
-            });
-          } else {
-            if (options.code) {
-              runnerContext.run(options.code);
-            }
-          }
-        });
-      } else if (options.urls) {
-        loadAll(options.urls, function() {
-          if (options.code) {
-            runnerContext.run(options.code);
-          }
-          onContextLoad(rendererController);
-        });
-      } else if (options.code) {
-        runnerContext.run(options.code);
-        onContextLoad(rendererController);
-      }
-
-      function loadAll(urls, cb) {
-        var nUrls = urls.length,
-            nLoaded = 0;
-        runnerContext.on('scriptLoaded', function(url) {
-          if (++nLoaded === nUrls) {
-            cb();
-          }
-        });
-        tools.forEach(urls, function(url) {
-          runnerContext.load(rendererController.baseUrl.resolveUri(url).toString());
-        });
-      }
+      onContextLoad(this);
     },
 
     initRenderer: function() {
