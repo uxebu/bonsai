@@ -349,7 +349,7 @@ define([], function() {
      * @returns {Object} { amount, unit }
      */
     parseUnitString: function (str) {
-      var amount = parseFloat(str.match(/^\-?\d+/)),
+      var amount = parseFloat(str),
           unit = str.match(/[a-z]*$/i)[0];
 
       return { amount: amount, unit: unit };
@@ -363,19 +363,19 @@ define([], function() {
      * @returns {Number} The angle in radians
      */
     parseAngle: function(angle) {
-      var parts = tools.parseUnitString(angle), unit = parts.amount, radians;
+      var parts = tools.parseUnitString(angle), amount = parts.amount, radians;
 
       switch (parts.unit) {
         case 'deg':
-          radians = unit * PI / 180; break;
+          radians = amount * PI / 180; break;
         case 'grad':
-          radians = unit * PI / 200; break;
+          radians = amount * PI / 200; break;
         case 'turn':
-          radians = unit * 2 * PI; break;
+          radians = amount * 2 * PI; break;
         case 'rad':
-          radians = unit; break;
+          radians = amount; break;
         default:
-          return 0;
+          radians = 0;
       }
 
       return radians;
