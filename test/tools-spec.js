@@ -284,4 +284,50 @@ define([
     });
   });
 
+  /*--------------------------------------------------------------------------*/
+
+  describe('tools.parseUnitString', function() {
+    var parseUnitString = tools.parseUnitString;
+
+    it('should return an amount and unit for a given unit string', function() {
+      var returned = parseUnitString('9deg');
+      var expected = { amount: 9, unit: 'deg' };
+
+      expect(returned).toEqual(expected);
+    });
+
+    it('should work with negative numbers', function() {
+      var returned = parseUnitString('-741232grad');
+      var expected = { amount: -741232, unit: 'grad' };
+
+      expect(returned).toEqual(expected);
+    });
+  });
+
+  describe('tools.parseAngle', function() {
+    var parseAngle = tools.parseAngle;
+
+    it('calculates radians for degrees', function() {
+      var calculated = parseAngle('45deg');
+      var expected = 0.7853981633974483;
+
+      expect(calculated).toBeCloseTo(expected, 10);
+    });
+
+    it('calculates radians for turns', function() {
+      var calculated = parseAngle('1turn');
+      var expected = 6.283185307179586;
+
+      expect(calculated).toBeCloseTo(expected, 10);
+    });
+
+    it('calculates radians for gradians', function () {
+      var calculated = parseAngle('-32grad');
+      var expected = -0.5026548245743669;
+
+      expect(calculated).toBeCloseTo(expected, 10);
+    });
+
+  });
+
 });
