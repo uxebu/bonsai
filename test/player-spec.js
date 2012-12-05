@@ -225,13 +225,6 @@ define([
             expect(optionsPassedToController.assetBaseUrl).toBe(String(player.baseUrl().resolveUri(assetBaseUrl)));
           });
 
-          it('should resolve a passed url against the base url of the player and forward it as a string', function() {
-            var url = '../some/./arbitrary.url';
-            funcSetup(createMockNode(), 50, 60, {url: url});
-            var optionsPassedToController = MockRendererControllerConstructor.mostRecentCall.args[3];
-            expect(optionsPassedToController.url).toBe(String(player.baseUrl().resolveUri(url)));
-          });
-
           it('should convert a function passed as "code" option to a self invoking function expression', function() {
             var func = function() {
               some.arbitrary.code();
@@ -252,6 +245,40 @@ define([
               player.baseUrl().resolveUri(urls[0]).toString(),
               urls[1]
             ]);
+          });
+
+          it('should resolve a passed url against the base url of the player and insert it into the urls array as a string', function() {
+            var url = '../some/./arbitrary.url';
+            funcSetup(createMockNode(), 50, 60, {url: url});
+            var optionsPassedToController = MockRendererControllerConstructor.mostRecentCall.args[3];
+            expect(optionsPassedToController.urls)
+              .toEqual([String(player.baseUrl().resolveUri(url))]);
+            expect(optionsPassedToController).not.toHaveProperties('url')
+          });
+
+          it('should append a passed url to existing urls options', function() {
+            var url = '../some/arbitrary/url';
+            var url1 = 'another/./arbitrary.url';
+            var url2 = 'http://an/absolute.url';
+            var urls = [url1, url2];
+
+            funcSetup(createMockNode(), 50, 60, {url: url, urls: urls});
+            var optionsPassedToController = MockRendererControllerConstructor
+              .mostRecentCall.args[3];
+
+            expect(optionsPassedToController.urls).toEqual([
+              player.baseUrl().resolveUri(url1).toString(),
+              url2,
+              player.baseUrl().resolveUri(url).toString()
+            ]);
+          });
+
+          it('should create an empty urls array if neither url nor urls are passed', function() {
+            funcSetup(createMockNode(), 50, 50, {});
+            var optionsPassedToController = MockRendererControllerConstructor
+              .mostRecentCall.args[3];
+
+            expect(optionsPassedToController.urls).toEqual([]);
           });
         });
       }

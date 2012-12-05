@@ -9,6 +9,8 @@ define([
 function(EventEmitter, RendererController, AssetController, tools, URI, version) {
   'use strict';
 
+  var map = tools.map;
+
   var player = {
     version: version,
 
@@ -46,14 +48,15 @@ function(EventEmitter, RendererController, AssetController, tools, URI, version)
       if ('assetBaseUrl' in options) {
         options.assetBaseUrl = baseUrl.resolveUri(options.assetBaseUrl).toString();
       }
+
+      // normalize all urls into one array
+      var urls = tools.isArray(options.urls) ? options.urls : [];
       if ('url' in options) {
-        options.url = baseUrl.resolveUri(options.url).toString();
+        urls.push(baseUrl.resolveUri(options.url).toString());
+        delete options.url;
       }
-      if (tools.isArray(options.urls)) {
-        options.urls = tools.forEach(options.urls, function(url, i, urls) {
-          urls[i] = baseUrl.resolveUri(url).toString();
-        });
-      }
+      options.urls = map(map(urls, baseUrl.resolveUri, baseUrl), String);
+
       if (typeof options.code === 'function') {
         options.code = '(' + options.code.toString() + '());';
       }
