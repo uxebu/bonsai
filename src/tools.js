@@ -363,9 +363,9 @@ define([], function() {
      * @returns {Number} The angle in radians
      */
     parseAngle: function(angle) {
-      var unit = tools.parseUnitString(angle),
-          amount = parseFloat(angle),
-          radians;
+      var radians,
+          unit = tools.parseUnitString(angle),
+          amount = parseFloat(angle);
 
       switch (unit) {
         case '': // default
