@@ -349,10 +349,6 @@ define([], function() {
      * @returns {String} unit
      */
     extractUnit: function (any) {
-      if (typeof any === 'undefined' || typeof any === 'number') {
-        return '';
-      }
-
       // make sure it's a string and remove trailing whitespace
       var unit = String(any).replace(/\s+$/, '');
       // returns extracted unit or empty string
@@ -381,8 +377,6 @@ define([], function() {
           radians = amount * PI / 200; break;
         case 'turn':
           radians = amount * 2 * PI; break;
-        default:
-          radians = 0;
       }
 
       return radians;

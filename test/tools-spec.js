@@ -293,49 +293,49 @@ define([
       var returned = extractUnit('9deg');
       var expected = 'deg';
 
-      expect(returned).toEqual(expected);
+      expect(returned).toBe(expected);
     });
 
     it('should work with negative numbers', function() {
       var returned = extractUnit('-741232grad');
       var expected = 'grad';
 
-      expect(returned).toEqual(expected);
+      expect(returned).toBe(expected);
     });
 
     it('should work with trailing whitespace', function() {
       var returned = extractUnit('-741232grad    ');
       var expected = 'grad';
 
-      expect(returned).toEqual(expected);
+      expect(returned).toBe(expected);
     });
 
     it('should work with leading whitespace', function() {
       var returned = extractUnit('-741232 grad    ');
       var expected = 'grad';
 
-      expect(returned).toEqual(expected);
+      expect(returned).toBe(expected);
     });
 
     it('should return an empty string in case of a number', function () {
       var returned = extractUnit(7531);
       var expected = '';
 
-      expect(returned).toEqual(expected);
+      expect(returned).toBe(expected);
     });
 
     it('should return the string when given an array', function () {
       var returned = extractUnit(['50s']);
       var expected = 's';
 
-      expect(returned).toEqual(expected);
+      expect(returned).toBe(expected);
     });
 
     it('should work with percentages', function () {
       var returned = extractUnit('50%');
       var expected = '%';
 
-      expect(returned).toEqual(expected);
+      expect(returned).toBe(expected);
     });
   });
 
