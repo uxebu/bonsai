@@ -1,6 +1,6 @@
 v0.4.2
 -------------------
-
+* Add tools.parseAngle to accept angle units as strings. http://www.w3.org/TR/css3-values/#angles
 * Add support for an `interactive` attribute on all DisplayObjects which allows
   pointer-events to be received (true) or to pass through (false)
 * Setting an attribute to the actual value won't trigger a render message.
