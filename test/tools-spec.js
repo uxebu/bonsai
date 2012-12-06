@@ -286,30 +286,57 @@ define([
 
   /*--------------------------------------------------------------------------*/
 
-  describe('tools.parseUnitString', function() {
-    var parseUnitString = tools.parseUnitString;
+  describe('tools.extractUnit', function() {
+    var extractUnit = tools.extractUnit;
 
     it('return the unit from a unit string', function() {
-      var returned = parseUnitString('9deg');
+      var returned = extractUnit('9deg');
       var expected = 'deg';
 
       expect(returned).toEqual(expected);
     });
 
     it('should work with negative numbers', function() {
-      var returned = parseUnitString('-741232grad');
+      var returned = extractUnit('-741232grad');
       var expected = 'grad';
 
       expect(returned).toEqual(expected);
     });
 
     it('should work with trailing whitespace', function() {
-      var returned = parseUnitString('-741232grad    ');
+      var returned = extractUnit('-741232grad    ');
       var expected = 'grad';
 
       expect(returned).toEqual(expected);
     });
 
+    it('should work with leading whitespace', function() {
+      var returned = extractUnit('-741232 grad    ');
+      var expected = 'grad';
+
+      expect(returned).toEqual(expected);
+    });
+
+    it('should return an empty string in case of a number', function () {
+      var returned = extractUnit(7531);
+      var expected = '';
+
+      expect(returned).toEqual(expected);
+    });
+
+    it('should return the string when given an array', function () {
+      var returned = extractUnit(['50s']);
+      var expected = 's';
+
+      expect(returned).toEqual(expected);
+    });
+
+    it('should work with percentages', function () {
+      var returned = extractUnit('50%');
+      var expected = '%';
+
+      expect(returned).toEqual(expected);
+    });
   });
 
   describe('tools.parseAngle', function() {
@@ -336,6 +363,19 @@ define([
       expect(calculated).toBeCloseTo(expected, 10);
     });
 
+    it('calculates radians for radians (string)', function () {
+      var calculated = parseAngle('-0.5026548245743669rad');
+      var expected = -0.5026548245743669;
+
+      expect(calculated).toBeCloseTo(expected, 10);
+    });
+
+    it('calculates radians for radians (number)', function () {
+      var calculated = parseAngle(-0.5026548245743669);
+      var expected = -0.5026548245743669;
+
+      expect(calculated).toBeCloseTo(expected, 10);
+    });
   });
 
 });

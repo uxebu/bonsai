@@ -345,14 +345,18 @@ define([], function() {
     /**
      * Parse a given unit string into the amount and unit
      *
-     * @param {String} any The unit string. E.g. '90deg', '7em'
+     * @param {any} any Anything that can be converted to a string. E.g. '7deg', ['50%']
      * @returns {String} unit
      */
-    parseUnitString: function (any) {
+    extractUnit: function (any) {
+      if (typeof any === 'undefined' || typeof any === 'number') {
+        return '';
+      }
+
       // make sure it's a string and remove trailing whitespace
       var unit = String(any).replace(/\s+$/, '');
       // returns extracted unit or empty string
-      return unit.match(/[a-z]*$/i)[0];
+      return unit.match(/[a-z%]*$/i)[0];
     },
 
     /**
@@ -364,7 +368,7 @@ define([], function() {
      */
     parseAngle: function(angle) {
       var radians,
-          unit = tools.parseUnitString(angle),
+          unit = tools.extractUnit(angle),
           amount = parseFloat(angle);
 
       switch (unit) {
