@@ -6,7 +6,8 @@ define([], function() {
       noop = function() {},
       push = [].push,
       slice = [].slice,
-      toString = {}.toString;
+      toString = {}.toString,
+      PI = Math.PI;
 
   /**
    *
@@ -339,6 +340,46 @@ define([], function() {
       array.length -= numRemoved;
 
       return array;
+    },
+
+    /**
+     * Parse a given unit string into the amount and unit
+     *
+     * @param {any} any Anything that can be converted to a string. E.g. '7deg', ['50%']
+     * @returns {String} unit
+     */
+    extractUnit: function (any) {
+      // make sure it's a string and remove trailing whitespace
+      var unit = String(any).replace(/\s+$/, '');
+      // returns extracted unit or empty string
+      return unit.match(/[a-z%]*$/i)[0];
+    },
+
+    /**
+     * Parses the angle string to radians
+     * https://developer.mozilla.org/en-US/docs/CSS/angle
+     *
+     * @param {Number|String} angle The angle/unit string
+     * @returns {Number} The angle in radians
+     */
+    parseAngle: function(angle) {
+      var radians,
+          unit = tools.extractUnit(angle),
+          amount = parseFloat(angle);
+
+      switch (unit) {
+        case '': // default
+        case 'rad':
+          radians = amount; break;
+        case 'deg':
+          radians = amount * PI / 180; break;
+        case 'grad':
+          radians = amount * PI / 200; break;
+        case 'turn':
+          radians = amount * 2 * PI; break;
+      }
+
+      return radians;
     }
   };
 
