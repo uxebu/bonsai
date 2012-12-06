@@ -289,19 +289,27 @@ define([
   describe('tools.parseUnitString', function() {
     var parseUnitString = tools.parseUnitString;
 
-    it('should return an amount and unit for a given unit string', function() {
+    it('return the unit from a unit string', function() {
       var returned = parseUnitString('9deg');
-      var expected = { amount: 9, unit: 'deg' };
+      var expected = 'deg';
 
       expect(returned).toEqual(expected);
     });
 
     it('should work with negative numbers', function() {
       var returned = parseUnitString('-741232grad');
-      var expected = { amount: -741232, unit: 'grad' };
+      var expected = 'grad';
 
       expect(returned).toEqual(expected);
     });
+
+    it('should work with trailing whitespace', function() {
+      var returned = parseUnitString('-741232grad    ');
+      var expected = 'grad';
+
+      expect(returned).toEqual(expected);
+    });
+
   });
 
   describe('tools.parseAngle', function() {
