@@ -370,8 +370,8 @@ define([
       expect(calculated).toBeCloseTo(expected, 10);
     });
 
-    it('calculates radians for radians (number)', function () {
-      var calculated = parseAngle(-0.5026548245743669);
+    it('calculates radians for radians', function () {
+      var calculated = parseAngle('-0.5026548245743669');
       var expected = -0.5026548245743669;
 
       expect(calculated).toBeCloseTo(expected, 10);
