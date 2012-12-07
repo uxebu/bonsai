@@ -73,7 +73,7 @@ define([], function() {
     /**
      * Creates a property descriptor for a data property.
      *
-     * @param {mixed} value The initial value
+     * @param {any} value The initial value
      * @param {boolean} [writable] Whether the property should be writable
      * @param {boolean} [enumerable] Whether the property should be enumerable
      * @param {boolean} [configurable] Whether the property should
@@ -154,7 +154,7 @@ define([], function() {
      *
      * @param {Object} thisArg The `this` binding for the `fn` function.
      *  If `fn` is a string, `thisArg` is also the object containing `fn`.
-     * @param {Function|String} A function to be bound to `thisArg`, or the name
+     * @param {Function|string} A function to be bound to `thisArg`, or the name
      *  of the method in `thisArg` to be bound.
      * @param [fixedArgs...] Any number of parameters. Will be passed to the
      *  bound function before any other parameters.
@@ -185,9 +185,9 @@ define([], function() {
      * index it is found at else `-1`.
      *
      * @param {Array} array The array to iterate over.
-     * @param {Mixed} value The value to search for.
-     * @param {Number} [fromIndex=0] The index to start searching from.
-     * @returns {Number} The index of the matched value or `-1`.
+     * @param {any} value The value to search for.
+     * @param {number} [fromIndex=0] The index to start searching from.
+     * @returns {number} The index of the matched value or `-1`.
      */
     indexOf: function(array, value, fromIndex) {
       return indexOf.call(array, value, fromIndex);
@@ -197,8 +197,8 @@ define([], function() {
      * Checks if a value has an internal `[[Class]]` of Array.
      *
      * @function
-     * @param {Mixed} value The value to check.
-     * @returns {Boolean} Returns `true` if the value has an internal [[Class]]
+     * @param {any} value The value to check.
+     * @returns {boolean} Returns `true` if the value has an internal [[Class]]
      *  of Array, else `false`.
      */
     isArray: Array.isArray || function(value) {
@@ -298,8 +298,8 @@ define([], function() {
      *
      * @param {Array} array The array to iterate over.
      * @param {Function} callback The function called per iteration.
-     * @param {Mixed} accumulator Initial value of the accumulator.
-     * @returns {Mixed} The accumulator.
+     * @param {any} accumulator Initial value of the accumulator.
+     * @returns {any} The accumulator.
      */
     reduce: function(array, callback, accumulator) {
       var noaccum = arguments.length < 3;
@@ -346,7 +346,7 @@ define([], function() {
      * Parse a given unit string into the amount and unit
      *
      * @param {any} any Anything that can be converted to a string. E.g. '7deg', ['50%']
-     * @returns {String} unit
+     * @returns {string} unit
      */
     extractUnit: function (any) {
       // make sure it's a string and remove trailing whitespace
@@ -359,8 +359,8 @@ define([], function() {
      * Parses the angle string to radians
      * https://developer.mozilla.org/en-US/docs/CSS/angle
      *
-     * @param {Number|String} angle The angle/unit string
-     * @returns {Number} The angle in radians
+     * @param {number|string} angle The angle/unit string
+     * @returns {number} The angle in radians
      */
     parseAngle: function(angle) {
       var radians,
