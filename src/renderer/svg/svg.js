@@ -147,7 +147,16 @@ define([
             }
             break;
           case 'interactive':
-            el.style.pointerEvents = value ? 'inherit' : 'none';
+            if (value) {
+              // only set if it already contains something
+              // prevents useless "empty" style attrs in dom
+              // (default is inherit anyways)
+              if (el.style.pointerEvents) {
+                el.style.pointerEvents = '';
+              }
+            } else {
+              el.style.pointerEvents = 'none';
+            }
             break;
           case 'fontFamily':
             value = fontIDs[value] || value;
@@ -186,10 +195,14 @@ define([
             break;
           case 'matrix':
             if (value != null) {
-              el.setAttribute(
-                'transform',
-                matrixToString(value)
-              );
+              // clear transform attribute for identity matrix
+              var strMatrix = matrixToString(value);
+              if (strMatrix == 'matrix(1,0,0,1,0,0)') {
+                // this is the default
+                el.removeAttribute('transform');
+              } else {
+                el.setAttribute('transform', strMatrix);
+              }
             } else if (value === null) {
               el.removeAttribute('transform');
             }
