@@ -20,6 +20,22 @@ define([
   // targets webkit based browsers from version 530.0 to 534.4
   var isWebkitPatternBug = /AppleWebKit\/53([0-3]|4.([0-4]))/.test(navigator.appVersion);
 
+  /**
+   * Sets a style property on a style object. Avoids unnecessary creation of
+   * style attributes in the DOM, to ease debugging.
+   *
+   * @param {CSSStyleDeclaration} style The style object to set the property on
+   * @param {string} name The name of the property to set
+   * @param {string} value The value of the property to set.
+   */
+  function setStyle(style, name, value) {
+    if (value) {
+      style[name] = value;
+    } else if (style[name]) { // only remove if set to prevent empty style attributes in the DOM
+      style[name] = '';
+    }
+  }
+
   // Math
   var min = Math.min;
   var max = Math.max;
@@ -140,16 +156,7 @@ define([
 
         switch (i) {
           case 'interactive':
-            if (value) {
-              // only set if it already contains something
-              // prevents useless "empty" style attrs in dom
-              // (default is inherit anyways)
-              if (el.style.pointerEvents) {
-                el.style.pointerEvents = '';
-              }
-            } else {
-              el.style.pointerEvents = 'none';
-            }
+            setStyle(el.style, 'pointerEvents', value ? '' : 'none');
             break;
           case 'fontFamily':
             value = fontIDs[value] || value;
@@ -515,7 +522,7 @@ define([
     }
 
     if (attr.visible != null) {
-      element.style.visibility = attr.visible ? '' : 'hidden';
+      setStyle(element.style, 'visibility', attr.visible ? '' : 'hidden');
     }
 
     if (type === 'Path' || type === 'Text' || type === 'TextSpan') {
