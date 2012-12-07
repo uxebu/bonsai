@@ -57,19 +57,20 @@ define([
       fontPrefix = AssetController.handlers.Font.prefix;
 
   var basicAttributeMap = {
-    cap: 'stroke-linecap',
-    join: 'stroke-linejoin',
-    miterLimit: 'stroke-miterlimit',
-    opacity: 'opacity',
-    fillOpacity: 'fill-opacity',
-    strokeOpacity: 'stroke-opacity',
-    fontSize: 'font-size',
-    fontWeight: 'font-weight',
-    fontStyle: 'font-style',
-    textAnchor: 'text-anchor',
-    text: 'text',
-    cursor: 'cursor',
-    fillRule: 'fill-rule'
+    // bonsai attribute: [svg attribute, default value]
+    cap: ['stroke-linecap', 'butt'],
+    join: ['stroke-linejoin', 'miter'],
+    miterLimit: ['stroke-miterlimit', '4'],
+    opacity: ['opacity', '1'],
+    fillOpacity: ['fill-opacity', '1'],
+    strokeOpacity: ['stroke-opacity', '1'],
+    fontSize: ['font-size'],
+    fontWeight: ['font-weight'],
+    fontStyle: ['font-style'],
+    textAnchor: ['text-anchor', 'start'],
+    text: ['text'],
+    cursor: ['cursor', 'inherit'],
+    fillRule: ['fill-rule', 'inherit']
   };
 
   var eventTypes = [
@@ -146,10 +147,14 @@ define([
         value = attributes[i];
 
         if (i in basicAttributeMap) {
-          if (value != null) {
-            el.setAttribute(basicAttributeMap[i], value);
-          } else if (value === null) {
-            el.removeAttribute(basicAttributeMap[i]);
+          var attributeInfo = basicAttributeMap[i];
+          var attributeName = attributeInfo[0], defaultValue = attributeInfo[1];
+
+          var isInitalValue = '' + value === defaultValue;
+          if (value !== null && !isInitalValue) {
+            el.setAttribute(attributeName, value);
+          } else if (value === null || isInitalValue) {
+            el.removeAttribute(attributeName);
           }
           continue;
         }
