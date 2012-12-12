@@ -16,6 +16,40 @@ define([
     return tools.mixin({}, e);
   }
 
+  /**
+   * Returns the bonsai id of a DOM node
+   *
+   * @param {Node} node A DOM node
+   * @return {number} The bonsai id of the dom node or -1
+   */
+  function getBonsaiIdOf(node) {
+    var id = node && node.getAttribute && node.getAttribute('data-bs-id');
+    return id ? +id : -1; // string '0' evaluates to true
+  }
+
+  /**
+   * Determines whether a DOM node is an SVG element
+   * @param {Node} node
+   * @return {boolean}
+   */
+  function isSvgElement(node) {
+    return 'ownerSVGElement' in node;
+  }
+
+  /**
+   * Finds the first object that is a bonsai object out of the passed node and
+   * its ancestors.
+   *
+   * @param {Node} node The node to start the search with
+   * @return {Node}
+   */
+  function findBonsaiObject(node) {
+    while (node && getBonsaiIdOf(node) === -1) {
+      node = node.parentNode;
+    }
+    return node;
+  }
+
   // These are mixed-in into the svg-renderer's prototype.
 
   return {
@@ -28,11 +62,13 @@ define([
           clientX = event.clientX,
           clientY = event.clientY,
           prefix = isMulti ? 'multi:' : '',
-          target = this._getTarget(touchEvent),
-          targetId = this._getIdOfTarget(target),
+          target = findBonsaiObject(touchEvent.target),
+          targetId = getBonsaiIdOf(target),
           type = touchEvent.type,
           trueTarget = document.elementFromPoint(touchEvent.pageX, touchEvent.pageY),
-          trueTargetId = trueTarget ? this._getIdOfTarget(trueTarget) : 0;
+          trueTargetId = trueTarget ? getBonsaiIdOf(trueTarget) : 0;
+
+      if (targetId === -1) { return }
 
       event.touchId = touchEvent.identifier;
       event.touchIndex = touchEvent.index;
@@ -108,26 +144,19 @@ define([
       var target = domEvent.target;
 
       // only prevent default for SVG elements, not for embedded html
-      if (!this.allowEventDefaults && (target.ownerSVGElement || target.nodeName === 'svg')) {
+      if (!this.allowEventDefaults && isSvgElement(target)) {
         // event killing is needed to prevent native scrolling etc. within bonsai movies
         domEvent.preventDefault();
       }
 
-      target = this._getTarget(domEvent);
-      var targetId = this._getIdOfTarget(target),
-          type = domEvent.type,
-          data = this;
+      target = findBonsaiObject(domEvent.target);
 
-      if (target && target instanceof HTMLElement) {
-        // Get DOM element for which there is a corresponding bonsai object
-        // i.e. children added via e.g. innerHTML should not trigger events
-        // (only their parents should)
-        while (!target._isBSDOMElement) {
-          target = target.parentNode;
-        }
+      var type = domEvent.type, data = this;
+      var targetId = getBonsaiIdOf(target);
+      if (targetId < 0) {
+        targetId = 0;
       }
 
-      targetId = targetId || 0;
 
       var event = this._getBasicEventData(domEvent),
           clientX = event.clientX,
@@ -235,20 +264,6 @@ define([
         event.type = 'multi:' + type;
         this.emit('userevent', event, targetId);
       }
-    },
-
-    _getTarget: function(e) {
-
-      var target = e.target;
-      while (target && this._getIdOfTarget(target) == null) {
-        target = target.parentNode;
-      }
-      return target;
-    },
-
-    _getIdOfTarget: function(target) {
-      var id = target && target.getAttribute && target.getAttribute('data-bs-id');
-      return id == null ? null : +id;
     },
 
     _getBasicEventData: function(e) {
