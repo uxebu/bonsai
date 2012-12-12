@@ -19,6 +19,7 @@ v0.4.2
 * Fix matrix attribute setter to update scale values correctly
 * Add tools.parseAngle to accept angle units as strings.
   http://www.w3.org/TR/css3-values/#angles
+* Add relatedTarget event properties for mouseout / mouseover.
 
 v0.4.1 / 2012-10-26
 -------------------

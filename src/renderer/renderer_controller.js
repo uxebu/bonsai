@@ -64,10 +64,11 @@ function(tools, EventEmitter, URI) {
     });
 
     // Bind to renderer, tunnel user events through to RunnerContext:
-    this.renderer.on('userevent', this, function(event, targetId) {
+    this.renderer.on('userevent', this, function(event, targetId, relatedTargetId) {
       this.post('userevent', {
         event: event,
-        targetId: targetId
+        targetId: targetId,
+        relatedTargetId: relatedTargetId
       });
     });
 
