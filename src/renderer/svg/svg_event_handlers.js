@@ -8,6 +8,9 @@ define([
 ], function(tools) {
   'use strict';
 
+  /** @const */
+  var ELEMENT_NODE = 1;
+
   var TOUCH_SUPPORT = typeof document == 'undefined' ? false : 'createTouch' in document;
   var rMultiEvent = /drag|pointerup|pointerdown|pointermove/;
   var rPointerEvent = /click|pointer/;
@@ -23,7 +26,7 @@ define([
    * @return {number} The bonsai id of the dom node or -1
    */
   function getBonsaiIdOf(node) {
-    var id = node && node.getAttribute && node.getAttribute('data-bs-id');
+    var id = node && node.nodeType === ELEMENT_NODE && node.getAttribute('data-bs-id');
     return id ? +id : -1; // string '0' evaluates to true
   }
 
@@ -44,7 +47,7 @@ define([
    * @return {Node}
    */
   function findBonsaiObject(node) {
-    while (node && getBonsaiIdOf(node) === -1) {
+    while (node && (node.nodeType !== ELEMENT_NODE || node.hasAttribute('bs-data-id'))) {
       node = node.parentNode;
     }
     return node;
@@ -157,6 +160,7 @@ define([
         targetId = 0;
       }
 
+      var relatedTarget;
 
       var event = this._getBasicEventData(domEvent),
           clientX = event.clientX,
@@ -242,6 +246,15 @@ define([
           // Pass focused element's value to bonsai
           event.inputValue = domEvent.target.value;
           break;
+
+        case 'mouseover':
+          relatedTarget = domEvent.relatedTarget || domEvent.fromElement;
+          relatedTarget = findBonsaiObject(relatedTarget);
+          break;
+        case 'mouseout':
+          relatedTarget = domEvent.relatedTarget || domEvent.toElement;
+          relatedTarget = findBonsaiObject(relatedTarget);
+          break;
       }
 
       data._lastEventPos = [clientX, clientY];
@@ -255,7 +268,7 @@ define([
           domEvent.button === 1 || domEvent.button === 0;
       }
 
-      this.emit('userevent', event, targetId);
+      this.emit('userevent', event, targetId, relatedTarget && getBonsaiIdOf(relatedTarget));
 
       if (!TOUCH_SUPPORT && rMultiEvent.test(type)) {
         // If we're on a non-touch platform (e.g. regular desktop)
