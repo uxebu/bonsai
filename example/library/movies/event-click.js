@@ -14,15 +14,18 @@ stage.addChild(rectPath);
 
 
 rectPath.on('click', function(data){
-  counts.click++; updateCountsText();
+  counts.click++;
+  updateCountsText();
   if (++index == colors.length) index = 0;
   rectPath.attr({fillColor: colors[index]});
 });
 rectPath.on('pointerdown', function(data){
-  counts.pointerdown++; updateCountsText();
+  counts.pointerdown++;
+  updateCountsText();
 });
 rectPath.on('pointerup', function(data){
-  counts.pointerup++; updateCountsText();
+  counts.pointerup++;
+  updateCountsText();
 });
 
 var t = new Text().attr({x: 100, y: 10});
@@ -35,3 +38,4 @@ var counts = {
 function updateCountsText() {
   t.attr({text: 'counts: ' + JSON.stringify(counts)});
 }
+updateCountsText();
