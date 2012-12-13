@@ -240,7 +240,6 @@ define([
       var movieRegistry = registry.movies;
 
       var movies = tools.removeValueFromArray(movieRegistry.movies);
-      var moviesToIncrement = [this];
 
       /*
         The `movies` array may contain gaps (if elements are removed from the
@@ -253,21 +252,23 @@ define([
 
         movie = movies[i];
         if (movie) {
-          if (movie.isPlaying) {
-            moviesToIncrement.push(movie);
-          }
           movie.emitFrame();
         }
 
         i += 1;
       }
 
+
       // Emit an event to mark the fact that we've emitted all submovies' frames:
       this.emit('subMoviesAdvanced');
 
+      var moviesToIncrement = [this].concat(movies);
       // Go through all movies and increment their respective frames:
       for (i = 0, len = moviesToIncrement.length; i < len; ++i) {
-        moviesToIncrement[i].incrementFrame();
+        movie = moviesToIncrement[i];
+        if (movie && movie.isPlaying) {
+          movie.incrementFrame();
+        }
       }
 
       var message;

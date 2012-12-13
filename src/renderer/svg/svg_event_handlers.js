@@ -94,6 +94,7 @@ define([
 
           singleTouchData = touchData[identifier] || (touchData[identifier] = {});
           this.handleSingleTouch(touch, singleTouchData, true);
+
           // Fire the non-multi event for the very first event in the touch-list
           if (i === 0) {
             this.handleSingleTouch(touch, singleTouchData, false);
