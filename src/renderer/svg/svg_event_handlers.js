@@ -71,8 +71,6 @@ define([
           trueTarget = document.elementFromPoint(touchEvent.pageX, touchEvent.pageY),
           trueTargetId = trueTarget ? getBonsaiIdOf(trueTarget) : 0;
 
-      if (targetId === -1) { return }
-
       event.touchId = touchEvent.identifier;
       event.touchIndex = touchEvent.index;
 
