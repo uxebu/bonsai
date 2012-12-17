@@ -136,10 +136,17 @@ define([
           this.assetLoader.handleEvent('error', data.id, data.loadData);
           break;
         case 'userevent':
-          var target = data.targetId ? this.registry.displayObjects[data.targetId] : this;
+          var displayObjectsRegistry = this.registry.displayObjects;
+          var targetId = data.targetId;
+          var target = targetId ? displayObjectsRegistry[targetId] : this;
           if (target) { // target might have been removed already
             var event = data.event;
             event.target = target;
+            var relatedTargetId = data.relatedTargetId;
+            if (relatedTargetId === 0 || relatedTargetId > 0) {
+              event.relatedTarget = displayObjectsRegistry[relatedTargetId] || this;
+            }
+
             uiEvent(event).emitOn(target);
           }
           break;

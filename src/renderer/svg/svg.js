@@ -837,9 +837,6 @@ define([
       }
     }
 
-    // Mark the element as one with a corresponding BS DOMElement object
-    element._isBSDOMElement = true;
-
     for (var i in attributes) {
       if (/^dom_/.test(i)) {
         if (i === 'dom_innerHTML') {
