@@ -47,7 +47,7 @@ define([
    * @return {Node}
    */
   function findBonsaiObject(node) {
-    while (node && (node.nodeType !== ELEMENT_NODE || node.hasAttribute('data-bs-id'))) {
+    while (node && (node.nodeType !== ELEMENT_NODE || !node.hasAttribute('data-bs-id'))) {
       node = node.parentNode;
     }
     return node;
