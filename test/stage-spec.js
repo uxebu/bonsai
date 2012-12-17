@@ -180,8 +180,6 @@ define([
             }
           });
 
-          expect(event.type).toBe(eventType);
-          expect(event.target).toBe(dChild);
           expect(event.relatedTarget).toBe(dParent);
         });
       });
