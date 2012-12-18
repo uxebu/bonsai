@@ -14,13 +14,12 @@ define([
     }
 
     it('should accept a dom id for the node argument', function () {
-      var targetNode = createFakeDomNode();
-      spyOn(targetNode, 'appendChild');
-      spyOn(document, 'getElementById').andReturn(targetNode);
-      var renderer = new SvgRenderer('thing', 1, 1);
+      spyOn(document, 'getElementById').andReturn(createFakeDomNode());
+      spyOn(SvgRenderer, 'Svg');
 
-      expect(document.getElementById).toHaveBeenCalledWith('thing');
-      expect(targetNode.appendChild).toHaveBeenCalledWith(renderer.svg.rootContainer);
+      new SvgRenderer('thing', 1, 1);
+
+      expect( SvgRenderer.Svg ).toHaveBeenCalledWith( createFakeDomNode(), 1, 1);
     });
 
 
