@@ -33,6 +33,10 @@ function(EventEmitter, RendererController, AssetController, tools, URI, version)
     },
 
     createRenderer: function(node, width, height, options) {
+      if (typeof node === 'string') {
+        node = document.getElementById(node);
+      }
+
       if (!options) {
         options = {};
       }
@@ -84,6 +88,10 @@ function(EventEmitter, RendererController, AssetController, tools, URI, version)
      * @returns {Movie}
      */
     run: function(node, url, options) {
+      if (typeof node === 'string') {
+        node = document.getElementById(node);
+      }
+
       if (url && typeof url != 'string') {
         options = url;
       } else {
