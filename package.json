@@ -13,7 +13,12 @@
   "dependencies": {
     "requirejs": "~2.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "grunt": "~0.4.0",
+    "grunt-closure-compiler": "~0.0.13",
+    "grunt-contrib-clean": "~0.4.0a",
+    "grunt-contrib-jshint": "~0.1.0"
+  },
   "engine": {},
   "contributors": [
     "Jens Arps <arps@uxebu.com>",
