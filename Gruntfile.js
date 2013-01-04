@@ -26,21 +26,21 @@ module.exports = function(grunt) {
     },
     'closure-compiler': {
       release: {
-        js: ['src/!(app_node).js'],
-        jsOutputFile: 'build/bonsai.js',
+        js: ['src/**/*.js', '!src/bootstrapper/_dev/*', '!src/bootstrapper/context/socketio/*', '!src/bootstrapper/context/node/*'],
+        jsOutputFile: 'dist/bonsai.js',
         options: {
           transform_amd_modules: null,
           process_common_js_modules: null,
           common_js_module_path_prefix: 'src',
-          common_js_entry_module: 'app_browser.js',
-          create_source_map: '%outname%.map',
-          source_map_format: 'V3',
-          output_wrapper: '"%output%\n//@ sourceMappingURL=tooling-example.js.map"'
+          common_js_entry_module: 'bootstrapper/_build/common.js',
+          //create_source_map: '%outname%.map',
+          //source_map_format: 'V3',
+          output_wrapper: '"(function __bonsaiRunnerCode__(){%output%}());"' // '\n//@ sourceMappingURL=bonsai.js.map"'
         }
       }
     },
     clean: {
-      release: ['dist']
+      release: ['dist/*']
     }
   });
 

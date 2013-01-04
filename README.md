@@ -51,3 +51,7 @@ r.animate('400ms', {
 
 See more here: [Bonsai Documentation/Overviews](http://docs.bonsaijs.org) or
 join the IRC channel [#bonsaijs on freenode](http://webchat.freenode.net/?channels=bonsaijs) and ask for help.
+
+## Notes
+
+- `brew install closure-compiler && export CLOSURE_PATH="/usr/local/opt/closure-compiler/libexec"`
