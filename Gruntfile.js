@@ -25,7 +25,7 @@ module.exports = function(grunt) {
       all: ['Grunfile.js', 'src/**/*.js', 'test/**/(!goog.math.Matrix)*.js']
     },
     'closure-compiler': {
-      release: {
+      'release-max': {
         js: ['src/**/*.js', '!src/bootstrapper/_dev/*', '!src/bootstrapper/context/socketio/*', '!src/bootstrapper/context/node/*'],
         jsOutputFile: 'dist/bonsai.js',
         options: {
@@ -33,10 +33,16 @@ module.exports = function(grunt) {
           process_common_js_modules: null,
           common_js_module_path_prefix: 'src',
           common_js_entry_module: 'bootstrapper/_build/common.js',
+          compilation_level: 'SIMPLE_OPTIMIZATIONS',
           //create_source_map: '%outname%.map',
           //source_map_format: 'V3',
           output_wrapper: '"(function __bonsaiRunnerCode__(){%output%}());"' // '\n//@ sourceMappingURL=bonsai.js.map"'
         }
+      },
+      'release-min': {
+        js: 'dist/bonsai.js',
+        jsOutputFile: 'dist/bonsai.min.js',
+        options: {}
       }
     },
     clean: {
