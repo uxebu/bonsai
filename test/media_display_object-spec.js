@@ -1,6 +1,5 @@
 require([
-  'bonsai/runner/media_display_object',
-  './runner.js'
+  'bonsai/runner/media_display_object'
 ], function(MediaDisplayObject) {
 
   describe('MediaDisplayObject', function() {

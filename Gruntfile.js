@@ -6,6 +6,7 @@ module.exports = function(grunt) {
       options: {
         eqnull: true,
         browser: true,
+        newcap: false,
         predef: [
           'afterEach',
           'beforeEach',
@@ -45,6 +46,25 @@ module.exports = function(grunt) {
         options: {}
       }
     },
+    jasmine: {
+      requirejs: {
+        src: ['src/**/*.js', '!src/bootstrapper/_build/*', '!src/bootstrapper/_dev/*', '!src/bootstrapper/context/socketio/*', '!src/bootstrapper/context/node/*'],
+        options: {
+          specs: ['test/**/*-spec.js', '!test/compare-spec.js', '!test/build-spec.js'],
+          helpers: ['test/jasmine-matchers.js', 'test/jasmine.helper.js'],
+          template: 'requirejs',
+          templateOptions: {
+            requireConfig: {
+              baseUrl: './src/',
+              paths: {
+                bonsai: '.',
+                common: '../test/common'
+              }
+            }
+          }
+        }
+      }
+    },
     clean: {
       release: ['dist/*']
     }
@@ -52,6 +72,7 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks('grunt-closure-compiler');
   grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-contrib-jasmine');
   grunt.loadNpmTasks('grunt-contrib-jshint');
 
   grunt.registerTask('default', ['jshint']);

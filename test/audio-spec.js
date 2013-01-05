@@ -1,7 +1,6 @@
 require([
   'bonsai/runner/audio',
-  'bonsai/runner/group',
-  './runner.js'
+  'bonsai/runner/group'
 ], function(Audio, Group) {
 
   var mockLoader;
