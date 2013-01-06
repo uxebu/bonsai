@@ -77,6 +77,24 @@ module.exports = function(grunt) {
     watch: {
 
     },
+    'saucelabs-jasmine': {
+      test: {
+        username: 'uxebu', // if not provided it'll default to ENV SAUCE_USERNAME (if applicable)
+        key: null, // if not provided it'll default to ENV SAUCE_ACCESS_KEY (if applicable)
+        urls: ['http://localhost:8001/_SpecRunner.html'],
+        tunnelTimeout: 5,
+        testname: 'bonsaijs',
+        browsers: [{
+          browserName: 'firefox'
+        }],
+        onTestComplete: function() {
+          var done = this.async();
+          setTimeout(function() {
+            done(true);
+          });
+        }
+      }
+    },
     clean: {
       release: ['dist/*']
     }
@@ -88,9 +106,11 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jasmine');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-saucelabs');
 
   grunt.registerTask('default', ['jshint']);
   grunt.registerTask('release', ['clean', 'closure-compiler']);
   grunt.registerTask('run-server', ['connect', 'watch']);
   grunt.registerTask('test', ['connect:test', 'jasmine:test']);
+  grunt.registerTask('test-saucelabs', ['connect:test', 'jasmine:test:build', 'saucelabs-jasmine:test']);
 };
