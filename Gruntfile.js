@@ -51,6 +51,7 @@ module.exports = function(grunt) {
         src: ['src/**/*.js', '!src/bootstrapper/_build/*', '!src/bootstrapper/_dev/*', '!src/bootstrapper/context/socketio/*', '!src/bootstrapper/context/node/*'],
         options: {
           host: 'http://<%= connect.test.options.hostname %>:<%= connect.test.options.port %>/',
+          outfile: '_spec_runner.html',
           specs: ['test/**/*-spec.js', '!test/compare-spec.js', '!test/build-spec.js'],
           helpers: ['test/jasmine-matchers.js', 'test/jasmine.helper.js'],
           template: 'requirejs',
@@ -79,13 +80,14 @@ module.exports = function(grunt) {
     },
     'saucelabs-jasmine': {
       test: {
-        username: 'uxebu', // if not provided it'll default to ENV SAUCE_USERNAME (if applicable)
-        key: null, // if not provided it'll default to ENV SAUCE_ACCESS_KEY (if applicable)
-        urls: ['http://localhost:8001/_SpecRunner.html'],
+        username: null, // if not set, defaults to ENV SAUCE_USERNAME
+        key: null, // if not set, defaults to ENV SAUCE_ACCESS_KEY
+        urls: ['http://<%= connect.test.options.hostname %>:<%= connect.test.options.port %>/<%= jasmine.test.options.outfile %>'],
         tunnelTimeout: 5,
+        testReadyTimeout: 1000*10,
         testname: 'bonsaijs',
         browsers: [{
-          browserName: 'firefox'
+          browserName: 'chrome'
         }],
         onTestComplete: function() {
           var done = this.async();
@@ -110,7 +112,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('default', ['jshint']);
   grunt.registerTask('release', ['clean', 'closure-compiler']);
-  grunt.registerTask('run-server', ['connect', 'watch']);
+  grunt.registerTask('run-server', ['connect', 'jasmine:test:build', 'watch']);
   grunt.registerTask('test', ['connect:test', 'jasmine:test']);
   grunt.registerTask('test-saucelabs', ['connect:test', 'jasmine:test:build', 'saucelabs-jasmine:test']);
 };
