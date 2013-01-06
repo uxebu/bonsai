@@ -47,7 +47,7 @@ module.exports = function(grunt) {
       }
     },
     jasmine: {
-      requirejs: {
+      test: {
         src: ['src/**/*.js', '!src/bootstrapper/_build/*', '!src/bootstrapper/_dev/*', '!src/bootstrapper/context/socketio/*', '!src/bootstrapper/context/node/*'],
         options: {
           specs: ['test/**/*-spec.js', '!test/compare-spec.js', '!test/build-spec.js'],
