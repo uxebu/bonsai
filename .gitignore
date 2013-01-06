@@ -9,3 +9,4 @@ tmp
 lib/r.js
 .sass-cache
 _site
+_spec_runner.html
