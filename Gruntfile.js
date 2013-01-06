@@ -50,6 +50,7 @@ module.exports = function(grunt) {
       test: {
         src: ['src/**/*.js', '!src/bootstrapper/_build/*', '!src/bootstrapper/_dev/*', '!src/bootstrapper/context/socketio/*', '!src/bootstrapper/context/node/*'],
         options: {
+          host: 'http://<%= connect.test.options.hostname %>:<%= connect.test.options.port %>/',
           specs: ['test/**/*-spec.js', '!test/compare-spec.js', '!test/build-spec.js'],
           helpers: ['test/jasmine-matchers.js', 'test/jasmine.helper.js'],
           template: 'requirejs',
@@ -65,6 +66,17 @@ module.exports = function(grunt) {
         }
       }
     },
+    connect: {
+      'test': {
+        options: {
+          hostname: 'localhost',
+          port: 8001
+        }
+      }
+    },
+    watch: {
+
+    },
     clean: {
       release: ['dist/*']
     }
@@ -72,9 +84,13 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks('grunt-closure-compiler');
   grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-jasmine');
   grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-contrib-watch');
 
   grunt.registerTask('default', ['jshint']);
   grunt.registerTask('release', ['clean', 'closure-compiler']);
+  grunt.registerTask('run-server', ['connect', 'watch']);
+  grunt.registerTask('test', ['connect:test', 'jasmine:test']);
 };
