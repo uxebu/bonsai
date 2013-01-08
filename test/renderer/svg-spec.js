@@ -13,17 +13,6 @@ define([
       return new SvgRenderer(createFakeDomNode(), 1, 1);
     }
 
-    it('should accept a dom id for the node argument', function () {
-      var targetNode = createFakeDomNode();
-      spyOn(targetNode, 'appendChild');
-      spyOn(document, 'getElementById').andReturn(targetNode);
-      var renderer = new SvgRenderer('thing', 1, 1);
-
-      expect(document.getElementById).toHaveBeenCalledWith('thing');
-      expect(targetNode.appendChild).toHaveBeenCalledWith(renderer.svg.rootContainer);
-    });
-
-
     describe('allowEventDefaults', function() {
       it('should assign the constructor value as property', function() {
         expect(new SvgRenderer(createFakeDomNode(), 1, 1, {
