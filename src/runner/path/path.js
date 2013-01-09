@@ -102,7 +102,6 @@ define([
   }
 
   var getStrokeDashArray = getter('_strokeDashArray');
-
   function setStrokeDashArray(dashArray) {
     if (dashArray) {
       if (dashArray.join) {
@@ -111,6 +110,15 @@ define([
       this._strokeDashArray = dashArray;
     } else {
       this._strokeDashArray = null;
+    }
+  }
+
+  var getStrokeOffset = getter('_strokeDashOffset');
+  function setStrokeOffset(strokeOffset) {
+    if (strokeOffset) {
+      this._strokeOffset = strokeOffset;
+    } else {
+      this._strokeOffset = null;
     }
   }
 
@@ -226,6 +234,8 @@ define([
       strokeGradient: accessor(getStrokeGradient, setStrokeGradient, true),
       _strokeDashArray: data(null, true),
       strokeDashArray: accessor(getStrokeDashArray, setStrokeDashArray, true),
+      _strokeOffset: data(null, true),
+      strokeOffset: accessor(getStrokeOffset, setStrokeOffset, true),
 
       strokeWidth: data(0, true, true),
       _miterLimit: data(4, true),
@@ -247,6 +257,8 @@ define([
     rendererAttributes.join = '_join';
     rendererAttributes.strokeWidth = 'strokeWidth';
     rendererAttributes.miterLimit = '_miterLimit';
+    rendererAttributes.strokeDashArray = 'strokeDashArray';
+    rendererAttributes.strokeOffset = '_strokeOffset';
 
     this.morphableAttributes = {
       x: 1,
@@ -257,6 +269,9 @@ define([
       strokeWidth: 1,
       fillOpacity: 1,
       strokeOpacity: 1,
+      strokeDashArray: 1,
+      strokeOffset: 1,
+      stroke: 1,
       opacity: 1,
       fillGradient: 1,
       scale: 1,

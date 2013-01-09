@@ -65,6 +65,7 @@ define([
     fillOpacity: ['fill-opacity', '1'],
     strokeOpacity: ['stroke-opacity', '1'],
     strokeDashArray: ['stroke-dasharray'],
+    strokeOffset: ['stroke-dashoffset'],
     fontSize: ['font-size'],
     fontWeight: ['font-weight'],
     fontStyle: ['font-style'],
@@ -562,6 +563,11 @@ define([
       if ('strokeGradient' in attr) {
         this.applyStrokeGradient(element, attr.strokeGradient, '', attr.strokeWidth);
       }
+
+      if ('strokeDashArray' in attr) {
+        this.applyStrokeDashArray(element, attr.strokeDashArray, attr.strokeOffset || 0);
+      }
+
     }
   };
 
@@ -1018,6 +1024,16 @@ define([
     } else if (aColor === null) {
       element.removeAttribute('stroke');
       element.removeAttribute('data-stroke');
+    }
+  };
+
+  proto.applyStrokeDashArray = function(element, strokeDashArray, strokeOffset) {
+    if (strokeDashArray) {
+      element.setAttribute('stroke-dasharray', strokeDashArray);
+      element.setAttribute('stroke-dashoffset', strokeOffset);
+    } else {
+      element.removeAttribute('stroke-dasharray');
+      element.removeAttribute('stroke-dashoffset');
     }
   };
 
