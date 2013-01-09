@@ -3,38 +3,48 @@ define([
   '../../tools',
   '../../event_emitter',
   './properties_tween'
-], function(easing, tools, EventEmitter, PropertiesTween) {
+], function(easingFunctions, tools, EventEmitter, PropertiesTween) {
   'use strict';
 
   var hasOwn = {}.hasOwnProperty,
       forEach = tools.forEach;
 
+  /**
+   * If func is a string, return the actual function that
+   * represents the given easing function name.
+   *
+   * @private
+   * @param {Function|string} easingFunc
+   * @return {*}
+   */
   function getEasingFunction(easingFunc) {
     return typeof easingFunc == 'function' ?
-      easingFunc : easing[easingFunc]
+      easingFunc : easingFunctions[easingFunc]
   }
 
   /**
-   * Creates a KeyframeAnimation instance
+   * A KeyframeAnimation is an animation where you can specify expected states
+   * at arbitrary keyframes in the animation timeline.
    *
-   * @constructor
    * @name KeyframeAnimation
-   * @memberOf module:animation
-   * @param {number|string} duration The duration, either as frames (number)
-   *  or as seconds (e.g. '1s')
-   * @param {Object} [properties] The keyframes to animate through
-   * @param {Object} [options] Additional options
-   * @param {String|Function} [options.easing] Easing function for each sub-animation
-   *  @param {Array|Object} [options.subjects] The subject(s) (e.g. DisplayObjects) of
-   *    the keyframe-animation
-   *  @param {Number|String} [options.delay=0] Delay before animation begins, in
-   *   frames or seconds
-   * @returns {KeyframeAnimation} An KeyframeAnimation instance
-   *
+   * @constructor
    * @mixes EventEmitter
+   * @memberOf module:animation
+   *
+   * @param {EventEmitter} clock An object that emits a 'tick' event and
+   *    has a `toFrameNumber` method.
+   * @param {number|string} duration The duration, either as frames (number)
+   *    or as seconds (e.g. '1s', '1ms')
+   * @param {Object} [keyframes] The keyframes to animate through
+   * @param {Object} [options={}] Additional options
+   * @property {String|Function} [options.easing] Easing function for each sub-animation
+   * @property {Array|Object} [options.subjects] The subject(s) (e.g. DisplayObjects) of
+   *    the keyframe-animation
+   * @property {Number|String} [options.delay=0] Delay before animation begins, in
+   *    frames or seconds
    */
   function KeyframeAnimation(clock, duration, keyframes, options) {
-    options || (options = {});
+    if (!options) options = {};
 
     this.clock = clock;
     duration = this.duration = +duration || clock.toFrameNumber(duration);
@@ -42,14 +52,15 @@ define([
     this._parseEventProps(options);
 
     this.subjects = [];
-    this.initialValues = null;
 
+    // Looks wonky, but because repeat allows Infinity, combining it into
+    // `(repeat-(repeat%1))||0` would result in 0, rather than Infinity.
     this.repeat = (options.repeat || 0) - (options.repeat % 1 || 0);
-    this.delay = options.delay && clock.toFrameNumber(options.delay) || 0;
+
+    this.delay = (options.delay && clock.toFrameNumber(options.delay)) || 0;
     this.isTimelineBound = options.isTimelineBound !== false;
 
-    var easingFunc = options.easing;
-    this.easing = getEasingFunction(easingFunc);
+    this.easing = getEasingFunction(options.easing);
 
     this.prevFrame = 0;
     this.frame = 0;
@@ -66,14 +77,87 @@ define([
     }
   }
 
-
   KeyframeAnimation.prototype = /** @lends module:animation.KeyframeAnimation.prototype */ {
+
+    /**
+     * @private
+     * @property {number} clock Frame interval in milliseconds
+     */
+    clock: null,
+
+    /**
+     * @private
+     * @property {number} currentDelay Number of frames we are _still_ waiting before starting animation
+     */
+    currentDelay: -1,
+    /**
+     * @private
+     * @property {number} currentTweenIndex Basically the animation progress
+     */
+    currentTweenIndex: -1,
+    /**
+     * @private
+     * @property {number} delay Initial number of frames to wait for this animation to begin
+     */
+    delay: -1,
+    /**
+     * @private
+     * @property {number} duration Number of entire animation in frames
+     */
+    duration: -1,
+    /**
+     * @private
+     * @property {Function} easing The easing function which transforms the actual progress
+     */
+    easing: null,
+    /**
+     * @private
+     * @property {number} frame Current frame position (=> relates to progress of animation)
+     */
+    frame: -1,
+    /**
+     * @private
+     * @property {boolean} isPlaying Is this animation currently applying changes?
+     */
+    isPlaying: false,
+    /**
+     * @private
+     * @property {boolean} isTimelineBound Does this animation sync progress with the timeline? So
+     *    listen to 'tick' or 'advance'?
+     */
+    isTimelineBound: false,
+    /**
+     * @private
+     * @property {number} keys Explicitly defined key frames (normalized progress) for this animation
+     */
+    keys: null,
+    /**
+     * @private
+     * @property {Object} keyframes Each key is the proper animation progress for its (key)frame value
+     */
+    keyframes: null,
+    /**
+     * @private
+     * @property {number} prevFrame Frame number of the first frame of the animation (TOFIX: rename it!)
+     */
+    prevFrame: -1,
+    /**
+     * @property {number} repeat Number of times this animation should repeat. Use Infinity for infinite loop.
+     */
+    repeat: -1,
+    /**
+     * @private
+     * @property {Object[]} subjects The objects that are animated (usually display objects)
+     */
+    subjects: null,
 
     /**
      * Parses and connects event listeners
      * passed via the options object.
      *
      * @private
+     * @param {Object} options
+     * @return {KeyframeAnimation}
      */
     _parseEventProps: function(options) {
       var propName, evtName;
@@ -89,7 +173,7 @@ define([
     /**
      * Clones the KeyframeAnimation instance.
      *
-     * @returns {Animation} The clone
+     * @return {KeyframeAnimation} The clone
      */
     clone: function() {
       return new KeyframeAnimation(this.clock, this.duration, tools.mixin({}, this.keyframes), {
@@ -101,11 +185,12 @@ define([
     },
 
     /**
-     * Starts or resumes an animation
-     *
+     * Starts or resumes an animation.
      * Optionally changes the subjects of the animation.
+     * Does nothing (except optionally update subjects) if already playing.
      *
      * @param {Object} [subjects]
+     * @return {KeyframeAnimation}
      */
     play: function(subjects) {
 
@@ -127,11 +212,9 @@ define([
 
       this.emit('play', this);
 
-      /*
-        Handle the case where initial values are specified and are
-        different from the subject's values. We need to set these
-        `from` properties manually: (FRAME 0)
-      */
+      // Handle the case where initial values are specified and are
+      // different from the subject's values. We need to set these
+      // `from` properties manually: (FRAME 0)
       var initial = this.keyframes[0];
       if (initial && this.currentTweenIndex === 0) {
         forEach(this.subjects, function(subj) {
@@ -147,6 +230,8 @@ define([
 
     /**
      * Pauses an animation
+     *
+     * @return {KeyframeAnimation}
      */
     pause: function() {
       this.clock.removeListener(this.isTimelineBound ? 'advance' : 'tick', this, this._onStep);
@@ -157,6 +242,8 @@ define([
 
     /**
      * Resets a keyframe animation (so it's ready to begin again)
+     *
+     * @return {KeyframeAnimation}
      */
     reset: function() {
       this.frame = 0;
@@ -168,7 +255,12 @@ define([
 
     /**
      * Event listener for the clock's tick event, delegates to step()
+     *
      * @private
+     *
+     * @param _ Unused (event param)
+     * @param {number} frameNumber
+     * @param {boolean} timelineIsFinished
      */
     _onStep: function(_, frameNumber, timelineIsFinished) {
 
@@ -176,7 +268,7 @@ define([
         return;
       }
 
-      // lastFrame defaults to the current frame
+      // prevFrame defaults to the current frame
       // (this'll be at the start of an animation)
       this.prevFrame = this.prevFrame || frameNumber;
 
@@ -209,7 +301,10 @@ define([
     /**
      * Runs a single step of the keyframe-animation, setting changed values
      * on their respective subjects
+     *
      * @private
+     * @param {number} progress
+     * @return {undefined}
      */
     step: function(progress) {
 
@@ -247,7 +342,9 @@ define([
 
     /**
      * Adds a subject to the keyframe-animation
+     *
      * @param {Object} subject The subject (usually a DisplayObject)
+     * @return {KeyframeAnimation}
      */
     addSubject: function(subject) {
 
@@ -267,48 +364,52 @@ define([
 
     /**
      * Adds multiple subjects to the animation
-     * @param {Array} subjects Array of subjects to add
+     *
+     * @param {Object|Object[]} subjects Array of subjects or single subject to add (usually display object(s))
+     * @return {KeyframeAnimation}
      */
     addSubjects: function(subjects) {
-      var me = this;
       subjects = tools.isArray(subjects) ? subjects : [subjects];
-      forEach(subjects, function(subject) {
-        me.addSubject(subject);
-      });
+      forEach(subjects, this.addSubject, this);
       return this;
     },
 
     /**
      * Removes a subject from the animation
+     *
      * @param {Object} subject The subject to remove
      */
     removeSubject: function(subject) {
-      for (var i = 0, l = this.subjects.length; i < l; ++i) {
-        if (this.subjects[i].subject === subject) {
-          this.subjects.splice(i, 1);
-          for (var a = 0, al = this.animations.length; a < al; ++a) {
-            this.animations[a].removeSubject(subject);
-          }
+      var subjects = this.subjects;
+      // Reverse search order to make splicing safe
+      for (var i = subjects.length - 1; i >= 0; i -= 1) {
+        if (subjects[i].subject === subject) {
+          subjects.splice(i, 1);
         }
       }
     },
 
     /**
      * Removes a subject from the animation
-     * @param {Array} subjects Array of subjects to remove
+     *
+     * @param {Object[]} subjects Array of subjects to remove (usually display objects)
+     * @return {KeyframeAnimation}
      */
     removeSubjects: function(subjects) {
-      forEach(subjects, tools.hitch(this, 'removeSubject'));
+      forEach(subjects, this.removeSubject, this);
       return this;
     },
 
     /**
-     * Creates a PropertiesTween object for each phase of the keyframe animation
+     * Creates a PropertiesTween object for each phase of the keyframe animation.
+     * Note that the startValues may have undefined properties, these need to be
+     * ignored.
      *
      * @private
+     * @param {Object} startValues The initial values of the tween
+     * @return {PropertiesTween[]}
      */
     _createTweens: function(startValues) {
-
       var animationDuration,
           totalDuration = 0,
           prevAnimation,
@@ -350,13 +451,16 @@ define([
     /**
      * Fills in properties where they are specified in one
      * keyframe but not in another
+     * Note that the initialValues may have undefined properties,
+     * these need to be ignored.
      *
      * @private
+     * @param {Object} initialValues
      */
     _fillInProperties: function(initialValues) {
 
-      var easingFn = this.easingFn,
-          lastFrame = this.duration,
+      var easing = this.easing,
+          duration = this.duration,
           keys = this.keys,
           keyframes = this.keyframes,
           keyframe,
@@ -414,7 +518,7 @@ define([
                 must be the last occurance and thus the end-point
               */
               nextValue = prevValue;
-              nextFrame = lastFrame;
+              nextFrame = duration;
             }
 
             fromValues = {};
@@ -425,8 +529,8 @@ define([
             // Calculate would-be progress of keyframe:
             progress = (frame - prevFrame) / (nextFrame - prevFrame);
 
-            if (easingFn) {
-              progress = easingFn(progress);
+            if (easing) {
+              progress = easing(progress);
             }
 
             if (nextFrame.easing) {
@@ -468,6 +572,8 @@ define([
      * an absolute frame. Make fresh copies using `tools.mixin({},...)`
      *
      * @private
+     * @param {Object[]} keyframes
+     * @return {Object} keyframes (new object, input cleaned)
      */
     _convertKeysToFrames: function(keyframes) {
       var key, frame, maxFrame = 0;

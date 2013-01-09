@@ -20,8 +20,23 @@ define([
    */
   var uid = 1;
 
-  var atan2 = Math.atan2, PI = Math.PI;
+  var atan2 = Math.atan2, sqrt = Math.sqrt, PI = Math.PI;
   var isfinite = isFinite; // local reference for faster lookup
+
+  /**
+   * Determines whether an attribute update is valid effectual.
+   *
+   * @param {Object} attributes An attributes object.
+   * @param {string} name The name of the attribute
+   * @param oldValue
+   * @param newValue
+   * @return {Boolean}
+   */
+  function isAttributeChange(attributes, name, oldValue, newValue) {
+    return name in attributes &&
+      name.charAt(0) !== '_' &&
+      (oldValue !== newValue || typeof oldValue === 'object');
+  }
 
   function getRotation() {
     var matrix = this._matrix;
@@ -72,6 +87,18 @@ define([
   }
 
   function setMatrix(matrix) {
+    /*
+      The internally stored matrix is 'unscaled', and scale is
+      stored seperately. This approach allows for non-destructive scaling to 0.
+
+      When setting the matrix, we need to convert it to the unscaled form, i.e.
+      extracting the scale, storing it into the respective internal variables,
+      and apply the reverse scale to the matrix.
+     */
+
+    var scaleX = this._scaleX = sqrt(matrix.a * matrix.a + matrix.b * matrix.b);
+    var scaleY = this._scaleY = sqrt(matrix.d * matrix.d + matrix.c * matrix.c);
+
     var m = this._matrix;
     m.a = matrix.a;
     m.b = matrix.b;
@@ -79,6 +106,16 @@ define([
     m.d = matrix.d;
     m.tx = matrix.tx;
     m.ty = matrix.ty;
+
+    if (scaleX !== 1 || scaleY !== 1) {
+      // Make sure we rotate around the chosen origin
+      var origin = m.transformPoint(this._origin);
+      m.tx -= origin.x;
+      m.ty -= origin.y;
+      m.scale( 1/scaleX || 1, 1/scaleY || 1); // avoid scaling by NaN
+      m.tx += origin.x;
+      m.ty += origin.y;
+    }
   }
 
   function getX() {
@@ -567,7 +604,7 @@ define([
           }
           for (name in attr) {
             value = attr[name]; // value parameter is unused in this branch
-            if (name in attributes && name.charAt(0) != '_' && attributes[name] !== value) {
+            if (isAttributeChange(attributes, name, attributes[name], value)) {
               attributes[name] = value;
               hasChange = this._mutatedAttributes[name] = true;
             }
@@ -575,7 +612,7 @@ define([
           break;
 
         case 2: // set at single attribute
-          if (attr in attributes && attr.charAt(0) != '_' && attributes[attr] !== value) {
+          if (isAttributeChange(attributes, attr, attributes[attr], value)) {
             attributes[attr] = value;
             hasChange = this._mutatedAttributes[attr] = true;
           }

@@ -20,6 +20,22 @@ define([
   // targets webkit based browsers from version 530.0 to 534.4
   var isWebkitPatternBug = /AppleWebKit\/53([0-3]|4.([0-4]))/.test(navigator.appVersion);
 
+  /**
+   * Sets a style property on a style object. Avoids unnecessary creation of
+   * style attributes in the DOM, to ease debugging.
+   *
+   * @param {CSSStyleDeclaration} style The style object to set the property on
+   * @param {string} name The name of the property to set
+   * @param {string} value The value of the property to set.
+   */
+  function setStyle(style, name, value) {
+    if (value) {
+      style[name] = value;
+    } else if (style[name]) { // only remove if set to prevent empty style attributes in the DOM
+      style[name] = '';
+    }
+  }
+
   // Math
   var min = Math.min;
   var max = Math.max;
@@ -41,20 +57,21 @@ define([
       fontPrefix = AssetController.handlers.Font.prefix;
 
   var basicAttributeMap = {
-    cap: 'stroke-linecap',
-    join: 'stroke-linejoin',
-    miterLimit: 'stroke-miterlimit',
-    opacity: 'opacity',
-    fillOpacity: 'fill-opacity',
-    strokeOpacity: 'stroke-opacity',
-    strokeDashArray: 'stroke-dasharray',
-    fontSize: 'font-size',
-    fontWeight: 'font-weight',
-    fontStyle: 'font-style',
-    textAnchor: 'text-anchor',
-    text: 'text',
-    cursor: 'cursor',
-    fillRule: 'fill-rule'
+    // bonsai attribute: [svg attribute, default value]
+    cap: ['stroke-linecap', 'butt'],
+    join: ['stroke-linejoin', 'miter'],
+    miterLimit: ['stroke-miterlimit', '4'],
+    opacity: ['opacity', '1'],
+    fillOpacity: ['fill-opacity', '1'],
+    strokeOpacity: ['stroke-opacity', '1'],
+    strokeDashArray: ['stroke-dasharray'],
+    fontSize: ['font-size'],
+    fontWeight: ['font-weight'],
+    fontStyle: ['font-style'],
+    textAnchor: ['text-anchor', 'start'],
+    text: ['text'],
+    cursor: ['cursor', 'inherit'],
+    fillRule: ['fill-rule', 'inherit']
   };
 
   var eventTypes = [
@@ -131,17 +148,21 @@ define([
         value = attributes[i];
 
         if (i in basicAttributeMap) {
-          if (value != null) {
-            el.setAttribute(basicAttributeMap[i], value);
-          } else if (value === null) {
-            el.removeAttribute(basicAttributeMap[i]);
+          var attributeInfo = basicAttributeMap[i];
+          var attributeName = attributeInfo[0], defaultValue = attributeInfo[1];
+
+          var isInitalValue = '' + value === defaultValue;
+          if (value !== null && !isInitalValue) {
+            el.setAttribute(attributeName, value);
+          } else if (value === null || isInitalValue) {
+            el.removeAttribute(attributeName);
           }
           continue;
         }
 
         switch (i) {
           case 'interactive':
-            el.style.pointerEvents = value ? 'inherit' : 'none';
+            setStyle(el.style, 'pointerEvents', value ? '' : 'none');
             break;
           case 'fontFamily':
             value = fontIDs[value] || value;
@@ -180,10 +201,14 @@ define([
             break;
           case 'matrix':
             if (value != null) {
-              el.setAttribute(
-                'transform',
-                matrixToString(value)
-              );
+              // clear transform attribute for identity matrix
+              var strMatrix = matrixToString(value);
+              if (strMatrix == 'matrix(1,0,0,1,0,0)') {
+                // this is the default
+                el.removeAttribute('transform');
+              } else {
+                el.setAttribute('transform', strMatrix);
+              }
             } else if (value === null) {
               el.removeAttribute('transform');
             }
@@ -197,7 +222,7 @@ define([
    * The SvgRenderer constructor
    *
    * @constructor
-   * @param {HTMLElement} node The element to append the svg root node to.
+   * @param {HTMLElement|String} node The element or element id to append the svg root node to.
    * @param {number} width The width to apply to the svg root node.
    *    Falsy means 'no width applied'.
    * @param {number} height The height to apply to the svg root node.
@@ -209,6 +234,11 @@ define([
    *    with the framerate.
    */
   function SvgRenderer(node, width, height, options) {
+
+    if (typeof node === 'string') {
+      node = document.getElementById(node);
+    }
+
     options = options || {};
     this.width = width;
     this.height = height;
@@ -233,6 +263,8 @@ define([
     document.addEventListener('keydown', this, false);
     document.addEventListener('keypress', this, false);
 
+    this._isLoggingFps = false;
+    this._fpsInterval = null;
     this._setupFPSLog(options.fpsLog);
     if (options.disableContextMenu) {
       this.config({
@@ -423,7 +455,9 @@ define([
       }
     }
 
-    this._logFrame();
+    if (this._isLoggingFps) {
+      this._logFrame();
+    }
 
     this.emit('canRender');
   };
@@ -494,7 +528,7 @@ define([
     }
 
     if (attr.visible != null) {
-      element.style.visibility = attr.visible ? '' : 'hidden';
+      setStyle(element.style, 'visibility', attr.visible ? '' : 'hidden');
     }
 
     if (type === 'Path' || type === 'Text' || type === 'TextSpan') {
@@ -827,6 +861,8 @@ define([
     }
 
   };
+
+  proto.getTime = Date.now || function() { return new Date().getTime() };
 
   proto.removeObject = function(element) {
 
@@ -1489,11 +1525,14 @@ define([
 
   proto._setupFPSLog = function(fpsLog) {
     var isFunction = typeof fpsLog === 'function';
-    if (fpsLog !== true || isFunction) {
+    var hasLog = fpsLog === true || isFunction;
+    this._isLoggingFps = hasLog;
+    clearInterval(this._fpsInterval);
+    if (!hasLog) {
       return;
     }
 
-    if (!isFunction) {
+    if (fpsLog === true) { // draw a fps counter on the stage
       this.render([
         {
           parent:0,
@@ -1536,14 +1575,14 @@ define([
   };
 
   proto._logFrame = function() {
-    (this._frameTimes || (this._frameTimes = [])).push(+new Date);
+    (this._frameTimes || (this._frameTimes = [])).push(this.getTime());
   };
 
   proto.getFPS = function() {
 
     var frames = this._frameTimes,
         fps = 0,
-        time = +new Date - 1000;
+        time = this.getTime() - 1000;
 
     for (var l = frames.length; l--;) {
       if (frames[l] < time) break;

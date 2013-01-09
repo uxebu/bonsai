@@ -29,7 +29,7 @@ define([
   mixin(translators, matrixTranslators);
   mixin(translators, cornerRadiusTranslators);
 
-  /** 
+  /**
    * Constructs an instance of PropertiesTween which takes care of tweening
    * a set of properties from one state to another, using any necessary
    * property translators (e.g. colors get split into r,g,b,a for tweening)
@@ -52,7 +52,11 @@ define([
       }
     }
 
-    this.propertyNames = Object.keys(this.propertiesFrom);
+    // note: only process properties that actually have a value!
+    // TOFIX: confirm that this shouldn't be fixed upstream (that unused properties should not be set at all)
+    this.propertyNames = Object.keys(this.propertiesFrom)
+      .filter(function(name){ return this.propertiesFrom[name] !== undefined && this.propertiesTo[name] !== undefined; },this);
+
     this.propertyLength = this.propertyNames.length;
     this.propertyTweens = [];
     this._setupTweens();
