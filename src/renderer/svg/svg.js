@@ -64,8 +64,8 @@ define([
     opacity: ['opacity', '1'],
     fillOpacity: ['fill-opacity', '1'],
     strokeOpacity: ['stroke-opacity', '1'],
-    strokeDashArray: ['stroke-dasharray'],
-    strokeOffset: ['stroke-dashoffset'],
+    strokeDash: ['stroke-dasharray'],
+    strokeDashOffset: ['stroke-dashoffset'],
     fontSize: ['font-size'],
     fontWeight: ['font-weight'],
     fontStyle: ['font-style'],
@@ -564,8 +564,8 @@ define([
         this.applyStrokeGradient(element, attr.strokeGradient, '', attr.strokeWidth);
       }
 
-      if ('strokeDashArray' in attr) {
-        this.applyStrokeDashArray(element, attr.strokeDashArray, attr.strokeOffset || 0);
+      if ('strokeDash' in attr) {
+        this.applyStrokeDashArray(element, attr.strokeDash.join(''), attr.strokeDashOffset);
       }
 
     }
