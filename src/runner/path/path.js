@@ -101,24 +101,12 @@ define([
     this._strokeColor = parseColor(color, this._strokeColor);
   }
 
-  var getStrokeDashArray = getter('_strokeDashArray');
-  function setStrokeDashArray(dashArray) {
-    if (dashArray) {
-      if (dashArray.join) {
-        dashArray = dashArray.join(', ');
-      }
-      this._strokeDashArray = dashArray;
+  var getStrokeDash = getter('_strokeDash');
+  function setStrokeDash(dashArray) {
+    if (tools.isArray(dashArray)) {
+      this._strokeDash = dashArray;
     } else {
-      this._strokeDashArray = null;
-    }
-  }
-
-  var getStrokeOffset = getter('_strokeDashOffset');
-  function setStrokeOffset(strokeOffset) {
-    if (strokeOffset) {
-      this._strokeOffset = strokeOffset;
-    } else {
-      this._strokeOffset = null;
+      this._strokeDash = null;
     }
   }
 
@@ -201,7 +189,8 @@ define([
    * @property {String} __supportedAttributes__.join The shape to be used at the corners of paths. Can be one of 'miter', 'round', 'bevel'. Default: 'miter'
    * @property {String} __supportedAttributes__.strokeColor The line color. Default: transparent
    * @property {gradient.LinearGradient|gradient.RadialGradient} __supportedAttributes__.strokeGradient The line gradient. Default: nothing
-   * @property {String} __supportedAttributes__.strokeDashArray The stroke dasharray. Default: nothing
+   * @property {Array} __supportedAttributes__.strokeDash The stroke dasharray. Default: nothing
+   * @property {Number} __supportedAttributes__.strokeDashOffset The stroke dasharray. Default: 0
    * @property {Number} __supportedAttributes__.strokeWidth The line width. Default: 0
    * @property {Number} __supportedAttributes__.miterLimit The miter limit of the stroke. Default: 4
    *
@@ -232,10 +221,9 @@ define([
       strokeColor: accessor(getStrokeColor, setStrokeColor, true),
       _strokeGradient: data(undefined, true),
       strokeGradient: accessor(getStrokeGradient, setStrokeGradient, true),
-      _strokeDashArray: data(null, true),
-      strokeDashArray: accessor(getStrokeDashArray, setStrokeDashArray, true),
-      _strokeOffset: data(null, true),
-      strokeOffset: accessor(getStrokeOffset, setStrokeOffset, true),
+      _strokeDash: data(null, true),
+      strokeDash: accessor(getStrokeDash, setStrokeDash, true),
+      strokeDashOffset: data(0, true, true),
 
       strokeWidth: data(0, true, true),
       _miterLimit: data(4, true),
@@ -257,8 +245,8 @@ define([
     rendererAttributes.join = '_join';
     rendererAttributes.strokeWidth = 'strokeWidth';
     rendererAttributes.miterLimit = '_miterLimit';
-    rendererAttributes.strokeDashArray = 'strokeDashArray';
-    rendererAttributes.strokeOffset = '_strokeOffset';
+    rendererAttributes.strokeDash = '_strokeDash';
+    rendererAttributes.strokeDashOffset = 'strokeDashOffset';
 
     this.morphableAttributes = {
       x: 1,
@@ -269,9 +257,8 @@ define([
       strokeWidth: 1,
       fillOpacity: 1,
       strokeOpacity: 1,
-      strokeDashArray: 1,
-      strokeOffset: 1,
-      stroke: 1,
+      strokeDash: 1,
+      strokeDashOffset: 1,
       opacity: 1,
       fillGradient: 1,
       scale: 1,
