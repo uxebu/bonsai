@@ -7,28 +7,24 @@ rect.attr({
   fillColor: 'yellow'
 });
 
-var i = 0;
-var offset = false;
-setInterval(function () {
-  i++;
+rect.animate('0.5s', {
+  strokeDashOffset: 14,
+}, { repeat: Infinity });
 
-  rect.attr('strokeDashOffset', i);
-
-  if (i === 9) i = 0;
-}, 100);
 
 var star = new Star(100, 97, 20, 5, 3).addTo(stage);
 star.attr({
   strokeWidth: 1,
   strokeDash: [10, 5, 10, 3],
-  strokeDashOffset: 5,
   strokeColor: 'orange',
   fillColor: 'white'
 });
 
-
-star.animate('1s', {
-  strokeDashOffset: 28
-}, { repeat: Infinity });
+// animations of stroke dashes with a different length works, too!
+star.animate(new KeyframeAnimation('4s', {
+  '0%': { strokeDash: [ 10, 5, 10, 3 ]},
+  '50%': { strokeDash: [ 20, 10 ]},
+  '100%': { strokeDash: [ 10, 5, 10, 3 ]}
+}, { repeat: Infinity }));
 
 
