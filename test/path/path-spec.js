@@ -332,6 +332,11 @@ define([
           var s = new Path().attr('strokeDash', [5, 5, 3, 5]);
           expect(s.attr('strokeDash')).toEqual([5, 5, 3, 5]);
         });
+
+        it('should return null if given a non-array', function(){
+          var s = new Path().attr('strokeDash', '');
+          expect(s.attr('strokeDash')).toEqual(null);
+        });
       });
 
       describe('Sets & Gets strokeDashOffset', function(){
@@ -343,6 +348,7 @@ define([
           var s = new Path().attr('strokeDashOffset', 5);
           expect(s.attr('strokeDashOffset')).toEqual(5);
         });
+
       });
 
       it('Sets & Gets opacity', function(){

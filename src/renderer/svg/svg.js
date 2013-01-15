@@ -1030,7 +1030,7 @@ define([
   proto.applyStrokeDashArray = function(element, strokeDashArray, strokeOffset) {
     if (strokeDashArray) {
       element.setAttribute('stroke-dasharray', strokeDashArray);
-      element.setAttribute('stroke-dashoffset', strokeOffset);
+      element.setAttribute('stroke-dashoffset', strokeOffset || 0);
     } else {
       element.removeAttribute('stroke-dasharray');
       element.removeAttribute('stroke-dashoffset');
