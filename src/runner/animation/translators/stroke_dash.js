@@ -28,9 +28,6 @@ define(function() {
           if (isNaN(strokeDash)) {
             strokeDashes[i] = 0;
           }
-          else {
-            strokeDashes[i] = strokeDash;
-          }
         }
 
         return strokeDashes;
