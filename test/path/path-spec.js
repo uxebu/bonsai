@@ -331,8 +331,6 @@ define([
         it('should be settable/gettable', function(){
           var s = new Path().attr('strokeDash', [5, 5, 3, 5]);
           expect(s.attr('strokeDash')).toEqual([5, 5, 3, 5]);
-          s.attr('strokeDash', '');
-          expect(s.attr('strokeDash')).toBe(null);
         });
       });
 
@@ -344,8 +342,6 @@ define([
         it('should be settable/gettable', function(){
           var s = new Path().attr('strokeDashOffset', 5);
           expect(s.attr('strokeDashOffset')).toEqual(5);
-          s.attr('strokeDashOffset', 0);
-          expect(s.attr('strokeDashOffset')).toBe(0);
         });
       });
 

@@ -565,7 +565,7 @@ define([
       }
 
       if ('strokeDash' in attr) {
-        this.applyStrokeDashArray(element, attr.strokeDash.join(''), attr.strokeDashOffset);
+        this.applyStrokeDashArray(element, attr.strokeDash, attr.strokeDashOffset);
       }
 
     }
