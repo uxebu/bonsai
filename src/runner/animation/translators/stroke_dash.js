@@ -9,23 +9,18 @@ define(function() {
   return {
     strokeDash: {
       toNumeric: function(strokeDashes, isEndValues) {
-        var numbers = [];
-        if (!isEndValues) {
-          this.strokeDash = strokeDashes;
-        }
-        for (var i = 0, l = strokeDashes.length; i < l; ++i) {
-          var strokeDash = strokeDashes[i];
-          if (!isNaN(strokeDash)) {
-            numbers.push(strokeDash);
+        var numbers = [], i = 0, len = strokeDashes.length;
+        for (i; i < len; ++i) {
+          if (!isNaN(strokeDashes[i])) {
+            numbers.push(strokeDashes[i]);
           }
         }
         return numbers;
       },
-      toAttr: function(numbers) {
-        var strokeDashes = numbers;
-        for (var i = 0, l = strokeDashes.length; i < l; i++) {
-          var strokeDash = strokeDashes[i];
-          if (isNaN(strokeDash)) {
+      toAttr: function(strokeDashes) {
+        var i = 0, len = strokeDashes.length;
+        for (i; i < len; ++i) {
+          if (isNaN(strokeDashes[i])) {
             strokeDashes[i] = 0;
           }
         }
