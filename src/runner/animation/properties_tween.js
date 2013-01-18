@@ -6,11 +6,13 @@ define([
   './translators/filter',
   './translators/segment',
   './translators/matrix',
-  './translators/corner_radius'
+  './translators/corner_radius',
+  './translators/stroke_dash'
 ], function(
   tools, PropertyTween,
   colorTranslators, gradientTranslators, filterTranslators,
-  segmentTranslators, matrixTranslators, cornerRadiusTranslators
+  segmentTranslators, matrixTranslators, cornerRadiusTranslators,
+  strokeDashTranslators
 ) {
 
   var mixin = tools.mixin;
@@ -28,6 +30,7 @@ define([
   mixin(translators, segmentTranslators);
   mixin(translators, matrixTranslators);
   mixin(translators, cornerRadiusTranslators);
+  mixin(translators, strokeDashTranslators);
 
   /**
    * Constructs an instance of PropertiesTween which takes care of tweening

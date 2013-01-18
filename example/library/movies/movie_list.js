@@ -142,6 +142,7 @@ movieList = {
     'shape-getPointAtLength.js',
     'shape-center-of-arc.js',
     'shape-fill-rule.js',
+    'shape-dashedstrokes.js',
     'overlapping-paths.js',
     'bounding-box.js'
   ],
