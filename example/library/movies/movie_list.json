@@ -73,6 +73,7 @@
     "event-multi-touch.js",
     "event-multi-touch2.js",
     "event-mouse-button.js",
+    "event-mouse-over-out.js",
     "key-events.js"
   ],
   "Filter": [

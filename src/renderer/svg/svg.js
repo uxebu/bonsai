@@ -223,7 +223,7 @@ define([
    * The SvgRenderer constructor
    *
    * @constructor
-   * @param {HTMLElement|String} node The element or element id to append the svg root node to.
+   * @param {HTMLElement} node The element to append the svg root node to.
    * @param {number} width The width to apply to the svg root node.
    *    Falsy means 'no width applied'.
    * @param {number} height The height to apply to the svg root node.
@@ -235,11 +235,6 @@ define([
    *    with the framerate.
    */
   function SvgRenderer(node, width, height, options) {
-
-    if (typeof node === 'string') {
-      node = document.getElementById(node);
-    }
-
     options = options || {};
     this.width = width;
     this.height = height;
@@ -835,9 +830,6 @@ define([
         element._root._height = attributes.css_height;
       }
     }
-
-    // Mark the element as one with a corresponding BS DOMElement object
-    element._isBSDOMElement = true;
 
     for (var i in attributes) {
       if (/^dom_/.test(i)) {
