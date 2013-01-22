@@ -31,6 +31,12 @@ define([
         expect(stage.framerate).toBe(40);
       });
 
+      it('should allow fractional numbers as framerate', function() {
+        var desiredFramerate = 1.23456;
+        stage.setFramerate(desiredFramerate);
+        expect(stage.framerate).toBe(desiredFramerate);
+      });
+
     });
 
     describe('setRendering', function() {
