@@ -653,14 +653,13 @@ define([
       }
     }
 
-    text.setAttributeNS(xlink, 'text-anchor', 'start');
+    setStyle(style, 'textAnchor', 'start');
 
     if (textOrigin != null) {
       setStyle(style, 'alignmentBaseline', textOrigin === 'top' ? 'hanging' : '');
       setStyle(style, 'dominantBaseline', textOrigin === 'top' ? 'hanging' : '');
     }
 
-    setStyle(style, 'textAnchor', 'start');
   };
 
   proto.drawVideo = function(foreignObject, message) {
