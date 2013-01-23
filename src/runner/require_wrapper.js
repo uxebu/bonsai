@@ -2,6 +2,7 @@ define(function() {
   'use strict';
 
   var requirejs;
+  var requirejsConfigured = false;
   var waitingCallbacks = [];
   var requireFunc = function() {
     var args = [].slice.call(arguments);
@@ -18,15 +19,21 @@ define(function() {
     return requirejs.apply(this, args);
   };
   var requireWrapperGet = function() {
-    if (typeof requirejs == 'function') {
-      return requireFunc;
-    } else {
-      return requirejs;
+    var requirejsRef = typeof requirejs == 'function' ? requireFunc : requirejs;
+    if (requirejsRef && !requirejsConfigured) {
+      // configure requirejs once, when available
+      requirejsRef.config({
+        baseUrl: baseUrl,
+        paths: requireConfig.paths
+      });
+      requirejsConfigured = true;
     }
+    return requirejsRef;
   };
   var requireWrapperSet = function(val) {
     // save original require function
     requirejs = val;
+    // expose "require.config" too
     requireFunc.config = requirejs.config;
   };
 
