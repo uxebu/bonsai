@@ -51,19 +51,15 @@ define([
       }
     });
 
-    self.load = function(url, cb) { return loader.load(url, cb); };
-    self.wait = function() { return loader.wait(); };
-    self.done = function() { return loader.done(); };
-
     var stage = new Stage(messageChannel);
     var env = stage.env.exports;
     // Expose bonsai API in iframe window
     tools.mixin(self, env);
 
-    // wrap AMD loader
-    Object.defineProperty(self, 'require', requireWrapper);
-
-    self.exports = {}; // for plugins
+    // wrap AMD loader (requirejs was loaded and configured in dev-mode already)
+    if (!self.require) {
+      Object.defineProperty(self, 'require', requireWrapper);
+    }
 
     messageChannel.on('message', function(message) {
       if (message.command === 'loadScript') {
@@ -76,13 +72,6 @@ define([
         });
       } else if (message.command === 'runScript') {
         Function(message.code)();
-      } else if (message.command === 'exposePluginExports') {
-        // Don't allow anything to overwrite the bonsai stage:
-        if ('stage' in self.exports) {
-          delete self.exports.stage;
-        }
-        // Expose exports [plugins] globally
-        tools.mixin(self, self.exports);
       }
     });
 
