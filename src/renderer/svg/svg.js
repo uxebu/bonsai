@@ -656,7 +656,7 @@ define([
     text.setAttributeNS(xlink, 'text-anchor', 'start');
 
     if (textOrigin != null) {
-      text.setAttribute('alignment-baseline', textOrigin === 'top' ? 'hanging' : '');
+      setStyle(style, 'alignmentBaseline', textOrigin === 'top' ? 'hanging' : '');
       setStyle(style, 'dominantBaseline', textOrigin === 'top' ? 'hanging' : '');
     }
 
