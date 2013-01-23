@@ -40,6 +40,24 @@ beforeEach(function() {
         }
       }
       return true;
+    },
+
+    toStartWith: function(value) {
+      return startsWith(this.actual, value);
+    },
+
+    toStartWithEither: function() {
+      var args = [].slice.call(arguments);
+      for (var i=0, l=args.length; i<l; i++) {
+        if (startsWith(this.actual, args[i])) {
+          return true;
+        }
+      }
+      return false;
     }
   })
 });
+
+function startsWith(haystack, needle) {
+  return haystack.substr(0, needle.length) == needle;
+}
