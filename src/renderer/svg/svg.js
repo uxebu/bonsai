@@ -91,6 +91,12 @@ define([
     'mousewheel'
   ];
 
+  var textOriginMap = {
+    top: 'hanging',
+    center: 'middle',
+    bottom: 'auto'
+  };
+
   // tools
   var isArray = tools.isArray;
 
@@ -656,8 +662,8 @@ define([
     setStyle(style, 'textAnchor', 'start');
 
     if (textOrigin != null) {
-      setStyle(style, 'alignmentBaseline', textOrigin === 'top' ? 'hanging' : '');
-      setStyle(style, 'dominantBaseline', textOrigin === 'top' ? 'hanging' : '');
+      setStyle(style, 'alignmentBaseline', textOriginMap[textOrigin]);
+      setStyle(style, 'dominantBaseline', textOriginMap[textOrigin]);
     }
 
   };
