@@ -13,17 +13,6 @@ define([
       return new SvgRenderer(createFakeDomNode(), 1, 1);
     }
 
-    it('should accept a dom id for the node argument', function () {
-      var targetNode = createFakeDomNode();
-      spyOn(targetNode, 'appendChild');
-      spyOn(document, 'getElementById').andReturn(targetNode);
-      var renderer = new SvgRenderer('thing', 1, 1);
-
-      expect(document.getElementById).toHaveBeenCalledWith('thing');
-      expect(targetNode.appendChild).toHaveBeenCalledWith(renderer.svg.rootContainer);
-    });
-
-
     describe('allowEventDefaults', function() {
       it('should assign the constructor value as property', function() {
         expect(new SvgRenderer(createFakeDomNode(), 1, 1, {
@@ -179,6 +168,33 @@ define([
 
         var frameTimes = renderer._frameTimes || [];
         expect(frameTimes).toEqual([]);
+      });
+    });
+
+    function createTouchEvent(which) {
+      var evt = document.createEvent('UIEvent');
+      evt.initEvent(which, true, true);
+      evt.view = window;
+      evt.altKey = false;
+      evt.ctrlKey = false;
+      evt.shiftKey = false;
+      evt.metaKey = false;
+      evt.touches = [{identifier:1}];
+      evt.changedTouches = evt.touches;
+      return evt;
+    }
+
+    describe('handleEvent', function() {
+      it('should only fire one `click` for touchstart+touchend', function() {
+        var numCalls = 0;
+        var listener = function(e) { if (e.type=='click') numCalls++; };
+        var renderer = createSvgRenderer();
+        renderer.on('userevent', listener);
+        renderer.svg.root.dispatchEvent(createTouchEvent('touchstart'));
+        renderer.svg.root.dispatchEvent(createTouchEvent('touchend'));
+        expect(numCalls)
+          .toBe(1);
+        renderer.removeListener('userevent', listener);
       });
     });
   });

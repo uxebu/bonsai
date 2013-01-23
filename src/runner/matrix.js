@@ -79,7 +79,7 @@ define([
      * @param {number} scaleY The vertical scale
      * @param {number} rotation The rotation in radians
      * @param {number} tx The horizontal translation
-     * @param {number} tx The vertical translation
+     * @param {number} ty The vertical translation
      * @returns {Matrix} The instance
      */
     createBox: function(scaleX, scaleY, rotation, tx, ty) {

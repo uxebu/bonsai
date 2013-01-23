@@ -152,10 +152,10 @@ define([
    * @constructor
    * @memberOf module:filter
    *
-   * @param {Number} offsetX The X offset of the shadow (pixels)
-   * @param {Number} offsetY The Y offset of the shadow (pixels)
-   * @param {Number} blur The amount of blur in pixels
-   * @param {String|Number|color.RGBAColor} blurColor Blur color
+   * @param {number|string} offsetX num:The X offset of the shadow (pixels). str: shadow angle
+   * @param {number} offsetY if y is num: The Y offset of the shadow (pixels), else: shadow distance
+   * @param {number} blur The amount of blur in pixels
+   * @param {string|number|color.RGBAColor} blurColor Blur color
    *
    * @example
    *    var f = new filter.DropShadow();
