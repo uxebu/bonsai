@@ -1,4 +1,4 @@
-define(['jasmine.helper.js'], function(jasmineHelper) {
+define(['./jasmine.helper'], function(jasmineHelper) {
   // jasmineCore, jasmineHtml, junitReporter, jasmineHelper, compareReporter
   var jasmineEnv = jasmine.getEnv();
   jasmineEnv.updateInterval = 10000;
