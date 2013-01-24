@@ -70,7 +70,6 @@ if (typeof importScripts !== 'undefined') {
     }
     player.defaultRunnerOptions.requireConfig = config;
 
-    window['bonsai'] = player;
     return player;
   });
 }

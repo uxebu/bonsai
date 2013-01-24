@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>BonsaiJS Build Spec Runner</title>
+  <title>BonsaiJS Integration Spec Runner</title>
   <link rel="stylesheet" type="text/css" href="../../lib/jasmine-core/jasmine.css">
   <script type="text/javascript" src="../../lib/jasmine-core/jasmine.js"></script>
   <script type="text/javascript" src="../../lib/jasmine-core/jasmine-html.js"></script>
@@ -15,13 +15,19 @@
   <script>
   require.config({
     paths: {
-      bonsai: '../src'
+      bonsai: '../../src'
     },
     urlArgs: +new Date
   });
-  require(['require', './build-spec'], function(require) {
-    require(['../runner.js']);
-  });
+  require(
+    ['require', 'bonsai/bootstrapper/_dev/iframe', 'bonsai/bootstrapper/_dev/worker'],
+    function(require, bonsaiDevIframe, bonsaiDevWorker) {
+      console.log(bonsai);
+      require(['require', './build-spec'], function(require) {
+        require(['../runner.js']);
+      });
+    }
+  );
   </script>
 </head>
 <body>
