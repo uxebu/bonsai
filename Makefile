@@ -89,6 +89,9 @@ test: mktemp
 test-phantom: mktemp
 	phantomjs test/phantom-runner-jasmine.js test/runner.html
 
+test-phantom-integration: mktemp
+	phantomjs test/phantom-runner-jasmine.js test/integration/runner.html
+
 syntux-diff: mktemp
 	${CI_TOOLS_DIR}/bin/syntux_diff.sh ${WORKSPACE}/src ${TEMP_DIR}
 
