@@ -1,6 +1,7 @@
-define([
-  'bonsai/renderer/svg/svg'
-], function(SvgRenderer) {
+define(['bonsai/renderer/svg/svg'], function(SvgRenderer) {
+
+  'use strict';
+
   describe('SvgRenderer', function() {
     function createFakeDomNode() {
       return {
