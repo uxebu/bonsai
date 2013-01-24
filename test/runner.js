@@ -35,7 +35,9 @@ define(['./jasmine.helper'], function(jasmineHelper) {
   } else {
 
     // passing reporter so we can access the individual DOM nodes
-    jasmineEnv.addReporter(new jasmine.CompareReporter(reporter));
+    if (jasmine.CompareReporter) {
+      jasmineEnv.addReporter(new jasmine.CompareReporter(reporter));
+    }
 
     jasmineEnv.specFilter = function(spec) {
       return reporter.specFilter(spec);

@@ -8,7 +8,6 @@
   <script type="text/javascript" src="../../lib/jasmine-core/jasmine-html.js"></script>
   <script type="text/javascript" src="../../lib/jasmine-core/jasmine.junit-reporter.js"></script>
   <script type="text/javascript" src="../../lib/jasmine-console/console-runner.js"></script>
-  <script type="text/javascript" src="../jasmine.compare-reporter.js"></script>
   <script type="text/javascript" src="../jasmine-matchers.js"></script>
   <script type="text/javascript" src="../../dist/bonsai.js"></script>
   <script type="text/javascript" src="../../lib/requirejs/require.js"></script>
@@ -19,10 +18,12 @@
     },
     urlArgs: +new Date
   });
+  var bonsaiDevIframe, bonsaiDevWorker;
   require(
     ['require', 'bonsai/bootstrapper/_dev/iframe', 'bonsai/bootstrapper/_dev/worker'],
-    function(require, bonsaiDevIframe, bonsaiDevWorker) {
-      console.log(bonsai);
+    function(require, playerIframe, playerWorker) {
+      bonsaiDevIframe = playerIframe;
+      bonsaiDevWorker = playerWorker;
       require(['require', './build-spec'], function(require) {
         require(['../runner.js']);
       });
