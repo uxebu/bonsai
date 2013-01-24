@@ -91,6 +91,12 @@ define([
     'mousewheel'
   ];
 
+  var textOriginMap = {
+    top: 'hanging',
+    center: 'middle',
+    bottom: 'auto'
+  };
+
   // tools
   var isArray = tools.isArray;
 
@@ -642,6 +648,8 @@ define([
   proto.drawText = function(text, message) {
 
     var attributes = message.attributes;
+    var style = text.style;
+    var textOrigin = attributes.textOrigin;
 
     if (attributes.selectable !== undefined) {
       if (attributes.selectable !== false) {
@@ -651,17 +659,13 @@ define([
       }
     }
 
-    text.setAttributeNS(xlink, 'text-anchor', 'start');
+    setStyle(style, 'textAnchor', 'start');
 
-    if (attributes.textOrigin != null) {
-      text.setAttribute(
-        'alignment-baseline',
-        attributes.textOrigin === 'top' ? 'hanging' : ''
-      );
+    if (textOrigin != null) {
+      setStyle(style, 'alignmentBaseline', textOriginMap[textOrigin]);
+      setStyle(style, 'dominantBaseline', textOriginMap[textOrigin]);
     }
 
-    var style = text.style;
-    style.textAnchor = 'start';
   };
 
   proto.drawVideo = function(foreignObject, message) {
