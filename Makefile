@@ -24,7 +24,7 @@ ifndef TEST_RUNNER
     TEST_RUNNER=test/runner.html
     TEST_RUNNER_COMPARE=test/runner-compare.html
     TEST_RUNNER_QC=test/runner-qc.html
-    TEST_RUNNER_BUILD=test/runner-build.html
+    TEST_RUNNER_BUILD=test/integration/runner.html
 endif
 
 ifndef WORKSPACE
