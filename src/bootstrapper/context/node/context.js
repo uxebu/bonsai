@@ -137,11 +137,6 @@ requirejs.requirejs([
       // expose bonsain API in vm context
       var env = stage.env.exports;
       tools.mixin(context, env);
-      context.exports = {}; // for plugins
-
-      context.load = function(url, cb) { return scriptLoader.load(url, cb); };
-      context.wait = function() { return scriptLoader.wait(); };
-      context.done = function() { return scriptLoader.done(); };
 
       // expose node's require and requirejs
       context.nodeRequire = require;
@@ -161,9 +156,6 @@ requirejs.requirejs([
     },
 
     notifyRunner: function(message) {
-      if (message.command == 'exposePluginExports') {
-        tools.mixin(this.vmContext, this.vmContext.exports);
-      }
       this.messageChannel.notify(message);
     },
 

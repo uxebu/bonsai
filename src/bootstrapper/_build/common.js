@@ -11,9 +11,10 @@ define([
   '../context/worker/bootstrap',
   '../context/worker/context',
   '../../renderer/svg/svg',
+  '../../require_config',
   '../../tools',
   '../util'
-], function(player, MessageChannel, bootstrapIframe, IframeRunnerContext, bootstrapWorker, WorkerRunnerContext, SvgRenderer, tools, bootstrapUtil) {
+], function(player, MessageChannel, bootstrapIframe, IframeRunnerContext, bootstrapWorker, WorkerRunnerContext, SvgRenderer, requireConfig, tools, bootstrapUtil) {
   'use strict';
 
   if(typeof window != 'undefined' && window.messageChannel) {
@@ -43,18 +44,27 @@ define([
   } else {
     window['bonsai'] = player;
 
-    var runnerUrl = bootstrapUtil.getUrl(__bonsaiRunnerCode__);
-
     player.Renderer = SvgRenderer;
     player.IframeRunnerContext = IframeRunnerContext;
     player.WorkerRunnerContext = WorkerRunnerContext;
 
     var originalPlayerRun = player.run;
     player.run = tools.hitch(player, function(node, url, options) {
+      var baseUrl = player._baseUrl || tools.baseUri(document);
+      // provide baseUrl to blob-worker (location is not set if worker was created from blob)
+      // additionally expose the outer requirejs configuration for the built environment
+      var iife = [
+        '(function(baseUrl, requireConfig) {',
+        '  this.baseUrl = baseUrl;',
+        '  this.requireConfig=requireConfig;',
+        '(' + __bonsaiRunnerCode__ + ')(); })',
+        '("' + baseUrl +'", ' + JSON.stringify(requireConfig.config) + ');'
+      ].join('');
+      var runnerUrl = player.runnerUrl || bootstrapUtil.getUrl(iife);
       player.setup({
-        baseUrl: player._baseUrl || tools.baseUri(document),
+        baseUrl: baseUrl,
         runnerContext: player.RunnerContext || (runnerUrl ? WorkerRunnerContext : IframeRunnerContext),
-        runnerUrl: player.runnerUrl || runnerUrl || ('' + __bonsaiRunnerCode__)
+        runnerUrl: runnerUrl || iife
       });
       return originalPlayerRun.apply(player, arguments);
     });

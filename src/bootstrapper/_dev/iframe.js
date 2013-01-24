@@ -52,7 +52,6 @@ if (window.parent !== window && window.isBonsaiMovie) {
     player.defaultRunnerOptions.requireConfig = requireConfig.config;
     player.defaultRunnerOptions.requireUrl = requireConfig.url;
 
-    window['bonsai'] = player;
     return player;
   });
 }

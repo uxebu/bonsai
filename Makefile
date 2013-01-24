@@ -24,7 +24,7 @@ ifndef TEST_RUNNER
     TEST_RUNNER=test/runner.html
     TEST_RUNNER_COMPARE=test/runner-compare.html
     TEST_RUNNER_QC=test/runner-qc.html
-    TEST_RUNNER_BUILD=test/runner-build.html
+    TEST_RUNNER_BUILD=test/integration/runner.html
 endif
 
 ifndef WORKSPACE
@@ -88,6 +88,9 @@ test: mktemp
 
 test-phantom: mktemp
 	phantomjs test/phantom-runner-jasmine.js test/runner.html
+
+test-phantom-integration: mktemp
+	phantomjs test/phantom-runner-jasmine.js test/integration/runner.html
 
 syntux-diff: mktemp
 	${CI_TOOLS_DIR}/bin/syntux_diff.sh ${WORKSPACE}/src ${TEMP_DIR}

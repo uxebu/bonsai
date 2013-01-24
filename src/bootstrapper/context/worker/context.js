@@ -14,7 +14,7 @@ define([
     destroy: function() {
       var worker = this._worker;
       worker.terminate();
-      delete worker.onmessage;
+      worker.onmessage = null;
       delete this._worker;
     },
 

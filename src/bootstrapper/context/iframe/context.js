@@ -59,12 +59,8 @@ define([
         }
       });
 
-      if (this.runnerUrl.indexOf('function __bonsaiRunnerCode__') > -1) {
-        var runnerCode = this.runnerUrl.substring(
-          this.runnerUrl.indexOf("{") + 1,
-          this.runnerUrl.lastIndexOf("}")
-        );
-        frameDoc.write('<script>' + runnerCode + '</script>');
+      if (this.runnerUrl.indexOf('(function __bonsaiRunnerCode__)') > -1) {
+        frameDoc.write('<script>' + this.runnerUrl + '</script>');
       } else {
         frameDoc.write('<script src="' + this.runnerUrl + '"></script>');
       }

@@ -1,8 +1,9 @@
 define([
   '../../../runner/stage',
   '../script_loader',
-  '../../../tools'
-], function(Stage, makeScriptLoader, tools) {
+  '../../../tools',
+  '../../../runner/require_wrapper'
+], function(Stage, makeScriptLoader, tools, requireWrapper) {
   'use strict';
 
   return function(messageChannel, iframeWindow) {
@@ -17,16 +18,16 @@ define([
       doc.documentElement.appendChild(script);
     });
 
-    iframeWindow.load = function(url, cb) { return loader.load(url, cb); };
-    iframeWindow.wait = function() { return loader.wait(); };
-    iframeWindow.done = function() { return loader.done(); };
-
     var stage = new Stage(messageChannel);
     var env = stage.env.exports;
 
     // Expose bonsai API in iframe window
     tools.mixin(iframeWindow, env);
-    var globalExports = iframeWindow.exports = {}; // for plugins
+
+    // wrap AMD loader (requirejs was loaded and configured in dev-mode already)
+    if (!iframeWindow.require) {
+      Object.defineProperty(iframeWindow, 'require', requireWrapper);
+    }
 
     // As per the boostrap's contract, it must provide stage.loadSubMovie
     stage.loadSubMovie = function(movieUrl, callback, movieInstance) {
@@ -44,11 +45,6 @@ define([
 
       // Expose bonsai on sub-movie:
       tools.mixin(subWindow, subEnvironment.exports);
-
-      // Expose top-level plugin exports on every sub-movie:
-      delete globalExports.stage; // don't allow anything to overwrite the bonsai stage
-      tools.mixin(subWindow.bonsai, globalExports);
-      tools.mixin(subWindow, globalExports);
 
       subWindow.stage = subMovie;
       subMovie.root = this;
@@ -81,11 +77,6 @@ define([
         });
       } else if (message.command === 'runScript') {
         loader.load('data:text/javascript,' + encodeURIComponent(message.code));
-      } else if (message.command === 'exposePluginExports') {
-        // don't allow anything to overwrite the bonsai stage
-        delete globalExports.stage;
-        tools.mixin(env, globalExports);
-        tools.mixin(iframeWindow, globalExports);
       }
     });
 

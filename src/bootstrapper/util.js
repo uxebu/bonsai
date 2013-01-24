@@ -48,13 +48,11 @@ define([
      * If not it returns an empty string.
      *
      * @private
-     * @param {Function} [workerFunction] that should be the data-/blob-URL
+     * @param {Function} [workerFuncString] content of the data-/blob-URL
      * @return {String} data-/blob-URL or empty String
      */
-    getUrl: function(workerFunction) {
+    getUrl: function(workerFuncString) {
       var url = window.URL || window.webkitURL;
-      // execute the function immediately
-      var workerFuncString = '(' + workerFunction + ')();';
       if (supportsWorkerWithBlobUri) {
         var blob = new Blob([workerFuncString], {'type': 'text\/javascript'});
         return url.createObjectURL(blob);

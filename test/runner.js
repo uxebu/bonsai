@@ -1,4 +1,4 @@
-define(['jasmine.helper.js'], function(jasmineHelper) {
+define(['./jasmine.helper'], function(jasmineHelper) {
   // jasmineCore, jasmineHtml, junitReporter, jasmineHelper, compareReporter
   var jasmineEnv = jasmine.getEnv();
   jasmineEnv.updateInterval = 10000;
@@ -35,7 +35,9 @@ define(['jasmine.helper.js'], function(jasmineHelper) {
   } else {
 
     // passing reporter so we can access the individual DOM nodes
-    jasmineEnv.addReporter(new jasmine.CompareReporter(reporter));
+    if (jasmine.CompareReporter) {
+      jasmineEnv.addReporter(new jasmine.CompareReporter(reporter));
+    }
 
     jasmineEnv.specFilter = function(spec) {
       return reporter.specFilter(spec);
