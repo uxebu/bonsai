@@ -21,11 +21,13 @@ define(function() {
   var requireWrapperGet = function() {
     var requirejsRef = typeof requirejs == 'function' ? requireFunc : requirejs;
     if (requirejsRef && !requirejsConfigured) {
-      // configure requirejs once, when available
-      requirejsRef.config({
-        baseUrl: baseUrl,
-        paths: requireConfig.paths
-      });
+      // configure requirejs once, when available (just for built versions)
+      if (typeof baseUrl !== 'undefined' && typeof requireConfig !== 'undefined') {
+        requirejsRef.config({
+          baseUrl: baseUrl,
+          paths: requireConfig.paths
+        });
+      }
       requirejsConfigured = true;
     }
     return requirejsRef;
