@@ -1,6 +1,6 @@
 define(function() {
   jasmine.getEnv().defaultTimeoutInterval = 10000;
-  describe('Bonsai build', function(){
+  describe('Bonsai integration', function(){
     var dummyNode = document.getElementById('dummyNode');
 
     var retBonsaiRun;
