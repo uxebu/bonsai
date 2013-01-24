@@ -97,6 +97,15 @@ define(function() {
             expect(retBonsaiRun.define).toBe('function');
           });
         });
+        it('finishes loading require-module before executing "code"', function() {
+          bonsaiRun({
+            urls: ['../../lib/requirejs/require.js', './dummy-require.js'],
+            code: 'stage.sendMessage("success", false);'
+          });
+          runs(function() {
+            expect(retBonsaiRun).toBe(true);
+          });
+        });
         it('sets the framerate through "framerate"', function() {
           bonsaiRun({
             framerate: 10,
