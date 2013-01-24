@@ -20,7 +20,7 @@ define([
     xhr.send(null);
   }
 
-  return function(messageChannel, urls, code) {
+  return function(messageChannel) {
 
     if (!('console' in self)) {
       self.console = {
@@ -41,6 +41,15 @@ define([
         }
       };
     }
+
+    var loader = makeScriptLoader(function(url, cb) {
+      try {
+        importScripts(url);
+        cb(null);
+      } catch(e) {
+        console.log('>>ERROR WORKER', e);
+      }
+    });
 
     var stage = new Stage(messageChannel);
     var env = stage.env.exports;

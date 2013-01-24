@@ -18,6 +18,7 @@ if (typeof importScripts !== 'undefined') {
 
     // load requirejs into worker env
     importScripts(options.requireUrl);
+
     require.config(options.requireConfig);
 
     require([
@@ -42,7 +43,7 @@ if (typeof importScripts !== 'undefined') {
 
       messageChannel = new MessageChannel(notifyRenderer, disconnect);
       addEventListener('message', onMessage);
-      bootstrapWorker(messageChannel, options.urls, options.code);
+      bootstrapWorker(messageChannel);
     });
 
   }());
