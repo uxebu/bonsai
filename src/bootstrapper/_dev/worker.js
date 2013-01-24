@@ -11,9 +11,13 @@ if (typeof importScripts !== 'undefined') {
 
   (function() {
     var options = JSON.parse(decodeURIComponent(location.hash.slice(1)));
+
+    // we need to declare the global require variable before requirejs does it
+    // to make sure it is configurable
+    self.require = null;
+
     // load requirejs into worker env
     importScripts(options.requireUrl);
-
     require.config(options.requireConfig);
 
     require([
@@ -38,7 +42,7 @@ if (typeof importScripts !== 'undefined') {
 
       messageChannel = new MessageChannel(notifyRenderer, disconnect);
       addEventListener('message', onMessage);
-      bootstrapWorker(messageChannel);
+      bootstrapWorker(messageChannel, options.urls, options.code);
     });
 
   }());

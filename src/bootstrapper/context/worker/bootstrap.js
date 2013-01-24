@@ -20,7 +20,7 @@ define([
     xhr.send(null);
   }
 
-  return function(messageChannel) {
+  return function(messageChannel, urls, code) {
 
     if (!('console' in self)) {
       self.console = {
@@ -42,38 +42,21 @@ define([
       };
     }
 
-    var loader = makeScriptLoader(function(url, cb) {
-      try {
-        importScripts(url);
-        cb(null);
-      } catch(e) {
-        console.log('>>ERROR WORKER', e);
-      }
-    });
-
     var stage = new Stage(messageChannel);
     var env = stage.env.exports;
     // Expose bonsai API in iframe window
     tools.mixin(self, env);
 
     // wrap AMD loader (requirejs was loaded and configured in dev-mode already)
-    if (!self.require) {
-      Object.defineProperty(self, 'require', requireWrapper);
+    var originalRequire = self.require;
+    Object.defineProperty(self, 'require', requireWrapper);
+    if (originalRequire) {
+      /*
+       We need to invoke the just registered setter for 'require' with the
+       original require function (of require.js) to make it work correctly.
+       */
+      self.require = originalRequire;
     }
-
-    messageChannel.on('message', function(message) {
-      if (message.command === 'loadScript') {
-        loader.load(message.url, function() {
-          //console.log('scriptLoaded', message.url)
-          messageChannel.notifyRenderer({
-            command: 'scriptLoaded',
-            url: message.url
-          });
-        });
-      } else if (message.command === 'runScript') {
-        Function(message.code)();
-      }
-    });
 
     // As per the boostrap's contract, it must provide stage.loadSubMovie
     stage.loadSubMovie = function(movieUrl, callback, movieInstance) {
@@ -112,6 +95,13 @@ define([
       });
 
     };
+
+    if (urls) {
+      importScripts.apply(null, urls);
+    }
+    if (code) {
+      importScripts('data:text/javascript,' + encodeURIComponent(code));
+    }
 
     stage.unfreeze();
     messageChannel.notifyRenderer({command:"isReady"});
