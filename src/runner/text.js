@@ -10,7 +10,8 @@ define([
   var accessor = tools.descriptorAccessor,
       data = tools.descriptorData,
       getter = tools.getter,
-      parseColor = color.parse;
+      parseColor = color.parse,
+      isArray = tools.isArray;
 
   // Getters and setters stolen from shape.js
 
@@ -174,7 +175,7 @@ define([
    */
   proto.addChild = function(child, index) {
     var isTextSpan =
-      tools.isArray(child) ?
+      isArray(child) ?
         child.every(function(child) {
           return child instanceof TextSpan;
         }) :
