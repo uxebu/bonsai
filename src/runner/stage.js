@@ -394,7 +394,7 @@ define([
 
       var wasFrozen = this._isFrozen;
       this.freeze();
-      this.framerate = Math.abs(framerate | 0);
+      this.framerate = Math.abs(framerate);
       if (!wasFrozen) {
         this.unfreeze();
       }
