@@ -49,6 +49,8 @@ define([
    * @constructor
    * @param {Object} messageChannel The messageChannel object used to
    *  communicate with the renderer
+   * @param {DisplayList} displayList A display list. The stage delegates all
+   *    child-related functionality to the displayList.
    *
    * @mixes EventEmitter
    * @mixes Timeline

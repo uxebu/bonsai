@@ -218,7 +218,7 @@ function(tools, EventEmitter, URI) {
      * Posts a command to the RunnerContext.
      *
      * @param {String} command A command name
-     * @param {mixed} [data] Data to post alongside the command.
+     * @param {*} [data] Data to post alongside the command.
      * @returns {this}
      */
     post: function(command, data) {
