@@ -55,8 +55,10 @@ define([
    * @mixes EventEmitter
    * @mixes Timeline
    */
-  function Stage(messageChannel, displayList) {
-    var registry = this.registry = new Registry();
+  function Stage(messageChannel, environment, loadScriptUrls, loadSubMovie, displayList) {
+    this.registry = new Registry();
+    this.loadScriptUrls = loadScriptUrls;
+    this.loadSubMovie = loadSubMovie;
 
     if (!displayList) {
       displayList = new DisplayList();
@@ -65,11 +67,15 @@ define([
     this.displayList = displayList;
 
     var assetLoader = this.assetLoader =
-      new AssetLoader(registry.pendingAssets)
+      new AssetLoader({})
         .on('request', hitch(this, this.loadAsset, null))
         .on('destroy', hitch(this, this.destroyAsset));
 
-    this.env = new Environment(this, assetLoader);
+    this.env = environment;
+    // Expose bonsai API in iframe window
+    environment.initialize(this, assetLoader);
+    environment.expose({});
+
     this.stage = this.root = this;
     this._canRender = true;
 
@@ -81,8 +87,9 @@ define([
     this._queuedFrames = [];
 
     this.messageChannel = messageChannel;
-    messageChannel.on('message', this, this.handleEvent);
-
+    messageChannel
+      .on('message', this, this.handleEvent)
+      .notifyRenderer({command:"isReady"});
   }
 
   var proto = Stage.prototype = /** @lends Stage.prototype */ {
@@ -227,11 +234,11 @@ define([
       subMovieUrl = this.assetBaseUrl.resolveUri(subMovieUrl);
       subMovie.url = subMovieUrl.toString();
       var assetBase = subMovieUrl.scheme === 'data' ? null : subMovieUrl;
-      return new Environment(
-        subMovie,
-        new AssetLoader(this.registry.pendingAssets)
-          .on('request', hitch(this, this.loadAsset, assetBase))
-      );
+      var environment = new Environment(this.env.exposeTarget);
+      var assetLoader = new AssetLoader(this.assetLoader.pendingAssets)
+        .on('request', hitch(this, this.loadAsset, assetBase));
+      environment.initialize(subMovie, assetLoader);
+      return environment;
     },
 
     /**
@@ -414,14 +421,25 @@ define([
     setOptions: function(options) {
       this.options = options;
       this.baseUrl = URI.parse(options.baseUrl);
+      var urls = options.urls;
       this.assetBaseUrl = URI.parse(
         // If assetBaseUrl is not defined then we use the primary
         // movie URL as the assumed base, with a last fallback to baseUrl:
-        options.assetBaseUrl || options.url || (options.urls && options.urls[0]) || options.baseUrl
+        options.assetBaseUrl || options.url || (urls && urls[0]) || options.baseUrl
       );
       this.setFramerate(options.framerate || DEFAULT_FRAMERATE);
       this.width = +options.width || Infinity;
       this.height = +options.height || Infinity;
+
+      var loadScriptUrls = this.loadScriptUrls;
+      if (loadScriptUrls) {
+        console.log('ze loading begins');
+        if (urls) {
+          loadScriptUrls(urls);
+          console.log('loading done');
+        }
+        this.loadScriptUrls = null;
+      }
 
       return this;
     },

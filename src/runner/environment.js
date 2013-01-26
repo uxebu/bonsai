@@ -59,7 +59,9 @@ define([
    * @param {Stage} stage The root stage object
    * @param {AssetLoader} assetLoader A loader for assets
    */
-  function Environment(stage, assetLoader) {
+  function Environment(exposeTarget) {
+
+    this.exposeTarget = exposeTarget;
 
     var exports = this.exports = {
 
@@ -90,20 +92,11 @@ define([
       gradient: gradient,
       easing: easing,
       filter: filter,
-      stage: stage,
+      stage: null,
       version: version
     };
 
-    this.assetLoader = assetLoader;
-
-    exports.Animation = bindConstructorToParameters(Animation, [stage]);
-    exports.KeyframeAnimation = bindConstructorToParameters(KeyframeAnimation, [stage]);
-    exports.Bitmap = bindConstructorToParameters(Bitmap, [assetLoader]);
-    exports.FontFamily = bindConstructorToParameters(FontFamily, [assetLoader]);
-    exports.Movie = bindConstructorToParameters(Movie, [stage]);
-    exports.Sprite = bindConstructorToParameters(Sprite, [assetLoader]);
-    exports.Video = bindConstructorToParameters(Video, [assetLoader]);
-    exports.Audio = bindConstructorToParameters(Audio, [assetLoader]);
+    this.assetLoader = null;
 
     exports.bonsai = exports;
 
@@ -117,6 +110,31 @@ define([
       offsetY: 0
     }, EventEmitter);
   }
+
+  Environment.prototype = {
+    expose: function(values) {
+      var mixin = tools.mixin;
+
+      var exports = mixin(this.exports, values);
+
+      var exposeTarget = this.exposeTarget;
+      if (exposeTarget) {
+        mixin(exposeTarget, exports);
+      }
+    },
+    initialize: function(stage, assetLoader) {
+      var exports = this.exports;
+      exports.stage = stage;
+      exports.Animation = bindConstructorToParameters(Animation, [stage]);
+      exports.KeyframeAnimation = bindConstructorToParameters(KeyframeAnimation, [stage]);
+      exports.Bitmap = bindConstructorToParameters(Bitmap, [assetLoader]);
+      exports.FontFamily = bindConstructorToParameters(FontFamily, [assetLoader]);
+      exports.Movie = bindConstructorToParameters(Movie, [stage]);
+      exports.Sprite = bindConstructorToParameters(Sprite, [assetLoader]);
+      exports.Video = bindConstructorToParameters(Video, [assetLoader]);
+      exports.Audio = bindConstructorToParameters(Audio, [assetLoader]);
+    }
+  };
 
   return Environment;
 });

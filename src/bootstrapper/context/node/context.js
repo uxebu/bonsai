@@ -91,6 +91,7 @@ requirejs.requirejs([
     },
 
     initStage: function(stage) {
+      //TODO: test and move to stage creation
       var context = this;
       var env = stage.env;
       stage.loadSubMovie = function(movieUrl, callback, movieInstance) {
@@ -132,11 +133,7 @@ requirejs.requirejs([
     },
 
     initVmContext: function(context, messageChannel, scriptLoader) {
-      var stage = context.stage = new Stage(messageChannel);
-
-      // expose bonsain API in vm context
-      var env = stage.env.exports;
-      tools.mixin(context, env);
+      var stage = new Stage(messageChannel, new Environment(context));
 
       // expose node's require and requirejs
       context.nodeRequire = require;
@@ -148,7 +145,6 @@ requirejs.requirejs([
 
     startMovie: function(stage) {
       stage.unfreeze();
-      this.messageChannel.notifyRenderer({command: 'isReady'});
     },
 
     notify: function(message) {

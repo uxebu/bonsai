@@ -51,6 +51,7 @@ define([
 
       frameWindow.options = options;
       frameWindow.isBonsaiMovie = true;
+      frameWindow.require = null;
 
       var context = this;
       this.messageChannel.on('message', function(msg) {
@@ -64,9 +65,6 @@ define([
       } else {
         frameDoc.write('<script src="' + this.runnerUrl + '"></script>');
       }
-
-      // TODO: y on first load fails in /library
-      frameDoc.close();
 
       this.doc = this.init = null;
       return this;

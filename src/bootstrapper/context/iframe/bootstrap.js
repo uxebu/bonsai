@@ -2,36 +2,13 @@ define([
   '../../../runner/stage',
   '../script_loader',
   '../../../tools',
-  '../../../runner/require_wrapper'
-], function(Stage, makeScriptLoader, tools, requireWrapper) {
+  '../../../runner/require_wrapper',
+  '../../../runner/environment'
+], function(Stage, makeScriptLoader, tools, requireWrapper, Environment) {
   'use strict';
 
   return function(messageChannel, iframeWindow) {
-
-    var doc = iframeWindow.document;
-
-    var loader = makeScriptLoader(function(url, cb) {
-      var script = doc.createElement('script');
-      script.src = url;
-      script.onload = function() { cb(null); };
-      script.onerror = function() { cb('Could not load: ' + url); };
-      doc.documentElement.appendChild(script);
-    });
-
-    var stage = new Stage(messageChannel);
-    var env = stage.env.exports;
-
-    // Expose bonsai API in iframe window
-    tools.mixin(iframeWindow, env);
-
-    // wrap AMD loader (requirejs was loaded and configured in dev-mode already)
-    if (!iframeWindow.require) {
-      Object.defineProperty(iframeWindow, 'require', requireWrapper);
-    }
-
-    // As per the boostrap's contract, it must provide stage.loadSubMovie
-    stage.loadSubMovie = function(movieUrl, callback, movieInstance) {
-
+    function loadSubMovie(movieUrl, callback, movieInstance) {
       var iframe = doc.createElement('iframe');
       doc.documentElement.appendChild(iframe);
       var subWindow = iframe.contentWindow;
@@ -64,8 +41,39 @@ define([
           callback.call(subMovie, null, subMovie);
         }
       });
+    }
+    function loadScriptUrls(scriptUrls) {
+      doc.write(
+        tools.map(scriptUrls, function(url) {
+          return '<script src="' + url + '"></script>';
+        }).join('')
+      );
+      doc.close();
+    }
 
-    };
+    var doc = iframeWindow.document;
+
+    var loader = makeScriptLoader(function(url, cb) {
+      var script = doc.createElement('script');
+      script.src = url;
+      script.onload = function() { cb(null); };
+      script.onerror = function() { cb('Could not load: ' + url); };
+      doc.documentElement.appendChild(script);
+    });
+
+    // wrap AMD loader (requirejs was loaded and configured in dev-mode already)
+    var originalRequire = iframeWindow.require;
+    Object.defineProperty(iframeWindow, 'require', requireWrapper);
+    if (originalRequire) {
+      /*
+       We need to invoke the just registered setter for 'require' with the
+       original require function (of require.js) to make it work correctly.
+       */
+      iframeWindow.require = originalRequire;
+    }
+
+    var env = new Environment(iframeWindow);
+    var stage = new Stage(messageChannel, env, loadScriptUrls, loadSubMovie);
 
     messageChannel.on('message', function(message) {
       if (message.command === 'loadScript') {
@@ -81,6 +89,5 @@ define([
     });
 
     stage.unfreeze();
-    messageChannel.notifyRenderer({command:"isReady"});
   };
 });

@@ -74,15 +74,7 @@ define(function() {
        * @private
        * @type {Object}
        */
-      needsInsertion: Object.create(null),
-
-      /**
-       * Registry for pending assets (added/removed via AssetLoader)
-       *
-       * @private
-       * @type {Object}
-       */
-      pendingAssets: Object.create(null)
+      needsInsertion: Object.create(null)
     };
   }
 
