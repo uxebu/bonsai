@@ -128,7 +128,6 @@ define([
     handleEvent: function(message) {
       var command = message.command,
           data = message.data;
-
       switch (command) {
         case 'options':
           this.setOptions(data);
@@ -420,7 +419,6 @@ define([
      * @returns {this} the stage intance.
      */
     setOptions: function(options) {
-
       this.options = options;
       this.baseUrl = URI.parse(options.baseUrl);
       var urls = options.urls || [];
@@ -433,10 +431,36 @@ define([
       this.width = +options.width || Infinity;
       this.height = +options.height || Infinity;
 
+      this._loadUrls();
+
+      return this;
+    },
+
+    _loadUrls: function() {
+      var options = this.options;
+      var urls = options.urls;
+      var self = this;
+
+      // setup a waiting loader
+      var finishCallbacks = 0;
+      var getLoader = function() {
+        var loader = function(err) {
+          if (err) {
+            console.log('Load error');
+          }
+          finishCallbacks -= 1;
+          if (finishCallbacks === 0) {
+            self.unfreeze();
+          }
+        };
+        finishCallbacks += 1;
+        return loader;
+      };
+
       // wrap AMD loader
       var global = this.env.global;
       var originalRequire = global.require;
-      Object.defineProperty(global, 'require', requireWrapper);
+      Object.defineProperty(global, 'require', requireWrapper(getLoader()));
       if (originalRequire) {
         /*
          We need to invoke the just registered setter for 'require' with the
@@ -454,13 +478,11 @@ define([
       }
       if (loadScriptUrls) {
         if (urls) {
-          loadScriptUrls(urls);
+          loadScriptUrls(urls, getLoader());
         }
         this.loadScriptUrls = null;
         this.unfreeze();
       }
-
-      return this;
     },
 
     /**

@@ -9,28 +9,22 @@
 
 if (window.parent !== window && window.isBonsaiMovie) {
 
-  // This needs to execute async (setTimeout:1) so that
-  // IFrameContext.init finishes before this executes:
-  setTimeout(function() {
+  var options = window.options;
 
-    var options = window.options;
-    delete window.options;
-
-    var s = document.createElement('script');
-    s.onload = function() {
-      require.config(options.requireConfig);
-      require([
-        'bonsai/bootstrapper/context/iframe/bootstrap'
-      ], function(bootstrapIframe) {
-        var messageChannel = window.messageChannel;
-        delete window.messageChannel;
-        bootstrapIframe(messageChannel, window);
-      });
-    };
-    s.src = options.requireUrl;
-    document.documentElement.appendChild(s);
-
-  }, 1);
+  var s = document.createElement('script');
+  s.onload = function() {
+    require.config(options.requireConfig);
+    require([
+      'bonsai/bootstrapper/context/iframe/bootstrap'
+    ], function(bootstrapIframe) {
+      var messageChannel = window.messageChannel;
+      delete window.messageChannel;
+      delete window.options;
+      bootstrapIframe(messageChannel, window);
+    });
+  };
+  s.src = options.requireUrl;
+  document.documentElement.appendChild(s);
 
 } else {
   define([

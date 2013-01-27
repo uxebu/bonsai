@@ -20,15 +20,16 @@ define([
   }
 
   return function(messageChannel) {
-    function loadScriptUrls(scriptUrls) {
+    function loadScriptUrls(scriptUrls, callback) {
       importScripts.apply(null, scriptUrls);
+      callback();
     }
 
     function loadSubMovie(movieUrl, callback, movieInstance) {
 
       movieUrl = this.assetBaseUrl.resolveUri(movieUrl);
 
-      var subMovie = movieInstance || new env.Movie();
+      var subMovie = movieInstance || new exports.Movie();
       var subEnvironment = stage.getSubMovieEnvironment(subMovie, movieUrl);
       var subEnvExports = subEnvironment.exports;
       var functionArgNames = [];
@@ -83,6 +84,7 @@ define([
 
     var env = new Environment(self);
     var stage = new Stage(messageChannel, env, loadScriptUrls, loadSubMovie);
+    var exports = stage.env.exports;
 
   };
 });
