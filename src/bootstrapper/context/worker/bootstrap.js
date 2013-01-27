@@ -1,10 +1,8 @@
 define([
   '../../../runner/stage',
-  '../script_loader',
   '../../../tools',
-  '../../../runner/require_wrapper',
   '../../../runner/environment'
-], function(Stage, makeScriptLoader, tools, requireWrapper, Environment) {
+], function(Stage, tools, Environment) {
   'use strict';
 
   function loadUrl(url, successCallback, errorCallback) {
@@ -83,29 +81,8 @@ define([
       };
     }
 
-    var loader = makeScriptLoader(function(url, cb) {
-      try {
-        importScripts(url);
-        cb(null);
-      } catch(e) {
-        console.log('>>ERROR WORKER', e);
-      }
-    });
-
-    // wrap AMD loader (requirejs was loaded and configured in dev-mode already)
-    var originalRequire = self.require;
-    Object.defineProperty(self, 'require', requireWrapper);
-    if (originalRequire) {
-      /*
-       We need to invoke the just registered setter for 'require' with the
-       original require function (of require.js) to make it work correctly.
-       */
-      self.require = originalRequire;
-    }
-
     var env = new Environment(self);
     var stage = new Stage(messageChannel, env, loadScriptUrls, loadSubMovie);
 
-    stage.unfreeze();
   };
 });

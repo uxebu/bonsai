@@ -8,10 +8,11 @@ define([
   '../asset/asset_loader',
   './environment',
   './ui_event',
-  '../uri'
+  '../uri',
+  './require_wrapper'
 ], function(EventEmitter, displayList, color, Timeline,
             tools, Registry, AssetLoader, Environment,
-            uiEvent, URI) {
+            uiEvent, URI, requireWrapper) {
   'use strict';
 
   var hitch = tools.hitch;
@@ -234,7 +235,7 @@ define([
       subMovieUrl = this.assetBaseUrl.resolveUri(subMovieUrl);
       subMovie.url = subMovieUrl.toString();
       var assetBase = subMovieUrl.scheme === 'data' ? null : subMovieUrl;
-      var environment = new Environment(this.env.exposeTarget);
+      var environment = new Environment(this.env.global);
       var assetLoader = new AssetLoader(this.assetLoader.pendingAssets)
         .on('request', hitch(this, this.loadAsset, assetBase));
       environment.initialize(subMovie, assetLoader);
@@ -419,9 +420,10 @@ define([
      * @returns {this} the stage intance.
      */
     setOptions: function(options) {
+
       this.options = options;
       this.baseUrl = URI.parse(options.baseUrl);
-      var urls = options.urls;
+      var urls = options.urls || [];
       this.assetBaseUrl = URI.parse(
         // If assetBaseUrl is not defined then we use the primary
         // movie URL as the assumed base, with a last fallback to baseUrl:
@@ -431,14 +433,31 @@ define([
       this.width = +options.width || Infinity;
       this.height = +options.height || Infinity;
 
+      // wrap AMD loader
+      var global = this.env.global;
+      var originalRequire = global.require;
+      Object.defineProperty(global, 'require', requireWrapper);
+      if (originalRequire) {
+        /*
+         We need to invoke the just registered setter for 'require' with the
+         original require function (of require.js) to make it work correctly.
+         */
+        global.require = originalRequire;
+      }
+
       var loadScriptUrls = this.loadScriptUrls;
+      if (options.url) {
+        urls.push(url);
+      }
+      if (options.code) {
+        urls.push('data:text/javascript,' + encodeURIComponent(options.code));
+      }
       if (loadScriptUrls) {
-        console.log('ze loading begins');
         if (urls) {
           loadScriptUrls(urls);
-          console.log('loading done');
         }
         this.loadScriptUrls = null;
+        this.unfreeze();
       }
 
       return this;

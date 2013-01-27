@@ -1,5 +1,5 @@
 define({
-  config: (typeof require != 'undefined' && require.s && require.s.contexts &&
+  config: (typeof require != 'undefined' && require !== null && require.s && require.s.contexts &&
     require.s.contexts._ && require.s.contexts._.config) || {}, // hack recommended on mailing list
   url: function(scripts) {
     for (var i = 0, len = scripts.length; i < len; i += 1) {

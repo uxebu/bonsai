@@ -198,7 +198,6 @@ function(tools, EventEmitter, URI) {
         // Make sure we transport an already-toString'd version of the URI instance
         options.baseUrl = options.baseUrl && options.baseUrl.toString();
         options.assetBaseUrl = options.assetBaseUrl && options.assetBaseUrl.toString();
-        console.log(options);
         this.post('options', options);
       }
 

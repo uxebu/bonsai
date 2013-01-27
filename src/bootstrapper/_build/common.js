@@ -53,19 +53,15 @@ define([
       var baseUrl = player._baseUrl || tools.baseUri(document);
       // provide baseUrl to blob-worker (location is not set if worker was created from blob)
       // additionally expose the outer requirejs configuration for the built environment
-      var iife = [
-        '(function(baseUrl, requireConfig) {',
-        '  this.baseUrl = baseUrl;',
-        '  this.requireConfig=requireConfig;',
-        '(' + __bonsaiRunnerCode__ + ')(); })',
-        '("' + baseUrl +'", ' + JSON.stringify(requireConfig.config) + ');'
-      ].join('');
+      var iife = '(' + __bonsaiRunnerCode__ + ')();';
       var runnerUrl = player.runnerUrl || bootstrapUtil.getUrl(iife);
       player.setup({
         baseUrl: baseUrl,
         runnerContext: player.RunnerContext || (runnerUrl ? WorkerRunnerContext : IframeRunnerContext),
         runnerUrl: runnerUrl || iife
       });
+      player.defaultRunnerOptions.requireConfig = requireConfig.config;
+      player.defaultRunnerOptions.requireUrl = requireConfig.url;
       return originalPlayerRun.apply(player, arguments);
     });
 

@@ -22,10 +22,10 @@ define(function() {
     var requirejsRef = typeof requirejs == 'function' ? requireFunc : requirejs;
     if (requirejsRef && !requirejsConfigured) {
       // configure requirejs once, when available (just for built versions)
-      if (typeof baseUrl !== 'undefined' && typeof requireConfig !== 'undefined') {
+      if (typeof stage.options.baseUrl !== 'undefined' && typeof stage.options.requireConfig !== 'undefined') {
+        requirejsRef.config(stage.options.requireConfig);
         requirejsRef.config({
-          baseUrl: baseUrl,
-          paths: requireConfig.paths
+          baseUrl: stage.options.baseUrl
         });
       }
       requirejsConfigured = true;

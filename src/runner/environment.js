@@ -56,12 +56,12 @@ define([
   /**
    * Provides an environment / namespace for individual bonsai scripts/movies
    *
-   * @param {Stage} stage The root stage object
+   * @param {global} global The global scope object (iframeWindow / worker / ...)
    * @param {AssetLoader} assetLoader A loader for assets
    */
-  function Environment(exposeTarget) {
+  function Environment(global) {
 
-    this.exposeTarget = exposeTarget;
+    this.global = global;
 
     var exports = this.exports = {
 
@@ -117,9 +117,9 @@ define([
 
       var exports = mixin(this.exports, values);
 
-      var exposeTarget = this.exposeTarget;
-      if (exposeTarget) {
-        mixin(exposeTarget, exports);
+      var global = this.global;
+      if (global) {
+        mixin(global, exports);
       }
     },
     initialize: function(stage, assetLoader) {
