@@ -20,9 +20,10 @@ define([
   }
 
   return function(messageChannel) {
-    function loadScriptUrls(scriptUrls, callback) {
+    function loadScriptUrls(scriptUrls, getLoaderCallback) {
+      var loaderCallback = getLoaderCallback();
       importScripts.apply(null, scriptUrls);
-      callback();
+      loaderCallback();
     }
 
     function loadSubMovie(movieUrl, callback, movieInstance) {

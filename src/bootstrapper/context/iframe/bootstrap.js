@@ -44,13 +44,14 @@ define([
         }
       });
     }
-    function loadScriptUrls(scriptUrls, callback) {
-      // need to close/open iframe for Opera
+    function loadScriptUrls(scriptUrls, getLoaderCallback) {
+      var loaderCallback = getLoaderCallback();
       doc.__loadCallback__ = function() {
         scriptUrls.length--;
         if (scriptUrls.length === 0) {
-          callback();
+          loaderCallback();
           delete doc.__loadCallback__;
+          // close document when everything was loaded!
           doc.close();
         }
       };

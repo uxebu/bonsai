@@ -3,19 +3,15 @@ define(function() {
 
   var requirejs;
   var requirejsConfigured = false;
-  var waitingCallbacks = [];
 
-  return function(loaderCallback) {
+  return function(getLoaderCallback) {
     var requireFunc = function() {
+      var loaderCallback = getLoaderCallback();
       var args = [].slice.call(arguments);
       var callback = args.pop();
-      waitingCallbacks.push(callback);
       args.push(function() {
-        waitingCallbacks.splice(waitingCallbacks.indexOf(callback), 1);
         var module = callback.apply(this, arguments);
-        if (waitingCallbacks.length == 0) {
-          loaderCallback();
-        }
+        loaderCallback();
         return module;
       });
       return requirejs.apply(this, args);

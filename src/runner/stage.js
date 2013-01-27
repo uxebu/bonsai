@@ -443,7 +443,7 @@ define([
 
       // setup a waiting loader
       var finishCallbacks = 0;
-      var getLoader = function() {
+      var getLoaderCallback = function() {
         var loader = function(err) {
           if (err) {
             console.log('Load error');
@@ -460,7 +460,7 @@ define([
       // wrap AMD loader
       var global = this.env.global;
       var originalRequire = global.require;
-      Object.defineProperty(global, 'require', requireWrapper(getLoader()));
+      Object.defineProperty(global, 'require', requireWrapper(getLoaderCallback));
       if (originalRequire) {
         /*
          We need to invoke the just registered setter for 'require' with the
@@ -478,10 +478,9 @@ define([
       }
       if (loadScriptUrls) {
         if (urls) {
-          loadScriptUrls(urls, getLoader());
+          loadScriptUrls(urls, getLoaderCallback);
         }
         this.loadScriptUrls = null;
-        this.unfreeze();
       }
     },
 
