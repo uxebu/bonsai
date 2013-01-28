@@ -323,6 +323,34 @@ define([
         expect(s.attr('strokeColor')).toBe(0xff0000ff);
       });
 
+      describe('Sets & Gets strokeDash', function(){
+        it('returns null be default', function(){
+          expect(new Path().attr('strokeDash')).toBe(null);
+        });
+
+        it('should be settable/gettable', function(){
+          var s = new Path().attr('strokeDash', [5, 5, 3, 5]);
+          expect(s.attr('strokeDash')).toEqual([5, 5, 3, 5]);
+        });
+
+        it('should return null if given a non-array', function(){
+          var s = new Path().attr('strokeDash', '');
+          expect(s.attr('strokeDash')).toEqual(null);
+        });
+      });
+
+      describe('Sets & Gets strokeDashOffset', function(){
+        it('returns 0 be default', function(){
+          expect(new Path().attr('strokeDashOffset')).toBe(0);
+        });
+
+        it('should be settable/gettable', function(){
+          var s = new Path().attr('strokeDashOffset', 5);
+          expect(s.attr('strokeDashOffset')).toEqual(5);
+        });
+
+      });
+
       it('Sets & Gets opacity', function(){
         var s = new Path();
         expect(s.attr('opacity')).toBe(1);
