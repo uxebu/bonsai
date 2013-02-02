@@ -52,7 +52,6 @@ define([
     player.run = tools.hitch(player, function(node, url, options) {
       var baseUrl = player._baseUrl || tools.baseUri(document);
       // provide baseUrl to blob-worker (location is not set if worker was created from blob)
-      // additionally expose the outer requirejs configuration for the built environment
       var iife = '(' + __bonsaiRunnerCode__ + ')();';
       var runnerUrl = player.runnerUrl || bootstrapUtil.getUrl(iife);
       player.setup({

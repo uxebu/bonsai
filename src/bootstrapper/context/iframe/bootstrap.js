@@ -51,14 +51,12 @@ define([
         if (scriptUrls.length === 0) {
           loaderCallback();
           delete doc.__loadCallback__;
-          // close document when everything was loaded!
-          doc.close();
         }
       };
       doc.write(
         tools.map(scriptUrls, function(url) {
           return '<script src="' + url + '" onload="__loadCallback__()"></script>';
-        }).join('')
+        }).join('') + '<script>document.close();</script>' // close document when everything was loaded!
       );
     }
 
