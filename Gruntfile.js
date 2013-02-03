@@ -54,7 +54,7 @@ module.exports = function(grunt) {
           outfile: '_spec_runner.html',
           specs: ['test/**/*-spec.js', '!test/compare-spec.js', '!test/build-spec.js'],
           helpers: ['test/jasmine-matchers.js', 'test/jasmine.helper.js'],
-          template: 'requirejs',
+          template: require('grunt-template-jasmine-requirejs'),
           templateOptions: {
             requireConfig: {
               baseUrl: './src/',
