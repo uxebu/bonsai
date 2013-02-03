@@ -1,6 +1,7 @@
-define([
-  'bonsai/renderer/svg/svg'
-], function(SvgRenderer) {
+define(['bonsai/renderer/svg/svg'], function(SvgRenderer) {
+
+  'use strict';
+
   describe('SvgRenderer', function() {
     function createFakeDomNode() {
       return {
@@ -12,17 +13,6 @@ define([
     function createSvgRenderer() {
       return new SvgRenderer(createFakeDomNode(), 1, 1);
     }
-
-    it('should accept a dom id for the node argument', function () {
-      var targetNode = createFakeDomNode();
-      spyOn(targetNode, 'appendChild');
-      spyOn(document, 'getElementById').andReturn(targetNode);
-      var renderer = new SvgRenderer('thing', 1, 1);
-
-      expect(document.getElementById).toHaveBeenCalledWith('thing');
-      expect(targetNode.appendChild).toHaveBeenCalledWith(renderer.svg.rootContainer);
-    });
-
 
     describe('allowEventDefaults', function() {
       it('should assign the constructor value as property', function() {
@@ -142,6 +132,40 @@ define([
           createSvgRenderer().drawAudio(audioElement, message);
           expect(audioElement.volume).toBe(0.0);
         });
+      });
+    });
+
+    describe('drawText', function() {
+      var textElement;
+      beforeEach(function() {
+        textElement = { style: {} };
+      });
+      it('is a function', function() {
+        expect(typeof createSvgRenderer().drawText).toBe('function');
+      });
+      it('sets baseline-alignment=hanging when attr.textOrigin=top', function() {
+        createSvgRenderer().drawText(textElement, { attributes: { textOrigin: 'top' } });
+        expect(textElement.style.alignmentBaseline).toBe('hanging');
+      });
+      it('sets dominant-alignment=hanging when attr.textOrigin=top', function() {
+        createSvgRenderer().drawText(textElement, { attributes: { textOrigin: 'top' } });
+        expect(textElement.style.dominantBaseline).toBe('hanging');
+      });
+      it('sets baseline-alignment=middle when attr.textOrigin=center', function() {
+        createSvgRenderer().drawText(textElement, { attributes: { textOrigin: 'center' } });
+        expect(textElement.style.alignmentBaseline).toBe('middle');
+      });
+      it('sets dominant-alignment=middle when attr.textOrigin=center', function() {
+        createSvgRenderer().drawText(textElement, { attributes: { textOrigin: 'center' } });
+        expect(textElement.style.dominantBaseline).toBe('middle');
+      });
+      it('sets baseline-alignment=auto when attr.textOrigin=center', function() {
+        createSvgRenderer().drawText(textElement, { attributes: { textOrigin: 'bottom' } });
+        expect(textElement.style.alignmentBaseline).toBe('auto');
+      });
+      it('sets dominant-alignment=auto when attr.textOrigin=center', function() {
+        createSvgRenderer().drawText(textElement, { attributes: { textOrigin: 'bottom' } });
+        expect(textElement.style.dominantBaseline).toBe('auto');
       });
     });
 

@@ -64,6 +64,8 @@ define([
     opacity: ['opacity', '1'],
     fillOpacity: ['fill-opacity', '1'],
     strokeOpacity: ['stroke-opacity', '1'],
+    strokeDash: ['stroke-dasharray'],
+    strokeDashOffset: ['stroke-dashoffset'],
     fontSize: ['font-size'],
     fontWeight: ['font-weight'],
     fontStyle: ['font-style'],
@@ -88,6 +90,12 @@ define([
     'touchmove',
     'mousewheel'
   ];
+
+  var textOriginMap = {
+    top: 'hanging',
+    center: 'middle',
+    bottom: 'auto'
+  };
 
   // tools
   var isArray = tools.isArray;
@@ -221,7 +229,7 @@ define([
    * The SvgRenderer constructor
    *
    * @constructor
-   * @param {HTMLElement|String} node The element or element id to append the svg root node to.
+   * @param {HTMLElement} node The element to append the svg root node to.
    * @param {number} width The width to apply to the svg root node.
    *    Falsy means 'no width applied'.
    * @param {number} height The height to apply to the svg root node.
@@ -233,11 +241,6 @@ define([
    *    with the framerate.
    */
   function SvgRenderer(node, width, height, options) {
-
-    if (typeof node === 'string') {
-      node = document.getElementById(node);
-    }
-
     options = options || {};
     this.width = width;
     this.height = height;
@@ -561,6 +564,11 @@ define([
       if ('strokeGradient' in attr) {
         this.applyStrokeGradient(element, attr.strokeGradient, '', attr.strokeWidth);
       }
+
+      if ('strokeDash' in attr) {
+        this.applyStrokeDashArray(element, attr.strokeDash, attr.strokeDashOffset);
+      }
+
     }
   };
 
@@ -640,6 +648,8 @@ define([
   proto.drawText = function(text, message) {
 
     var attributes = message.attributes;
+    var style = text.style;
+    var textOrigin = attributes.textOrigin;
 
     if (attributes.selectable !== undefined) {
       if (attributes.selectable !== false) {
@@ -649,17 +659,13 @@ define([
       }
     }
 
-    text.setAttributeNS(xlink, 'text-anchor', 'start');
+    setStyle(style, 'textAnchor', 'start');
 
-    if (attributes.textOrigin != null) {
-      text.setAttribute(
-        'alignment-baseline',
-        attributes.textOrigin === 'top' ? 'hanging' : ''
-      );
+    if (textOrigin != null) {
+      setStyle(style, 'alignmentBaseline', textOriginMap[textOrigin]);
+      setStyle(style, 'dominantBaseline', textOriginMap[textOrigin]);
     }
 
-    var style = text.style;
-    style.textAnchor = 'start';
   };
 
   proto.drawVideo = function(foreignObject, message) {
@@ -1014,6 +1020,16 @@ define([
     } else if (aColor === null) {
       element.removeAttribute('stroke');
       element.removeAttribute('data-stroke');
+    }
+  };
+
+  proto.applyStrokeDashArray = function(element, strokeDashArray, strokeOffset) {
+    if (strokeDashArray) {
+      element.setAttribute('stroke-dasharray', strokeDashArray);
+      element.setAttribute('stroke-dashoffset', strokeOffset || 0);
+    } else {
+      element.removeAttribute('stroke-dasharray');
+      element.removeAttribute('stroke-dashoffset');
     }
   };
 
