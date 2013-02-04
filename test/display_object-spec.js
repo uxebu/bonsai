@@ -4,9 +4,10 @@ define([
   'bonsai/event_emitter',
   'bonsai/runner/matrix',
   'bonsai/tools',
+  'bonsai/point',
   'common/mock',
   'common/displayobject-lifecycle'
-], function(DisplayObject, Group, EventEmitter, Matrix, tools, mock, testLifeCycle) {
+], function(DisplayObject, Group, EventEmitter, Matrix, tools, Point, mock, testLifeCycle) {
   describe('DisplayObject', function() {
     testLifeCycle(function() {
       return new DisplayObject();
@@ -407,6 +408,70 @@ define([
         expect(spy).toHaveBeenCalled();
         //TOFIX: freezes the test runner
         //expect(spy.mostRecentCall.object).toBe(displayObject);
+      });
+    });
+
+    describe('globalToLocal', function() {
+      it('should apply the transform of an display object to a point', function() {
+        var point = new Point(-102, 23.75);
+        var matrix = new Matrix(1.0625, 0.3125, -1.25, -1.09375, 26.5, -34);
+        var displayObject = new DisplayObject().attr('matrix', matrix);
+
+        expect(displayObject.globalToLocal(point))
+          .toEqual(matrix.transformPoint(point));
+      });
+
+      it('should apply the computed transform of the display object and each parent', function() {
+        var point = new Point(-102, 23.75);
+        var matrix = new Matrix(1.375, -0.75, 1.328125, -0.15625, 41.75, -34.25);
+        var displayObject = new DisplayObject().attr('matrix', matrix);
+
+        var parent = new Group();
+        parent.addChild(displayObject);
+        var parentMatrix = new Matrix(1.9375, -1.609375, -1.609375, -0.078125, -15.5, -7);
+        parent.attr('matrix', parentMatrix);
+
+        var root = new Group();
+        root.addChild(parent);
+        var rootMatrix = new Matrix(-0.0625, 1.6875, -1.5, -1.421875, -14.5, 36.75);
+        root.attr('matrix', rootMatrix);
+
+        var absoluteMatrix = matrix.concat(parentMatrix).concat(rootMatrix);
+
+        expect(displayObject.globalToLocal(point))
+          .toEqual(absoluteMatrix.transformPoint(point));
+      });
+    });
+
+    describe('localToGlobal', function() {
+      it('should apply the inversed transform of an display object to a point', function() {
+        var point = new Point(-102, 23.75);
+        var matrix = new Matrix(1.0625, 0.3125, -1.25, -1.09375, 26.5, -34);
+        var displayObject = new DisplayObject().attr('matrix', matrix);
+
+        expect(displayObject.localToGlobal(point))
+          .toEqual(matrix.invert().transformPoint(point));
+      });
+
+      it('should apply the inverse computed transform of the display object and each parent', function() {
+        var point = new Point(-102, 23.75);
+        var matrix = new Matrix(1.375, -0.75, 1.328125, -0.15625, 41.75, -34.25);
+        var displayObject = new DisplayObject().attr('matrix', matrix);
+
+        var parent = new Group();
+        parent.addChild(displayObject);
+        var parentMatrix = new Matrix(1.9375, -1.609375, -1.609375, -0.078125, -15.5, -7);
+        parent.attr('matrix', parentMatrix);
+
+        var root = new Group();
+        root.addChild(parent);
+        var rootMatrix = new Matrix(-0.0625, 1.6875, -1.5, -1.421875, -14.5, 36.75);
+        root.attr('matrix', rootMatrix);
+
+        var absoluteMatrix = matrix.concat(parentMatrix).concat(rootMatrix);
+
+        expect(displayObject.localToGlobal(point))
+          .toEqual(absoluteMatrix.invert().transformPoint(point));
       });
     });
   });
