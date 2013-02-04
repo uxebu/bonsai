@@ -1,6 +1,7 @@
 v0.4.3
 -------------------
 * Add support for `strokeDash` and `strokeDashOffset` attributes on all Paths.
+* Add `DisplayObject#globalToLocal()` and `DisplayObject#localToGlobal()`
 
 v0.4.2 / 2013-01-14
 -------------------
