@@ -676,6 +676,28 @@ define([
     },
 
     /**
+     * Transforms a point in global coordinate space to the local coordinate
+     * space of the display object.
+     *
+     * @param {Point} point
+     * @returns {Point}
+     */
+    globalToLocal: function(point) {
+      return this.getAbsoluteMatrix().transformPoint(point);
+    },
+
+    /**
+     * Transforms a point in the local coordinate space of the display object to
+     * the global coordinate space.
+     *
+     * @param {Point} point
+     * @returns {Point}
+     */
+    localToGlobal: function(point) {
+      return this.getAbsoluteMatrix().invert().transformPoint(point);
+    },
+
+    /**
      * Destroys a child: removes it from the parent and removes all listeners.
      *
      * @returns {this} The instance
