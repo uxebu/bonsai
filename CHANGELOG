@@ -1,3 +1,8 @@
+v0.4.4
+-------------------
+* Added a basic implementation of charCode to return for
+  keydown events, as long as they are broken in DOM
+
 v0.4.3
 -------------------
 * Add support for `strokeDash` and `strokeDashOffset` attributes on all Paths.

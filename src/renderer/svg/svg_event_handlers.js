@@ -236,6 +236,14 @@ define([
             // There is another currently focused element (outside of the stage), exit:
             return;
           }
+          var charCode = domEvent.charCode;
+          if (!charCode) {
+            charCode = domEvent.keyCode;
+          }
+          if (domEvent.shiftKey) {
+            charCode = (String.fromCharCode(charCode)).toUpperCase().charCodeAt(0);
+          }
+          event.charCode = charCode;
           event.keyCode = domEvent.keyCode;
           event.ctrlKey = domEvent.ctrlKey;
           event.altKey = domEvent.altKey;
