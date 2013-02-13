@@ -412,9 +412,38 @@ define([
     });
 
     describe('Coordinate space conversion', function() {
+      beforeEach(function() {
+        this.addMatchers({
+          toMatchPoint: function(x, y) {
+            var round = Math.round;
+            var precision = 1 << 24;
+            var point = this.actual;
+            return round(x * precision) === round(point.x * precision) &&
+              round(y * precision) === round(point.y * precision);
+          }
+        })
       });
 
       describe('globalToLocal', function() {
+        it('should apply a rotation transformation as expected', function() {
+          var displayObject = new DisplayObject();
+          var transform = new Matrix().rotate(Math.PI / 4);
+          displayObject.attr('matrix', transform);
+
+          expect(displayObject.globalToLocal(new Point(Math.sqrt(8), 0))).toMatchPoint(2, -2);
+        });
+
+        it('should apply a translation as expected', function() {
+          var displayObject = new DisplayObject();
+          var tx = 100;
+          var ty = 200;
+          var transform = new Matrix().translate(tx, ty);
+          displayObject.attr('matrix', transform);
+
+          var x = 10;
+          var y = 20;
+          expect(displayObject.globalToLocal(new Point(x, y))).toMatchPoint(x - tx, y - ty);
+        });
 
         it('should apply the transform of an display object to a point', function() {
           var point = new Point(-102, 23.75);
@@ -422,10 +451,10 @@ define([
           var displayObject = new DisplayObject().attr('matrix', matrix);
 
           expect(displayObject.globalToLocal(point))
-            .toEqual(matrix.transformPoint(point));
+            .toEqual(matrix.invert().transformPoint(point));
         });
 
-        it('should apply the computed transform of the display object and each parent', function() {
+        it('should apply the inverted computed transform of the display object and each of its parents', function() {
           var point = new Point(-102, 23.75);
           var matrix = new Matrix(1.375, -0.75, 1.328125, -0.15625, 41.75, -34.25);
           var displayObject = new DisplayObject().attr('matrix', matrix);
@@ -443,21 +472,41 @@ define([
           var absoluteMatrix = matrix.concat(parentMatrix).concat(rootMatrix);
 
           expect(displayObject.globalToLocal(point))
-            .toEqual(absoluteMatrix.transformPoint(point));
+            .toEqual(absoluteMatrix.invert().transformPoint(point));
         });
       });
 
       describe('localToGlobal', function() {
+        it('should apply a rotation transformation as expected', function() {
+          var displayObject = new DisplayObject();
+          var transform = new Matrix().rotate(Math.PI / 4);
+          displayObject.attr('matrix', transform);
+
+          expect(displayObject.localToGlobal(new Point(2, 2))).toMatchPoint(0, Math.sqrt(8));
+        });
+
+        it('should apply a translation as expected', function() {
+          var displayObject = new DisplayObject();
+          var tx = 100;
+          var ty = 200;
+          var transform = new Matrix().translate(tx, ty);
+          displayObject.attr('matrix', transform);
+
+          var x = 10;
+          var y = 20;
+          expect(displayObject.localToGlobal(new Point(x, y))).toMatchPoint(x + tx, y + ty);
+        });
+
         it('should apply the inversed transform of an display object to a point', function() {
           var point = new Point(-102, 23.75);
           var matrix = new Matrix(1.0625, 0.3125, -1.25, -1.09375, 26.5, -34);
           var displayObject = new DisplayObject().attr('matrix', matrix);
 
           expect(displayObject.localToGlobal(point))
-            .toEqual(matrix.invert().transformPoint(point));
+            .toEqual(matrix.transformPoint(point));
         });
 
-        it('should apply the inverse computed transform of the display object and each parent', function() {
+        it('should apply the computed transform of the display object and each of its parents', function() {
           var point = new Point(-102, 23.75);
           var matrix = new Matrix(1.375, -0.75, 1.328125, -0.15625, 41.75, -34.25);
           var displayObject = new DisplayObject().attr('matrix', matrix);
@@ -475,7 +524,7 @@ define([
           var absoluteMatrix = matrix.concat(parentMatrix).concat(rootMatrix);
 
           expect(displayObject.localToGlobal(point))
-            .toEqual(absoluteMatrix.invert().transformPoint(point));
+            .toEqual(absoluteMatrix.transformPoint(point));
         });
       });
     });
