@@ -683,7 +683,7 @@ define([
      * @returns {Point}
      */
     globalToLocal: function(point) {
-      return this.getAbsoluteMatrix().transformPoint(point);
+      return this.getAbsoluteMatrix().invert().transformPoint(point);
     },
 
     /**
@@ -694,7 +694,7 @@ define([
      * @returns {Point}
      */
     localToGlobal: function(point) {
-      return this.getAbsoluteMatrix().invert().transformPoint(point);
+      return this.getAbsoluteMatrix().transformPoint(point);
     },
 
     /**
