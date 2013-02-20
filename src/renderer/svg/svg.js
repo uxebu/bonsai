@@ -245,7 +245,7 @@ define([
     this.width = width;
     this.height = height;
     this.allowEventDefaults = !!options.allowEventDefaults;
-
+    this.queuedMessages = [];
     var svg = this.svg = new Svg(node, width, height);
 
     // for each element in the tree, [parentId, nextId].join()
@@ -274,6 +274,16 @@ define([
         value: true
       });
     }
+
+    var self = this;
+
+    function update() {
+      self.render(self.queuedMessages, 'draw');
+      self.queuedMessages.length = 0;
+      window.webkitRequestAnimationFrame(update);
+    }
+    window.webkitRequestAnimationFrame(update);
+
   }
 
   var proto = SvgRenderer.prototype = tools.mixin({}, EventEmitter, eventHandlers);
@@ -307,7 +317,12 @@ define([
     }
   };
 
-  proto.render = function(messages) {
+  proto.render = function(messages, isDraw) {
+
+    if (isDraw == null) {
+      this.queuedMessages = this.queuedMessages.concat(messages);
+      return;
+    }
 
     var drawName,
       element,
