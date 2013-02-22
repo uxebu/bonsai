@@ -85,6 +85,8 @@ define([
         case 'touchmove':
           event.diffX = clientX - touchData.startX;
           event.diffY = clientY - touchData.startY;
+          event.deltaX = clientX - touchData.lastX;
+          event.deltaY = clientY - touchData.lastY;
           touchData.touchMoveHappened = true;
           event = cloneBasicEvent(event);
           event.type = prefix + 'drag';
@@ -107,6 +109,7 @@ define([
             event.type = 'click';
             this.emit('userevent', event, targetId);
           }
+          break;
       }
     },
 
@@ -136,6 +139,10 @@ define([
           if (i === 0) {
             this.handleSingleTouch(touch, singleTouchData, false);
           }
+
+          // set lastX/Y at the very end -- touches might be handled to handleSingleTouch multiple times
+          singleTouchData.lastX = touch.clientX;
+          singleTouchData.lastY = touch.clientY;
         }
       }
 
