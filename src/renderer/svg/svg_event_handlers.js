@@ -189,7 +189,6 @@ define([
           event.delta = domEvent.wheelDelta;
           break;
 
-        case 'touchend':
         case 'mouseup':
           targetId = data._dragId;
           event.diffX = clientX - start[0];
@@ -201,22 +200,12 @@ define([
           type = 'pointerup';
           break;
 
-        case 'touchstart':
-          if (data._currentTouch) {
-            // Don't allow other touches while once has yet to end.
-            return;
-          }
-          data._currentTouch = domEvent.touches[0].identifier;
         case 'mousedown':
           data._dragId = targetId;
           data._startEventPos = [clientX, clientY];
           type = 'pointerdown';
           break;
 
-        case 'touchmove':
-          if (domEvent.touches[0].identifier !== data._currentTouch) {
-            return;
-          }
         case 'mousemove':
           // Regular mousemove event (not dragging)
           (event = cloneBasicEvent(event)).type = 'pointermove';
