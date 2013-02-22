@@ -171,12 +171,13 @@ define([
       var last = data._lastEventPos || [clientX, clientY];
       var start = data._startEventPos || [clientX, clientY];
 
-      if (/^touch/.test(domEvent.type)) {
-        this.handleTouchEvent(domEvent);
-        return;
-      }
-
       switch (type) {
+        case 'touchstart':
+        case 'touchmove':
+        case 'touchend':
+        case 'touchcancel':
+          this.handleTouchEvent(domEvent);
+          return;
 
         case 'dblclick':
           type = 'doubleclick';
