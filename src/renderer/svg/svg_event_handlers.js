@@ -194,10 +194,7 @@ define([
           targetId = data._dragId;
           event.diffX = clientX - start[0];
           event.diffY = clientY - start[1];
-          delete data._currentTouch;
-          delete data._dragId;
-          delete data._startEventPos;
-          delete data._lastEventPos;
+          data._dragId = data._startEventPos = data._lastEventPos = null;
           type = 'pointerup';
           break;
 
