@@ -138,6 +138,10 @@ define([
           }
         }
       }
+
+      if (type === 'touchend' && allTouches.length === 0) {
+        this.touchData = {};
+      }
     },
 
     handleEvent: function(domEvent) {
