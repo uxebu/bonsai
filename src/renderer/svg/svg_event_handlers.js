@@ -213,11 +213,15 @@ define([
           this.emit('userevent', event, targetId);
 
           targetId = data._dragId;
-          type = 'drag';
           event.diffX = clientX - start[0];
           event.diffY = clientY - start[1];
           event.deltaX = clientX - last[0];
           event.deltaY = clientY - last[1];
+          if (targetId !== null) {
+            type = 'drag';
+          } else {
+            return;
+          }
           break;
         case 'keypress':
           type = 'key';
