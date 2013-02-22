@@ -205,6 +205,11 @@ define([
           break;
 
         case 'mousemove':
+          event.diffX = clientX - start[0];
+          event.diffY = clientY - start[1];
+          event.deltaX = clientX - last[0];
+          event.deltaY = clientY - last[1];
+
           // Regular mousemove event (not dragging)
           (event = cloneBasicEvent(event)).type = 'pointermove';
           this.emit('userevent', event, targetId);
@@ -213,10 +218,6 @@ define([
           this.emit('userevent', event, targetId);
 
           targetId = data._dragId;
-          event.diffX = clientX - start[0];
-          event.diffY = clientY - start[1];
-          event.deltaX = clientX - last[0];
-          event.deltaY = clientY - last[1];
           if (targetId !== null) {
             type = 'drag';
           } else {
