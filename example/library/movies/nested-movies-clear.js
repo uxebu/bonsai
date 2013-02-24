@@ -15,12 +15,10 @@ function createMovie(name, length, parent, addStop){
   var _frames = frames[name] = [];
   for(var i=0; i<length; i++){
     _frames.push(function(){
-      console.log(name, _movie.currentFrame);
 
       if(_movie.currentFrame === 0){
 
         // as in transwf, we clear the movie on frame 0:
-        console.log('clearing movie ' + name);
         _movie.clear();
 
         // now setup the text:
