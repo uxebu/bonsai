@@ -16,6 +16,8 @@ define([
   var rMultiEvent = /drag|pointerup|pointerdown|pointermove/;
   var rPointerEvent = /click|pointer/;
 
+  var indexOf = Array.prototype.indexOf;
+
   function cloneBasicEvent(e) {
     return tools.mixin({}, e);
   }
@@ -116,7 +118,7 @@ define([
 
     handleTouchEvent: function(domEvent) {
 
-      var allTouches = [].slice.call(domEvent.touches),
+      var allTouches = domEvent.touches,
           changedTouches = domEvent.changedTouches,
           touchData = this.touchData || (this.touchData = {}),
           type = domEvent.type,
@@ -131,7 +133,7 @@ define([
           // Handle each touch individually:
           identifier = touch.identifier;
           touch.type = type;
-          touch.index = allTouches.indexOf(touch);
+          touch.index = indexOf.call(allTouches, touch);
 
           singleTouchData = touchData[identifier] || (touchData[identifier] = {});
           this.handleSingleTouch(touch, singleTouchData, true);
