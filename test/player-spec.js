@@ -134,12 +134,13 @@ define([
           expect(funcSetup(createMockNode())).toBeInstanceOf(player.RendererController);
         });
 
-        it('passes node, width, height, allowEventDefaults and fpsLog arguments to the renderer', function () {
-          var node = createMockNode(), width = 162, height = 100, options = {allowEventDefaults: true, fpsLog: true};
+        it('passes node, width, height, allowEventDefaults, elementsUnderPointer, and fpsLog arguments to the renderer', function () {
+          var node = createMockNode(), width = 162, height = 100, options = {allowEventDefaults: true, elementsUnderPointer: true, fpsLog: true};
           funcSetup(node, width, height, options);
 
           expect(MockRendererConstructor).toHaveBeenCalledWith(node, width, height, {
             allowEventDefaults: options.allowEventDefaults,
+            elementsUnderPointer: true,
             fpsLog: options.fpsLog
           });
         });
