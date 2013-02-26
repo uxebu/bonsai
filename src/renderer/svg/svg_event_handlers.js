@@ -4,8 +4,9 @@
  * @requires module:renderer
  */
 define([
-  '../../tools'
-], function(tools) {
+  '../../tools',
+  './check_intersection'
+], function(tools, checkIntersection) {
   'use strict';
 
   /** @const */
