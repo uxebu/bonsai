@@ -34,10 +34,10 @@ define(function() {
    */
   KeyboardEvent.fromDomEvent = function(type, keys, targetValue) {
     var modifiers =
-      !!keys.altKey * ALT_KEY |
-      !!keys.ctrlKey * CTRL_KEY |
-      !!keys.metaKey * META_KEY |
-      !!keys.shiftKey * SHIFT_KEY;
+      (keys.altKey ? ALT_KEY : 0) |
+      (keys.ctrlKey ? CTRL_KEY : 0) |
+      (keys.metaKey ? META_KEY : 0) |
+      (keys.shiftKey ? SHIFT_KEY : 0);
     return new KeyboardEvent(undefined, keys.keyCode, modifiers, targetValue);
   };
   KeyboardEvent.NO_MODIFIER = NO_MODIFIER;
@@ -45,6 +45,20 @@ define(function() {
   KeyboardEvent.CTRL_KEY = CTRL_KEY;
   KeyboardEvent.META_KEY = META_KEY;
   KeyboardEvent.SHIFT_KEY = SHIFT_KEY;
+
+  KeyboardEvent.prototype.clone = function(type) {
+    var modifiers = (this.altKey ? ALT_KEY : 0) |
+      (this.ctrlKey ? CTRL_KEY : 0) |
+      (this.metaKey ? META_KEY : 0) |
+      (this.shiftKey ? SHIFT_KEY : 0);
+
+    return new KeyboardEvent(
+      type || this.type,
+      this.keyCode,
+      modifiers,
+      this.inputValue
+    );
+  };
 
   /**
    * Represents a pointer event (either mouse or touch)
@@ -79,6 +93,34 @@ define(function() {
     var clientX = clientOffsets.clientX;
     var clientY = clientOffsets.clientY;
     return new PointerEvent(undefined, clientX - stageClientX, clientY - stageClientY, clientX, clientY);
+  };
+
+  /**
+   * Clones the PointerEvent instance. Optionally sets the type property to a
+   * different value.
+   *
+   * @param {string} [type] Optional new event .type
+   * @return {PointerEvent}
+   */
+  PointerEvent.prototype.clone = function(type) {
+    var clone = new PointerEvent(
+      type || this.type,
+      this.x,
+      this.y,
+      this.clientX,
+      this.clientY
+    );
+    clone.deltaX = this.deltaX;
+    clone.deltaY = this.deltaY;
+    clone.diffX = this.diffX;
+    clone.diffY = this.diffY;
+    clone.isLeft = this.isLeft;
+    clone.isRight = this.isRight;
+    clone.isMiddle = this.isMiddle;
+    clone.isLeft = this.isLeft;
+    clone.touchId = this.touchId;
+    clone.touchIndex = this.touchIndex;
+    return clone;
   };
 
   return {

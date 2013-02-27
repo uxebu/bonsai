@@ -72,6 +72,29 @@ define([
             });
         });
       });
+
+      describe('#clone()', function() {
+        var pointerEvent = new PointerEvent('arbitrary', 123, 345, 567, 789);
+        pointerEvent.deltaX = 10;
+        pointerEvent.deltaY = 0;
+        pointerEvent.isLeft = true;
+        pointerEvent.touchId = 123;
+        it('should return a PointerEvent instance', function() {
+          expect(pointerEvent.clone()).toBeInstanceOf(PointerEvent);
+        });
+        it('should copy all property values to the clone', function() {
+          expect(pointerEvent.clone()).toEqual(pointerEvent);
+        });
+        it('should not return the instance itself', function() {
+          expect(pointerEvent.clone()).not.toBe(pointerEvent);
+        });
+        it('should change the "type" property if called with an argument', function() {
+          var expected = pointerEvent.clone();
+          var newType = 'othertype';
+          expected.type = newType;
+          expect(pointerEvent.clone(newType)).toEqual(expected);
+        });
+      });
     });
 
     describe('KeyboardEvent', function() {
@@ -148,6 +171,28 @@ define([
               shiftKey: shiftKey,
               inputValue: targetValue
             });
+        });
+      });
+
+      describe('#clone()', function() {
+        var modifiers = KeyboardEvent.SHIFT_KEY | KeyboardEvent.META_KEY;
+        var keyboardEvent = new KeyboardEvent('arbitrary', 0x123, modifiers, 'arbitrary value');
+
+        it('should return a Keyboard event instance', function() {
+          expect(keyboardEvent.clone()).toBeInstanceOf(KeyboardEvent);
+        });
+        it('should copy all property values to the clone', function() {
+          expect(keyboardEvent.clone()).toEqual(keyboardEvent);
+        });
+        it('should not return the instance itself', function() {
+          expect(keyboardEvent.clone()).not.toBe(keyboardEvent);
+        });
+        it('should change the "type" property if called with an argument', function() {
+          var expected = keyboardEvent.clone();
+          var newType = 'some different type';
+          expected.type = newType;
+
+          expect(keyboardEvent.clone(newType)).toEqual(expected);
         });
       });
     });
