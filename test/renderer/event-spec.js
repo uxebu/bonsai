@@ -177,25 +177,6 @@ define([
         });
       });
 
-      describe('.fromDomEvent', function() {
-        var clientX = 123, clientY = 456;
-        var stageOffsetX = 78, stageOffsetY = 90;
-
-        it('should initialize a PointerEvent from an object that has client offsets (like a mouse event or a touch)', function() {
-          var mouseEventOrTouch = {clientX: clientX, clientY: clientY};
-          expect(PointerEvent.fromDomEvent('arbitrary', mouseEventOrTouch, stageOffsetX, stageOffsetY))
-            .toHaveOwnProperties({
-              type: undefined,
-              stageX: clientX - stageOffsetX,
-              x: clientX - stageOffsetX,
-              stageY: clientY - stageOffsetY,
-              y: clientY - stageOffsetY,
-              clientX: clientX,
-              clientY: clientY
-            });
-        });
-      });
-
       describe('#clone()', function() {
         var pointerEvent = new PointerEvent('arbitrary', 123, 345, 567, 789);
         pointerEvent.deltaX = 10;
@@ -274,17 +255,32 @@ define([
         });
       });
 
-      describe('.fromDomEvent', function() {
-        it('should populate the event with the corresponding properties from the dom event', function() {
-          var targetValue = 'arbitrary value';
-          var keyCode = 0x123;
-          var altKey = true;
-          var ctrlKey = false;
-          var metaKey = true;
-          var shiftKey = false;
-          var keys = {keyCode: keyCode, altKey: altKey, ctrlKey: ctrlKey, metaKey: metaKey, shiftKey: shiftKey};
+      describe('.fromDomKeyboardEvent', function() {
+        var targetValue = 'arbitrary value';
+        var keyCode = 0x123;
+        var altKey = true;
+        var ctrlKey = false;
+        var metaKey = true;
+        var shiftKey = false;
 
-          expect(KeyboardEvent.fromDomEvent('arbitrary', keys, targetValue))
+        function createDomKeyboardEvent(type) {
+          return {
+            type: type,
+            keyCode: keyCode,
+            altKey: altKey,
+            ctrlKey: ctrlKey,
+            metaKey: metaKey,
+            shiftKey: shiftKey,
+            target: {value: targetValue}
+          };
+        }
+        it('should return a KeyboardEvent instance', function() {
+          expect(KeyboardEvent.fromDomKeyboardEvent(createDomKeyboardEvent('arbitrary')))
+            .toBeInstanceOf(KeyboardEvent);
+        });
+
+        it('should populate the event with the corresponding properties from the dom event', function() {
+          expect(KeyboardEvent.fromDomKeyboardEvent(createDomKeyboardEvent('arbitrary')))
             .toHaveOwnProperties({
               type: undefined,
               keyCode: keyCode,
@@ -295,6 +291,22 @@ define([
               inputValue: targetValue
             });
         });
+
+        eachProperty(
+          {
+            keypress: 'key',
+            keyup: 'keyup',
+            keydown: 'keydown'
+          },
+          function(expectedType, domEventType) {
+            it('should create ' + expectedType + ' events for ' + domEventType + ' events', function() {
+              var keyboardEvent = KeyboardEvent
+                .fromDomKeyboardEvent(createDomKeyboardEvent(domEventType));
+              expect(keyboardEvent).toHaveOwnProperties({type: expectedType});
+            });
+          }
+        )
+
       });
 
       describe('#clone()', function() {

@@ -2,6 +2,9 @@ define(function() {
   'use strict';
 
   var eventTypeMap = {
+    keypress: 'key',
+    keyup: 'keyup',
+    keydown: 'keydown',
     mouseup: 'pointerup',
     mousedown: 'pointerdown',
     mousemove: 'pointermove',
@@ -36,20 +39,18 @@ define(function() {
   }
 
   /**
-   * Creates a KeyboardEvent from a DOM event
+   * Creates a KeyboardEvent from a DOM keyboard event
    *
-   * @param {string} type The event type
-   * @param {Object} keys A keyboard event
-   * @param {string} [targetValue] The current value of an associated input
-   * @returns {KeyboardEvent}
+   * @param {KeyboardEvent} domEvent
+   * @return {KeyboardEvent}
    */
-  KeyboardEvent.fromDomEvent = function(type, keys, targetValue) {
+  KeyboardEvent.fromDomKeyboardEvent = function(domEvent) {
     var modifiers =
-      (keys.altKey ? ALT_KEY : 0) |
-      (keys.ctrlKey ? CTRL_KEY : 0) |
-      (keys.metaKey ? META_KEY : 0) |
-      (keys.shiftKey ? SHIFT_KEY : 0);
-    return new KeyboardEvent(undefined, keys.keyCode, modifiers, targetValue);
+      (domEvent.altKey ? ALT_KEY : 0) |
+      (domEvent.ctrlKey ? CTRL_KEY : 0) |
+      (domEvent.metaKey ? META_KEY : 0) |
+      (domEvent.shiftKey ? SHIFT_KEY : 0);
+    return new KeyboardEvent(eventTypeMap[domEvent.type], domEvent.keyCode, modifiers, domEvent.target.value);
   };
   KeyboardEvent.NO_MODIFIER = NO_MODIFIER;
   KeyboardEvent.ALT_KEY = ALT_KEY;
@@ -91,20 +92,6 @@ define(function() {
       this.isLeft = this.isRight = this.isMiddle =
       this.touchId = undefined;
   }
-  /**
-   * Creates a PointerEvent from a DOM MouseEvent or TouchEvent
-   *
-   * @param {string} domType The type of the DOM event
-   * @param {Object} clientOffsets An object with "clientX" and "clientY" properties
-   * @param {number} stageClientX The x offset of the stage relative to the viewport.
-   * @param {number} stageClientY The y offset of the stage relative to the viewport.
-   * @return {PointerEvent}
-   */
-  PointerEvent.fromDomEvent = function(domType, clientOffsets, stageClientX, stageClientY) {
-    var clientX = clientOffsets.clientX;
-    var clientY = clientOffsets.clientY;
-    return new PointerEvent(undefined, clientX - stageClientX, clientY - stageClientY, clientX, clientY);
-  };
 
   /**
    * Creates a PointerEvent from a DOM MouseEvent
@@ -125,6 +112,15 @@ define(function() {
     );
   };
 
+  /**
+   * Creates a PointerEvent from a DOM Touch / TouchEvent pair
+   *
+   * @param {Touch} domTouch The single touch to create an event for
+   * @param {TouchEvent} domEvent The touch event the touch belongs to
+   * @param {number} stageX The x offset of the stage relative to the viewport.
+   * @param {number} stageY The y offset of the stage relative to the viewport.
+   * @return {PointerEvent}
+   */
   PointerEvent.fromDomTouch = function(domTouch, domEvent, stageX, stageY) {
     var clientX = domTouch.clientX, clientY = domTouch.clientY;
     var pointerEvent = new PointerEvent(
