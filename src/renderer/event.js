@@ -1,6 +1,14 @@
 define(function() {
   'use strict';
 
+  var eventTypeMap = {
+    mouseup: 'pointerup',
+    mousedown: 'pointerdown',
+    mousemove: 'pointermove',
+    mouseover: 'mouseover',
+    mouseout: 'mouseout'
+  };
+
   /** @const */
   var NO_MODIFIER = 0, ALT_KEY = 1 << 0, CTRL_KEY = 1 << 1, META_KEY = 1 << 2, SHIFT_KEY = 1 << 3;
 
@@ -93,6 +101,23 @@ define(function() {
     var clientX = clientOffsets.clientX;
     var clientY = clientOffsets.clientY;
     return new PointerEvent(undefined, clientX - stageClientX, clientY - stageClientY, clientX, clientY);
+  };
+
+  /**
+   * Creates a PointerEvent from a DOM MouseEvent
+   *
+   * @param {MouseEvent} domEvent
+   * @param {number} stageX The x offset of the stage relative to the viewport
+   * @param {number} stageY The y offset of the stage relative to the viewport
+   * @returns {PointerEvent}
+   */
+  PointerEvent.fromDomMouseEvent = function(domEvent, stageX, stageY) {
+    var clientX = domEvent.clientX, clientY = domEvent.clientY;
+    return new PointerEvent(eventTypeMap[domEvent.type], clientX - stageX, clientY - stageY, clientX, clientY);
+  };
+
+  PointerEvent.fromDomTouchEvent = function() {
+
   };
 
   /**

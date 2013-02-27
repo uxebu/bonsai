@@ -3,6 +3,12 @@ define([
 ], function(event) {
   'use strict';
 
+  function eachProperty(object, callback) {
+    for (var key in object) {
+      callback(object[key], key);
+    }
+  }
+
   describe('renderer events', function() {
     describe('PointerEvent', function() {
       var PointerEvent = event.PointerEvent;
@@ -51,6 +57,58 @@ define([
               isRight: undefined,
               isMiddle: undefined
             });
+        });
+      });
+
+
+      describe('factories', function() {
+        var clientX = 123, clientY = 456;
+        var stageX = 78, stageY = 90;
+
+        describe('.fromDomMouseEvent', function() {
+          function createDomMouseEvent(type) {
+            return {
+              type: type,
+              clientX: clientX,
+              clientY: clientY
+            };
+          }
+          it('should return a PointerEvent', function() {
+            var pointerEvent = PointerEvent.fromDomMouseEvent(createDomMouseEvent('arbitrary'), stageX, stageY);
+            expect(pointerEvent)
+              .toBeInstanceOf(PointerEvent);
+          });
+
+          it('should initialize all offset properties from the mouse event', function() {
+            var pointerEvent = PointerEvent.fromDomMouseEvent(createDomMouseEvent('arbitrary'), stageX, stageY);
+            expect(pointerEvent)
+              .toHaveOwnProperties({
+                stageX: clientX - stageX,
+                x: clientX - stageX,
+                stageY: clientY - stageY,
+                y: clientY - stageY,
+                clientX: clientX,
+                clientY: clientY
+              });
+          });
+
+          eachProperty(
+            {
+              mouseup: 'pointerup',
+              mousedown: 'pointerdown',
+              mousemove: 'pointermove',
+              mouseover: 'mouseover',
+              mouseout: 'mouseout'
+            },
+            function(expectedType, domEventType) {
+              it('should create ' + expectedType + ' events to ' + domEventType + ' events', function() {
+                var pointerEvent = PointerEvent.fromDomMouseEvent(
+                  createDomMouseEvent(domEventType), stageX, stageY
+                );
+                expect(pointerEvent).toHaveOwnProperties({type: expectedType});
+              });
+            }
+          );
         });
       });
 
