@@ -26,40 +26,22 @@ define([
             });
         });
 
-        it('should initialize the "touchId" property to undefined', function() {
-          var pointerEvent = new PointerEvent(type, stageX, stageY, clientX, clientY);
-          expect(pointerEvent.touchId).toBe(undefined);
-          expect(pointerEvent).toHaveOwnProperties('touchId')
+        it('should initialize the "deltaX", "deltaY", "diffX" and "diffY" properties to undefined (movement)', function() {
+          expect(new PointerEvent(type, stageX, stageY, clientX, clientY))
+            .toHaveOwnProperties({
+              deltaX: undefined,
+              deltaY: undefined,
+              diffX: undefined,
+              diffY: undefined
+            });
         });
 
-        it('should initialize the "touchIndex" property to undefined', function() {
-          var pointerEvent = new PointerEvent(type, stageX, stageY, clientX, clientY);
-          expect(pointerEvent.touchIndex).toBe(undefined);
-          expect(pointerEvent).toHaveOwnProperties('touchIndex')
-        });
-
-        it('should initialize the "diffX" property to undefined', function() {
-          var pointerEvent = new PointerEvent(type, stageX, stageY, clientX, clientY);
-          expect(pointerEvent.diffX).toBe(undefined);
-          expect(pointerEvent).toHaveOwnProperties('diffX')
-        });
-
-        it('should initialize the "diffY" property to undefined', function() {
-          var pointerEvent = new PointerEvent(type, stageX, stageY, clientX, clientY);
-          expect(pointerEvent.diffY).toBe(undefined);
-          expect(pointerEvent).toHaveOwnProperties('diffY')
-        });
-
-        it('should initialize the "deltaX" property to undefined', function() {
-          var pointerEvent = new PointerEvent(type, stageX, stageY, clientX, clientY);
-          expect(pointerEvent.deltaX).toBe(undefined);
-          expect(pointerEvent).toHaveOwnProperties('deltaX')
-        });
-
-        it('should initialize the "deltaY" property to undefined', function() {
-          var pointerEvent = new PointerEvent(type, stageX, stageY, clientX, clientY);
-          expect(pointerEvent.deltaY).toBe(undefined);
-          expect(pointerEvent).toHaveOwnProperties('deltaY')
+        it('should initialize the "touchId" and "touchIndex" properties to undefined (touch)', function() {
+          expect(new PointerEvent(type, stageX, stageY, clientX, clientY))
+            .toHaveOwnProperties({
+              touchId: undefined,
+              touchIndex: undefined
+            });
         });
       });
 
