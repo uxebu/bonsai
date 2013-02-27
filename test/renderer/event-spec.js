@@ -3,27 +3,6 @@ define([
 ], function(event) {
   'use strict';
 
-  function memoize(func) {
-    var cache = {};
-    return function(param) {
-      return (param in cache) ? cache[param] : (cache[param] = func(param));
-    }
-  }
-
-  var getConstructCall = memoize(function(numParameters) {
-    var parameters = [];
-    for (var i = 0; i < numParameters; i += 1) {
-      parameters[i] = 'args[' + i + ']';
-    }
-    var body = 'return new Constructor(' + parameters.join(', ') + ')';
-    return Function('Constructor', 'args', body);
-  });
-
-  function parameterToPropertyTest(Constructor, args, propertyName, parameterIndex) {
-    var construct = getConstructCall(args.length);
-    expect(construct(Constructor, args)[propertyName]).toEqual(args[parameterIndex]);
-  }
-
   describe('renderer events', function() {
     describe('PointerEvent', function() {
       var PointerEvent = event.PointerEvent;
