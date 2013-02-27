@@ -113,11 +113,28 @@ define(function() {
    */
   PointerEvent.fromDomMouseEvent = function(domEvent, stageX, stageY) {
     var clientX = domEvent.clientX, clientY = domEvent.clientY;
-    return new PointerEvent(eventTypeMap[domEvent.type], clientX - stageX, clientY - stageY, clientX, clientY);
+    return new PointerEvent(
+      eventTypeMap[domEvent.type],
+      clientX - stageX,
+      clientY - stageY,
+      clientX,
+      clientY
+    );
   };
 
-  PointerEvent.fromDomTouchEvent = function() {
-
+  var indexOf = Array.prototype.indexOf;
+  PointerEvent.fromDomTouch = function(domTouch, domEvent, stageX, stageY) {
+    var clientX = domTouch.clientX, clientY = domTouch.clientY;
+    var pointerEvent = new PointerEvent(
+      undefined,
+      clientX - stageX,
+      clientY - stageY,
+      clientX,
+      clientY
+    );
+    pointerEvent.touchId = domTouch.identifier;
+    pointerEvent.touchIndex = indexOf.call(domEvent.touches, domTouch);
+    return pointerEvent;
   };
 
   /**

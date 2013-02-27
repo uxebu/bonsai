@@ -74,13 +74,14 @@ define([
             };
           }
           it('should return a PointerEvent', function() {
-            var pointerEvent = PointerEvent.fromDomMouseEvent(createDomMouseEvent('arbitrary'), stageX, stageY);
-            expect(pointerEvent)
-              .toBeInstanceOf(PointerEvent);
+            var domEvent = createDomMouseEvent('arbitrary');
+            var pointerEvent = PointerEvent.fromDomMouseEvent(domEvent, stageX, stageY);
+            expect(pointerEvent).toBeInstanceOf(PointerEvent);
           });
 
           it('should initialize all offset properties from the mouse event', function() {
-            var pointerEvent = PointerEvent.fromDomMouseEvent(createDomMouseEvent('arbitrary'), stageX, stageY);
+            var domEvent = createDomMouseEvent('arbitrary');
+            var pointerEvent = PointerEvent.fromDomMouseEvent(domEvent, stageX, stageY);
             expect(pointerEvent)
               .toHaveOwnProperties({
                 stageX: clientX - stageX,
@@ -109,6 +110,60 @@ define([
               });
             }
           );
+        });
+
+        describe('.fromDomTouch', function() {
+          var touchId = 0;
+          function createDomTouch(clientX, clientY) {
+            return {
+              clientX: clientX,
+              clientY: clientY,
+              identifier: touchId += 1
+            };
+          }
+          function createDomTouchEvent(type, containedTouch) {
+            return {
+              type: type,
+              touches: [createDomTouch(-20, -30), containedTouch],
+              changedTouches: [containedTouch]
+            };
+          }
+          function createDomTouchendEvent() {
+            var touch = createDomTouchEvent('touchend');
+            touch.touches.length = 0;
+            return touch;
+          }
+
+          it('should return a PointerEvent', function() {
+            var domTouch = createDomTouch(clientX, clientY);
+            var domEvent = createDomTouchEvent('arbitrary', domTouch);
+            var pointerEvent = PointerEvent.fromDomTouch(domTouch, domEvent, stageX, stageY);
+            expect(pointerEvent).toBeInstanceOf(PointerEvent);
+          });
+
+          it('should initialize all offset properties from the first changed touch event', function() {
+            var domTouch = createDomTouch(clientX, clientY);
+            var domEvent = createDomTouchEvent('arbitrary', domTouch);
+            var pointerEvent = PointerEvent.fromDomTouch(domTouch, domEvent, stageX, stageY);
+            expect(pointerEvent)
+              .toHaveOwnProperties({
+                stageX: clientX - stageX,
+                x: clientX - stageX,
+                stageY: clientY - stageY,
+                y: clientY - stageY,
+                clientX: clientX,
+                clientY: clientY
+              });
+          });
+
+          it('should set the "touchId" from the passed in DOM touch', function() {
+            var domTouch = createDomTouch(clientX, clientY);
+            var domEvent = createDomTouchEvent('arbitrary', domTouch);
+            var pointerEvent = PointerEvent.fromDomTouch(domTouch, domEvent, stageX, stageY);
+            expect(pointerEvent).toHaveOwnProperties({
+              touchId: domTouch.identifier
+            });
+          });
         });
       });
 
