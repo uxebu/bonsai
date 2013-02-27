@@ -62,8 +62,8 @@ define(function() {
     this.stageY = this.y = stageY;
     this.clientX = clientX;
     this.clientY = clientY;
-    this.deltaX = this.deltaY =
-      this.diffX = this.diffY =
+    this.deltaX = this.deltaY = this.diffX = this.diffY =
+      this.isLeft = this.isRight = this.isMiddle =
       this.touchId = this.touchIndex = undefined;
   }
   /**

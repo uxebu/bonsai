@@ -43,6 +43,15 @@ define([
               touchIndex: undefined
             });
         });
+
+        it('should initialize the "isLeft", "isRight", and "isMiddle" properties to undefined (mouse)', function() {
+          expect(new PointerEvent(type, stageX, stageY, clientX, clientY))
+            .toHaveOwnProperties({
+              isLeft: undefined,
+              isRight: undefined,
+              isMiddle: undefined
+            });
+        });
       });
 
       describe('.fromDomEvent', function() {
