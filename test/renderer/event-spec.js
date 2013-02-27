@@ -42,11 +42,10 @@ define([
             });
         });
 
-        it('should initialize the "touchId" and "touchIndex" properties to undefined (touch)', function() {
+        it('should initialize the "touchId" property to undefined (touch)', function() {
           expect(new PointerEvent(type, stageX, stageY, clientX, clientY))
             .toHaveOwnProperties({
-              touchId: undefined,
-              touchIndex: undefined
+              touchId: undefined
             });
         });
 

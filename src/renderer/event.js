@@ -86,7 +86,7 @@ define(function() {
     this.clientY = clientY;
     this.deltaX = this.deltaY = this.diffX = this.diffY =
       this.isLeft = this.isRight = this.isMiddle =
-      this.touchId = this.touchIndex = undefined;
+      this.touchId = undefined;
   }
   /**
    * Creates a PointerEvent from a DOM MouseEvent or TouchEvent
@@ -122,7 +122,6 @@ define(function() {
     );
   };
 
-  var indexOf = Array.prototype.indexOf;
   PointerEvent.fromDomTouch = function(domTouch, domEvent, stageX, stageY) {
     var clientX = domTouch.clientX, clientY = domTouch.clientY;
     var pointerEvent = new PointerEvent(
@@ -133,7 +132,6 @@ define(function() {
       clientY
     );
     pointerEvent.touchId = domTouch.identifier;
-    pointerEvent.touchIndex = indexOf.call(domEvent.touches, domTouch);
     return pointerEvent;
   };
 
@@ -161,7 +159,6 @@ define(function() {
     clone.isMiddle = this.isMiddle;
     clone.isLeft = this.isLeft;
     clone.touchId = this.touchId;
-    clone.touchIndex = this.touchIndex;
     return clone;
   };
 
