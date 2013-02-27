@@ -6,7 +6,10 @@ define(function() {
     mousedown: 'pointerdown',
     mousemove: 'pointermove',
     mouseover: 'mouseover',
-    mouseout: 'mouseout'
+    mouseout: 'mouseout',
+    touchstart: 'pointerdown',
+    touchmove: 'pointermove',
+    touchend: 'pointerup'
   };
 
   /** @const */
@@ -125,7 +128,7 @@ define(function() {
   PointerEvent.fromDomTouch = function(domTouch, domEvent, stageX, stageY) {
     var clientX = domTouch.clientX, clientY = domTouch.clientY;
     var pointerEvent = new PointerEvent(
-      undefined,
+      eventTypeMap[domEvent.type],
       clientX - stageX,
       clientY - stageY,
       clientX,

@@ -101,7 +101,7 @@ define([
               mouseout: 'mouseout'
             },
             function(expectedType, domEventType) {
-              it('should create ' + expectedType + ' events to ' + domEventType + ' events', function() {
+              it('should create ' + expectedType + ' events for ' + domEventType + ' events', function() {
                 var pointerEvent = PointerEvent.fromDomMouseEvent(
                   createDomMouseEvent(domEventType), stageX, stageY
                 );
@@ -126,11 +126,6 @@ define([
               touches: [createDomTouch(-20, -30), containedTouch],
               changedTouches: [containedTouch]
             };
-          }
-          function createDomTouchendEvent() {
-            var touch = createDomTouchEvent('touchend');
-            touch.touches.length = 0;
-            return touch;
           }
 
           it('should return a PointerEvent', function() {
@@ -163,6 +158,22 @@ define([
               touchId: domTouch.identifier
             });
           });
+
+          eachProperty(
+            {
+              touchstart: 'pointerdown',
+              touchmove: 'pointermove',
+              touchend: 'pointerup'
+            },
+            function(expectedType, domEventType) {
+              it('should create ' + expectedType + ' events for ' + domEventType + ' events', function() {
+                var domTouch = createDomTouch(clientX, clientY);
+                var domEvent = createDomTouchEvent(domEventType, domTouch);
+                var pointerEvent = PointerEvent.fromDomTouch(domTouch, domEvent, stageX, stageY);
+                expect(pointerEvent).toHaveOwnProperties({type: expectedType});
+              });
+            }
+          )
         });
       });
 
