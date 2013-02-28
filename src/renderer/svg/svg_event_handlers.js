@@ -205,7 +205,7 @@ define([
           var dragEvent = pointerEvent.clone('drag');
           dragEvent.diffX = x - this._mouseDragStartX;
           dragEvent.diffY = y - this._mouseDragStartY;
-          emitMouseEvent(this, dragEvent, targetId);
+          emitMouseEvent(this, dragEvent, dragId);
         }
       } else if (type === 'pointerup') {
         this._mouseDragId = this._mouseDragStartX = this._mouseDragStartY = undefined;
