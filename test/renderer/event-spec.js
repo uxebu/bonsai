@@ -94,6 +94,8 @@ define([
 
           eachProperty(
             {
+              click: 'click',
+              dblclick: 'dblclick',
               mouseup: 'pointerup',
               mousedown: 'pointerdown',
               mousemove: 'pointermove',

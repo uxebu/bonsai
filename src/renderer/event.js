@@ -2,6 +2,8 @@ define(function() {
   'use strict';
 
   var eventTypeMap = {
+    click: 'click',
+    dblclick: 'dblclick',
     keypress: 'key',
     keyup: 'keyup',
     keydown: 'keydown',
