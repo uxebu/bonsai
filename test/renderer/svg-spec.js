@@ -6,6 +6,7 @@ define(['bonsai/renderer/svg/svg'], function(SvgRenderer) {
     function createFakeDomNode() {
       return {
         ownerSVGElement: {},
+        ownerDocument: {},
         appendChild: function() {},
         setAttribute: function() {}
       };
@@ -206,6 +207,23 @@ define(['bonsai/renderer/svg/svg'], function(SvgRenderer) {
       });
     });
 
+    function proxyProperty(object, propertyName) {
+      return {
+        get: function() {
+          return object[propertyName];
+        }
+      };
+    }
+
+    function createTouch(parentEvent, identifier) {
+      return Object.defineProperties({}, {
+        identifier: {value: identifier},
+        target: proxyProperty(parentEvent, 'target'),
+        clientX: proxyProperty(parentEvent, 'clientX'),
+        clientY: proxyProperty(parentEvent, 'clientY')
+      });
+    }
+
     function createTouchEvent(which) {
       var evt = document.createEvent('UIEvent');
       evt.initEvent(which, true, true);
@@ -214,8 +232,9 @@ define(['bonsai/renderer/svg/svg'], function(SvgRenderer) {
       evt.ctrlKey = false;
       evt.shiftKey = false;
       evt.metaKey = false;
-      evt.touches = [{identifier:1}];
-      evt.changedTouches = evt.touches;
+      evt.clientX = evt.clientY = 0;
+      evt.changedTouches = [createTouch(evt, 1)];
+      evt.touches = which === 'touchend' ? [] : evt.changedTouches;
       return evt;
     }
 
