@@ -12,6 +12,7 @@ define(function() {
     mousemove: 'pointermove',
     mouseover: 'mouseover',
     mouseout: 'mouseout',
+    touchcancel: 'pointerup',
     touchstart: 'pointerdown',
     touchmove: 'pointermove',
     touchend: 'pointerup'

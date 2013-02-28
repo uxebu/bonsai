@@ -165,7 +165,8 @@ define([
             {
               touchstart: 'pointerdown',
               touchmove: 'pointermove',
-              touchend: 'pointerup'
+              touchend: 'pointerup',
+              touchcancel: 'pointerup'
             },
             function(expectedType, domEventType) {
               it('should create ' + expectedType + ' events for ' + domEventType + ' events', function() {
