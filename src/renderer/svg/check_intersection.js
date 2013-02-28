@@ -13,7 +13,7 @@ define(function() {
     svgRect.x = svgRect.y = 0;
     try { // Gecko throws an error
       // Opera/Presto needs the second argument. Older WebKits return null.
-      hasSupport = !!svg.getIntersectionList(rect, null);
+      hasSupport = !!svgElement.getIntersectionList(svgRect, null);
     } catch (e) {
       hasSupport = false;
     }
@@ -23,7 +23,7 @@ define(function() {
 
   return function(svgElement, x, y) {
     if (hasSupport === undefined) {
-      checkSupport();
+      checkSupport(svgElement);
     }
 
     if (!hasSupport) {
@@ -34,7 +34,7 @@ define(function() {
     svgRect.y = y;
 
     // second argument needed for Opera/Presto
-    var elementsUnderPoint = svgElememt.getIntersectionList(svgRect, null);
+    var elementsUnderPoint = svgElement.getIntersectionList(svgRect, null);
     var numElements = elementsUnderPoint.length;
 
     if (!numElements) { return null; }
