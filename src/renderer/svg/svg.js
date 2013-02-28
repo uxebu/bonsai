@@ -76,19 +76,19 @@ define([
   };
 
   var eventTypes = [
-    'dblclick',
     'click',
+    'dblclick',
+    'mousedown',
     'mouseenter',
     'mouseleave',
-    'mouseover',
-    'mouseout',
-    'mouseup',
-    'mousedown',
-    'touchstart',
-    'touchend',
     'mousemove',
+    'mouseout',
+    'mouseover',
+    'mouseup',
+    'touchcancel',
+    'touchend',
     'touchmove',
-    'mousewheel'
+    'touchstart'
   ];
 
   var textOriginMap = {
