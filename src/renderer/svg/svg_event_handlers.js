@@ -156,6 +156,8 @@ define([
               // event killing is needed to prevent native scrolling etc. within bonsai movies
               domEvent.preventDefault();
             }
+          } else if (domEventType === 'touchcancel') {
+            this._hadTouchCancel = true;
           }
 
           for (var i = 0; i < numTouches; i += 1) {
@@ -166,7 +168,7 @@ define([
           }
 
           if (domEventType === 'touchend' && domEvent.touches.length === 0) { // last finger is raised
-            if (!(this._isMultiTouch || this._hadTouchMove)) {
+            if (!(this._isMultiTouch || this._hadTouchMove || this._hadTouchCancel)) {
               var domTimeStamp = domEvent.timeStamp;
               var isDoubleClick = domTimeStamp - (this._lastClickFromTouch || 0) < 300;
               var clickType = isDoubleClick ? 'dblclick' : 'click';
@@ -174,7 +176,7 @@ define([
               emitMouseEvent(this, pointerEvent.clone(clickType), touchTargetId);
               domEvent.preventDefault(); // prevent the default click
             }
-            this._isMultiTouch = false;
+            this._isMultiTouch = this._hadTouchCancel = false;
           }
         }
       } else if (isKeyboardEventType(domEventType)) {
