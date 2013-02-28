@@ -147,6 +147,14 @@ define([
               event.relatedTarget = displayObjectsRegistry[relatedTargetId] || this;
             }
 
+            var elementsUnderPointerIds = data.elementsUnderPointerIds;
+            if (elementsUnderPointerIds) {
+              var elementsUnderPointer = event.underPointer = [];
+              for (var i = 0, elementId; (elementId = elementsUnderPointerIds[i]); i += 1) {
+                elementsUnderPointer[i] = displayObjectsRegistry[elementId];
+              }
+            }
+
             uiEvent(event).emitOn(target);
           }
           break;
