@@ -106,13 +106,19 @@ define(function() {
    */
   PointerEvent.fromDomMouseEvent = function(domEvent, stageX, stageY) {
     var clientX = domEvent.clientX, clientY = domEvent.clientY;
-    return new PointerEvent(
+    var pointerEvent = new PointerEvent(
       eventTypeMap[domEvent.type],
       clientX - stageX,
       clientY - stageY,
       clientX,
       clientY
     );
+    var button = domEvent.button;
+    pointerEvent.isLeft = button === 0;
+    pointerEvent.isMiddle = button === 1;
+    pointerEvent.isRight = button === 2;
+
+    return pointerEvent;
   };
 
   /**

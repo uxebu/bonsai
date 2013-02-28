@@ -65,11 +65,12 @@ define([
         var stageX = 78, stageY = 90;
 
         describe('.fromDomMouseEvent', function() {
-          function createDomMouseEvent(type) {
+          function createDomMouseEvent(type, button) {
             return {
               type: type,
               clientX: clientX,
-              clientY: clientY
+              clientY: clientY,
+              button: button || 0
             };
           }
           it('should return a PointerEvent', function() {
@@ -90,6 +91,36 @@ define([
                 clientX: clientX,
                 clientY: clientY
               });
+          });
+
+          it('should initialize the "isLeft" property from the mouse event', function() {
+            var domEvent = createDomMouseEvent('arbitrary', 0);
+            var pointerEvent = PointerEvent.fromDomMouseEvent(domEvent, stageX, stageY);
+            expect(pointerEvent).toHaveOwnProperties({
+              isLeft: true,
+              isMiddle: false,
+              isRight: false
+            });
+          });
+
+          it('should initialize the "isMiddle" property from the mouse event', function() {
+            var domEvent = createDomMouseEvent('arbitrary', 1);
+            var pointerEvent = PointerEvent.fromDomMouseEvent(domEvent, stageX, stageY);
+            expect(pointerEvent).toHaveOwnProperties({
+              isLeft: false,
+              isMiddle: true,
+              isRight: false
+            });
+          });
+
+          it('should initialize the "isRight" property from the mouse event', function() {
+            var domEvent = createDomMouseEvent('arbitrary', 2);
+            var pointerEvent = PointerEvent.fromDomMouseEvent(domEvent, stageX, stageY);
+            expect(pointerEvent).toHaveOwnProperties({
+              isLeft: false,
+              isMiddle: false,
+              isRight: true
+            });
           });
 
           eachProperty(
