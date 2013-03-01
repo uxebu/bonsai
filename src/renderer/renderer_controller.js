@@ -69,7 +69,7 @@ function(tools, EventEmitter, URI) {
         event: event,
         targetId: targetId,
         relatedTargetId: relatedTargetId,
-        elementsUnderPointerIds: underPointerIds
+        objectsUnderPointerIds: underPointerIds
       });
     });
 

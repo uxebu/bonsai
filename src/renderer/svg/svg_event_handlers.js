@@ -81,14 +81,14 @@ define([
    * @param {PointerEvent} event The pointer event to dispatch
    * @param {number} targetId The bonsai id of the event target
    * @param {number} [relatedTargetId] The bonsai id of the related target, if any
-   * @param {Array} [elementsUnderPointerIds] An array of element ids under the mouse pointer
+   * @param {Array} [objectsUnderPointerIds] An array of element ids under the mouse pointer
    */
-  function emitMouseEvent(emitter, event, targetId, relatedTargetId, elementsUnderPointerIds) {
+  function emitMouseEvent(emitter, event, targetId, relatedTargetId, objectsUnderPointerIds) {
     emitter.emit('userevent', event, targetId, relatedTargetId);
     if (!TOUCH_SUPPORT) {
       // If we're on a non-touch platform (e.g. regular desktop)
       // then fire the mutli: event so we get cross-platform support:
-      emitter.emit('userevent', event.clone('multi:' + event.type), targetId, relatedTargetId, elementsUnderPointerIds);
+      emitter.emit('userevent', event.clone('multi:' + event.type), targetId, relatedTargetId, objectsUnderPointerIds);
     }
   }
 
@@ -97,14 +97,14 @@ define([
    * @param {PointerEvent} event The pointer event to dispatch
    * @param {number} targetId The bonsai id of the event target
    * @param {boolean} isMultiTouch Whether the touch is part of a multitouch gesture
-   * @param {Array} [elementsUnderPointerIds] An array of element ids under the finger tip
+   * @param {Array} [objectsUnderPointerIds] An array of element ids under the finger tip
    */
-  function emitTouchEvent(emitter, event, targetId, isMultiTouch, elementsUnderPointerIds) {
+  function emitTouchEvent(emitter, event, targetId, isMultiTouch, objectsUnderPointerIds) {
     var type = event.type;
     event.type = 'multi:' + type;
     emitter.emit('userevent', event, targetId);
     if (!isMultiTouch) {
-      emitter.emit('userevent', event.clone(type), targetId, null, elementsUnderPointerIds);
+      emitter.emit('userevent', event.clone(type), targetId, null, objectsUnderPointerIds);
     }
   }
 
@@ -197,9 +197,9 @@ define([
       var type = pointerEvent.type, x = pointerEvent.x, y = pointerEvent.y;
       if (!type) { return; }
 
-      var elementIdsUnderPointer;
-      if (this.elementsUnderPointer) {
-        elementIdsUnderPointer = this.getElementIdsUnderPointer(x, y);
+      var objectUnderPointerIds;
+      if (this.objectsUnderPointer) {
+        objectUnderPointerIds = this.getElementIdsUnderPointer(x, y);
       }
 
       if (type === 'pointerdown') {
@@ -214,14 +214,14 @@ define([
           var dragEvent = pointerEvent.clone('drag');
           dragEvent.diffX = x - this._mouseDragStartX;
           dragEvent.diffY = y - this._mouseDragStartY;
-          emitMouseEvent(this, dragEvent, dragId, null, elementIdsUnderPointer);
+          emitMouseEvent(this, dragEvent, dragId, null, objectUnderPointerIds);
         }
       } else if (type === 'pointerup') {
         this._mouseDragId = this._mouseDragStartX = this._mouseDragStartY = undefined;
       }
       this._mouseMoveLastX = x;
       this._mouseMoveLastY = y;
-      emitMouseEvent(this, pointerEvent, targetId, relatedTargetId, elementIdsUnderPointer);
+      emitMouseEvent(this, pointerEvent, targetId, relatedTargetId, objectUnderPointerIds);
     },
 
     /**
@@ -236,9 +236,9 @@ define([
 
       var x = pointerEvent.x, y = pointerEvent.y;
 
-      var elementIdsUnderPointer;
-      if (this.elementsUnderPointer) {
-        elementIdsUnderPointer = this.getElementIdsUnderPointer(x, y);
+      var objectUnderPointerIds;
+      if (this.objectsUnderPointer) {
+        objectUnderPointerIds = this.getElementIdsUnderPointer(x, y);
       }
 
       var isMultiTouch = this._isMultiTouch;
@@ -257,12 +257,12 @@ define([
           pointerEvent.diffY = y - touchData.dragStartY;
           pointerEvent.deltaX = x - touchData.lastX;
           pointerEvent.deltaY = y - touchData.lastY;
-          emitTouchEvent(this, pointerEvent.clone('drag'), targetId, isMultiTouch, elementIdsUnderPointer);
+          emitTouchEvent(this, pointerEvent.clone('drag'), targetId, isMultiTouch, objectUnderPointerIds);
         }
         touchData.lastX = x;
         touchData.lastY = y;
       }
-      emitTouchEvent(this, pointerEvent, targetId, isMultiTouch, elementIdsUnderPointer);
+      emitTouchEvent(this, pointerEvent, targetId, isMultiTouch, objectUnderPointerIds);
     },
 
     getElementIdsUnderPointer: function(x, y) {
