@@ -84,7 +84,7 @@ define([
    * @param {Array} [objectsUnderPointerIds] An array of element ids under the mouse pointer
    */
   function emitMouseEvent(emitter, event, targetId, relatedTargetId, objectsUnderPointerIds) {
-    emitter.emit('userevent', event, targetId, relatedTargetId);
+    emitter.emit('userevent', event, targetId, relatedTargetId, objectsUnderPointerIds);
     if (!TOUCH_SUPPORT) {
       // If we're on a non-touch platform (e.g. regular desktop)
       // then fire the mutli: event so we get cross-platform support:
@@ -102,7 +102,7 @@ define([
   function emitTouchEvent(emitter, event, targetId, isMultiTouch, objectsUnderPointerIds) {
     var type = event.type;
     event.type = 'multi:' + type;
-    emitter.emit('userevent', event, targetId);
+    emitter.emit('userevent', event, targetId, null, objectsUnderPointerIds);
     if (!isMultiTouch) {
       emitter.emit('userevent', event.clone(type), targetId, null, objectsUnderPointerIds);
     }
