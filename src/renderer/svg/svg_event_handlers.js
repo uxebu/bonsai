@@ -230,6 +230,14 @@ define([
           break;
         case 'keypress':
           type = 'key';
+          var charCode = domEvent.charCode;
+          if (!charCode) {
+            charCode = domEvent.keyCode;
+          }
+          if (domEvent.shiftKey) {
+            charCode = (String.fromCharCode(charCode)).toUpperCase().charCodeAt(0);
+          }
+          event.charCode = charCode;
         case 'keyup':
         case 'keydown':
           if (target && !target._isBSDOMElement && document.activeElement !== document.body) {
