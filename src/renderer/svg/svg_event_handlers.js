@@ -208,7 +208,7 @@ define([
         this._mouseDragStartY = y;
       } else if (type === 'pointermove') {
         pointerEvent.deltaX = x - this._mouseMoveLastX;
-        pointerEvent.deltaX = y - this._mouseMoveLastY;
+        pointerEvent.deltaY = y - this._mouseMoveLastY;
         var dragId = this._mouseDragId;
         if (dragId === +dragId) { // emit drag events if the mouse is down.
           var dragEvent = pointerEvent.clone('drag');
