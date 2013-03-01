@@ -85,6 +85,8 @@ define([
         case 'touchmove':
           event.diffX = clientX - touchData.startX;
           event.diffY = clientY - touchData.startY;
+          event.deltaX = clientX - touchData.lastX;
+          event.deltaY = clientY - touchData.lastY;
           touchData.touchMoveHappened = true;
           event = cloneBasicEvent(event);
           event.type = prefix + 'drag';
@@ -107,6 +109,7 @@ define([
             event.type = 'click';
             this.emit('userevent', event, targetId);
           }
+          break;
       }
     },
 
@@ -136,7 +139,15 @@ define([
           if (i === 0) {
             this.handleSingleTouch(touch, singleTouchData, false);
           }
+
+          // set lastX/Y at the very end -- touches might be handled to handleSingleTouch multiple times
+          singleTouchData.lastX = touch.clientX;
+          singleTouchData.lastY = touch.clientY;
         }
+      }
+
+      if (type === 'touchend' && allTouches.length === 0) {
+        this.touchData = {};
       }
     },
 
@@ -167,12 +178,13 @@ define([
       var last = data._lastEventPos || [clientX, clientY];
       var start = data._startEventPos || [clientX, clientY];
 
-      if (/^touch/.test(domEvent.type)) {
-        this.handleTouchEvent(domEvent);
-        return;
-      }
-
       switch (type) {
+        case 'touchstart':
+        case 'touchmove':
+        case 'touchend':
+        case 'touchcancel':
+          this.handleTouchEvent(domEvent);
+          return;
 
         case 'dblclick':
           type = 'doubleclick';
@@ -185,35 +197,26 @@ define([
           event.delta = domEvent.wheelDelta;
           break;
 
-        case 'touchend':
         case 'mouseup':
           targetId = data._dragId;
           event.diffX = clientX - start[0];
           event.diffY = clientY - start[1];
-          delete data._currentTouch;
-          delete data._dragId;
-          delete data._startEventPos;
-          delete data._lastEventPos;
+          data._dragId = data._startEventPos = data._lastEventPos = null;
           type = 'pointerup';
           break;
 
-        case 'touchstart':
-          if (data._currentTouch) {
-            // Don't allow other touches while once has yet to end.
-            return;
-          }
-          data._currentTouch = domEvent.touches[0].identifier;
         case 'mousedown':
           data._dragId = targetId;
           data._startEventPos = [clientX, clientY];
           type = 'pointerdown';
           break;
 
-        case 'touchmove':
-          if (domEvent.touches[0].identifier !== data._currentTouch) {
-            return;
-          }
         case 'mousemove':
+          event.diffX = clientX - start[0];
+          event.diffY = clientY - start[1];
+          event.deltaX = clientX - last[0];
+          event.deltaY = clientY - last[1];
+
           // Regular mousemove event (not dragging)
           (event = cloneBasicEvent(event)).type = 'pointermove';
           this.emit('userevent', event, targetId);
@@ -222,11 +225,11 @@ define([
           this.emit('userevent', event, targetId);
 
           targetId = data._dragId;
-          type = 'drag';
-          event.diffX = clientX - start[0];
-          event.diffY = clientY - start[1];
-          event.deltaX = clientX - last[0];
-          event.deltaY = clientY - last[1];
+          if (targetId !== null) {
+            type = 'drag';
+          } else {
+            return;
+          }
           break;
         case 'keypress':
           type = 'key';
