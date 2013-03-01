@@ -89,7 +89,7 @@ function(tools) {
       forEach(eventTypesForDocument, function(eventType) {
         document.removeEventListener(eventType, this, false);
       });
-    }
+    },
 
     handleEvent: function(domEvent) {
       var renderer = this.renderer;
@@ -147,24 +147,28 @@ function(tools) {
             }
             this.isMultiTouch = this.hadTouchMove = this.hadTouchCancel = false;
           }
-        } else if (isKeyboardEventType(domEventType)) {
+        }
+      } else if (isKeyboardEventType(domEventType)) {
 //TODO: check this bailout
 //        if (!target || target._isBSDOMElement || ownerDocument.activeElement === ownerDocument.body) {} else {
 //          // There is another currently focused element (outside of the stage), exit:
 //          return;
 //        }
-          var keyboardEvent = KeyboardEvent.fromDomKeyboardEvent(domEvent);
-          this.emit('userevent', keyboardEvent, targetId);
-        }
+        var keyboardEvent = KeyboardEvent.fromDomKeyboardEvent(domEvent);
+        this.emit('userevent', keyboardEvent, targetId);
       }
     },
 
+    handleMouseEvent: function(pointerEvent, targetId, relatedTargetId) {
+
+    },
+
     triggerClickFromTouch: function(domEvent, pointerEvent) {
-      var clickType, domTimeStamp = domEvent.timeStamp;
+      var domTimeStamp = domEvent.timeStamp;
       var isDoubleClick = domTimeStamp - this.lastClickFromTouchTime < 300;
       var clickType = isDoubleClick ? 'dblclick' : 'click';
       this.lastClickFromTouchTime = isDoubleClick ? 0 : domTimeStamp;
-      emitMouseEvent(this.renderer, pointerEvent.clone(clickType), touchTargetId);
+      this.renderer.emit('userevent', pointerEvent.clone(clickType), touchTargetId);
     }
   };
 
