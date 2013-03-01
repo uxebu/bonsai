@@ -245,6 +245,7 @@ define([
     this.width = width;
     this.height = height;
     this.allowEventDefaults = !!options.allowEventDefaults;
+    this.objectsUnderPointer = !!options.objectsUnderPointer;
 
     var svg = this.svg = new Svg(node, width, height);
 
