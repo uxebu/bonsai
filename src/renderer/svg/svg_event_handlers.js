@@ -190,9 +190,6 @@ define([
 //        }
 
         var keyboardEvent = KeyboardEvent.fromDomKeyboardEvent(domEvent);
-        if (domEventType === 'keypress') {
-          event.charCode = domEvent.charCode;
-        }
         this.emit('userevent', keyboardEvent, targetId);
       }
     },
