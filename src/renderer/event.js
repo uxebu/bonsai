@@ -26,12 +26,15 @@ define(function() {
    *
    * @param {string} type The event type
    * @param {number} keyCode The scan code of the key
+   * @param {number} charCode The unicode code point of the key (only relevant
+   *    for "keypress" events)
    * @param {number} [modifiers] Modifiers pressed during the key event
    * @param {string} [targetValue] The current value of an associated input
    * @constructor
    */
-  function KeyboardEvent(type, keyCode, modifiers, targetValue) {
+  function KeyboardEvent(type, keyCode, charCode, modifiers, targetValue) {
     this.type = type;
+    this.charCode = charCode;
     this.keyCode = keyCode;
     this.inputValue = targetValue;
 
@@ -53,7 +56,13 @@ define(function() {
       (domEvent.ctrlKey ? CTRL_KEY : 0) |
       (domEvent.metaKey ? META_KEY : 0) |
       (domEvent.shiftKey ? SHIFT_KEY : 0);
-    return new KeyboardEvent(eventTypeMap[domEvent.type], domEvent.keyCode, modifiers, domEvent.target.value);
+    return new KeyboardEvent(
+      eventTypeMap[domEvent.type],
+      domEvent.keyCode,
+      domEvent.charCode,
+      modifiers,
+      domEvent.target.value
+    );
   };
   KeyboardEvent.NO_MODIFIER = NO_MODIFIER;
   KeyboardEvent.ALT_KEY = ALT_KEY;
@@ -70,6 +79,7 @@ define(function() {
     return new KeyboardEvent(
       type || this.type,
       this.keyCode,
+      this.charCode,
       modifiers,
       this.inputValue
     );

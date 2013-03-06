@@ -240,10 +240,11 @@ define([
       var modifiers = 0;
       describe('Constructor', function() {
         it('should initialize properties from parameters', function() {
-          var type = 'arbitrary', keyCode = 0x123;
+          var type = 'arbitrary', keyCode = 0x123, charCode = 0x345;
           var modifiers = KeyboardEvent.NO_MODIFIER, targetValue = 'arbitrary value';
-          expect(new KeyboardEvent(type, keyCode, modifiers, targetValue)).toHaveOwnProperties({
+          expect(new KeyboardEvent(type, keyCode, charCode, modifiers, targetValue)).toHaveOwnProperties({
             type: type,
+            charCode: charCode,
             keyCode: keyCode,
             inputValue: targetValue
           });
@@ -261,7 +262,7 @@ define([
               expectedProperties[property] = true;
             }
 
-            expect(new KeyboardEvent('arbitrary', 0x123, modifiers))
+            expect(new KeyboardEvent('arbitrary', 0x123, 0x234, modifiers))
               .toHaveOwnProperties(expectedProperties);
           }
 
@@ -292,6 +293,7 @@ define([
       describe('.fromDomKeyboardEvent', function() {
         var targetValue = 'arbitrary value';
         var keyCode = 0x123;
+        var charCode = 0x345;
         var altKey = true;
         var ctrlKey = false;
         var metaKey = true;
@@ -301,6 +303,7 @@ define([
           return {
             type: type,
             keyCode: keyCode,
+            charCode: charCode,
             altKey: altKey,
             ctrlKey: ctrlKey,
             metaKey: metaKey,
@@ -318,6 +321,7 @@ define([
             .toHaveOwnProperties({
               type: undefined,
               keyCode: keyCode,
+              charCode: charCode,
               altKey: altKey,
               ctrlKey: ctrlKey,
               metaKey: metaKey,
@@ -345,7 +349,7 @@ define([
 
       describe('#clone()', function() {
         var modifiers = KeyboardEvent.SHIFT_KEY | KeyboardEvent.META_KEY;
-        var keyboardEvent = new KeyboardEvent('arbitrary', 0x123, modifiers, 'arbitrary value');
+        var keyboardEvent = new KeyboardEvent('arbitrary', 0x123, 0x234, modifiers, 'arbitrary value');
 
         it('should return a Keyboard event instance', function() {
           expect(keyboardEvent.clone()).toBeInstanceOf(KeyboardEvent);
