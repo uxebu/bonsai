@@ -62,6 +62,7 @@ function(EventEmitter, RendererController, AssetController, tools, URI, version)
       var context = new this.RunnerContext(this.runnerUrl, doc, options.baseUrl);
       var renderer = new this.Renderer(node, width, height, {
         allowEventDefaults: options.allowEventDefaults,
+        objectsUnderPointer: options.objectsUnderPointer,
         fpsLog: options.fpsLog,
         disableContextMenu: options.disableContextMenu
       });

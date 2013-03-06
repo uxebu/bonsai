@@ -64,11 +64,12 @@ function(tools, EventEmitter, URI) {
     });
 
     // Bind to renderer, tunnel user events through to RunnerContext:
-    this.renderer.on('userevent', this, function(event, targetId, relatedTargetId) {
+    this.renderer.on('userevent', this, function(event, targetId, relatedTargetId, underPointerIds) {
       this.post('userevent', {
         event: event,
         targetId: targetId,
-        relatedTargetId: relatedTargetId
+        relatedTargetId: relatedTargetId,
+        objectsUnderPointerIds: underPointerIds
       });
     });
 
@@ -270,7 +271,7 @@ function(tools, EventEmitter, URI) {
      * Posts a command to the RunnerContext.
      *
      * @param {String} command A command name
-     * @param {mixed} [data] Data to post alongside the command.
+     * @param {*} [data] Data to post alongside the command.
      * @returns {this}
      */
     post: function(command, data) {
