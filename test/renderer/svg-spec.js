@@ -34,11 +34,13 @@ define(['bonsai/renderer/svg/svg'], function(SvgRenderer) {
         expect(event.preventDefault).not.toHaveBeenCalled();
       });
 
-      it('should call .preventDefault() on events when allowEventDefaults is set to false', function() {
+      it('should call .preventDefault() on events when allowEventDefaults is set to false and the event type is "touchmove"', function() {
         var renderer = createSvgRenderer();
         renderer.allowEventDefaults = false;
 
         var event = {
+          type: "touchmove",
+          changedTouches: [],
           target: createFakeDomNode(),
           preventDefault: jasmine.createSpy('preventDefault')
         };
@@ -46,10 +48,12 @@ define(['bonsai/renderer/svg/svg'], function(SvgRenderer) {
         expect(event.preventDefault).toHaveBeenCalled();
       });
 
-      it('should call .preventDefault() on events when allowEventDefaults is not set', function() {
+      it('should call .preventDefault() on events when allowEventDefaults is not set and the event type is "touchmove"', function() {
         var renderer = createSvgRenderer();
 
         var event = {
+          type: "touchmove",
+          changedTouches: [],
           target: createFakeDomNode(),
           preventDefault: jasmine.createSpy('preventDefault')
         };
