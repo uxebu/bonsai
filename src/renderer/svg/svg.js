@@ -76,19 +76,19 @@ define([
   };
 
   var eventTypes = [
-    'dblclick',
     'click',
+    'dblclick',
+    'mousedown',
     'mouseenter',
     'mouseleave',
-    'mouseover',
-    'mouseout',
-    'mouseup',
-    'mousedown',
-    'touchstart',
-    'touchend',
     'mousemove',
+    'mouseout',
+    'mouseover',
+    'mouseup',
+    'touchcancel',
+    'touchend',
     'touchmove',
-    'mousewheel'
+    'touchstart'
   ];
 
   var textOriginMap = {
@@ -245,6 +245,8 @@ define([
     this.width = width;
     this.height = height;
     this.allowEventDefaults = !!options.allowEventDefaults;
+    this.objectsUnderPointer = !!options.objectsUnderPointer;
+
     this.queuedMessages = [];
     var svg = this.svg = new Svg(node, width, height);
 
