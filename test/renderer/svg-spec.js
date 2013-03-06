@@ -305,7 +305,7 @@ define(['bonsai/renderer/svg/svg'], function(SvgRenderer) {
           });
           it('should create the correct charCode for "A" (upper case)', function() {
             var charCode = 'A';
-            var keyCode = charCode.toLowerCase().charCodeAt(0);
+            var keyCode = charCode.charCodeAt(0);
             fireKeyPress(keyCode, keyCode, true);
             expect(evtData.charCode)
               .toBe(charCode.charCodeAt(0));
