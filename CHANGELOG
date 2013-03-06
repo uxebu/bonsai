@@ -1,3 +1,7 @@
+v0.4.4
+-------------------
+
+
 v0.4.3 / 2013-03-06
 -------------------
 * Add support for `strokeDash` and `strokeDashOffset` attributes on all Paths.
