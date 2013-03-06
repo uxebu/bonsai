@@ -2,6 +2,10 @@ v0.4.3
 -------------------
 * Add support for `strokeDash` and `strokeDashOffset` attributes on all Paths.
 * Add `DisplayObject#globalToLocal()` and `DisplayObject#localToGlobal()`
+* Consistent delivery of diffX/Y and deltaX/Y offsets for move and drag events
+* Added a basic implementation of charCode to return for
+  keydown events, as long as they are broken in DOM
+* Add experimental renderer feature: get all elements under the pointer
 
 v0.4.2 / 2013-01-14
 -------------------

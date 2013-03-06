@@ -1,4 +1,35 @@
 beforeEach(function() {
+  function testKeyList(keys, object, testFn) {
+    for (var i = 0, len = keys.length; i < len; i += 1) {
+      if (!testFn(object, keys[i])) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function testKeyObject(referenceObject, object, testFn) {
+    for (var key in referenceObject) {
+      if (!testFn(object, key, referenceObject[key])) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function hasProperty(object, key) {
+    return key in object;
+  }
+  function hasOwnProperty(object, key) {
+    return {}.hasOwnProperty.call(object, key);
+  }
+  function hasPropertyWithValue(object, key, value) {
+    return object[key] === value;
+  }
+  function hasOwnPropertyWithValue(object, key, value) {
+    return hasOwnProperty(object, key) && hasPropertyWithValue(object, key, value);
+  }
+
   this.addMatchers({
     toBeArray: function() {
       return {}.toString.call(this.actual) === '[object Array]';
@@ -23,23 +54,15 @@ beforeEach(function() {
     },
 
     toHaveProperties: function(name0, name1, name2) {
-      var actual = this.actual;
-      for (var i = 0, len = arguments.length; i < len; i += 1) {
-        if (!(arguments[i] in actual)) {
-          return false;
-        }
-      }
-      return true;
+      return typeof name0 === 'object' ?
+        testKeyObject(name0, this.actual, hasPropertyWithValue) :
+        testKeyList(arguments, this.actual, hasProperty);
     },
 
     toHaveOwnProperties: function(name0, name1, name2) {
-      var actual = this.actual, hasOwnProperty = {}.hasOwnProperty;
-      for (var i = 0, len = arguments.length; i < len; i += 1) {
-        if (!hasOwnProperty.call(actual, arguments[i])) {
-          return false;
-        }
-      }
-      return true;
+      return typeof name0 === 'object' ?
+        testKeyObject(name0, this.actual, hasOwnPropertyWithValue) :
+        testKeyList(arguments, this.actual, hasOwnProperty);
     }
   })
 });
