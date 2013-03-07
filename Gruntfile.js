@@ -3,6 +3,7 @@ module.exports = function(grunt) {
   // Project configuration.
   grunt.initConfig({
     jshint: {
+      all: ['Grunfile.js', 'src/**/*.js', 'test/**/*.js', '!test/goog.math.Matrix.js'],
       options: {
         eqnull: true,
         browser: true,
@@ -22,8 +23,7 @@ module.exports = function(grunt) {
           'xit',
           'waitsFor'
         ]
-      },
-      all: ['Grunfile.js', 'src/**/*.js', 'test/**/(!goog.math.Matrix)*.js']
+      }
     },
     'closure-compiler': {
       'release-max': {
@@ -76,7 +76,10 @@ module.exports = function(grunt) {
       }
     },
     watch: {
-
+      js: {
+        files: '<%= jshint.all %>',
+        tasks: ['test']
+      }
     },
     'saucelabs-jasmine': {
       test: {
@@ -110,7 +113,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-saucelabs');
 
-  grunt.registerTask('default', ['jshint']);
+  grunt.registerTask('default', ['jshint', 'test']);
   grunt.registerTask('release', ['clean', 'closure-compiler']);
   grunt.registerTask('run-server', ['connect', 'jasmine:test:build', 'watch']);
   grunt.registerTask('test', ['connect:test', 'jasmine:test']);
