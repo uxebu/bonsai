@@ -10,6 +10,8 @@ define(function() {
     pointermove: true,
     click: true,
     doubleclick: true,
+    drag: true,
+    'multi:drag': true,
     'multi:pointerdown': true,
     'multi:pointermove': true,
     'multi:pointerup': true
