@@ -205,7 +205,7 @@ function(tools, EventEmitter, URI) {
       switch (message.command) {
         case 'render':
           this.currentFrame = message.frame;
-          this.renderer.render(messageData);
+          this.renderer.queuedMessages.push.apply(this.renderer.queuedMessages, messageData);
           break;
         case 'renderConfig':
           this.renderer.config(messageData);
