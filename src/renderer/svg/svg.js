@@ -280,8 +280,8 @@ define([
     var self = this;
 
     function update() {
-      if (self.queuedMessages.length > 0) {
-        self.render(self.queuedMessages, 'draw');
+      if (self.queuedMessages[0] != null) {
+        self.render(self.queuedMessages);
       }
       self.queuedMessages.length = 0;
       window.webkitRequestAnimationFrame(update);
@@ -321,12 +321,7 @@ define([
     }
   };
 
-  proto.render = function(messages, isDraw) {
-
-    if (isDraw == null) {
-      this.queuedMessages = this.queuedMessages.concat(messages);
-      return;
-    }
+  proto.render = function(messages) {
 
     var drawName,
       element,
