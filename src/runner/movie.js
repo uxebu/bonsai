@@ -23,7 +23,13 @@ define([
    * @mixes Timeline
    * @mixes displayList.timelineMethods
    */
-  function Movie(root, displayList, url, callback) {
+  function Movie(root, displayList, url, assetUrl, callback) {
+
+    if (arguments.length === 4 && typeof assetUrl === 'function') {
+      callback = assetUrl;
+      assetUrl = null;
+    }
+
     AssetDisplayObject.call(this, null, url, callback);
 
     if (!displayList) {
@@ -35,7 +41,7 @@ define([
     this.root = root;
     var me = this;
     if (url) {
-      root.loadSubMovie(url, function(err) {
+      root.loadSubMovie(url, assetUrl, function(err) {
         // We trigger the event asynchronously so as to ensure that any events
         // bound after instantiation are still triggered:
         if (err) {
