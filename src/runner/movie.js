@@ -23,7 +23,7 @@ define([
    * @mixes Timeline
    * @mixes displayList.timelineMethods
    */
-  function Movie(root, url, callback, displayList) {
+  function Movie(root, displayList, url, callback) {
     AssetDisplayObject.call(this, null, url, callback);
 
     if (!displayList) {
