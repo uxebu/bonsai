@@ -229,14 +229,13 @@ define([
      * @private
      * @returns {Environment} The Submovie Environment
      */
-    getSubMovieEnvironment: function(subMovie, subMovieUrl) {
+    getSubMovieEnvironment: function(subMovie, subMovieUrl, assetUrl) {
       subMovieUrl = this.assetBaseUrl.resolveUri(subMovieUrl);
       subMovie.url = subMovieUrl.toString();
-      var assetBase = subMovieUrl.scheme === 'data' ? null : subMovieUrl;
       return new Environment(
         subMovie,
         new AssetLoader(this.registry.pendingAssets)
-          .on('request', hitch(this, this.loadAsset, assetBase))
+          .on('request', hitch(this, this.loadAsset, assetUrl.scheme === 'data' ? null : assetUrl))
       );
     },
 
