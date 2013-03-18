@@ -280,11 +280,11 @@ define([
     var self = this;
 
     function update() {
+      window.webkitRequestAnimationFrame(update);
       if (self.queuedMessages[0] != null) {
         self.render(self.queuedMessages);
       }
       self.queuedMessages.length = 0;
-      window.webkitRequestAnimationFrame(update);
     }
     window.webkitRequestAnimationFrame(update);
 
