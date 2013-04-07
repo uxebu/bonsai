@@ -181,7 +181,6 @@ Pong = (function() {
       });
 
       stage.on('pointermove', function(e) {
-        if (e.target !== stage) return;
         userPaddle.x = e.stageX;
       });
 

@@ -10,12 +10,21 @@ define([
 
     var doc = iframeWindow.document;
 
-    function loadSubMovie(movieUrl, callback, movieInstance) {
+    function loadSubMovie(movieUrl, assetUrl, callback, movieInstance) {
+      if (arguments.length < 4) {
+        movieInstance = callback;
+        callback = assetUrl;
+        assetUrl = null;
+      }
+
+      movieUrl = this.assetBaseUrl.resolveUri(movieUrl);
+      assetUrl = assetUrl ? movieUrl.resolveUri(assetUrl) : movieUrl;
+
       var iframe = doc.createElement('iframe');
       doc.documentElement.appendChild(iframe);
       var subWindow = iframe.contentWindow;
       var subMovie = movieInstance || new exports.Movie();
-      var subEnvironment = stage.getSubMovieEnvironment(subMovie, movieUrl);
+      var subEnvironment = stage.getSubMovieEnvironment(subMovie, movieUrl, assetUrl);
 
       // Need to call open()/close() before exposing anything on the window
       // (Opera would initiate a separate script context if we did it after)

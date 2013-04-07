@@ -27,11 +27,18 @@ define([
     }
 
     function loadSubMovie(movieUrl, callback, movieInstance) {
+      if (arguments.length < 4) {
+        movieInstance = callback;
+        callback = assetUrl;
+        assetUrl = null;
+      }
 
       movieUrl = this.assetBaseUrl.resolveUri(movieUrl);
+      assetUrl = assetUrl ? movieUrl.resolveUri(assetUrl) : movieUrl;
 
       var subMovie = movieInstance || new exports.Movie();
-      var subEnvironment = stage.getSubMovieEnvironment(subMovie, movieUrl);
+      var subEnvironment = stage.getSubMovieEnvironment(subMovie, movieUrl, assetUrl);
+
       var subEnvExports = subEnvironment.exports;
       var functionArgNames = [];
       var functionArgValues = [];

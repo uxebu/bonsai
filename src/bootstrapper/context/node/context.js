@@ -94,11 +94,19 @@ requirejs.requirejs([
       //TODO: test and move to stage creation
       var context = this;
       var env = stage.env;
-      stage.loadSubMovie = function(movieUrl, callback, movieInstance) {
+      stage.loadSubMovie = function(movieUrl, assetUrl, callback, movieInstance) {
+
+        if (arguments.length < 4) {
+          movieInstance = callback;
+          callback = assetUrl;
+          assetUrl = null;
+        }
+
         movieUrl = this.assetBaseUrl.resolveUri(movieUrl);
+        assetUrl = assetUrl ? movieUrl.resolveUri(assetUrl) : movieUrl;
 
         var subMovie = movieInstance || new env.Movie();
-        var subEnvironment = stage.getSubMovieEnvironment(subMovie, movieUrl);
+        var subEnvironment = stage.getSubMovieEnvironment(subMovie, movieUrl, assetUrl);
         var subEnvExports = subEnvironment.exports;
         var functionArgNames = [];
         var functionArgValues = [];

@@ -156,6 +156,14 @@ define([
               event.relatedTarget = displayObjectsRegistry[relatedTargetId] || this;
             }
 
+            var objectsUnderPointerIds = data.objectsUnderPointerIds;
+            if (objectsUnderPointerIds) {
+              var objectsUnderPointer = event.underPointer = [];
+              for (var i = 0, elementId; (elementId = objectsUnderPointerIds[i]); i += 1) {
+                objectsUnderPointer[i] = displayObjectsRegistry[elementId];
+              }
+            }
+
             uiEvent(event).emitOn(target);
           }
           break;
@@ -230,13 +238,12 @@ define([
      * @private
      * @returns {Environment} The Submovie Environment
      */
-    getSubMovieEnvironment: function(subMovie, subMovieUrl) {
+    getSubMovieEnvironment: function(subMovie, subMovieUrl, assetUrl) {
       subMovieUrl = this.assetBaseUrl.resolveUri(subMovieUrl);
       subMovie.url = subMovieUrl.toString();
-      var assetBase = subMovieUrl.scheme === 'data' ? null : subMovieUrl;
       var environment = new Environment(this.env.global);
       var assetLoader = new AssetLoader(this.assetLoader.pendingAssets)
-        .on('request', hitch(this, this.loadAsset, assetBase));
+        .on('request', hitch(this, this.loadAsset, assetUrl.scheme === 'data' ? null : assetUrl));
       environment.initialize(subMovie, assetLoader);
       return environment;
     },

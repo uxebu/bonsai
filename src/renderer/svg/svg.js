@@ -76,20 +76,26 @@ define([
   };
 
   var eventTypes = [
-    'dblclick',
     'click',
+    'dblclick',
+    'mousedown',
     'mouseenter',
     'mouseleave',
-    'mouseover',
-    'mouseout',
-    'mouseup',
-    'mousedown',
-    'touchstart',
-    'touchend',
     'mousemove',
+    'mouseout',
+    'mouseover',
+    'mouseup',
+    'touchcancel',
+    'touchend',
     'touchmove',
-    'mousewheel'
+    'touchstart'
   ];
+
+  var textOriginMap = {
+    top: 'hanging',
+    center: 'middle',
+    bottom: 'auto'
+  };
 
   // tools
   var isArray = tools.isArray;
@@ -239,6 +245,7 @@ define([
     this.width = width;
     this.height = height;
     this.allowEventDefaults = !!options.allowEventDefaults;
+    this.objectsUnderPointer = !!options.objectsUnderPointer;
 
     var svg = this.svg = new Svg(node, width, height);
 
@@ -642,6 +649,8 @@ define([
   proto.drawText = function(text, message) {
 
     var attributes = message.attributes;
+    var style = text.style;
+    var textOrigin = attributes.textOrigin;
 
     if (attributes.selectable !== undefined) {
       if (attributes.selectable !== false) {
@@ -651,17 +660,13 @@ define([
       }
     }
 
-    text.setAttributeNS(xlink, 'text-anchor', 'start');
+    setStyle(style, 'textAnchor', 'start');
 
-    if (attributes.textOrigin != null) {
-      text.setAttribute(
-        'alignment-baseline',
-        attributes.textOrigin === 'top' ? 'hanging' : ''
-      );
+    if (textOrigin != null) {
+      setStyle(style, 'alignmentBaseline', textOriginMap[textOrigin]);
+      setStyle(style, 'dominantBaseline', textOriginMap[textOrigin]);
     }
 
-    var style = text.style;
-    style.textAnchor = 'start';
   };
 
   proto.drawVideo = function(foreignObject, message) {

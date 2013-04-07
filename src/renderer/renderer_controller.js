@@ -64,15 +64,16 @@ function(tools, EventEmitter, URI) {
     });
 
     // Bind to renderer, tunnel user events through to RunnerContext:
-    this.renderer.on('userevent', this, function(event, targetId, relatedTargetId) {
+    this.renderer.on('userevent', this, function(event, targetId, relatedTargetId, underPointerIds) {
       this.post('userevent', {
         event: event,
         targetId: targetId,
-        relatedTargetId: relatedTargetId
+        relatedTargetId: relatedTargetId,
+        objectsUnderPointerIds: underPointerIds
       });
     });
 
-    this.renderer.on('canRender', tools.hitch(this, this.postAsync, 'canRender'));
+    this.renderer.on('canRender', hitch(this, this.postAsync, 'canRender'));
 
     runnerContext.init(options);
 
@@ -246,7 +247,7 @@ function(tools, EventEmitter, URI) {
 
       if (!this._isEnvSenderSetup) {
         if (typeof window !== 'undefined') {
-          var listener = tools.hitch(this, this._sendEnvData);
+          var listener = hitch(this, this._sendEnvData);
           window.addEventListener('resize', listener, false);
           window.addEventListener('scroll', listener, false);
         }

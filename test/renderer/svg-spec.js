@@ -1,10 +1,12 @@
-define([
-  'bonsai/renderer/svg/svg'
-], function(SvgRenderer) {
+define(['bonsai/renderer/svg/svg'], function(SvgRenderer) {
+
+  'use strict';
+
   describe('SvgRenderer', function() {
     function createFakeDomNode() {
       return {
         ownerSVGElement: {},
+        ownerDocument: {},
         appendChild: function() {},
         setAttribute: function() {}
       };
@@ -32,11 +34,13 @@ define([
         expect(event.preventDefault).not.toHaveBeenCalled();
       });
 
-      it('should call .preventDefault() on events when allowEventDefaults is set to false', function() {
+      it('should call .preventDefault() on events when allowEventDefaults is set to false and the event type is "touchmove"', function() {
         var renderer = createSvgRenderer();
         renderer.allowEventDefaults = false;
 
         var event = {
+          type: "touchmove",
+          changedTouches: [],
           target: createFakeDomNode(),
           preventDefault: jasmine.createSpy('preventDefault')
         };
@@ -44,10 +48,12 @@ define([
         expect(event.preventDefault).toHaveBeenCalled();
       });
 
-      it('should call .preventDefault() on events when allowEventDefaults is not set', function() {
+      it('should call .preventDefault() on events when allowEventDefaults is not set and the event type is "touchmove"', function() {
         var renderer = createSvgRenderer();
 
         var event = {
+          type: "touchmove",
+          changedTouches: [],
           target: createFakeDomNode(),
           preventDefault: jasmine.createSpy('preventDefault')
         };
@@ -134,6 +140,40 @@ define([
       });
     });
 
+    describe('drawText', function() {
+      var textElement;
+      beforeEach(function() {
+        textElement = { style: {} };
+      });
+      it('is a function', function() {
+        expect(typeof createSvgRenderer().drawText).toBe('function');
+      });
+      it('sets baseline-alignment=hanging when attr.textOrigin=top', function() {
+        createSvgRenderer().drawText(textElement, { attributes: { textOrigin: 'top' } });
+        expect(textElement.style.alignmentBaseline).toBe('hanging');
+      });
+      it('sets dominant-alignment=hanging when attr.textOrigin=top', function() {
+        createSvgRenderer().drawText(textElement, { attributes: { textOrigin: 'top' } });
+        expect(textElement.style.dominantBaseline).toBe('hanging');
+      });
+      it('sets baseline-alignment=middle when attr.textOrigin=center', function() {
+        createSvgRenderer().drawText(textElement, { attributes: { textOrigin: 'center' } });
+        expect(textElement.style.alignmentBaseline).toBe('middle');
+      });
+      it('sets dominant-alignment=middle when attr.textOrigin=center', function() {
+        createSvgRenderer().drawText(textElement, { attributes: { textOrigin: 'center' } });
+        expect(textElement.style.dominantBaseline).toBe('middle');
+      });
+      it('sets baseline-alignment=auto when attr.textOrigin=center', function() {
+        createSvgRenderer().drawText(textElement, { attributes: { textOrigin: 'bottom' } });
+        expect(textElement.style.alignmentBaseline).toBe('auto');
+      });
+      it('sets dominant-alignment=auto when attr.textOrigin=center', function() {
+        createSvgRenderer().drawText(textElement, { attributes: { textOrigin: 'bottom' } });
+        expect(textElement.style.dominantBaseline).toBe('auto');
+      });
+    });
+
     describe('Frame logging', function() {
       function createSvgRenderer(fpsLog, getTime) {
         var renderer = new SvgRenderer(createFakeDomNode(), 1, 1, {fpsLog: fpsLog});
@@ -171,6 +211,23 @@ define([
       });
     });
 
+    function proxyProperty(object, propertyName) {
+      return {
+        get: function() {
+          return object[propertyName];
+        }
+      };
+    }
+
+    function createTouch(parentEvent, identifier) {
+      return Object.defineProperties({}, {
+        identifier: {value: identifier},
+        target: proxyProperty(parentEvent, 'target'),
+        clientX: proxyProperty(parentEvent, 'clientX'),
+        clientY: proxyProperty(parentEvent, 'clientY')
+      });
+    }
+
     function createTouchEvent(which) {
       var evt = document.createEvent('UIEvent');
       evt.initEvent(which, true, true);
@@ -179,8 +236,9 @@ define([
       evt.ctrlKey = false;
       evt.shiftKey = false;
       evt.metaKey = false;
-      evt.touches = [{identifier:1}];
-      evt.changedTouches = evt.touches;
+      evt.clientX = evt.clientY = 0;
+      evt.changedTouches = [createTouch(evt, 1)];
+      evt.touches = which === 'touchend' ? [] : evt.changedTouches;
       return evt;
     }
 
@@ -195,6 +253,68 @@ define([
         expect(numCalls)
           .toBe(1);
         renderer.removeListener('userevent', listener);
+      });
+
+      describe('keydown events', function() {
+        function createDomKeyDownEvent(keyCode, charCode, shiftKey) {
+          // found working solution at http://stackoverflow.com/questions/8942678/keyboardevent-in-chrome-keycode-is-0/12522752#12522752
+          var evt = document.createEvent("Events");
+          evt.initEvent("keypress", true, true);
+          evt.altKey = false;
+          evt.ctrlKey = false;
+          evt.shiftKey = !!shiftKey;
+          evt.metaKey = false;
+          evt.keyCode = keyCode;
+          evt.charCode = charCode;
+          return evt;
+        }
+        var evtData, renderer, listener;
+        function fireKeyPress(keyCode, charCode, shiftKey) {
+          evtData = null;
+          listener = function(e) { if (e.type=='key') evtData = e; };
+          renderer = createSvgRenderer();
+          renderer.on('userevent', listener);
+          document.dispatchEvent(createDomKeyDownEvent(keyCode, charCode, shiftKey));
+        }
+        afterEach(function() {
+          renderer.removeListener('userevent', listener);
+        });
+        it('should pass the keyCode for a key press', function() {
+          var keyCode = 65;
+          fireKeyPress(keyCode);
+          expect(evtData.keyCode)
+            .toBe(keyCode);
+        });
+        describe('charCode delivered by the event', function() {
+          it('should pass the charCode for a key press', function() {
+            var charCode = 'a'.charCodeAt(0);
+            fireKeyPress(65, charCode);
+            expect(evtData.charCode)
+              .toBe(charCode);
+          });
+          it('should pass the charCode "A" properly', function() {
+            var charCode = 'A'.charCodeAt(0);
+            fireKeyPress(65, charCode);
+            expect(evtData.charCode)
+              .toBe(charCode);
+          });
+        });
+        describe('charCode not given by the event', function() {
+          it('should create the correct charCode for "a" (lower case)', function() {
+            var charCode = 'a';
+            var keyCode = charCode.charCodeAt(0);
+            fireKeyPress(keyCode, keyCode);
+            expect(evtData.charCode)
+              .toBe(keyCode);
+          });
+          it('should create the correct charCode for "A" (upper case)', function() {
+            var charCode = 'A';
+            var keyCode = charCode.charCodeAt(0);
+            fireKeyPress(keyCode, keyCode, true);
+            expect(evtData.charCode)
+              .toBe(charCode.charCodeAt(0));
+          });
+        });
       });
     });
   });
