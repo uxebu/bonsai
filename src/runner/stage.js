@@ -9,32 +9,34 @@ define([
   './environment',
   './ui_event',
   '../uri'
-], function(EventEmitter, DisplayList, color, Timeline,
+], function(EventEmitter, displayList, color, Timeline,
             tools, Registry, AssetLoader, Environment,
             uiEvent, URI) {
   'use strict';
 
   var hitch = tools.hitch;
+  var DisplayList = displayList.DisplayList;
 
   /** @const */
   var DEFAULT_FRAMERATE = 30;
 
   /**
-   * Helper used to collect all descendent IDs of a DisplayList
+   * Helper used to collect all descendent IDs of a display list
    * (recursive)
    */
-  function collectChildIds(object) {
-    var children = object._children,
-        ids = [];
-    if (children) {
-      for (var i = 0, l = children.length; i < l; ++i) {
-        if (children[i]) {
-          // TODO: why is this check necessary? children should never be falsey.
-          ids.push(children[i].id);
-          ids.push.apply(ids, collectChildIds(children[i]));
+  function collectChildIds(displayList) {
+    var ids = [];
+    if (displayList) {
+      var children = displayList.children;
+      for (var child, i = 0; (child = children[i]); ++i) {
+        ids.push(child.id);
+        var subDisplayList = child.displayList;
+        if (subDisplayList) {
+          ids.push.apply(ids, collectChildIds(subDisplayList));
         }
       }
     }
+
     return ids;
   }
 
@@ -51,8 +53,14 @@ define([
    * @mixes EventEmitter
    * @mixes Timeline
    */
-  function Stage(messageChannel) {
+  function Stage(messageChannel, displayList) {
     var registry = this.registry = new Registry();
+
+    if (!displayList) {
+      displayList = new DisplayList();
+    }
+    displayList.owner = this;
+    this.displayList = displayList;
 
     var assetLoader = this.assetLoader =
       new AssetLoader(registry.pendingAssets)
@@ -75,7 +83,7 @@ define([
 
   }
 
-  Stage.prototype = /** @lends Stage.prototype */ {
+  var proto = Stage.prototype = /** @lends Stage.prototype */ {
     _isFrozen: true,
 
     assetBaseUrl: new URI(null, null, ''),
@@ -122,16 +130,31 @@ define([
           this[command](data);
           break;
         case 'assetLoadSuccess':
-          this.assetLoader.handleEvent('load', data.id, data);
+          this.assetLoader.handleEvent('load', data.id, data.loadData);
           break;
         case 'assetLoadError':
-          this.assetLoader.handleEvent('error', data.id, data);
+          this.assetLoader.handleEvent('error', data.id, data.loadData);
           break;
         case 'userevent':
-          var target = data.targetId ? this.registry.displayObjects[data.targetId] : this;
+          var displayObjectsRegistry = this.registry.displayObjects;
+          var targetId = data.targetId;
+          var target = targetId ? displayObjectsRegistry[targetId] : this;
           if (target) { // target might have been removed already
             var event = data.event;
             event.target = target;
+            var relatedTargetId = data.relatedTargetId;
+            if (relatedTargetId === 0 || relatedTargetId > 0) {
+              event.relatedTarget = displayObjectsRegistry[relatedTargetId] || this;
+            }
+
+            var objectsUnderPointerIds = data.objectsUnderPointerIds;
+            if (objectsUnderPointerIds) {
+              var objectsUnderPointer = event.underPointer = [];
+              for (var i = 0, elementId; (elementId = objectsUnderPointerIds[i]); i += 1) {
+                objectsUnderPointer[i] = displayObjectsRegistry[elementId];
+              }
+            }
+
             uiEvent(event).emitOn(target);
           }
           break;
@@ -141,7 +164,11 @@ define([
           this.env.exports.env.emit('change', data);
           break;
         case 'message':
-          this.emit('message', data);
+          if ('category' in message) {
+            this.emit('message:' + message.category, data);
+          } else {
+            this.emit('message', data);
+          }
           break;
         case 'canRender':
           this._canRender = true;
@@ -202,14 +229,13 @@ define([
      * @private
      * @returns {Environment} The Submovie Environment
      */
-    getSubMovieEnvironment: function(subMovie, subMovieUrl) {
+    getSubMovieEnvironment: function(subMovie, subMovieUrl, assetUrl) {
       subMovieUrl = this.assetBaseUrl.resolveUri(subMovieUrl);
       subMovie.url = subMovieUrl.toString();
-      var assetBase = subMovieUrl.scheme === 'data' ? null : subMovieUrl;
       return new Environment(
         subMovie,
         new AssetLoader(this.registry.pendingAssets)
-          .on('request', hitch(this, this.loadAsset, assetBase))
+          .on('request', hitch(this, this.loadAsset, assetUrl.scheme === 'data' ? null : assetUrl))
       );
     },
 
@@ -228,7 +254,6 @@ define([
       var movieRegistry = registry.movies;
 
       var movies = tools.removeValueFromArray(movieRegistry.movies);
-      var moviesToIncrement = [this];
 
       /*
         The `movies` array may contain gaps (if elements are removed from the
@@ -242,18 +267,22 @@ define([
         movie = movies[i];
         if (movie) {
           movie.emitFrame();
-          moviesToIncrement.push(movie);
         }
 
         i += 1;
       }
 
+
       // Emit an event to mark the fact that we've emitted all submovies' frames:
       this.emit('subMoviesAdvanced');
 
+      var moviesToIncrement = [this].concat(movies);
       // Go through all movies and increment their respective frames:
       for (i = 0, len = moviesToIncrement.length; i < len; ++i) {
-        moviesToIncrement[i].incrementFrame();
+        movie = moviesToIncrement[i];
+        if (movie && movie.isPlaying) {
+          movie.incrementFrame();
+        }
       }
 
       var message;
@@ -289,7 +318,7 @@ define([
         } else {
 
           // collect ids of all children (all levels) that are removed together with the parent
-          var childIds = collectChildIds(obj);
+          var childIds = collectChildIds(obj.displayList);
 
           message = {id: +id, detach: true};
           if (childIds.length) {
@@ -340,11 +369,24 @@ define([
 
     /**
      * Sends a message to the renderer / stage controller
+     *
+     * @param [category=null] The message category
      * @param messageData
      * @returns {this} The instance
      */
-    sendMessage: function(messageData) {
-      return this.post({command: 'message', data: messageData});
+    sendMessage: function(category, messageData) {
+      if (arguments.length > 1) {
+        return this.post({
+          command: 'message',
+          category: category,
+          data: messageData
+        });
+      } else {
+        return this.post({
+          command: 'message',
+          data: category
+        });
+      }
     },
 
     /**
@@ -359,7 +401,7 @@ define([
 
       var wasFrozen = this._isFrozen;
       this.freeze();
-      this.framerate = Math.abs(framerate | 0);
+      this.framerate = Math.abs(framerate);
       if (!wasFrozen) {
         this.unfreeze();
       }
@@ -429,7 +471,8 @@ define([
     }
   };
 
-  tools.mixin(Stage.prototype, EventEmitter, DisplayList, Timeline);
+  tools.mixin(proto, EventEmitter, displayList.timelineMethods, Timeline);
+  delete proto.markUpdate;
 
   return Stage;
 });

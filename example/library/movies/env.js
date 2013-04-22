@@ -1,3 +1,7 @@
+/**
+ * env
+ */
+
 var offsetX = txt(100),
     offsetY = txt(130),
     windowHeight = txt(160),

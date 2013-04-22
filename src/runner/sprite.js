@@ -63,7 +63,7 @@ define([
 
     this.addChild(bitmap);
 
-    if (callback && this._children.length == this.sources.length) {
+    if (callback && this.displayList.children.length == this.sources.length) {
       this.emit('load', callback);
     }
   };

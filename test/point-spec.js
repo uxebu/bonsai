@@ -1,6 +1,5 @@
-require([
-  'bonsai/point',
-  './runner.js'
+define([
+  'bonsai/point'
 ], function(Point) {
 
   var toString = {}.toString;
@@ -102,6 +101,17 @@ require([
             distance = Math.sqrt(xDiff * xDiff + yDiff * yDiff);
         expect(a.distance(b)).toBe(distance);
       });
+    });
+
+    describe('angle', function() {
+
+      it('Returns the radians between two points', function() {
+        var a = new Point(0, 0),
+            b = new Point(180, 180),
+            radians = Math.atan2(0 - 180, 0 - 180);
+        expect(a.angle(b)).toBe(radians);
+      });
+
     });
 
     // Linear Interpolation between two points a and b

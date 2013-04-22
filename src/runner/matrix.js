@@ -1,12 +1,7 @@
-/**
- * This module contains the Matrix class.
- *
- * @exports matrix
- * @requires module:point
- */
 define([
-  '../point'
-], function(Point) {
+  '../point',
+  '../tools'
+], function(Point, tools) {
   'use strict';
 
   var cos = Math.cos, sin = Math.sin;
@@ -15,8 +10,9 @@ define([
    * The Matrix class.
    *
    * @constructor
+   * @name Matrix
    *
-   * @param {number} a Horizontal/x scale
+   * @param {number|array} a Horizontal/x scale or array of a, b, c, d, tx, ty
    * @param {number} b Vertical/y skew
    * @param {number} c Horizontal/x skew
    * @param {number} d Vertical/y scale
@@ -24,6 +20,10 @@ define([
    * @param {number} ty Vertical/y translation
    */
   function Matrix(a, b, c, d, tx, ty) {
+    if (tools.isArray(a)) {
+      return Matrix.apply(this, a);
+    }
+
     this.a = a != null ? a : 1;
     this.b = b || 0;
     this.c = c || 0;
@@ -32,7 +32,7 @@ define([
     this.ty = ty || 0;
   }
 
-  Matrix.prototype = {
+  Matrix.prototype = /** @lends Matrix.prototype */ {
     /**
      * Returns a clone of the matrix
      *
@@ -79,12 +79,12 @@ define([
      * @param {number} scaleY The vertical scale
      * @param {number} rotation The rotation in radians
      * @param {number} tx The horizontal translation
-     * @param {number} tx The vertical translation
+     * @param {number} ty The vertical translation
      * @returns {Matrix} The instance
      */
     createBox: function(scaleX, scaleY, rotation, tx, ty) {
       return this.
-        identify().
+        identity().
         rotate(rotation).
         scale(scaleX, scaleY).
         translate(tx, ty);
@@ -139,7 +139,7 @@ define([
      *
      * @returns {Matrix} The instance
      */
-    identify: function() {
+    identity: function() {
       this.a = this.d = 1;
       this.b = this.c = this.tx = this.ty = 0;
       return this;
@@ -241,6 +241,16 @@ define([
       return this;
     }
   };
+
+  /**
+   * Creates a new Matrix from a matrix string: `'matrix(1,1,0,0,1,1)'`
+   *
+   * @param {string} matrixString The matrix string.
+   * @returns {Matrix} The instance.
+   */
+  Matrix.fromString = function (matrixString) {
+    return new Matrix(matrixString.match(/[^matrix(,)]+/g).map(Number));
+  }
 
   return Matrix;
 });

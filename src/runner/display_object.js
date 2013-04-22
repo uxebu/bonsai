@@ -20,8 +20,23 @@ define([
    */
   var uid = 1;
 
-  var atan2 = Math.atan2, PI = Math.PI;
+  var atan2 = Math.atan2, sqrt = Math.sqrt, PI = Math.PI;
   var isfinite = isFinite; // local reference for faster lookup
+
+  /**
+   * Determines whether an attribute update is valid effectual.
+   *
+   * @param {Object} attributes An attributes object.
+   * @param {string} name The name of the attribute
+   * @param oldValue
+   * @param newValue
+   * @return {Boolean}
+   */
+  function isAttributeChange(attributes, name, oldValue, newValue) {
+    return name in attributes &&
+      name.charAt(0) !== '_' &&
+      (oldValue !== newValue || typeof oldValue === 'object');
+  }
 
   function getRotation() {
     var matrix = this._matrix;
@@ -72,6 +87,18 @@ define([
   }
 
   function setMatrix(matrix) {
+    /*
+      The internally stored matrix is 'unscaled', and scale is
+      stored seperately. This approach allows for non-destructive scaling to 0.
+
+      When setting the matrix, we need to convert it to the unscaled form, i.e.
+      extracting the scale, storing it into the respective internal variables,
+      and apply the reverse scale to the matrix.
+     */
+
+    var scaleX = this._scaleX = sqrt(matrix.a * matrix.a + matrix.b * matrix.b);
+    var scaleY = this._scaleY = sqrt(matrix.d * matrix.d + matrix.c * matrix.c);
+
     var m = this._matrix;
     m.a = matrix.a;
     m.b = matrix.b;
@@ -79,6 +106,16 @@ define([
     m.d = matrix.d;
     m.tx = matrix.tx;
     m.ty = matrix.ty;
+
+    if (scaleX !== 1 || scaleY !== 1) {
+      // Make sure we rotate around the chosen origin
+      var origin = m.transformPoint(this._origin);
+      m.tx -= origin.x;
+      m.ty -= origin.y;
+      m.scale( 1/scaleX || 1, 1/scaleY || 1); // avoid scaling by NaN
+      m.tx += origin.x;
+      m.ty += origin.y;
+    }
   }
 
   function getX() {
@@ -86,13 +123,15 @@ define([
   }
 
   function setX(x) {
-    var s = this._scaleX;
-    if (s === 1) {
-      this._matrix.tx = x;
-    } else {
-      this._matrix.tx += x - this.matrix.tx;
+    if (isfinite(x)) {
+      var s = this._scaleX;
+      if (s === 1) {
+        this._matrix.tx = x;
+      } else {
+        this._matrix.tx += x - this.matrix.tx;
+      }
+      this._owner._mutatedAttributes.matrix = true;
     }
-    this._owner._mutatedAttributes.matrix = true;
   }
 
   function getY() {
@@ -100,13 +139,15 @@ define([
   }
 
   function setY(y) {
-    var s = this._scaleY;
-    if (s === 1) {
-      this._matrix.ty = y;
-    } else {
-      this._matrix.ty += y - this.matrix.ty;
+    if (isfinite(y)) {
+      var s = this._scaleY;
+      if (s === 1) {
+        this._matrix.ty = y;
+      } else {
+        this._matrix.ty += y - this.matrix.ty;
+      }
+      this._owner._mutatedAttributes.matrix = true;
     }
-    this._owner._mutatedAttributes.matrix = true;
   }
 
   function getScaleX() {
@@ -285,6 +326,7 @@ define([
       matrix: accessor(getMatrix, setMatrix, true),
       _filters: data([], true),
       filters: accessor(getFilters,setFilters, true),
+      interactive: data(true, true),
       _opacity: data(1, true),
       opacity: accessor(getOpacity, setOpacity, true),
       _origin: data(new Point()),
@@ -319,7 +361,8 @@ define([
       maskId: '_maskId',
       cursor: '_cursor',
       fillRule: 'fillRule',
-      visible: 'visible'
+      visible: 'visible',
+      interactive: 'interactive'
     };
 
     /*
@@ -371,9 +414,11 @@ define([
 
     // We need to ensure that all children are registered as off-stage objects
     // (this includes adding them to the registry!)
-    if (obj._children) {
-      for (var i = 0, l = obj._children.length; i < l; ++i) {
-        var child = obj._children[i];
+
+    var children = obj.displayList && obj.displayList.children;
+    if (children) {
+      for (var i = 0, l = children.length; i < l; ++i) {
+        var child = children[i];
         if (child) {
           DisplayObject.registerOffStageObj(subject, child, stage, type, true);
         }
@@ -410,9 +455,10 @@ define([
       delete obj._offStageType;
       obj._isOffStage = false;
 
-      if (obj._children) {
-        for (var i = 0, l = obj._children.length; i < l; ++i) {
-          var child = obj._children[i];
+      var children = obj.displayList && obj.displayList.children;
+      if (children) {
+        for (var i = 0, l = children.length; i < l; ++i) {
+          var child = children[i];
           if (child) {
             DisplayObject.unregisterOffStageObj(subject, child, true);
           }
@@ -473,6 +519,11 @@ define([
         this._isOffStage = true;
       }
 
+      var registry = stage.registry;
+      registry.displayObjects[this.id] = this;
+      registry.needsInsertion[this.id] = this;
+      this.markUpdate();
+
       this.emit('addedToStage');
     },
 
@@ -481,7 +532,15 @@ define([
      * ancestors from the stage.
      */
     _deactivate: function() {
-      delete this.stage;
+      var stage = this.stage;
+      if (stage) {
+        var registry = stage.registry;
+        var id = this.id;
+        this.stage = void 0;
+        registry.needsDraw[id] = this;
+        delete registry.displayObjects[id];
+        delete registry.needsInsertion[id];
+      }
       this.emit('removedFromStage');
     },
 
@@ -525,6 +584,7 @@ define([
     attr: function(attr, value) {
       var copy,
           name,
+          hasChange = false,
           attributes = this._attributes;
 
       switch (arguments.length) {
@@ -543,27 +603,96 @@ define([
               attributes[attr] : void 0;
           }
           for (name in attr) {
-            if (name in attributes && name.charAt(0) != '_') {
-              attributes[name] = attr[name];
-              this._mutatedAttributes[name] = true;
+            value = attr[name]; // value parameter is unused in this branch
+            if (isAttributeChange(attributes, name, attributes[name], value)) {
+              attributes[name] = value;
+              hasChange = this._mutatedAttributes[name] = true;
             }
           }
           break;
 
         case 2: // set at single attribute
-          if (attr in attributes && attr.charAt(0) != '_') {
+          if (isAttributeChange(attributes, attr, attributes[attr], value)) {
             attributes[attr] = value;
-            this._mutatedAttributes[attr] = true;
+            hasChange = this._mutatedAttributes[attr] = true;
           }
           break;
       }
-      this.markUpdate();
+      if (hasChange) {
+        this.markUpdate();
+      }
       return this;
     },
 
-    getComputed: function(thing) {
-      var size = {top: 0, right: 0, bottom: 0, left: 0, width: 0, height: 0};
-      return thing === 'size' ? size : size[thing];
+    /**
+     * Gets the matrix of the DisplayObject combined with all ancestor matrices
+     *
+     * @returns {Matrix} The resulting matrix
+     */
+    getAbsoluteMatrix: function() {
+      var matrix = this.attr('matrix').clone();
+      var parent = this;
+      while ((parent = parent.parent) && parent.id !== 0) {
+        matrix.concat(parent.attr('matrix'));
+      }
+      return matrix;
+    },
+
+    /**
+     * Computed the absolute bounding box relative to the top-most ancestor
+     *
+     * @returns {Object} an object with all box properties
+     *  (left, top, right, bottom, width, height)
+     */
+    getAbsoluteBoundingBox: function() {
+      return this.getBoundingBox( this.getAbsoluteMatrix() );
+    },
+
+    /**
+     * Computes bounding boxes and single data points of a display object.
+     *
+     * @param {Matrix} [transform=null] A transform to apply to all points
+     *    before computation.
+     * @returns {Object} an object with all box properties
+     *  (left, top, right, bottom, width, height)
+     */
+    getBoundingBox: function(transform) {
+      var x = 0, y = 0;
+      if (transform) {
+        var transformed = transform.transformPoint({x: 0, y: 0});
+        x = transformed.x;
+        y = transformed.y;
+      }
+      return {
+        top: y,
+        right: x,
+        bottom: y,
+        left: x,
+        width: 0,
+        height: 0
+      };
+    },
+
+    /**
+     * Transforms a point in global coordinate space to the local coordinate
+     * space of the display object.
+     *
+     * @param {Point} point
+     * @returns {Point}
+     */
+    globalToLocal: function(point) {
+      return this.getAbsoluteMatrix().invert().transformPoint(point);
+    },
+
+    /**
+     * Transforms a point in the local coordinate space of the display object to
+     * the global coordinate space.
+     *
+     * @param {Point} point
+     * @returns {Point}
+     */
+    localToGlobal: function(point) {
+      return this.getAbsoluteMatrix().transformPoint(point);
     },
 
     /**
@@ -573,6 +702,7 @@ define([
      */
     destroy: function() {
       return this.
+        emit('destroy', this). // do before removing the listeners ;)
         removeAllListeners().
         remove();
     },
@@ -630,7 +760,11 @@ define([
      * @returns {this}
      */
     addTo: function(parent, index) {
-      parent.addChild(this, index);
+      if (arguments.length === 1) {
+        parent.addChild(this);
+      } else {
+        parent.addChild(this, index);
+      }
       return this;
     },
 
@@ -741,7 +875,7 @@ define([
      */
     animate: function(duration, properties, options) {
       var animation = duration;
-      if (!(animation instanceof Animation || animation instanceof KeyframeAnimation)) {
+      if (/number|string/.test(typeof duration) || !(animation instanceof Animation || animation instanceof KeyframeAnimation)) {
         var clock = options && options.clock || this.stage;
         options || (options = {});
         if (!clock) { // not in the display list -- try to find parent timeline
@@ -761,7 +895,7 @@ define([
         animation = new Animation(clock, duration, properties, options);
       }
 
-      animation.play(this);
+      animation.addSubject(this).play();
       return this;
     }
   };

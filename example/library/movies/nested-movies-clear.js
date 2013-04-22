@@ -1,3 +1,7 @@
+/**
+ * nested movies clear
+ */
+
 stage.root.setFramerate(1);
 
 var movies = {};
@@ -5,18 +9,16 @@ var frames = {};
 var texts = {};
 
 function createMovie(name, length, parent, addStop){
-  var _movie = movies[name] = new Movie()
-  parent && _movie.addTo(parent);
+  var _movie = movies[name] = new Movie();
+  if (parent) _movie.addTo(parent);
 
   var _frames = frames[name] = [];
   for(var i=0; i<length; i++){
     _frames.push(function(){
-      console.log(name, _movie.currentFrame);
 
       if(_movie.currentFrame === 0){
 
         // as in transwf, we clear the movie on frame 0:
-        console.log('clearing movie ' + name);
         _movie.clear();
 
         // now setup the text:

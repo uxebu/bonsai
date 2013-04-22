@@ -1,7 +1,6 @@
-require([
+define([
   'bonsai/renderer/svg/svg',
-  'bonsai/renderer/svg/svg_helper',
-  './runner.js'
+  'bonsai/renderer/svg/svg_helper'
 ], function(SvgRenderer, svgHelper) {
 
   var svgInstance, aDomElement;
@@ -15,10 +14,11 @@ require([
     });
 
     describe('the constructor', function() {
-      it('creates a svg context and appends it to a given dom element', function() {
+      it('creates an svg container element and appends it to a given dom element', function() {
         var el = document.createDocumentFragment();
         var svg = new SvgRenderer.Svg(el);
-        expect(el.firstChild).toBeInstanceOf(SVGSVGElement);
+        expect(el.firstChild).toBeInstanceOf(HTMLElement);
+        expect(el.firstChild.firstChild).toBeInstanceOf(SVGSVGElement)
       });
     });
 

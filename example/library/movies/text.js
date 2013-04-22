@@ -1,12 +1,14 @@
-var bs = bonsai;
+/**
+ * text
+ */
 
 // The explicit version to create a text on the screen.
 // That has a gradient fill style.
-var text = new bs.Text('Say hello Text 1');
+var text = new Text('Say hello Text 1');
 text.attr({
   x: 10, y: 10, textFillColor: 'red',
   fontFamily: 'Arial', fontSize: '20px',
-  textFillGradient: bs.gradient.radial(['white', 'black'], 100)
+  textFillGradient: gradient.radial(['white', 'black'], 100)
 });
 stage.addChild(text);
 
@@ -14,14 +16,14 @@ stage.addChild(text);
 // fontSize can also be a pure number, nice for animating it.
 // Note that the point that the text rotates around is the upper left corner
 // of the unrotated text, so the left top corner of the "S"!
-new bs.Text('Say hello Text 2')
+new Text('Say hello Text 2')
   .attr({x: 500, y: 40, textFillColor: 'blue',
     fontFamily: 'Arial', fontSize: 40, rotation: Math.PI
   })
   .addTo(stage);
-  
+
 // Rotating text.
-var text = new bs.Text('Say hello Text 3');
+var text = new Text('Say hello Text 3');
 text.attr({
   x: 100, y: 80, textFillColor: 'green',
   fontFamily: 'Arial', fontSize: '20px'
@@ -30,7 +32,7 @@ stage.addChild(text);
 text.animate('10s', {rotation: Math.PI*3});
 
 // A little fancier animation.
-var text = new bs.Text('Say hello Text 4');
+var text = new Text('Say hello Text 4');
 text.attr({
   x: 200, y: 300, textFillColor: 'black', opacity: 0.5,
   fontFamily: 'Arial', fontSize: 20, fontWeight: 'bold'

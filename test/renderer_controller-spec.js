@@ -1,9 +1,8 @@
-require([
+define([
   'bonsai/renderer/renderer_controller',
   'bonsai/uri',
   'bonsai/event_emitter',
-  'bonsai/tools',
-  './runner.js'
+  'bonsai/tools'
 ], function(RendererController, URI, EventEmitter, tools) {
   var mockAssetController, mockRenderer, mockRunner, baseUri;
 
@@ -26,7 +25,11 @@ require([
         this.emit('message', {command: 'init', data: 'listening'});
       }),
       notifyRunner: jasmine.createSpy('runner.notifyRunner'),
-      notifyRunnerAsync: jasmine.createSpy('runner.notifyRunnerAsync'),
+      notifyRunnerAsync: function() { this.notifyRunner.apply(this, arguments); },
+      load: function(url) {
+        this.emit('scriptLoaded', url);
+      },
+      run: function() {},
       destroy: jasmine.createSpy('runner.destroy')
     }, EventEmitter);
 
@@ -34,7 +37,10 @@ require([
   }
 
   function createRendererController() {
-    return new RendererController(mockRenderer, mockAssetController, mockRunner, baseUri);
+    return new RendererController(mockRenderer, mockAssetController, mockRunner, {
+      baseUri: baseUri,
+      code: 'arbitrary(code)'
+    });
   }
 
   describe('RendererController', function () {
@@ -308,6 +314,173 @@ require([
         createRendererController().post(command, commandData);
 
         expect(mockRunner.notifyRunner).toHaveBeenCalledWithCommand(command, commandData);
+      });
+    });
+
+    describe('sendMessage', function() {
+      var rendererController;
+      beforeEach(function() {
+        rendererController = createRendererController();
+        rendererController.runnerContext.emit('message', {command: 'isReady'});
+      });
+      function getFirstArg() {
+        return mockRunner.notifyRunner.mostRecentCall.args[0];
+      }
+
+      it('should send an uncategorized message when called with one argument', function() {
+        var message = {};
+
+        rendererController.sendMessage(message);
+        var arg = getFirstArg();
+
+        expect(arg.command).toBe('message');
+        expect(arg.data).toBe(message);
+        expect(arg.category).toBeFalsy();
+      });
+
+      it('should send a categorized message when called with two arguments', function() {
+        var message = {};
+        var messageCategory = 'arbitrary';
+
+        rendererController.sendMessage(messageCategory, message);
+        var arg = getFirstArg();
+
+        expect(arg.command).toBe('message');
+        expect(arg.data).toBe(message);
+        expect(arg.category).toBe(messageCategory);
+      });
+
+    });
+
+    describe('message events', function() {
+      var rendererController;
+      beforeEach(function() {
+        rendererController = createRendererController();
+      });
+
+      it('should emit uncategorized messages to uncategorized listeners only', function() {
+        var uncategorizedListener = jasmine.createSpy('uncategorized');
+        var undefinedCategoryListener = jasmine.createSpy('undefined');
+        var messageData = {};
+        rendererController.on('message', uncategorizedListener);
+        rendererController.on('message:undefined', undefinedCategoryListener);
+
+        rendererController.handleEvent({command: 'message', data: messageData});
+
+        expect(uncategorizedListener).toHaveBeenCalledWith(messageData);
+        expect(undefinedCategoryListener).not.toHaveBeenCalled();
+      });
+
+      it('should emit a message with category "null" to categorized listeners only', function() {
+        var uncategorizedListener = jasmine.createSpy('uncategorized');
+        var nullCategoryListener = jasmine.createSpy('null');
+        var messageData = {};
+        rendererController.on('message', uncategorizedListener);
+        rendererController.on('message:null', nullCategoryListener);
+
+        rendererController.handleEvent({command: 'message', data: messageData, category: null});
+
+        expect(uncategorizedListener).not.toHaveBeenCalled();
+        expect(nullCategoryListener).toHaveBeenCalledWith(messageData);
+      });
+
+      it('should emit categorized messages to categorized listeners only', function() {
+        var uncategorizedListener = jasmine.createSpy('uncategorized');
+        var categorizedListener = jasmine.createSpy('categorized');
+        var messageData = {};
+        var category = 'arbitrary';
+        rendererController.on('message', uncategorizedListener);
+        rendererController.on('message:' + category, categorizedListener);
+
+        rendererController.handleEvent({command: 'message', data: messageData, category: category});
+
+        expect(uncategorizedListener).not.toHaveBeenCalled();
+        expect(categorizedListener).toHaveBeenCalledWith(messageData);
+      });
+
+      describe('deferral until runner startup completion', function() {
+        beforeEach(function() {
+          this.addMatchers({
+            toHaveReceivedMessage: function(category, data) {
+              var spy = this.actual, calls = spy.calls;
+              var match = arguments.length < 2 ?
+                function(message) {
+                  return message &&
+                    message.command === 'message' &&
+                    message.data === category;
+                } :
+                function(message) {
+                  return message &&
+                    message.command === 'message' &&
+                    message.category === category &&
+                    message.data === data;
+                };
+
+              for (var i = 0, length = calls.length; i < length; i += 1) {
+                if (match(calls[i].args[0])) return true;
+              }
+              return false;
+            }
+          })
+        });
+
+        var rendererController, runnerContext;
+        function initRendererController(options) {
+          resetMocks();
+          rendererController = new RendererController(mockRenderer, mockAssetController, mockRunner, options);
+          runnerContext = rendererController.runnerContext;
+        }
+        function runnerContextIsReady() {
+          runnerContext.emit('message', {command: 'isReady'});
+        }
+
+        function testDeferral(options) {
+          initRendererController(options);
+
+          var message1 = {};
+          rendererController.sendMessage(message1);
+
+          var category2 = 'arbitrary', message2 = {};
+          rendererController.sendMessage(category2, message2);
+
+          expect(runnerContext.notifyRunner)
+            .not.toHaveReceivedMessage(message1);
+          expect(runnerContext.notifyRunner)
+            .not.toHaveReceivedMessage(category2, message2);
+
+          runnerContextIsReady();
+
+          var category3 = 'arbitrary 2', message3 = {};
+          rendererController.sendMessage(category3, message3);
+
+          expect(runnerContext.notifyRunner)
+            .toHaveReceivedMessage(message1);
+          expect(runnerContext.notifyRunner)
+            .toHaveReceivedMessage(category2, message2);
+          expect(runnerContext.notifyRunner)
+            .toHaveReceivedMessage(category3, message3);
+        }
+
+        it('should defer sending messages if initialized with just an url', function() {
+          testDeferral({
+            url: 'foo.js'
+          });
+        });
+
+        it('should defer sending messages if initialized with only code', function() {
+          testDeferral({
+            code: 'stage.addChild(new Rect());'
+          });
+        });
+
+        it('should defer sending messages if initialized with plugins, urls, url, and code', function() {
+          testDeferral({
+            plugins: ['a.js', 'b.js', 'c.js'],
+            urls: ['d.js', 'e.js', 'f.js'],
+            url: 'g.js',
+            code: 'void arbitrary(stage);'
+          });
+        });
       });
     });
   });

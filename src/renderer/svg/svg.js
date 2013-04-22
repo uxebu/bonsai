@@ -20,6 +20,26 @@ define([
   // targets webkit based browsers from version 530.0 to 534.4
   var isWebkitPatternBug = /AppleWebKit\/53([0-3]|4.([0-4]))/.test(navigator.appVersion);
 
+  /**
+   * Sets a style property on a style object. Avoids unnecessary creation of
+   * style attributes in the DOM, to ease debugging.
+   *
+   * @param {CSSStyleDeclaration} style The style object to set the property on
+   * @param {string} name The name of the property to set
+   * @param {string} value The value of the property to set.
+   */
+  function setStyle(style, name, value) {
+    if (value) {
+      style[name] = value;
+    } else if (style[name]) { // only remove if set to prevent empty style attributes in the DOM
+      style[name] = '';
+    }
+  }
+
+  // Math
+  var min = Math.min;
+  var max = Math.max;
+
   // svgHelper
   var cssClasses = svgHelper.cssClasses,
       matrixToString = svgHelper.matrixToString,
@@ -30,7 +50,6 @@ define([
 
   // svgFilters
   var isFEColorMatrixEnabled = svgFilters.isFEColorMatrixEnabled,
-      colorApplyColorMatrix = svgFilters.colorApplyColorMatrix,
       filterElementsFromList = svgFilters.filterElementsFromList;
 
   // AssetController
@@ -38,38 +57,50 @@ define([
       fontPrefix = AssetController.handlers.Font.prefix;
 
   var basicAttributeMap = {
-    cap: 'stroke-linecap',
-    join: 'stroke-linejoin',
-    miterLimit: 'stroke-miterlimit',
-    opacity: 'opacity',
-    fillOpacity: 'fill-opacity',
-    strokeOpacity: 'stroke-opacity',
-    fontSize: 'font-size',
-    fontWeight: 'font-weight',
-    fontStyle: 'font-style',
-    textAnchor: 'text-anchor',
-    text: 'text',
-    cursor: 'cursor',
-    fillRule: 'fill-rule'
+    // bonsai attribute: [svg attribute, default value]
+    cap: ['stroke-linecap', 'butt'],
+    join: ['stroke-linejoin', 'miter'],
+    miterLimit: ['stroke-miterlimit', '4'],
+    opacity: ['opacity', '1'],
+    fillOpacity: ['fill-opacity', '1'],
+    strokeOpacity: ['stroke-opacity', '1'],
+    strokeDash: ['stroke-dasharray'],
+    strokeDashOffset: ['stroke-dashoffset'],
+    fontSize: ['font-size'],
+    fontWeight: ['font-weight'],
+    fontStyle: ['font-style'],
+    textAnchor: ['text-anchor', 'start'],
+    text: ['text'],
+    cursor: ['cursor', 'inherit'],
+    fillRule: ['fill-rule', 'inherit']
   };
 
   var eventTypes = [
-    'dblclick',
     'click',
+    'dblclick',
+    'mousedown',
     'mouseenter',
     'mouseleave',
-    'mouseover',
-    'mouseout',
-    'mouseup',
-    'mousedown',
-    'touchstart',
-    'touchend',
     'mousemove',
+    'mouseout',
+    'mouseover',
+    'mouseup',
+    'touchcancel',
+    'touchend',
     'touchmove',
-    'mousewheel'
+    'touchstart'
   ];
 
   var textAlignValues = ['start', 'middle', 'end'];
+
+  var textOriginMap = {
+    top: 'hanging',
+    center: 'middle',
+    bottom: 'auto'
+  };
+
+  // tools
+  var isArray = tools.isArray;
 
   var xlink = 'http://www.w3.org/1999/xlink';
 
@@ -85,7 +116,15 @@ define([
   }
 
   function Svg(node, width, height) {
+
     var root = this.root = this[0] = createElement('svg', 0);
+
+    // We require an additional rootContainer div so we can accurately
+    // retrieve the position of the movie in getOffset on iOS devices.
+    var rootContainer = this.rootContainer = document.createElement('div');
+    rootContainer.style.paddingLeft = '0';
+    rootContainer.style.paddingTop = '0';
+
     if (width) {
       root.setAttribute('width', width);
     }
@@ -97,7 +136,8 @@ define([
     this.viewBox(width, height);
 
     this.defs = this.root.appendChild(createElement('defs'));
-    node.appendChild(root);
+    rootContainer.appendChild(root);
+    node.appendChild(rootContainer);
   }
 
   Svg.prototype = {
@@ -117,15 +157,22 @@ define([
         value = attributes[i];
 
         if (i in basicAttributeMap) {
-          if (value != null) {
-            el.setAttribute(basicAttributeMap[i], value);
-          } else if (value === null) {
-            el.removeAttribute(basicAttributeMap[i]);
+          var attributeInfo = basicAttributeMap[i];
+          var attributeName = attributeInfo[0], defaultValue = attributeInfo[1];
+
+          var isInitalValue = '' + value === defaultValue;
+          if (value !== null && !isInitalValue) {
+            el.setAttribute(attributeName, value);
+          } else if (value === null || isInitalValue) {
+            el.removeAttribute(attributeName);
           }
           continue;
         }
 
         switch (i) {
+          case 'interactive':
+            setStyle(el.style, 'pointerEvents', value ? '' : 'none');
+            break;
           case 'fontFamily':
             value = fontIDs[value] || value;
             if (value != null) {
@@ -170,10 +217,14 @@ define([
             break;
           case 'matrix':
             if (value != null) {
-              el.setAttribute(
-                'transform',
-                matrixToString(value)
-              );
+              // clear transform attribute for identity matrix
+              var strMatrix = matrixToString(value);
+              if (strMatrix == 'matrix(1,0,0,1,0,0)') {
+                // this is the default
+                el.removeAttribute('transform');
+              } else {
+                el.setAttribute('transform', strMatrix);
+              }
             } else if (value === null) {
               el.removeAttribute('transform');
             }
@@ -198,10 +249,12 @@ define([
    *    true displays the frame rate in the rendering, a function will be called
    *    with the framerate.
    */
-  function SvgRenderer(node, width, height, allowEventDefaults, fpsLog) {
+  function SvgRenderer(node, width, height, options) {
+    options = options || {};
     this.width = width;
     this.height = height;
-    this.allowEventDefaults = !!allowEventDefaults;
+    this.allowEventDefaults = !!options.allowEventDefaults;
+    this.objectsUnderPointer = !!options.objectsUnderPointer;
 
     var svg = this.svg = new Svg(node, width, height);
 
@@ -222,7 +275,15 @@ define([
     document.addEventListener('keydown', this, false);
     document.addEventListener('keypress', this, false);
 
-    this._setupFPSLog(fpsLog);
+    this._isLoggingFps = false;
+    this._fpsInterval = null;
+    this._setupFPSLog(options.fpsLog);
+    if (options.disableContextMenu) {
+      this.config({
+        item: 'disableContextMenu',
+        value: true
+      });
+    }
   }
 
   var proto = SvgRenderer.prototype = tools.mixin({}, EventEmitter, eventHandlers);
@@ -249,6 +310,9 @@ define([
         break;
       case 'backgroundColor':
         this.svg.root.style.backgroundColor = color(value).rgba();
+        break;
+      case 'disableContextMenu':
+        this.svg.root.oncontextmenu = value ? function() { return false; } : null;
         break;
     }
   };
@@ -292,6 +356,8 @@ define([
         if (type === 'DOMElement') {
           element = svg[id] = document.createElement(message.attributes.nodeName);
           element.setAttribute('data-bs-id', id);
+        } else if (type === 'Audio') {
+          element = svg[id] = AssetController.assets[id];
         } else {
           element = svg[id] = createElement(typesToTags[type], id);
         }
@@ -396,12 +462,14 @@ define([
             } while ((prev = prev.prev));
             element = fragment;
           }
-          parent.insertBefore(element, svg[message.next]);
+          parent.insertBefore(element, svg[message.next] || null);
         }
       }
     }
 
-    this._logFrame();
+    if (this._isLoggingFps) {
+      this._logFrame();
+    }
 
     this.emit('canRender');
   };
@@ -416,24 +484,23 @@ define([
    */
   proto.drawAll = function(type, element, message) {
 
-    var hasFilters = false;
     var attr = message.attributes;
+    var filters = attr.filters;
     var fillColor = attr.fillColor;
     var fillGradient = attr.fillGradient;
-    var filters = attr.filters || [];
-    var svg = this.svg;
 
     // when filter is applied, force fillColor change on UA w/o SVG Filter support
     if (!isFEColorMatrixEnabled && !fillColor && filters && element._fillColorSignature) {
       fillColor = element._fillColorSignature;
     }
 
-    if (filters.length) {
-      hasFilters = true;
-      this.applyFilters(element, filters);
-    } else if (filters === null) {
-      element._filterSignature &&
+    if (isArray(filters)) {
+      // modify filters
+      if (filters.length > 0) {
+        this.applyFilters(element, filters);
+      } else {
         this.removeFilters(element);
+      }
     }
 
     if (message.offStageType === 'clip') {
@@ -473,7 +540,7 @@ define([
     }
 
     if (attr.visible != null) {
-      element.style.visibility = attr.visible ? '' : 'hidden';
+      setStyle(element.style, 'visibility', attr.visible ? '' : 'hidden');
     }
 
     if (type === 'Path' || type === 'Text' || type === 'TextSpan') {
@@ -507,6 +574,11 @@ define([
       if ('strokeGradient' in attr) {
         this.applyStrokeGradient(element, attr.strokeGradient, '', attr.strokeWidth);
       }
+
+      if ('strokeDash' in attr) {
+        this.applyStrokeDashArray(element, attr.strokeDash, attr.strokeDashOffset);
+      }
+
     }
   };
 
@@ -551,10 +623,7 @@ define([
 
   proto.drawTextSpan = function(tspan, message) {
 
-    var attributes = message.attributes,
-        fontSize = attributes.fontSize,
-        fontFamily = attributes.fontFamily,
-        text = attributes.text;
+    var attributes = message.attributes;
 
     tspan.setAttributeNS(xlink, 'text-anchor', 'start');
     tspan.setAttribute('alignment-baseline', 'inherit');
@@ -576,71 +645,171 @@ define([
       tspan.removeAttribute('y');
     }
 
-    if (tspan._text !== text) {
+    if (tspan._text !== attributes.text) {
       // attribute is different to cached text is different, overwrite text nodes:
       while (tspan.firstChild) {
         tspan.removeChild(tspan.firstChild);
       }
-      tspan._text = text;
-      tspan.appendChild(document.createTextNode(text));
+      tspan._text = attributes.text;
+      tspan.appendChild(document.createTextNode(attributes.text));
     }
   };
 
   proto.drawText = function(text, message) {
 
-    var style;
     var attributes = message.attributes;
+    var style = text.style;
+    var textOrigin = attributes.textOrigin;
 
-    if (attributes.selectable !== false) {
-      cssClasses.add(text, 'selectable');
-    } else {
-      cssClasses.remove(text, 'selectable');
+    if (attributes.selectable !== undefined) {
+      if (attributes.selectable !== false) {
+        cssClasses.add(text, 'selectable');
+      } else {
+        cssClasses.remove(text, 'selectable');
+      }
     }
 
-    if (attributes.textOrigin != null) {
-      text.setAttribute(
-        'alignment-baseline',
-        attributes.textOrigin === 'top' ? 'hanging' : ''
-      );
+    setStyle(style, 'textAnchor', 'start');
+
+    if (textOrigin != null) {
+      setStyle(style, 'alignmentBaseline', textOriginMap[textOrigin]);
+      setStyle(style, 'dominantBaseline', textOriginMap[textOrigin]);
     }
+
   };
 
   proto.drawVideo = function(foreignObject, message) {
 
     // assuming a valid assetId
+    var volume;
     var attributes = message.attributes;
     var id = message.id;
-    var video = AssetController.assets[id];
+    var videoElement = AssetController.assets[id];
+    var playing = attributes.playing;
 
-    if (typeof video === 'undefined') {
-      throw Error('asset <' + id + '> is unkown.');
+    if (typeof videoElement === 'undefined') {
+      throw Error('asset <' + id + '> is unknown.');
     }
-
-    var obj = this.svg[id];
-    var width = attributes.width || 100;
-    var height = attributes.height || 100;
-    var matrix = attributes.matrix || {tx: 0, ty: 0};
-
-    foreignObject.setAttribute('x', matrix.tx);
-    foreignObject.setAttribute('y', matrix.ty);
-    foreignObject.setAttribute('width', width);
-    foreignObject.setAttribute('height', height);
-    foreignObject.setAttribute('preserveAspectRatio', 'none');
 
     // work-around: some browsers cannot transform the content of a foreignObject
     // e.g. webkit: http://code.google.com/p/chromium/issues/detail?id=87072
     // check http://double.co.nz/video_test/video.svg
     foreignObject.removeAttribute('transform');
 
-    video.setAttribute('width', width);
-    video.setAttribute('height', height);
-    video.setAttribute('controls', 'controls');
-
-    if (attributes.autoplay) {
-      video.play();
+    if ('matrix' in attributes) {
+      foreignObject.setAttribute('x', attributes.matrix.tx);
+      foreignObject.setAttribute('y', attributes.matrix.ty);
     }
 
-    foreignObject.appendChild(video);
+    if ('width' in attributes) {
+      foreignObject.setAttribute('width', attributes.width);
+      videoElement.setAttribute('width', attributes.width);
+    }
+    if ('height' in attributes) {
+      foreignObject.setAttribute('height', attributes.height);
+      videoElement.setAttribute('height', attributes.height);
+    }
+
+    foreignObject.setAttribute('preserveAspectRatio', 'none');
+
+    if (attributes.prepareUserEvent && 'ontouchstart' in document) {
+      // We bind to the next touch-event and play/pause the audio to cause
+      // iOS devices to allow subsequent play/pause commands on the audio el.
+      // --
+      // (Usually, iOS Devices will only allow play/pause methods to be called
+      // after a user event. Due to bonsai's async nature, a movie programmer
+      // can never achieve this. So we setup a fake one here...)
+      var touchStartHandler = function() {
+        videoElement.play();
+        videoElement.pause();
+        document.removeEventListener('touchstart', touchStartHandler, true);
+      };
+      document.addEventListener('touchstart', touchStartHandler, true);
+    }
+
+    if ('volume' in attributes) {
+      // Value between 0-1. NaN is treated as `0`
+      videoElement.volume = min(max(+attributes.volume || 0, 0), 1);
+    }
+
+    // Time in seconds. `currentTime` throws when there's no
+    // current playback state machine
+    if ('time' in attributes) {
+      // Set volume to 0 to avoid "clicks"
+      volume = videoElement.volume;
+      videoElement.volume = 0;
+      try {
+        // Some browsers ignore `0`, that's why we set it to `0.01`
+        videoElement.currentTime = +attributes.time || 0.01;
+      } catch(e) {}
+      // Set volume back to the initial value
+      videoElement.volume = volume;
+    }
+
+    if (playing === true) {
+      videoElement.play();
+    }
+    if (playing === false) {
+      videoElement.pause();
+    }
+
+    videoElement.setAttribute('controls', 'controls');
+
+    foreignObject.appendChild(videoElement);
+  };
+
+  proto.drawAudio = function(audioElement, message) {
+
+    var volume;
+    var attributes = message.attributes;
+    var id = message.id;
+    var playing = attributes.playing;
+
+    if (typeof audioElement === 'undefined') {
+      throw Error('asset <' + id + '> is unknown.');
+    }
+
+    if (attributes.prepareUserEvent && 'ontouchstart' in document) {
+      // We bind to the next touch-event and play/pause the audio to cause
+      // iOS devices to allow subsequent play/pause commands on the audio el.
+      // --
+      // (Usually, iOS Devices will only allow play/pause methods to be called
+      // after a user event. Due to bonsai's async nature, a movie programmer
+      // can never achieve this. So we setup a fake one here...)
+      var touchStartHandler = function() {
+        audioElement.play();
+        audioElement.pause();
+        document.removeEventListener('touchstart', touchStartHandler, true);
+      };
+      document.addEventListener('touchstart', touchStartHandler, true);
+    }
+
+    if ('volume' in attributes) {
+      // Value between 0-1. NaN is treated as `0`
+      audioElement.volume = min(max(+attributes.volume || 0, 0), 1);
+    }
+
+    // Time in seconds. `currentTime` throws when there's no
+    // current playback state machine
+    if ('time' in attributes) {
+      // Set volume to 0 to avoid "clicks"
+      volume = audioElement.volume;
+      audioElement.volume = 0;
+      try {
+        // Some browsers ignore `0`, that's why we set it to `0.01`
+        audioElement.currentTime = +attributes.time || 0.01;
+      } catch(e) {}
+      // Set volume back to the initial value
+      audioElement.volume = volume;
+    }
+
+    if (playing === true) {
+      audioElement.play();
+    }
+    if (playing === false) {
+      audioElement.pause();
+    }
+
   };
 
   proto.drawDOMElement = function(element, message) {
@@ -648,11 +817,7 @@ define([
     // assuming a valid assetId
     var body,
         attributes = message.attributes,
-        css = attributes.css,
-        id = message.id,
-        parent = this.svg[message.parent],
-        width = attributes.width,
-        height = attributes.height;
+        parent = this.svg[message.parent];
 
     // Parent may not be defined if message is a NeedsDraw and *not* a NeedsInsertion
     if (parent && !element._root && !(parent instanceof HTMLElement)) {
@@ -680,9 +845,6 @@ define([
       }
     }
 
-    // Mark the element as one with a corresponding BS DOMElement object
-    element._isBSDOMElement = true;
-
     for (var i in attributes) {
       if (/^dom_/.test(i)) {
         if (i === 'dom_innerHTML') {
@@ -690,7 +852,7 @@ define([
         } else {
           element.setAttribute(i.slice(4), attributes[i]);
         }
-      } else if(/^css_/.test(i) && typeof attributes[i] !== 'undefined') {
+      } else if(/^css_/.test(i) && attributes[i] != null) {
         element.style[i.slice(4)] = attributes[i].toString().replace(/\{\{prefix\}\}/g, fontPrefix);
       }
     }
@@ -711,6 +873,8 @@ define([
     }
 
   };
+
+  proto.getTime = Date.now || function() { return new Date().getTime() };
 
   proto.removeObject = function(element) {
 
@@ -735,9 +899,7 @@ define([
       this.removeGradient(element, 'stroke');
 
     this.removeMask(element);
-
-    element._filterSignature &&
-      this.removeFilters(element);
+    this.removeFilters(element);
   };
 
   proto.removeFilters = function(element) {
@@ -747,6 +909,7 @@ define([
     var signature = element._filterSignature,
         def = this.definitions[signature];
 
+    // return early when no filter was previously applied
     if (!def) {
       return;
     }
@@ -758,6 +921,8 @@ define([
       delete this.definitions[signature];
     }
 
+    // remove filter-attribute and internal filter-reference
+    element.removeAttribute('filter');
     delete element._filterSignature;
   };
 
@@ -868,6 +1033,16 @@ define([
     }
   };
 
+  proto.applyStrokeDashArray = function(element, strokeDashArray, strokeOffset) {
+    if (strokeDashArray) {
+      element.setAttribute('stroke-dasharray', strokeDashArray);
+      element.setAttribute('stroke-dashoffset', strokeOffset || 0);
+    } else {
+      element.removeAttribute('stroke-dasharray');
+      element.removeAttribute('stroke-dashoffset');
+    }
+  };
+
   proto.applyStrokeGradient = function(element, gradient, filterSignature, strokeWidth) {
     if (gradient != null) {
       /*
@@ -894,7 +1069,7 @@ define([
    * @param {DOMElement} element A DOM Element
    * @param {String} styleAttribute "fill" or "stroke"
    * @param {Number} aColor Color with 32-bit int repr.
-   * @param {String} filterSignature [optional]
+   * @param {String} [filterSignature]
    */
   proto.applyColor = function(styleAttribute, element, aColor, filterSignature) {
 
@@ -1232,8 +1407,8 @@ define([
       pattern.setAttribute('width', boundingBox.width / fillRepeatX);
       pattern.setAttribute('height', boundingBox.height / fillRepeatY);
       elementMatrix = tools.mixin({}, attributes.matrix);
-      elementMatrix.tx += boundingBox.x;
-      elementMatrix.ty += boundingBox.y;
+      elementMatrix.tx = boundingBox.x;
+      elementMatrix.ty = boundingBox.y;
       pattern.setAttribute('patternTransform', matrixToString(elementMatrix));
 
       patternFillColor.setAttribute('x', 0);
@@ -1304,22 +1479,8 @@ define([
       return;
     }
 
-    // If the element already has an attached filter we may be able
-    // to use it (as long as it's not being used by something else)
-    if (element._filterSignature) {
-
-      filterDef = this.definitions[element._filterSignature];
-
-      if (filterDef.n > 1) {
-        // decrease retain count b/c filter is used by other elements
-        filterDef.n--;
-      } else {
-        // remove old filter
-        filterDef.element.parentNode.removeChild(filterDef.element);
-        element.removeAttribute('filter');
-        delete this.definitions[element._filterSignature];
-      }
-    }
+    // remove already applied filters
+    this.removeFilters(element);
 
     var filterContainer = createElement('filter');
 
@@ -1368,11 +1529,15 @@ define([
 
   proto.getOffset = function() {
 
+    // We query the bounding box of the rootContainer instead of the root
+    // (i.e. the parent DIV). This is due to an issue with getting the offset
+    // of an SVGElement on iOS devices (unreliable).
+
     var ctm,
-        offset = this.svg.root.getBoundingClientRect();
+        offset = this.svg.rootContainer.getBoundingClientRect();
 
     if (isNaN(offset.left) || isNaN(offset.top)) {
-      ctm = this.svg.root.getScreenCTM();
+      ctm = this.svg.rootContainer.getScreenCTM();
       offset.left = ctm.e;
       offset.top = ctm.f;
     }
@@ -1382,11 +1547,14 @@ define([
 
   proto._setupFPSLog = function(fpsLog) {
     var isFunction = typeof fpsLog === 'function';
-    if (fpsLog !== true || isFunction) {
+    var hasLog = fpsLog === true || isFunction;
+    this._isLoggingFps = hasLog;
+    clearInterval(this._fpsInterval);
+    if (!hasLog) {
       return;
     }
 
-    if (!isFunction) {
+    if (fpsLog === true) { // draw a fps counter on the stage
       this.render([
         {
           parent:0,
@@ -1429,14 +1597,14 @@ define([
   };
 
   proto._logFrame = function() {
-    (this._frameTimes || (this._frameTimes = [])).push(+new Date);
+    (this._frameTimes || (this._frameTimes = [])).push(this.getTime());
   };
 
   proto.getFPS = function() {
 
     var frames = this._frameTimes,
         fps = 0,
-        time = +new Date - 1000;
+        time = this.getTime() - 1000;
 
     for (var l = frames.length; l--;) {
       if (frames[l] < time) break;

@@ -1,17 +1,22 @@
-require([
+define([
   'bonsai/tools',
   'bonsai/runner/stage',
   'bonsai/runner/environment',
   'bonsai/runner/display_object',
   'bonsai/event_emitter',
-  './runner.js'
-], function(tools, Stage, Environment, DisplayObject, EventEmitter) {
+  'common/mock',
+  'common/displaylist-owner'
+], function(tools, Stage, Environment, DisplayObject, EventEmitter, mock, testDisplayList) {
   function makeStage() {
-    var messageChannel = tools.mixin({notifyRenderer: function() {}}, EventEmitter);
-    return new Stage(messageChannel, function() {});
+    var messageChannel = mock.createMessageProxy();
+    return new Stage(messageChannel);
   }
 
   describe('stage', function() {
+
+    testDisplayList(function(displayList) {
+      return new Stage(mock.createMessageProxy(), displayList);
+    }, true);
 
     describe('setFramerate', function() {
 
@@ -24,6 +29,12 @@ require([
       it('Sets the framerate', function() {
         stage.setFramerate(40);
         expect(stage.framerate).toBe(40);
+      });
+
+      it('should allow fractional numbers as framerate', function() {
+        var desiredFramerate = 1.23456;
+        stage.setFramerate(desiredFramerate);
+        expect(stage.framerate).toBe(desiredFramerate);
       });
 
     });
@@ -46,7 +57,8 @@ require([
       it('returns an Environment instance for a new subMovie', function() {
         var subMovie = {};
         var subMovieUrl = 'test/123.js';
-        var env = makeStage().getSubMovieEnvironment(subMovie, subMovieUrl);
+        var assetUrl = 'arbitrary/assets'
+        var env = makeStage().getSubMovieEnvironment(subMovie, subMovieUrl, assetUrl);
         expect(env instanceof Environment).toBe(true);
         expect(env.exports.stage).toBe(subMovie);
       });
@@ -100,14 +112,15 @@ require([
             dParent = new DisplayObject,
             dChild = new DisplayObject;
 
-        dParent.id = 1;
-        dChild.id = 2;
         dChild.parent = dParent;
+        var registry = stage.registry.displayObjects = {};
+        registry[dParent.id] = dParent;
+        registry[dChild.id] = dChild;
 
-        stage.registry.displayObjects = {
-          1: dParent,
-          2: dChild
-        };
+        afterEach(function() {
+          dChild.removeAllListeners();
+          dParent.removeAllListeners();
+        });
 
         it('Triggers correct event on child and parent [bubbles]', function() {
 
@@ -123,7 +136,7 @@ require([
           proxy.runMessageListener({
             command: 'userevent',
             data: {
-              targetId: 2,
+              targetId: dChild.id,
               event: eventObject
             }
           });
@@ -147,7 +160,7 @@ require([
           proxy.runMessageListener({
             command: 'userevent',
             data: {
-              targetId: 2,
+              targetId: dChild.id,
               event: eventObject
             }
           });
@@ -155,6 +168,109 @@ require([
           expect(fakeEventChildHandler).toHaveBeenCalledWith(eventObject);
           expect(fakeEventParentHandler).not.toHaveBeenCalled(); // should not be called
 
+        });
+
+        it('should add the correct `relatedTarget` property to the event ' +
+          'object if a related target id is passed', function() {
+
+          var event, eventType = 'arbitrary';
+          dChild.on(eventType, function(event_) {
+            event = event_;
+          });
+
+          stage.handleEvent({
+            command: 'userevent',
+            data: {
+              event: {type: eventType},
+              targetId: dChild.id,
+              relatedTargetId: dParent.id
+            }
+          });
+
+          expect(event.relatedTarget).toBe(dParent);
+        });
+      });
+
+      describe('sendMessage', function() {
+        var messageProxy, stage;
+        function getFirstArg() {
+          return messageProxy.notifyRenderer.mostRecentCall.args[0];
+        }
+        beforeEach(function(argument) {
+          messageProxy = mock.createMessageProxy();
+          stage = new Stage(messageProxy);
+        });
+
+        it('should send an uncategorized message when called with one argument', function() {
+          var message = {};
+
+          stage.sendMessage(message);
+          var arg = getFirstArg();
+
+          expect(arg.command).toBe('message');
+          expect(arg.data).toBe(message);
+          expect(arg.category).toBeFalsy();
+        });
+
+        it('should send a categorized message when called with two arguments', function() {
+          var message = {};
+          var messageCategory = 'arbitrary';
+
+          stage.sendMessage(messageCategory, message);
+          var arg = getFirstArg();
+
+          expect(arg.command).toBe('message');
+          expect(arg.data).toBe(message);
+          expect(arg.category).toBe(messageCategory);
+        });
+
+      });
+
+      describe('message events', function() {
+        var messageProxy, stage;
+        beforeEach(function(argument) {
+          messageProxy = mock.createMessageProxy();
+          stage = new Stage(messageProxy);
+        });
+
+        it('should emit uncategorized messages to uncategorized listeners only', function() {
+          var uncategorizedListener = jasmine.createSpy('uncategorized');
+          var undefinedCategoryListener = jasmine.createSpy('undefined');
+          var messageData = {};
+          stage.on('message', uncategorizedListener);
+          stage.on('message:undefined', undefinedCategoryListener);
+
+          stage.handleEvent({command: 'message', data: messageData});
+
+          expect(uncategorizedListener).toHaveBeenCalledWith(messageData);
+          expect(undefinedCategoryListener).not.toHaveBeenCalled();
+        });
+
+        it('should emit messages with category "null" to categorized listeners only', function() {
+          var uncategorizedListener = jasmine.createSpy('uncategorized');
+          var nullCategoryListener = jasmine.createSpy('null');
+          var messageData = {};
+          stage.on('message', uncategorizedListener);
+          stage.on('message:null', nullCategoryListener);
+
+          stage.handleEvent({command: 'message', data: messageData, category: null});
+
+          expect(uncategorizedListener).not.toHaveBeenCalled();
+          expect(nullCategoryListener).toHaveBeenCalledWith(messageData);
+        });
+
+        it('should emit categorized messages to categorized listeners only', function() {
+          var uncategorizedListener = jasmine.createSpy('uncategorized');
+          var categorizedListener = jasmine.createSpy('categorized');
+          var messageData = {};
+          var category = 'arbitrary';
+          stage.on('message', uncategorizedListener);
+          stage.on('message:' + category, categorizedListener);
+
+          stage.handleEvent({command: 'message', data: messageData, category: category});
+
+          expect(uncategorizedListener).not.toHaveBeenCalled();
+          expect(categorizedListener).toHaveBeenCalledWith(messageData);
         });
 
       });

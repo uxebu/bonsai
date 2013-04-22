@@ -1,4 +1,6 @@
 /**
+ * event drag
+ *
  * Paths w/ drag events.
  */
 
@@ -7,13 +9,14 @@ for (var a = 0; a < 3; ++a) {
     (function() {
 
       var x, y,
-          fill = bonsai.color('red').darker(.1).randomize('hue');
+          fill = color('red').darker(.1).randomize('hue');
 
-      bonsai.Path.rect(
+      var r = new Rect(
         a * 150 + 50, b * 150 + 50, 100, 100
       ).attr({
         fillColor: fill
       })
+      var g = new Group()
         .on('mouseover', function() {
           this.attr('fillColor', fill.lighter(.2));
         })
@@ -33,6 +36,7 @@ for (var a = 0; a < 3; ++a) {
         })
         .emit('multi:pointerdown')
         .addTo(stage);
+      r.addTo(g);
 
     }());
   }

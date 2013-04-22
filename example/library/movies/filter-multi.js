@@ -1,5 +1,9 @@
+/**
+ * filter multi
+ */
+
 // shorthands, defaults
-new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
+new Bitmap('assets/redpanda.jpg', function(err) {
   if (err) return;
   this.attr({
     y: 10,
@@ -11,13 +15,13 @@ new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
 });
 
 // shorthand methods
-new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
+new Bitmap('assets/redpanda.jpg', function(err) {
   if (err) return;
   this.attr({
     y: 10,
     x: 150,
     scale: 0.5,
-    filters: [filter.blur(1), filter.saturate(1)]
+    filters: [new filter.Blur(1), new filter.Saturate(1)]
   });
   stage.addChild(this);
 });
@@ -26,7 +30,7 @@ new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
 var blurFilter = new filter.Blur(10);
 var saturationFilter = new filter.Saturate(100);
 
-new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
+new Bitmap('assets/redpanda.jpg', function(err) {
   if (err) return;
   this.attr({
     y: 10,

@@ -9,21 +9,18 @@ define([
   './asset_request',
   './font_handler',
   './video_handler',
+  './audio_handler',
   './bitmap_handler',
   './raw_handler'
 ],
 function(
   tools, EventEmitter, AssetRequest,
-  FontHandler, VideoHandler, BitmapHandler, RawHandler
+  FontHandler, VideoHandler, AudioHandler, BitmapHandler, RawHandler
 ) {
   'use strict';
 
-  // save references to all assets (TODO: rethink)
+  // save references to all assets
   AssetController.assets = {};
-
-  AssetController.hasVideoSupport = function() {
-    return !!domVideo.canPlayType;
-  };
 
   /**
   * Receiver of asset-load messages from worker.
@@ -52,6 +49,11 @@ function(
     Font: FontHandler,
 
     /**
+     * Type handler for audio
+     */
+    Audio: AudioHandler,
+
+    /**
      * Type handler for video
      */
     Video: VideoHandler,
@@ -67,7 +69,7 @@ function(
 
     /**
      * Destroys our reference to the asset's corresponding data/element.
-     * (<img> or <video> etc.)
+     * (<img> or <video> or <audio> etc.)
      */
     destroy: function(assetId) {
       delete AssetController.assets[assetId];
@@ -95,11 +97,12 @@ function(
           .on('registerElement', function(element) {
             AssetController.assets[data.id] = element;
           })
-          .on('load', this, function(assetData) {
-            this.emit(successEvent, tools.mixin(data, assetData));
+          .on('load', this, function(loadData) {
+            data.loadData = loadData;
+            this.emit(successEvent, data);
           })
-          .on('error', this, function(err) {
-            data.err = err;
+          .on('error', this, function(errorData) {
+            data.loadData = errorData;
             this.emit(errorEvent, data);
           })
           .load();

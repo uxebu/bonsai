@@ -3,8 +3,7 @@
   "name": "bonsai",
   "description": "Bonsai runtime and node server",
   "main": "src/bootstrapper/_dev/node.js",
-  "version": "0.3.3",
-  "private": true,
+  "version": "0.4.3",
   "homepage": "https://github.com/uxebu/bonsai/",
   "maintainers": [],
   "repository": {
@@ -20,6 +19,7 @@
     "Jens Arps <arps@uxebu.com>",
     "David Aurelio <aurelio@uxebu.com>",
     "John-David Dalton <dalton@uxebu.com>",
+    "Dustan Kasten <dustan.kasten@gmail.com>",
     "Tobias von Klipstein <klipstein@uxebu.com>",
     "Wolfram Kriesing <kriesing@uxebu.com>",
     "Nikolai Onken <onken@uxebu.com>",

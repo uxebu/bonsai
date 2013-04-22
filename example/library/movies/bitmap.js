@@ -1,4 +1,7 @@
-new bonsai.Bitmap('assets/redpanda.jpg', function(err) {
+/**
+ * bitmap
+ */
+new Bitmap('assets/redpanda.jpg', function(err) {
   if (err) return;
   this.attr({
     y: -256,

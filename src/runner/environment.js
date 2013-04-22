@@ -24,8 +24,10 @@ define([
   './gradient',
   './text',
   './text_span',
+  './audio',
   './video',
   './filter/builtin',
+  './display_list',
   './dom_element',
   '../version'
 ], function(
@@ -33,8 +35,8 @@ define([
   Path, SpecialAttrPath, Rect, Polygon, Star, Ellipse, Circle, Arc,
   Bitmap, DisplayObject, Group,
   Animation, KeyframeAnimation, easing, FontFamily, Matrix,
-  Sprite, color, gradient, Text, TextSpan, Video, filter,
-  DOMElement, version
+  Sprite, color, gradient, Text, TextSpan, Audio, Video, filter,
+  displayList, DOMElement, version
 ) {
   'use strict';
 
@@ -79,6 +81,9 @@ define([
       Circle: Circle,
       Arc: Arc,
 
+      DisplayList: displayList.DisplayList,
+      EventEmitter: EventEmitter,
+
       Point: Point,
       color: color,
       tools: tools,
@@ -95,9 +100,10 @@ define([
     exports.KeyframeAnimation = bindConstructorToParameters(KeyframeAnimation, [stage]);
     exports.Bitmap = bindConstructorToParameters(Bitmap, [assetLoader]);
     exports.FontFamily = bindConstructorToParameters(FontFamily, [assetLoader]);
-    exports.Movie = bindConstructorToParameters(Movie, [stage]);
+    exports.Movie = bindConstructorToParameters(Movie, [stage, null]);
     exports.Sprite = bindConstructorToParameters(Sprite, [assetLoader]);
     exports.Video = bindConstructorToParameters(Video, [assetLoader]);
+    exports.Audio = bindConstructorToParameters(Audio, [assetLoader]);
 
     exports.bonsai = exports;
 

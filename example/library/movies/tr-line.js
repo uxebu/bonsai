@@ -1,11 +1,15 @@
-var movie = new bonsai.Movie();
+/**
+ * tr line
+ */
+
+var movie = new Movie();
 
 stage.addChild(movie);
 
 var dict = [
 
 function shape_1() { // DefinePath4
-  var s = new bonsai.Path().moveTo(81, 79).attr({
+  var s = new Path().moveTo(81, 79).attr({
     strokeWidth: 1,
     strokeColor: 0x000000ff,
     cap: 'round',

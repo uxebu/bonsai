@@ -1,6 +1,9 @@
+/**
+ * event buble
+ */
 
-var shape = new bonsai.Path.rect(10,10,100,100).attr({fillColor: 'red'});
-var group = new bonsai.Group();
+var shape = new Rect(10,10,100,100).attr({fillColor: 'red'});
+var group = new Group();
 
 group.addChild(shape);
 

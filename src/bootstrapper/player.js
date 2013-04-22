@@ -1,18 +1,21 @@
 define([
+  '../event_emitter',
   '../renderer/renderer_controller',
   '../asset/asset_controller',
   '../tools',
   '../uri',
   '../version'
 ],
-function(RendererController, AssetController, tools, URI, version) {
+function(EventEmitter, RendererController, AssetController, tools, URI, version) {
   'use strict';
 
   var player = {
     version: version,
 
     AssetController: AssetController,
+    EventEmitter: EventEmitter,
     RendererController: RendererController,
+    tools: tools,
 
     defaultRunnerOptions: {},
     _addDefaultRunnerOptions: function(options) {
@@ -51,10 +54,18 @@ function(RendererController, AssetController, tools, URI, version) {
           urls[i] = baseUrl.resolveUri(url).toString();
         });
       }
+      if (typeof options.code === 'function') {
+        options.code = '(' + options.code.toString() + '());';
+      }
 
       var doc = typeof document === 'undefined' ? null : document;
       var context = new this.RunnerContext(this.runnerUrl, doc, options.baseUrl);
-      var renderer = new this.Renderer(node, width, height, options.allowEventDefaults, options.fpsLog);
+      var renderer = new this.Renderer(node, width, height, {
+        allowEventDefaults: options.allowEventDefaults,
+        objectsUnderPointer: options.objectsUnderPointer,
+        fpsLog: options.fpsLog,
+        disableContextMenu: options.disableContextMenu
+      });
       var assetController = new this.AssetController();
 
       return new this.RendererController(renderer, assetController, context, options);
@@ -63,7 +74,7 @@ function(RendererController, AssetController, tools, URI, version) {
     /**
      * Loads a bonsai movie and embeds it into a HTML document.
      *
-     * @param {HTMLElement} node The html element to replace with the movie
+     * @param {HTMLElement|String} node The html element or DOM id to inject the movie into
      * @param {string} url The URL to the bonsai script to load
      * @param {Number} [options.width] The width of the movie
      * @param {Number} [options.height] The height of the movie
@@ -74,6 +85,9 @@ function(RendererController, AssetController, tools, URI, version) {
      * @returns {Movie}
      */
     run: function(node, url, options) {
+      if (typeof node === 'string') {
+        node = document.getElementById(node);
+      }
 
       if (url && typeof url != 'string') {
         options = url;
@@ -108,6 +122,9 @@ function(RendererController, AssetController, tools, URI, version) {
       }
       if ('baseUrl' in options) {
         this._baseUrl = URI.parse(options.baseUrl);
+      }
+      if ('renderer' in options) {
+        this.Renderer = options.renderer;
       }
       return this;
     },

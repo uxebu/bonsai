@@ -16,18 +16,28 @@ movieList = {
     'animation-stars-2.js',
     'animation-circles.js'
   ],
+  'Audio': [
+    'audio-simple.js',
+    'audio-tick-16.js',
+    'audio-volume.js',
+    'audio-boom.js',
+    'audio-piano-sprite.js',
+    'audio-button.js'
+  ],
   'Bitmaps and Sprites': [
     'bitmap.js',
+    'bitmap-memory-check.js',
+    'bitmap-source.js',
+    'data-url.js',
     'fill-image.js',
     'sprite.js',
-    'data-url.js',
-    'bitmap-memory-check.js'
+    'sprite-ninja.js'
   ],
   'Color': [
     'color.js',
+    'color-gradient-knight-rider.js',
     'linear-gradients.js',
-    'radial-gradients.js',
-    'color-gradient-knight-rider.js'
+    'radial-gradients.js'
   ],
   'Clipping & Masking': [
     'clip-simple.js',
@@ -54,7 +64,7 @@ movieList = {
     'content-creation.js',
     'business-card.js',
     'blobs-by-manfred.js',
-    'svg-lion.js'
+    'svg-tiger.js'
   ],
   'Events': [
     'event-click.js',
@@ -62,12 +72,15 @@ movieList = {
     'event-bubble.js',
     'event-multi-touch.js',
     'event-multi-touch2.js',
+    'event-mouse-button.js',
+    'event-mouse-over-out.js',
     'key-events.js'
   ],
   'Filter': [
     'filter-blur.js',
     'filter-list.js',
     'filter-multi.js',
+    'filter-frames.js',
     'filter-colorMatrix-shim.js',
     'filter-colorMatrix-shim-2.js'
   ],
@@ -76,8 +89,9 @@ movieList = {
   ],
   'Games': [
     'asteroids.js',
-    'breakout.js',
-    'pacman.js'
+    'pacman.js',
+    'pong.js',
+    'set.js'
   ],
   'Grouping and Layering': [
     'group.js',
@@ -96,11 +110,15 @@ movieList = {
     'raining-rainbows.js',
     '10000-objects.js',
     'env.js',
-    'connect-two-points.js'
+    'connect-two-points.js',
+    'collision-detection-line.js',
+    'collision-detection-moving.js',
+    'collision-detection-both.js',
   ],
   'Morph': [
     'animation-morph.js',
     'animation-morph-2.js',
+		'bounding-box.js',
     'fx-morph.js',
     'ugly2polygon-morph.js',
     'ugly2polygon-morph2.js'
@@ -123,7 +141,10 @@ movieList = {
     'shape-arc.js',
     'shape-getPointAtLength.js',
     'shape-center-of-arc.js',
-    'shape-fill-rule.js'
+    'shape-fill-rule.js',
+    'shape-dashedstrokes.js',
+    'overlapping-paths.js',
+    'bounding-box.js'
   ],
   'Test': [
     'text.js',
@@ -151,5 +172,8 @@ movieList = {
     'video-remote.js',
     'video-onload.js',
     'video-memory-check.js'
+  ],
+  'Plugins' : [
+    'plugin-preloader.js'
   ]
 }

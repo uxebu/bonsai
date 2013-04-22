@@ -10,7 +10,8 @@ define([
   var accessor = tools.descriptorAccessor,
       data = tools.descriptorData,
       getter = tools.getter,
-      parseColor = color.parse;
+      parseColor = color.parse,
+      isArray = tools.isArray;
 
   var textAlignValues = ['left', 'center', 'right'];
 
@@ -66,9 +67,8 @@ define([
   }
 
   function setText(text) {
-    var _owner = this._owner;
-    _owner.clear();
-    _owner.addChild(new TextSpan(text));
+    this._owner.clear();
+    this._owner.addChild(new TextSpan(text));
   }
 
   function getText() {
@@ -144,10 +144,8 @@ define([
       _miterLimit: data(4, true),
       miterLimit: accessor(getMiterLimit, setMiterLimit, true),
       text: accessor(getText, setText, true),
-      textOrigin: data(null, true, true),
-      selectable: data(true, true, true),
-      _textAlign: data(0, true),
-      textAlign: accessor(getTextAlign, setTextAlign)
+      textOrigin: data('top', true, true),
+      selectable: data(true, true, true)
     });
 
     var rendererAttributes = this._renderAttributes;
@@ -168,15 +166,13 @@ define([
     rendererAttributes.textOrigin = 'textOrigin';
     rendererAttributes.textAlign = '_textAlign';
 
-    if (text) {
+    if (text != null) {
       this.attr('text', text);
     }
   }
 
-  var parentPrototype = Group.prototype;
-  var parentPrototypeAddChild = parentPrototype.addChild;
-
-  var proto = Text.prototype = Object.create(parentPrototype);
+  var superObject = Group.prototype;
+  var proto = Text.prototype = Object.create(superObject);
 
   /**
    * Adds a TextSpan child at the end list of contained TextSpans.
@@ -192,7 +188,7 @@ define([
    */
   proto.addChild = function(child, index) {
     var isTextSpan =
-      tools.isArray(child) ?
+      isArray(child) ?
         child.every(function(child) {
           return child instanceof TextSpan;
         }) :
@@ -201,7 +197,7 @@ define([
       throw TypeError('child is not a TextSpan instance/an array of TextSpans');
     }
 
-    return parentPrototypeAddChild.apply(this, arguments);
+    return superObject.addChild.apply(this, arguments);
   };
 
   proto.type = 'Text';

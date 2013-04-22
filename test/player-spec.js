@@ -1,8 +1,9 @@
-require([
+define([
   'bonsai/bootstrapper/player',
-  'bonsai/uri',
-  './runner.js'
-], function (player, URI) {
+  'bonsai/event_emitter',
+  'bonsai/tools',
+  'bonsai/uri'
+], function (player, EventEmitter, tools, URI) {
   'use strict';
 
   var MockAssetControllerConstructor,
@@ -59,6 +60,14 @@ require([
       expect(player.defaultRunnerOptions).toBeInstanceOf(Object);
     });
 
+    it('exposes the EventEmiiter', function() {
+      expect(player.EventEmitter).toBe(EventEmitter);
+    });
+
+    it('exposes tools', function() {
+      expect(player.tools).toBe(tools);
+    });
+
     describe('.baseUrl()', function () {
       it('returns an instance of URI', function () {
         expect(player.baseUrl()).toBeInstanceOf(URI);
@@ -102,6 +111,20 @@ require([
         expect(player.runnerUrl).toBe(currentUrl);
         expect(player.RunnerContext).toBe(RunnerContext);
       });
+
+      it('sets the Renderer property of the player from the renderer option', function() {
+        var Renderer = function() {};
+        player.setup({renderer: Renderer});
+
+        expect(player.Renderer).toBe(Renderer);
+      });
+
+      it('does not set the Renderer when it is not passed as option', function() {
+        var currentRenderer = player.Renderer;
+        player.setup({});
+
+        expect(player.Renderer).toBe(currentRenderer);
+      });
     });
 
     // Helper function to test `createStage`, `run`, and `runCode`
@@ -111,11 +134,15 @@ require([
           expect(funcSetup(createMockNode())).toBeInstanceOf(player.RendererController);
         });
 
-        it('passes node, width, height, allowEventDefaults and fpsLog arguments to the renderer', function () {
-          var node = createMockNode(), width = 162, height = 100, options = {allowEventDefaults: true, fpsLog: true};
+        it('passes node, width, height, allowEventDefaults, objectsUnderPointer, and fpsLog arguments to the renderer', function () {
+          var node = createMockNode(), width = 162, height = 100, options = {allowEventDefaults: true, objectsUnderPointer: true, fpsLog: true};
           funcSetup(node, width, height, options);
 
-          expect(MockRendererConstructor).toHaveBeenCalledWith(node, width, height, options.allowEventDefaults, options.fpsLog);
+          expect(MockRendererConstructor).toHaveBeenCalledWith(node, width, height, {
+            allowEventDefaults: options.allowEventDefaults,
+            objectsUnderPointer: true,
+            fpsLog: options.fpsLog
+          });
         });
 
         it('passes an url and a document to the runner', function () {
@@ -140,6 +167,7 @@ require([
           expect(args[3]).toBeInstanceOf(Object /* these are the options */);
           expect(args[3]).toHaveProperties('baseUrl');
         });
+
 
         describe('defaultRunnerOptions', function() {
           var originalOptions;
@@ -205,6 +233,18 @@ require([
             expect(optionsPassedToController.url).toBe(String(player.baseUrl().resolveUri(url)));
           });
 
+          it('should convert a function passed as "code" option to a self invoking function expression', function() {
+            var func = function() {
+              some.arbitrary.code();
+              var located = here in this.func.tion;
+            }
+            funcSetup(createMockNode(), 50, 60, {code: func});
+            var optionsPassedToController = MockRendererControllerConstructor.mostRecentCall.args[3];
+
+            var code = optionsPassedToController.code;
+            expect(code).toBe('(' + func.toString() + '());');
+          });
+
           it('should resolve a passed array of urls against the base url of the player and forward it as an array of strings', function() {
             var urls = ['../some/./arbitrary.url', 'http://an/absolute.url'];
             funcSetup(createMockNode(), 50, 60, {urls: urls});
@@ -232,6 +272,21 @@ require([
 
         return player.run(node, options);
       })();
+
+
+      it('passes a node when given a DOM id to the renderer', function () {
+        var el = document.createElement('div'), node = 'node', width = 100, height = 100, options = { width: width, height: height };
+
+        // create fixture
+        el.setAttribute('id', node);
+        document.body.appendChild(el);
+
+        player.run(node, options);
+
+        expect(MockRendererConstructor).toHaveBeenCalledWith(el, width, height, {});
+        // cleanup
+        document.body.removeChild(el);
+      });
 
     });
 

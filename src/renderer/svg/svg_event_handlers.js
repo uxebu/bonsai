@@ -4,271 +4,281 @@
  * @requires module:renderer
  */
 define([
-  '../../tools'
-], function(tools) {
+  '../../tools',
+  '../event',
+  './check_intersection'
+], function(tools, event, checkIntersection) {
   'use strict';
 
-  var TOUCH_SUPPORT = typeof document == 'undefined' ? false : 'createTouch' in document;
+  var max = Math.max;
 
-  function cloneBasicEvent(e) {
-    return tools.mixin({}, e);
+  /** @const */
+  var ELEMENT_NODE = 1;
+  var TOUCH_SUPPORT = null;
+
+  var KeyboardEvent = event.KeyboardEvent, PointerEvent = event.PointerEvent;
+
+  /**
+   * Returns the bonsai id of a DOM node
+   *
+   * @param {Node} node A DOM node
+   * @return {number} The bonsai id of the dom node or -1
+   */
+  function getBonsaiIdOf(node) {
+    var id = node && node.nodeType === ELEMENT_NODE && node.getAttribute('data-bs-id');
+    return id ? +id : -1; // string '0' evaluates to true
+  }
+
+  /**
+   * Determines whether an event type is a keyboard event type.
+   *
+   * @param {string} type The event type
+   * @return {boolean}
+   */
+  function isKeyboardEventType(type) {
+    return type === 'keydown' || type === 'keypress' || type === 'keyup';
+  }
+
+  /**
+   * Determines whether an event type is a mouse event type.
+   *
+   * @param {string} type The event type
+   * @return {boolean}
+   */
+  function isMouseEventType(type) {
+    return type === 'click' || type === 'dblclick' ||
+      type === 'mousedown' || type === 'mousemove' || type === 'mouseout' ||
+      type === 'mouseover' || type === 'mouseup' || type === 'mousewheel';
+  }
+
+  /**
+   * Determines whether an event type is a touch event type.
+   *
+   * @param {string} type The event type
+   * @return {boolean}
+   */
+  function isTouchEventType(type) {
+    return type === 'touchstart' || type === 'touchend' ||
+      type === 'touchmove' || type === 'touchcancel';
+  }
+
+  /**
+   * Finds the first object that is a bonsai object out of the passed node and
+   * its ancestors.
+   *
+   * @param {Node} node The node to start the search with
+   * @return {Node}
+   */
+  function findBonsaiObject(node) {
+    while (node && (node.nodeType !== ELEMENT_NODE || !node.hasAttribute('data-bs-id'))) {
+      node = node.parentNode;
+    }
+    return node;
+  }
+
+  /**
+   * @param {EventEmitter} emitter The event emitter to emit the event on
+   * @param {PointerEvent} event The pointer event to dispatch
+   * @param {number} targetId The bonsai id of the event target
+   * @param {number} [relatedTargetId] The bonsai id of the related target, if any
+   * @param {Array} [objectsUnderPointerIds] An array of element ids under the mouse pointer
+   */
+  function emitMouseEvent(emitter, event, targetId, relatedTargetId, objectsUnderPointerIds) {
+    emitter.emit('userevent', event, targetId, relatedTargetId, objectsUnderPointerIds);
+    if (!TOUCH_SUPPORT) {
+      // If we're on a non-touch platform (e.g. regular desktop)
+      // then fire the mutli: event so we get cross-platform support:
+      emitter.emit('userevent', event.clone('multi:' + event.type), targetId, relatedTargetId, objectsUnderPointerIds);
+    }
+  }
+
+  /**
+   * @param {EventEmitter} emitter The event emitter to emit the event on
+   * @param {PointerEvent} event The pointer event to dispatch
+   * @param {number} targetId The bonsai id of the event target
+   * @param {boolean} isMultiTouch Whether the touch is part of a multitouch gesture
+   * @param {Array} [objectsUnderPointerIds] An array of element ids under the finger tip
+   */
+  function emitTouchEvent(emitter, event, targetId, isMultiTouch, objectsUnderPointerIds) {
+    var type = event.type;
+    event.type = 'multi:' + type;
+    emitter.emit('userevent', event, targetId, null, objectsUnderPointerIds);
+    if (!isMultiTouch) {
+      emitter.emit('userevent', event.clone(type), targetId, null, objectsUnderPointerIds);
+    }
+  }
+
+  function getTouchTargetId(domTouch, domEventTarget, targetId) {
+    return domTouch.target === domEventTarget ?
+      targetId : max(0, getBonsaiIdOf(findBonsaiObject(domTouch.target)));
   }
 
   // These are mixed-in into the svg-renderer's prototype.
 
   return {
-
-    handleSingleTouch: function(touchEvent, touchData, isMulti) {
-
-      // Handle a single touch from DomEvent.touches (touch-capable devices)
-
-      var event = this._getBasicEventData(touchEvent),
-          clientX = event.clientX,
-          clientY = event.clientY,
-          prefix = isMulti ? 'multi:' : '',
-          target = this._getTarget(touchEvent),
-          targetId = this._getIdOfTarget(target),
-          type = touchEvent.type,
-          trueTarget = document.elementFromPoint(touchEvent.pageX, touchEvent.pageY),
-          trueTargetId = trueTarget ? this._getIdOfTarget(trueTarget) : 0;
-
-      event.touchId = touchEvent.identifier;
-      event.touchIndex = touchEvent.index;
-
-      switch (type) {
-        case 'touchstart':
-          touchData.startX = clientX;
-          touchData.startY = clientY;
-          event = cloneBasicEvent(event);
-          event.type = prefix + 'pointerdown';
-          this.emit('userevent', event, targetId);
-          break;
-        case 'touchmove':
-          event.diffX = clientX - touchData.startX;
-          event.diffY = clientY - touchData.startY;
-          touchData.touchMoveHappened = true;
-          event = cloneBasicEvent(event);
-          event.type = prefix + 'drag';
-          this.emit('userevent', event, targetId);
-          event = cloneBasicEvent(event);
-          event.type = prefix + 'pointermove';
-          this.emit('userevent', event, trueTargetId);
-          break;
-        case 'touchend':
-          event = cloneBasicEvent(event);
-          event.type = prefix + 'pointerup';
-          this.emit('userevent', event, targetId);
-          if (target !== trueTarget) {
-            event = cloneBasicEvent(event);
-            this.emit('userevent', event, trueTargetId);
-          }
-          if (!touchData.touchMoveHappened) {
-            // If the touch hasn't moved then it is a click:
-            event = cloneBasicEvent(event);
-            event.type = 'click';
-            this.emit('userevent', event, targetId);
-          }
-      }
-    },
-
-    handleTouchEvent: function(domEvent) {
-
-      var allTouches = [].slice.call(domEvent.touches),
-          changedTouches = domEvent.changedTouches,
-          touchData = this.touchData || (this.touchData = {}),
-          type = domEvent.type,
-          identifier,
-          touch;
-
-      if (allTouches && allTouches.length) {
-        // Fire the non-multi event for the very first event in the touch-list
-        allTouches[0].type = type;
-        this.handleSingleTouch(
-          allTouches[0],
-          touchData[allTouches[0].identifier] || (touchData[allTouches[0].identifier] = {}),
-          false
-        );
-      } else {
-        if (type === 'touchend') {
-          // Final touchend (not part of `.changedTouches`) TODO: find out why
-          // Fire touchend->pointerup
-          this.handleSingleTouch(
-            domEvent,
-            {}
-          );
-          this.touchData = {};
-        }
-      }
-
-      if (changedTouches && changedTouches.length) {
-        // Go through new touch events and fire individually:
-        for (var i = 0, l = changedTouches.length; i < l; ++i) {
-          touch = changedTouches[i];
-          touch.type = type;
-          touch.index = allTouches.indexOf(touch);
-          // Handle each touch individually:
-          this.handleSingleTouch(
-            touch,
-            touchData[touch.identifier] || (touchData[touch.identifier] = {}),
-            true
-          );
-        }
-      }
-    },
-
     handleEvent: function(domEvent) {
-
-      var target = domEvent.target;
-
-      // only prevent default for SVG elements, not for embedded html
-      if (!this.allowEventDefaults && (target.ownerSVGElement || target.nodeName === 'svg')) {
-        // event killing is needed to prevent native scrolling etc. within bonsai movies
-        domEvent.preventDefault();
+      var domEventTarget = domEvent.target, domEventType = domEvent.type;
+      if (TOUCH_SUPPORT === null) {
+        TOUCH_SUPPORT = 'createTouch' in domEventTarget.ownerDocument;
       }
 
-      target = this._getTarget(domEvent);
-      var targetId = this._getIdOfTarget(target),
-          type = domEvent.type,
-          data = this;
+      var target = findBonsaiObject(domEventTarget);
+      var targetId = getBonsaiIdOf(target);
+      var isMouseEvent = isMouseEventType(domEventType);
+      var isTouchEvent = isTouchEventType(domEventType);
+      if (targetId < 0) { targetId = 0; }
 
-      if (target && target instanceof HTMLElement) {
-        // Get DOM element for which there is a corresponding bonsai object
-        // i.e. children added via e.g. innerHTML should not trigger events
-        // (only their parents should)
-        while (!target._isBSDOMElement) {
-          target = target.parentNode;
+      if (isMouseEvent || isTouchEvent) {
+        var stageOffset = this.getOffset();
+        var stageX = stageOffset.left, stageY = stageOffset.top;
+        var pointerEvent;
+        if (isMouseEvent) {
+          pointerEvent = PointerEvent
+            .fromDomMouseEvent(domEvent, stageX, stageY);
+          var relatedTarget = findBonsaiObject(domEvent.relatedTarget || domEvent.fromElement);
+          this.handleMouseEvent(pointerEvent, targetId, relatedTarget && getBonsaiIdOf(relatedTarget));
+        } else {
+          TOUCH_SUPPORT = true;
+
+          var domTouch, touchTargetId;
+          var changedTouches = domEvent.changedTouches;
+          var numTouches = changedTouches.length;
+
+          if (domEventType === 'touchstart') {
+            this._isMultiTouch =
+              this._isMultiTouch || numTouches > 1 || domEvent.touches.length > 1;
+          } else if (domEventType === 'touchmove') {
+            //if (this.consistentPointerMoveTargets) {
+              //TODO: get first element under pointer that does not have pointer-events: none set
+              //TODO: implement setting logic for this option
+            //}
+            this._hadTouchMove = true;
+            // only prevent default for SVG elements, not for embedded html
+            if (!this.allowEventDefaults) {
+              // event killing is needed to prevent native scrolling etc. within bonsai movies
+              domEvent.preventDefault();
+            }
+          } else if (domEventType === 'touchcancel') {
+            this._hadTouchCancel = true;
+          }
+
+          for (var i = 0; i < numTouches; i += 1) {
+            domTouch = changedTouches[i];
+            pointerEvent = PointerEvent.fromDomTouch(domTouch, domEvent, stageX, stageY);
+            touchTargetId = getTouchTargetId(domTouch, domEventTarget, targetId);
+            this.handleTouchEvent(pointerEvent, touchTargetId);
+          }
+
+          if (domEventType === 'touchend' && domEvent.touches.length === 0) { // last finger is raised
+            if (!(this._isMultiTouch || this._hadTouchMove || this._hadTouchCancel)) {
+              var domTimeStamp = domEvent.timeStamp;
+              var isDoubleClick = domTimeStamp - (this._lastClickFromTouch || 0) < 300;
+              var clickType = isDoubleClick ? 'dblclick' : 'click';
+              this._lastClickFromTouch =  isDoubleClick ? 0 : domTimeStamp;
+              emitMouseEvent(this, pointerEvent.clone(clickType), touchTargetId);
+              domEvent.preventDefault(); // prevent the default click
+            }
+            this._isMultiTouch = this._hadTouchCancel = false;
+          }
+        }
+      } else if (isKeyboardEventType(domEventType)) {
+//        var ownerDocument = domEventTarget.ownerDocument;
+
+//        if (!target || target._isBSDOMElement || ownerDocument.activeElement === ownerDocument.body) {} else {
+//          // There is another currently focused element (outside of the stage), exit:
+//          return;
+//        }
+
+        var keyboardEvent = KeyboardEvent.fromDomKeyboardEvent(domEvent);
+        this.emit('userevent', keyboardEvent, targetId);
+      }
+    },
+
+    handleMouseEvent: function(pointerEvent, targetId, relatedTargetId) {
+      var type = pointerEvent.type, x = pointerEvent.x, y = pointerEvent.y;
+      if (!type) { return; }
+
+      var objectUnderPointerIds;
+      if (this.objectsUnderPointer) {
+        objectUnderPointerIds = this.getElementIdsUnderPointer(x, y);
+      }
+
+      if (type === 'pointerdown') {
+        this._mouseDragId = targetId;
+        this._mouseDragStartX = x;
+        this._mouseDragStartY = y;
+      } else if (type === 'pointermove') {
+        pointerEvent.deltaX = x - this._mouseMoveLastX;
+        pointerEvent.deltaY = y - this._mouseMoveLastY;
+        var dragId = this._mouseDragId;
+        if (dragId === +dragId) { // emit drag events if the mouse is down.
+          var dragEvent = pointerEvent.clone('drag');
+          dragEvent.diffX = x - this._mouseDragStartX;
+          dragEvent.diffY = y - this._mouseDragStartY;
+          emitMouseEvent(this, dragEvent, dragId, null, objectUnderPointerIds);
+        }
+      } else if (type === 'pointerup') {
+        this._mouseDragId = this._mouseDragStartX = this._mouseDragStartY = undefined;
+      }
+      this._mouseMoveLastX = x;
+      this._mouseMoveLastY = y;
+      emitMouseEvent(this, pointerEvent, targetId, relatedTargetId, objectUnderPointerIds);
+    },
+
+    /**
+     *
+     * @param {PointerEvent} pointerEvent
+     * @param {number} targetId
+     */
+    handleTouchEvent: function(pointerEvent, targetId) {
+      var type = pointerEvent.type, touchId = pointerEvent.touchId;
+
+      if (!type) { return; }
+
+      var x = pointerEvent.x, y = pointerEvent.y;
+
+      var objectUnderPointerIds;
+      if (this.objectsUnderPointer) {
+        objectUnderPointerIds = this.getElementIdsUnderPointer(x, y);
+      }
+
+      var isMultiTouch = this._isMultiTouch;
+      var touchStates = this._touchStates || (this._touchStates = {});
+
+      if (type === 'pointerup') {
+        delete touchStates[touchId];
+      } else {
+        var touchData = touchStates[touchId] || (touchStates[touchId] = {});
+        if (type === 'pointerdown') {
+          touchData.dragStartX = x;
+          touchData.dragStartY = y;
+          touchData.dragId = targetId;
+        } else if (type === 'pointermove') {
+          pointerEvent.diffX = x - touchData.dragStartX;
+          pointerEvent.diffY = y - touchData.dragStartY;
+          pointerEvent.deltaX = x - touchData.lastX;
+          pointerEvent.deltaY = y - touchData.lastY;
+          emitTouchEvent(this, pointerEvent.clone('drag'), targetId, isMultiTouch, objectUnderPointerIds);
+        }
+        touchData.lastX = x;
+        touchData.lastY = y;
+      }
+      emitTouchEvent(this, pointerEvent, targetId, isMultiTouch, objectUnderPointerIds);
+    },
+
+    getElementIdsUnderPointer: function(x, y) {
+      var elements = checkIntersection(this.svg.root, x, y);
+      if (!elements) { return null; }
+      var ids = [], hasIds = false;
+      for (var i  = 0, element; (element = elements[i]); i += 1) {
+        var id = getBonsaiIdOf(element);
+        if (id > 0 && ids.indexOf(id) !== 1) {
+          hasIds = true;
+          ids.push(id);
         }
       }
 
-      targetId = targetId || 0;
-
-      var event = this._getBasicEventData(domEvent),
-          clientX = event.clientX,
-          clientY = event.clientY;
-
-      var last = data._lastEventPos || [clientX, clientY];
-      var start = data._startEventPos || [clientX, clientY];
-
-      if (/^touch/.test(domEvent.type)) {
-        this.handleTouchEvent(domEvent);
-        return;
-      }
-
-      switch (type) {
-
-        case 'dblclick':
-          type = 'doubleclick';
-          break;
-        case 'click':
-          break;
-
-        case 'mousewheel':
-          // TODO: Ensure support
-          event.delta = domEvent.wheelDelta;
-          break;
-
-        case 'touchend':
-        case 'mouseup':
-          targetId = data._dragId;
-          delete data._currentTouch;
-          delete data._dragId;
-          delete data._startEventPos;
-          delete data._lastEventPos;
-          type = 'pointerup';
-          break;
-
-        case 'touchstart':
-          if (data._currentTouch) {
-            // Don't allow other touches while once has yet to end.
-            return;
-          }
-          data._currentTouch = domEvent.touches[0].identifier;
-        case 'mousedown':
-          data._dragId = targetId;
-          data._startEventPos = [clientX, clientY];
-          type = 'pointerdown';
-          break;
-
-        case 'touchmove':
-          if (domEvent.touches[0].identifier !== data._currentTouch) {
-            return;
-          }
-        case 'mousemove':
-          // Regular mousemove event (not dragging)
-          (event = cloneBasicEvent(event)).type = 'pointermove';
-          this.emit('userevent', event, targetId);
-          // must call multi too (for cross-platform)
-          (event = cloneBasicEvent(event)).type = 'multi:pointermove';
-          this.emit('userevent', event, targetId);
-
-          targetId = data._dragId;
-          type = 'drag';
-          event.diffX = clientX - start[0];
-          event.diffY = clientY - start[1];
-          event.deltaX = clientX - last[0];
-          event.deltaY = clientY - last[1];
-          break;
-        case 'keypress':
-          type = 'key';
-        case 'keyup':
-        case 'keydown':
-          if (target && !target._isBSDOMElement && document.activeElement !== document.body) {
-            // There is another currently focused element (outside of the stage), exit:
-            return;
-          }
-          event.keyCode = domEvent.keyCode;
-          event.ctrlKey = domEvent.ctrlKey;
-          event.altKey = domEvent.altKey;
-          event.metaKey = domEvent.metaKey;
-          // Pass focused element's value to bonsai
-          event.inputValue = domEvent.target.value;
-          break;
-      }
-
-      data._lastEventPos = [clientX, clientY];
-      event.type = type;
-
-      this.emit('userevent', event, targetId);
-
-      if (!TOUCH_SUPPORT && /drag|pointerup|pointerdown|pointermove/.test(type)) {
-        // If we're on a non-touch platform (e.g. regular desktop)
-        // then fire the mutli: event so we get cross-platform support:
-        event = cloneBasicEvent(event);
-        event.type = 'multi:' + type;
-        this.emit('userevent', event, targetId);
-      }
-    },
-
-    _getTarget: function(e) {
-
-      var target = e.target;
-      while (target && this._getIdOfTarget(target) == null) {
-        target = target.parentNode;
-      }
-      return target;
-    },
-
-    _getIdOfTarget: function(target) {
-      var id = target && target.getAttribute && target.getAttribute('data-bs-id');
-      return id == null ? null : +id;
-    },
-
-    _getBasicEventData: function(e) {
-
-      var stageOffset = this.getOffset(),
-          clientX = e.clientX || (e.touches && e.touches.length && e.touches[0].clientX) || 0,
-          clientY = e.clientY || (e.touches && e.touches.length && e.touches[0].clientY) || 0,
-          stageX = clientX - stageOffset.left,
-          stageY = clientY - stageOffset.top;
-
-      return {
-        stageX: stageX,
-        stageY: stageY,
-        x: stageX,
-        y: stageY,
-        clientX: clientX,
-        clientY: clientY
-      };
+      return hasIds ? ids : null;
     }
   };
 });

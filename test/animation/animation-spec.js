@@ -1,14 +1,26 @@
-require([
+define([
   'bonsai/runner/animation/animation',
+  'bonsai/runner/animation/keyframe_animation',
   'bonsai/runner/display_object',
   'bonsai/runner/timeline',
   'bonsai/tools',
   'bonsai/runner/animation/easing',
   'bonsai/runner/path/path',
   'bonsai/color',
-  'bonsai/runner/matrix',
-  './runner.js'
-], function(Animation, DisplayObject, Timeline, tools, easing, Path, color, Matrix) {
+  'bonsai/runner/matrix'
+], function(Animation, KeyframeAnimation, DisplayObject, Timeline, tools, easing, Path, color, Matrix) {
+
+  function wrappedSubject(obj) {
+    return {
+      attr: function(a) {
+        if (a) {
+          for (var i in a) obj[i] = a[i];
+        } else {
+          return obj;
+        }
+      }
+    };
+  }
 
   var clock = tools.mixin({}, Timeline, {
     framerate: 30,
@@ -79,28 +91,20 @@ require([
       });
     });
 
-    describe('setSubject', function() {
-      it('should set the subject of the animation', function() {
-        // NOTE: This will probably change.
-        var anim = createAnimation();
-        var obj = new DisplayObject();
-        anim.setSubject(obj);
-        expect(anim.subjects[0].subject).toBe(obj);
-      });
-    });
-
     describe('play', function() {
       it('should emit play event', function() {
         var anim = createAnimation();
+        anim.addSubject(wrappedSubject({}));
         var listener = jasmine.createSpy('listener');
         anim.on('play', listener);
-        anim.play({}, 'prop');
+        anim.play();
 
         expect(listener).toHaveBeenCalled();
       });
       it('should play', function() {
         var anim = createAnimation();
-        anim.play({}, 'prop');
+        anim.addSubject(wrappedSubject({}));
+        anim.play();
         expect(anim.isPlaying).toBeTruthy();
       });
     });
@@ -108,16 +112,18 @@ require([
     describe('pause', function() {
       it('should emit pause event', function() {
         var anim = createAnimation();
+        anim.addSubject(wrappedSubject({}));
         var listener = jasmine.createSpy('listener');
         anim.on('pause', listener);
-        anim.play({}, 'prop');
+        anim.play();
         anim.pause();
 
         expect(listener).toHaveBeenCalled();
       });
       it('should stop', function() {
         var anim = createAnimation();
-        anim.play({}, 'prop');
+        anim.addSubject(wrappedSubject({}));
+        anim.play();
         anim.pause();
         expect(anim.isPlaying).toBeFalsy();
       });
@@ -126,22 +132,23 @@ require([
     describe('event order', function() {
       it('should emit beforebegin before play', function() {
         var anim = createAnimation();
+        anim.addSubject(wrappedSubject({}));
         var result = 0;
         anim.on('beforebegin', function(){ result += 1; });
         anim.on('play', function(){ result *= 2; } );
-        anim.play({}, 'prop');
+        anim.play();
         expect(result).toBe(2);
       });
     });
 
     describe('clone', function() {
-      it('should return animation instance', function() {
+      it('should return KeyframeAnimation instance', function() {
         var clone = createAnimation().clone();
-        expect(clone).toBeInstanceOf(Animation);
+        expect(clone).toBeInstanceOf(KeyframeAnimation);
       });
-      it('should copy properties to clone', function() {
-        var clone = createAnimation(1, {x:0}).clone();
-        expect(clone.properties.x).toBe(0);
+      it('should copy endValues to clone', function() {
+        var clone = createAnimation(1, ({x:0})).clone();
+        expect(clone.keyframes[1].x).toBe(0);
       });
       it('should copy options to clone', function() {
         var clone = createAnimation(100).clone();
@@ -154,15 +161,15 @@ require([
     });
 
     it('should transform one value to another over time', function() {
-      var subject = {foo:0};
+      var subject = wrappedSubject({foo:0});
       var anim = new createAnimation('50ms', {
         foo: 1000
       });
-      anim.setSubjects(subject, 'prop');
+      anim.addSubject(subject);
       anim.play();
       async(function(next) {
         anim.on('end', function() {
-          expect(subject.foo).toBe(1000);
+          expect(subject.attr().foo).toBe(1000);
           next();
         });
       });
@@ -170,44 +177,44 @@ require([
 
     it('should only register onEnd if it\'s a function', function() {
       var fn = function(){};
-      var animA = new createAnimation('50ms', {t:1}, { onEnd: fn });
-      var animB = new createAnimation('50ms', {t:1}, { onEnd: null });
+      var animA = new createAnimation('50ms', ({t:1}), { onEnd: fn });
+      var animB = new createAnimation('50ms', ({t:1}), { onEnd: null });
       expect(animA._events[':end'][0].listener).toBe(fn);
       expect(animB._events).toBe(undefined);
     });
 
     it('should transform one value to another over time after a specified delay', function() {
-      var subject = {foo:0};
+      var subject = wrappedSubject({foo:0});
       var anim = new createAnimation('50ms', {
         foo: 1000
       }, {
         delay: '60ms'
       });
       expect(anim.delay).toBe(2);
-      anim.setSubjects(subject, 'prop');
+      anim.addSubject(subject, 'prop');
       anim.play();
       async(function(next) {
         anim.on('end', function() {
-          expect(subject.foo).toBe(1000);
+          expect(subject.attr().foo).toBe(1000);
           next();
         });
       });
     });
 
     it('should animate multiple properties over time', function() {
-      var subject = {foo:0, bar:0, far:100};
+      var subject = wrappedSubject({foo:0, bar:0, far:100});
       var anim = createAnimation('50ms', {
         foo: 1000,
         bar: -777,
-        far: .053
+        far: 0.053
       });
-      anim.setSubjects(subject, 'prop');
+      anim.addSubject(subject, 'prop');
       anim.play();
       async(function(next) {
         anim.on('end', function() {
-          expect(subject.foo).toBe(1000);
-          expect(subject.bar).toBe(-777);
-          expect(subject.far).toBeCloseTo(.053);
+          expect(subject.attr().foo).toBe(1000);
+          expect(subject.attr().bar).toBe(-777);
+          expect(subject.attr().far).toBeCloseTo(0.053);
           next();
         });
       });
@@ -215,44 +222,44 @@ require([
 
     it('should animate multiple subjects at once', function() {
       var subjects = [
-        {x: 0, y: 0, id: 1},
-        {x: 0, y: 50, id: 2},
-        {x: 0, y: 100, id: 3}
+        wrappedSubject({x: 0, y: 0, id: 1}),
+        wrappedSubject({x: 0, y: 50, id: 2}),
+        wrappedSubject({x: 0, y: 100, id: 3})
       ];
       var anim = createAnimation('50ms', {
         x: 500
       });
-      anim.setSubjects(subjects, 'prop');
+      anim.addSubjects(subjects, 'prop');
       anim.play();
       async(function(next) {
         anim.on('end', function() {
-          expect(subjects[0]).toEqual({x: 500, y: 0, id: 1});
-          expect(subjects[1]).toEqual({x: 500, y: 50, id: 2});
-          expect(subjects[2]).toEqual({x: 500, y: 100, id: 3});
+          expect(subjects[0].attr()).toEqual({x: 500, y: 0, id: 1});
+          expect(subjects[1].attr()).toEqual({x: 500, y: 50, id: 2});
+          expect(subjects[2].attr()).toEqual({x: 500, y: 100, id: 3});
           next();
         });
       });
     });
 
     it('Should be able to animate a matrix', function() {
-      var subject = {matrix:new Matrix(1,0,0,1,0,0)};
+      var subject = wrappedSubject({matrix:new Matrix(1,0,0,1,0,0)});
       var anim = new createAnimation('50ms', {
         matrix: new Matrix(2,1,-1,1,150,200)
       });
-      anim.setSubjects(subject, 'prop');
+      anim.addSubjects(subject, 'prop');
       anim.play();
       async(function(next) {
         anim.on('end', function() {
-          expect(subject.matrix.a).toBe(2);
-          expect(subject.matrix.b).toBe(1);
-          expect(subject.matrix.c).toBe(-1);
-          expect(subject.matrix.d).toBe(1);
-          expect(subject.matrix.tx).toBe(150);
-          expect(subject.matrix.ty).toBe(200);
+          expect(subject.attr().matrix.a).toBe(2);
+          expect(subject.attr().matrix.b).toBe(1);
+          expect(subject.attr().matrix.c).toBe(-1);
+          expect(subject.attr().matrix.d).toBe(1);
+          expect(subject.attr().matrix.tx).toBe(150);
+          expect(subject.attr().matrix.ty).toBe(200);
           next();
         });
       });
-    })
+    });
   });
 
   describe('Path - morphing', function() {
@@ -261,18 +268,18 @@ require([
       return segments.map(function(seg){
         return [].slice.call(seg).map(function(arg){
           return isNaN(arg) ? arg : arg.toFixed(5);
-        })
+        });
       });
     }
 
     describe('morphTo', function() {
 
-      var source = new Path().moveTo(01, 01).lineTo(100, 50).arcTo(10, 10, 0, 0, 0, 20, 20),
+      var source = new Path().moveTo(1, 1).lineTo(100, 50).arcTo(10, 10, 0, 0, 0, 20, 20),
           sourceClone = source.clone(),
           target = new Path().moveTo(20, 20).lineTo(200, 11).arcTo(22, 33, 0, 0, 0, 30, 30);
 
-      source.attr({strokeColor: 'red', opacity: .5});
-      target.attr({strokeColor: 'blue', opacity: .5});
+      source.attr({strokeColor: 'red', opacity: 0.5});
+      target.attr({strokeColor: 'blue', opacity: 0.5});
 
       it('Should morph a source to the target segments', function() {
 
@@ -290,7 +297,7 @@ require([
                 sensibleCopyOfSegments(target._segments)
               );
               expect(+source.attr('strokeColor')).toBe(+color('blue'));
-              expect(source.attr('opacity')).toBe(.5);
+              expect(source.attr('opacity')).toBe(0.5);
               next();
             }
           });

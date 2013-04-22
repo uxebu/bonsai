@@ -1,3 +1,7 @@
+/**
+ * text fonts
+ */
+
 new Text('Fontilicious').addTo(stage).attr({
   fontFamily: new FontFamily('FLORLRG', [
     'assets/FLORLRG_FONT/FLORLRG_-webfont.woff',

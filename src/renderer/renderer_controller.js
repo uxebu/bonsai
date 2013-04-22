@@ -11,6 +11,22 @@ define([
 function(tools, EventEmitter, URI) {
   'use strict';
 
+  function onContextLoad(rendererController) {
+    var pendingMessages = rendererController._pendingMessages;
+
+    // set to null first, so that further calls to sendMessage are not queued
+    rendererController._pendingMessages = null;
+
+    // send all queued messages again
+    var sendMessage = rendererController.sendMessage;
+    tools.forEach(pendingMessages, function(messageArguments) {
+      sendMessage.apply(rendererController, messageArguments);
+    });
+
+    // emit load event
+    rendererController.emit('load');
+  }
+
   var hitch = tools.hitch;
 
   /**
@@ -31,9 +47,15 @@ function(tools, EventEmitter, URI) {
     this._movieOptions = this._cleanOptions(options);
     this.baseUrl = URI.parse(options.baseUrl);
 
+    /*
+      All user messages sent via `sendMessage()` are queued until the runner has
+      loaded completely. This ensures that a listener can be registered in time.
+     */
+    this._pendingMessages = [];
+
     runnerContext.on('message', this, this.handleEvent);
 
-    // Bind to assetController, tunnel assetLoaded event through to runner:
+    // Bind to assetController, tunnel assetLoaded event through to RunnerContext:
     assetController.on('assetLoadSuccess', this, function(data) {
       this.post('assetLoadSuccess', data);
     });
@@ -41,15 +63,17 @@ function(tools, EventEmitter, URI) {
       this.post('assetLoadError', data);
     });
 
-    // Bind to renderer, tunnel user events through to runner:
-    this.renderer.on('userevent', this, function(event, targetId) {
+    // Bind to renderer, tunnel user events through to RunnerContext:
+    this.renderer.on('userevent', this, function(event, targetId, relatedTargetId, underPointerIds) {
       this.post('userevent', {
         event: event,
-        targetId: targetId
+        targetId: targetId,
+        relatedTargetId: relatedTargetId,
+        objectsUnderPointerIds: underPointerIds
       });
     });
 
-    this.renderer.on('canRender', tools.hitch(this, this.postAsync, 'canRender'));
+    this.renderer.on('canRender', hitch(this, this.postAsync, 'canRender'));
 
     runnerContext.init(options);
 
@@ -79,7 +103,7 @@ function(tools, EventEmitter, URI) {
               if (options.code) {
                 runnerContext.run(options.code);
               }
-              rendererController.emit('load');
+              onContextLoad(rendererController);
             });
           } else {
             if (options.code) {
@@ -92,22 +116,23 @@ function(tools, EventEmitter, URI) {
           if (options.code) {
             runnerContext.run(options.code);
           }
-          rendererController.emit('load');
+          onContextLoad(rendererController);
         });
       } else if (options.code) {
         runnerContext.run(options.code);
+        onContextLoad(rendererController);
       }
 
       function loadAll(urls, cb) {
         var nUrls = urls.length,
             nLoaded = 0;
-        tools.forEach(urls, function(url) {
-          runnerContext.load(rendererController.baseUrl.resolveUri(url).toString());
-        });
         runnerContext.on('scriptLoaded', function(url) {
           if (++nLoaded === nUrls) {
             cb();
           }
+        });
+        tools.forEach(urls, function(url) {
+          runnerContext.load(rendererController.baseUrl.resolveUri(url).toString());
         });
       }
     },
@@ -118,9 +143,9 @@ function(tools, EventEmitter, URI) {
     },
 
     /**
-     * Creates a clean set of options for the runner.
+     * Creates a clean set of options for the RunnerContext.
      *
-     * @param {Object} options Options for the runner.
+     * @param {Object} options Options for the RunnerContext.
      * @param {boolean} [options.pluginDebug] Whether to debug plugins.
      * @param {string} [options.pluginUrl] URL to lookup plugins.
      * @param {Array} [options.plugins] Array of plugins to load.
@@ -138,10 +163,10 @@ function(tools, EventEmitter, URI) {
 
 
     /**
-     * Terminates worker and renderer.
+     * Terminates RunnerContext and renderer.
      *
      * Use this before deleting references to the instance. Otherwise the
-     * worker will not be terminated and the rendering is not removed.
+     * RunnerContext will not be terminated and the rendering is not removed.
      */
     destroy: function() {
       this.renderer.destroy();
@@ -157,7 +182,7 @@ function(tools, EventEmitter, URI) {
      * @param items
      */
     debug: function (items) {
-      console.log.apply(console, ['WORKER DEBUG:'].concat(items));
+      console.log.apply(console, ['RUNNER DEBUG:'].concat(items));
     },
 
     /**
@@ -170,7 +195,7 @@ function(tools, EventEmitter, URI) {
     },
 
     /**
-     * Event handling method. Used to communicate with the worker.
+     * Event handling method. Used to communicate with the RunnerContext.
      *
      * @private
      * @param {MessageEvent} The message event to handle.
@@ -201,7 +226,11 @@ function(tools, EventEmitter, URI) {
           this.assetController.destroy(messageData.id);
           break;
         case 'message':
-          this.emit('message', messageData);
+          if ('category' in message) {
+            this.emit('message:' + message.category, messageData);
+          } else {
+            this.emit('message', messageData);
+          }
           break;
         case 'isReady':
           this.isRunnerListening = true;
@@ -239,10 +268,10 @@ function(tools, EventEmitter, URI) {
     },
 
     /**
-     * Posts a command to the runner.
+     * Posts a command to the RunnerContext.
      *
      * @param {String} command A command name
-     * @param {mixed} [data] Data to post alongside the command.
+     * @param {*} [data] Data to post alongside the command.
      * @returns {this}
      */
     post: function(command, data) {
@@ -252,7 +281,7 @@ function(tools, EventEmitter, URI) {
     },
 
     /**
-     * Like #post: Posts a command to the runner. Guaranteed to be asynchronous.
+     * Like #post: Posts a command to the RunnerContext. Guaranteed to be asynchronous.
      *
      * @param {String} command A command name
      * @param {mixed} [data] Data to post alongside the command.
@@ -264,13 +293,13 @@ function(tools, EventEmitter, URI) {
     },
 
     /**
-     * Setups sender and sends env data to the worker thread
+     * Setups sender and sends env data to the RunnerContext
      */
     _sendEnvData: function() {
 
       if (!this._isEnvSenderSetup) {
         if (typeof window !== 'undefined') {
-          var listener = tools.hitch(this, this._sendEnvData);
+          var listener = hitch(this, this._sendEnvData);
           window.addEventListener('resize', listener, false);
           window.addEventListener('scroll', listener, false);
         }
@@ -298,12 +327,36 @@ function(tools, EventEmitter, URI) {
     },
 
     /**
-     * Sends a message to the runner / stage
+     * Sends a message to the RunnerContext / stage
+     *
+     * @param [category=null] The message category
      * @param messageData
      * @returns {this} The instance
      */
-    sendMessage: function(messageData) {
-      return this.post('message', messageData);
+    sendMessage: function(category, messageData) {
+      var pendingMessages = this._pendingMessages;
+
+      /*
+        Before the runner context has loaded and is ready, pendingMessage is an
+        array. Afterwards, pendingMessage is set to null and the test will fail.
+      */
+      if (pendingMessages) {
+        // the context is not ready yet, queue all messages;
+        // pendingMessages is set to null as soon as the context can receive
+        pendingMessages.push(arguments);
+        return this;
+      }
+
+      if (arguments.length < 2) {
+        this.post('message', category);
+      } else {
+        this.runnerContext.notifyRunner({
+          command: 'message',
+          category: category,
+          data: messageData
+        });
+      }
+      return this;
     },
 
     /**

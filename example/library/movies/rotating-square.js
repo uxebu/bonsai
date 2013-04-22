@@ -1,3 +1,7 @@
+/**
+ * rotating square
+ */
+
 var rect = new Rect(-50, -50, 100, 100).attr({
   fillColor: 'red',
   x: 200,
@@ -12,7 +16,7 @@ rect.animate('5s', {
 
 
 /*stage.addChild(
-  bonsai.Path.rect(200, 200, 100, 100).
+ new Rect(200, 200, 100, 100).
     attr({fillColor:'red'}).
     animate('5s', {rotation: 10 * Math.PI * 2}, {easing: 'cubicIn', repeat: Infinity})
 );*/

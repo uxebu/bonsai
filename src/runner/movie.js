@@ -3,8 +3,10 @@ define([
   './display_list',
   './timeline',
   '../tools'
-], function(AssetDisplayObject, DisplayList, Timeline, tools) {
+], function(AssetDisplayObject, displayList, Timeline, tools) {
   'use strict';
+
+  var DisplayList = displayList.DisplayList;
 
   /**
    * Constructs a Movie instance
@@ -19,16 +21,27 @@ define([
    *
    * @extends AssetDisplayObject
    * @mixes Timeline
-   * @mixes DisplayList
+   * @mixes displayList.timelineMethods
    */
-  function Movie(root, url, callback) {
+  function Movie(root, displayList, url, assetUrl, callback) {
+
+    if (arguments.length === 4 && typeof assetUrl === 'function') {
+      callback = assetUrl;
+      assetUrl = null;
+    }
+
     AssetDisplayObject.call(this, null, url, callback);
 
+    if (!displayList) {
+      displayList = new DisplayList();
+    }
+    displayList.owner = this;
+    this.displayList = displayList;
+
     this.root = root;
-    this._children = [];
     var me = this;
     if (url) {
-      root.loadSubMovie(url, function(err) {
+      root.loadSubMovie(url, assetUrl, function(err) {
         // We trigger the event asynchronously so as to ensure that any events
         // bound after instantiation are still triggered:
         if (err) {
@@ -40,7 +53,8 @@ define([
     }
   }
 
-  var proto = Movie.prototype = tools.mixin(Object.create(AssetDisplayObject.prototype), Timeline, DisplayList);
+  var proto = Movie.prototype =
+    tools.mixin(Object.create(AssetDisplayObject.prototype), Timeline, displayList.timelineMethods);
 
   proto.loadSubMovie = function() {
     return this.root.loadSubMovie.apply(this.root, arguments);

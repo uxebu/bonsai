@@ -1,9 +1,3 @@
-/**
- * This module contains the FontFamily class.
- *
- * @exports Font
- * @requires module:tools
- */
 define([
   '../tools',
   '../asset/asset_request',
@@ -15,6 +9,8 @@ define([
 
   /**
    * Creates a new Font (and initiates loading of it)
+   * @constructor
+   * @name FontFamily
    * @param {AssetLoader} The asset loader to use
    * @param {String} fontId The ID/name of the font
    * @param {String|Object|Array} resources A single or list of resources, in any
@@ -40,6 +36,7 @@ define([
 
   /**
    * Notify is called by the AssetLoader (this._loader)
+   * @private
    */
   proto.notify = function(type, data) {
 

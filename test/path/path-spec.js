@@ -1,10 +1,11 @@
-require([
+define([
   'bonsai/runner/path/path',
   'bonsai/runner/path/rect',
+  'bonsai/runner/path/circle',
   'bonsai/runner/gradient',
   'bonsai/runner/bitmap',
-  './runner.js'
-], function(Path, Rect, gradient, Bitmap) {
+  'bonsai/runner/matrix'
+], function(Path, Rect, Circle, gradient, Bitmap, Matrix) {
 
   var precision = new Number(12);
   precision.PRECISION = +precision;
@@ -322,6 +323,34 @@ require([
         expect(s.attr('strokeColor')).toBe(0xff0000ff);
       });
 
+      describe('Sets & Gets strokeDash', function(){
+        it('returns null be default', function(){
+          expect(new Path().attr('strokeDash')).toBe(null);
+        });
+
+        it('should be settable/gettable', function(){
+          var s = new Path().attr('strokeDash', [5, 5, 3, 5]);
+          expect(s.attr('strokeDash')).toEqual([5, 5, 3, 5]);
+        });
+
+        it('should return null if given a non-array', function(){
+          var s = new Path().attr('strokeDash', '');
+          expect(s.attr('strokeDash')).toEqual(null);
+        });
+      });
+
+      describe('Sets & Gets strokeDashOffset', function(){
+        it('returns 0 be default', function(){
+          expect(new Path().attr('strokeDashOffset')).toBe(0);
+        });
+
+        it('should be settable/gettable', function(){
+          var s = new Path().attr('strokeDashOffset', 5);
+          expect(s.attr('strokeDashOffset')).toEqual(5);
+        });
+
+      });
+
       it('Sets & Gets opacity', function(){
         var s = new Path();
         expect(s.attr('opacity')).toBe(1);
@@ -459,35 +488,94 @@ require([
 
     });
 
-    describe('#getComputed()', function() {
-      describe('uses all control points to determine the extrema', function() {
+    describe('#getBoundingBox()', function() {
+      describe('uses all control points to determine the extrema in local coord system', function() {
         var left = 20;
         var top = 30;
         var width = 40;
         var height = 50;
         var expectedRight = left + width;
         var expectedBottom = top + height;
-        var shape = new Rect(left, top, width, height);
 
-        it('computes the "top" value', function() {
-          expect(shape.getComputed('top')).toBe(top);
-        });
-        it('computes the "right" value', function() {
-          expect(shape.getComputed('right')).toBe(expectedRight);
-        });
-        it('computes the "bottom" value', function() {
-          expect(shape.getComputed('bottom')).toBe(expectedBottom);
-        });
-        it('computes the "left" value', function() {
-          expect(shape.getComputed('left')).toBe(left);
-        });
-        it('computes the "width" value', function() {
-          expect(shape.getComputed('width')).toBe(width);
-        });
-        it('computes the "height" value', function() {
-          expect(shape.getComputed('height')).toBe(height);
+        // Create rectangle offset by {left,top} in its own coordinate space:
+        var shape = new Path()
+          .moveTo(left, top)
+          .lineTo(expectedRight, top)
+          .lineTo(expectedRight, expectedBottom)
+          .lineTo(left, expectedBottom);
+
+        it('Computed the correct bbox', function() {
+          expect(shape.getBoundingBox()).toEqual({
+            top: top,
+            left: left,
+            width: width,
+            height: height,
+            right: expectedRight,
+            bottom: expectedBottom
+          });
         });
 
+      });
+      describe('uses all control points to determine the extrema in outer coord system', function() {
+        var left = 20;
+        var top = 30;
+        var width = 40;
+        var height = 50;
+        var expectedRight = left + width;
+        var expectedBottom = top + height;
+        var x = 100;
+        var y = 200;
+
+        // Create rectangle offset by {left,top} in its own coordinate space:
+        var shape = new Path()
+          .moveTo(left, top)
+          .lineTo(expectedRight, top)
+          .lineTo(expectedRight, expectedBottom)
+          .lineTo(left, expectedBottom)
+          .attr({
+            x: 100,
+            y: 200
+          });
+
+        it('Computed the correct bbox', function() {
+          expect(shape.getBoundingBox( shape.attr('matrix') )).toEqual({
+            top: top + y,
+            left: left + x,
+            width: width,
+            height: height,
+            right: expectedRight + x,
+            bottom: expectedBottom + y
+          });
+        });
+
+      });
+      describe('Can calculate extrema of a circle correctly', function() {
+        var shape = new Circle(40, 50, 45);
+        expect(shape.getBoundingBox( shape.attr('matrix') )).toEqual({
+          top: 5,
+          left: -5,
+          width: 90,
+          height: 90,
+          bottom: 95,
+          right: 85
+        });
+      });
+      describe('Can calculate extrema of complex curves', function() {
+        var path = new Path()
+          .moveTo(100, 40)
+          .curveTo(700, 200, 200, 700, 300, 322)
+          .lineTo(500, 560)
+          .curveTo(700, 200, 200, 700, 500, 212)
+          .lineTo(200, 600);
+        // Verified visually
+        expect(path.getBoundingBox()).toEqual({
+          top: 40,
+          left: 100,
+          width: 448.7280710464647,
+          height: 560,
+          bottom: 600,
+          right: 548.7280710464647
+        });
       });
     });
 

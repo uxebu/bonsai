@@ -16,6 +16,15 @@ requirejs.requirejs([
     this.baseUrl = baseUrl;
     this.messageChannel = null;
     this.vmContext = null;
+    this.timeouts = [];
+    this.intervals = [];
+
+    this.timeouts.remove = this.intervals.remove = function(id) {
+      var i = this.indexOf(id);
+      if (i !== -1) {
+        this.splice(i, 1);
+      }
+    };
   }
 
   NodeContext.prototype = tools.mixin({
@@ -31,6 +40,10 @@ requirejs.requirejs([
 
       this.removeAllListeners();
 
+      this.timeouts.forEach(clearTimeout);
+      this.intervals.forEach(clearInterval);
+      this.timeouts = this.intervals = null;
+
       delete this.vmContext;
       delete this.vm;
       delete this.scriptLoader;
@@ -40,8 +53,33 @@ requirejs.requirejs([
 
       var messageChannel = this.messageChannel =
         new this.MessageChannel(tools.hitch(this, this.notify), function() {});
+      var self = this;
 
-      var vmContext = this.vmContext = this.vm.createContext();
+      var vmContext = this.vmContext = this.vm.createContext({
+        clearInterval: function(id) {
+          self.intervals.remove(id);
+          return clearInterval(id);
+        },
+        clearTimeout: function(id) {
+          self.timeouts.remove(id);
+          return clearTimeout(id);
+        },
+        setInterval: function() {
+          var id = setInterval.apply(null, arguments);
+          self.intervals.push(id);
+          return id;
+        },
+        setTimeout: function() {
+          var callback = arguments[0];
+          arguments[0] = function() {
+            self.timeouts.remove(id);
+            return callback.apply(this, arguments);
+          }
+          var id = setTimeout.apply(null, arguments);
+          self.timeouts.push(id);
+          return id;
+        }
+      });
 
       var scriptLoader = this.scriptLoader = makeScriptLoader(
         this._importScript.bind(null, this.vm, vmContext)
@@ -55,11 +93,19 @@ requirejs.requirejs([
     initStage: function(stage) {
       var context = this;
       var env = stage.env;
-      stage.loadSubMovie = function(movieUrl, callback, movieInstance) {
+      stage.loadSubMovie = function(movieUrl, assetUrl, callback, movieInstance) {
+
+        if (arguments.length < 4) {
+          movieInstance = callback;
+          callback = assetUrl;
+          assetUrl = null;
+        }
+
         movieUrl = this.assetBaseUrl.resolveUri(movieUrl);
+        assetUrl = assetUrl ? movieUrl.resolveUri(assetUrl) : movieUrl;
 
         var subMovie = movieInstance || new env.Movie();
-        var subEnvironment = stage.getSubMovieEnvironment(subMovie, movieUrl);
+        var subEnvironment = stage.getSubMovieEnvironment(subMovie, movieUrl, assetUrl);
         var subEnvExports = subEnvironment.exports;
         var functionArgNames = [];
         var functionArgValues = [];
@@ -110,7 +156,6 @@ requirejs.requirejs([
       context.require = requirejs.createForVmContext(context);
 
       context.console = console;
-
       return stage;
     },
 
@@ -126,7 +171,6 @@ requirejs.requirejs([
     notifyRunner: function(message) {
       if (message.command == 'exposePluginExports') {
         tools.mixin(this.vmContext, this.vmContext.exports);
-        tools.mixin(this.vmContext.bonsai, this.vmContext.exports);
       }
       this.messageChannel.notify(message);
     },

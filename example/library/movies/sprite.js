@@ -1,4 +1,8 @@
-new bonsai.Sprite(['assets/redpanda.jpg'], function(err){
+/**
+ * sprite
+ */
+
+new Sprite(['assets/redpanda.jpg'], function(err){
   if (err) return;
   this.attr({
     y: -256,

@@ -1,3 +1,7 @@
+/**
+ * ui debugger
+ */
+
 stage.root.setBackgroundColor('rgba(46,92,135,1)');
 
 var lines = [];
@@ -12,6 +16,6 @@ new Path(lines.join()).attr({
 
 // ---- movie ----
 
-Path.rect(100,100,100,100)
+new Rect(100,100,100,100)
   .addTo(stage)
   .attr({fillColor:"red"});
