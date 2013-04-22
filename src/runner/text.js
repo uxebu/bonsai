@@ -13,8 +13,6 @@ define([
       parseColor = color.parse,
       isArray = tools.isArray;
 
-  var textAlignValues = ['left', 'center', 'right'];
-
   // Getters and setters stolen from shape.js
 
   function getTextFillColor() {
@@ -80,13 +78,12 @@ define([
     return text.join('');
   }
 
-  function getTextAlign() {
-    return textAlignValues[this._textAlign];
+  function getTextAnchor() {
+    return this._textAnchor;
   }
-  function setTextAlign(textAlign) {
-    var index = textAlignValues.indexOf(textAlign);
-    if (index !== -1) {
-      this._textAlign = index;
+  function setTextAnchor(textAnchor) {
+    if (/^(left|center|right)$/.test(textAnchor)) {
+      this._textAnchor = textAnchor;
     }
   }
 
@@ -130,6 +127,8 @@ define([
       fontWeight: data('normal', true, true),
       _cap: data('butt', true),
       cap: accessor(getCap, setCap, true),
+      _textAnchor: data('left', true),
+      textAnchor: accessor(getTextAnchor, setTextAnchor, true),
       _textFillColor: data(0x000000ff, true), // transparent by default
       textFillColor: accessor(getTextFillColor, setTextFillColor, true),
       _textFillGradient: data(null, true),
@@ -164,7 +163,7 @@ define([
     rendererAttributes.miterLimit = '_miterLimit';
     rendererAttributes.selectable = 'selectable';
     rendererAttributes.textOrigin = 'textOrigin';
-    rendererAttributes.textAlign = '_textAlign';
+    rendererAttributes.textAnchor = '_textAnchor';
 
     if (text != null) {
       this.attr('text', text);

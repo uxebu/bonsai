@@ -122,15 +122,18 @@ define([
 
     });
 
-    describe('provides a property to change `textAlign`', function() {
+    describe('provides a property to change `textAnchor`', function() {
       it('is set to `left` by default', function() {
-        expect(new Text('').attr('textAlign')).toBe('left');
+        expect(new Text('').attr('textAnchor')).toBe('left');
       });
       it('returns `center` when set to `center`.', function() {
-        expect(new Text('').attr('textAlign', 'center').attr('textAlign')).toBe('center');
+        expect(new Text('').attr('textAnchor', 'center').attr('textAnchor')).toBe('center');
       });
       it('returns `right` when set to `right`', function() {
-        expect(new Text('').attr('textAlign', 'right').attr('textAlign')).toBe('right');
+        expect(new Text('').attr('textAnchor', 'right').attr('textAnchor')).toBe('right');
+      });
+      it('ignores unkown values', function() {
+        expect(new Text('').attr('textAnchor', 4).attr('textAnchor')).toBe('left');
       });
     });
 
