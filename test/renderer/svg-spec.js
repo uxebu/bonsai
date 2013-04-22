@@ -172,6 +172,19 @@ define(['bonsai/renderer/svg/svg'], function(SvgRenderer) {
         createSvgRenderer().drawText(textElement, { attributes: { textOrigin: 'bottom' } });
         expect(textElement.style.dominantBaseline).toBe('auto');
       });
+
+      it('sets text-anchor=start when attr.textAnchor=left', function() {
+        createSvgRenderer().drawText(textElement, { attributes: { textAnchor: 'left' } });
+        expect(textElement.style.textAnchor).toBe('start');
+      });
+      it('sets text-anchor=middle when attr.textAnchor=center', function() {
+        createSvgRenderer().drawText(textElement, { attributes: { textAnchor: 'center' } });
+        expect(textElement.style.textAnchor).toBe('middle');
+      });
+      it('sets text-anchor=end when attr.textAnchor=right', function() {
+        createSvgRenderer().drawText(textElement, { attributes: { textAnchor: 'right' } });
+        expect(textElement.style.textAnchor).toBe('end');
+      });
     });
 
     describe('Frame logging', function() {

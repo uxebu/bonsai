@@ -69,7 +69,6 @@ define([
     fontSize: ['font-size'],
     fontWeight: ['font-weight'],
     fontStyle: ['font-style'],
-    textAnchor: ['text-anchor', 'start'],
     text: ['text'],
     cursor: ['cursor', 'inherit'],
     fillRule: ['fill-rule', 'inherit']
@@ -91,7 +90,11 @@ define([
     'touchstart'
   ];
 
-  var textAlignValues = ['start', 'middle', 'end'];
+  var textAnchorMap = {
+    left: 'start',
+    center: 'middle',
+    right: 'end'
+  };
 
   var textOriginMap = {
     top: 'hanging',
@@ -179,13 +182,6 @@ define([
               el.setAttribute('font-family', value);
             } else if (value === null) {
               el.removeAttribute('font-family');
-            }
-            break;
-          case 'textAlign':
-            value = textAlignValues[value];
-            // set what matches with `textAlignValues` or ignore it.
-            if (typeof value !== 'undefined') {
-              el.style.textAnchor = value;
             }
             break;
           case 'strokeWidth':
@@ -660,6 +656,7 @@ define([
     var attributes = message.attributes;
     var style = text.style;
     var textOrigin = attributes.textOrigin;
+    var textAnchor = attributes.textAnchor;
 
     if (attributes.selectable !== undefined) {
       if (attributes.selectable !== false) {
@@ -669,7 +666,9 @@ define([
       }
     }
 
-    setStyle(style, 'textAnchor', 'start');
+    if (textAnchor != null) {
+      setStyle(style, 'textAnchor', textAnchorMap[textAnchor]);
+    }
 
     if (textOrigin != null) {
       setStyle(style, 'alignmentBaseline', textOriginMap[textOrigin]);
