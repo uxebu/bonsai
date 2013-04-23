@@ -90,7 +90,7 @@ define([
     'touchstart'
   ];
 
-  var textAnchorMap = {
+  var textAlignMap = {
     left: 'start',
     center: 'middle',
     right: 'end'
@@ -656,7 +656,7 @@ define([
     var attributes = message.attributes;
     var style = text.style;
     var textOrigin = attributes.textOrigin;
-    var textAnchor = attributes.textAnchor;
+    var textAlign = attributes.textAlign;
 
     if (attributes.selectable !== undefined) {
       if (attributes.selectable !== false) {
@@ -666,8 +666,8 @@ define([
       }
     }
 
-    if (textAnchor != null) {
-      setStyle(style, 'textAnchor', textAnchorMap[textAnchor]);
+    if (textAlign != null) {
+      setStyle(style, 'textAnchor', textAlignMap[textAlign]);
     }
 
     if (textOrigin != null) {

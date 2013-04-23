@@ -78,12 +78,12 @@ define([
     return text.join('');
   }
 
-  function getTextAnchor() {
-    return this._textAnchor;
+  function getTextAlign() {
+    return this._textAlign;
   }
-  function setTextAnchor(textAnchor) {
-    if (/^(left|center|right)$/.test(textAnchor)) {
-      this._textAnchor = textAnchor;
+  function setTextAlign(textAlign) {
+    if (/^(left|center|right)$/.test(textAlign)) {
+      this._textAlign = textAlign;
     }
   }
 
@@ -127,8 +127,8 @@ define([
       fontWeight: data('normal', true, true),
       _cap: data('butt', true),
       cap: accessor(getCap, setCap, true),
-      _textAnchor: data('left', true),
-      textAnchor: accessor(getTextAnchor, setTextAnchor, true),
+      _textAlign: data('left', true),
+      textAlign: accessor(getTextAlign, setTextAlign, true),
       _textFillColor: data(0x000000ff, true), // transparent by default
       textFillColor: accessor(getTextFillColor, setTextFillColor, true),
       _textFillGradient: data(null, true),
@@ -163,7 +163,7 @@ define([
     rendererAttributes.miterLimit = '_miterLimit';
     rendererAttributes.selectable = 'selectable';
     rendererAttributes.textOrigin = 'textOrigin';
-    rendererAttributes.textAnchor = '_textAnchor';
+    rendererAttributes.textAlign = '_textAlign';
 
     if (text != null) {
       this.attr('text', text);

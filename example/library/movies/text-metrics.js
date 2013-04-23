@@ -26,5 +26,5 @@ drawBox(new Text('bottom right').attr({
 drawBox(new Text('center center').attr({
   y:260,
   textOrigin:'center',
-  textAnchor:'center'
+  textAlign:'center'
 }));
