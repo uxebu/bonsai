@@ -80,7 +80,7 @@ define([
               next();
             });
             assetController.load({
-              request: new AssetRequest('asset/a.png'),
+              request: new AssetRequest('test/asset/a.png'),
               type: 'Bitmap'
             });
           });
@@ -100,7 +100,7 @@ define([
               next();
             });
             assetController.load({
-              request: new AssetRequest('asset/a.png'),
+              request: new AssetRequest('test/asset/a.png'),
               type: 'Bitmap'
             }, 'customSuccessEvent123', 'customFailureEvent123');
           });
@@ -146,8 +146,8 @@ define([
             });
             assetController.load({
               request: new AssetRequest([
-                {src: 'asset/sample.m4v', type: 'video/mp4'},
-                {src: 'asset/sample.ogv', type: 'video/ogg'}
+                {src: 'test/asset/sample.m4v', type: 'video/mp4'},
+                {src: 'test/asset/sample.ogv', type: 'video/ogg'}
               ]),
               type: 'Video',
               id: 'test-id'
@@ -194,7 +194,7 @@ define([
 
           async(function(next){
 
-            assetController.preload(['asset/a.png', 'asset/b.png', 'asset/c.png'], function() {
+            assetController.preload(['test/asset/a.png', 'test/asset/b.png', 'test/asset/c.png'], function() {
               loaded = true;
               expect(true).toBe(true);
               next();
