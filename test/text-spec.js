@@ -122,6 +122,21 @@ define([
 
     });
 
+    describe('provides a property to change `textAlign`', function() {
+      it('is set to `left` by default', function() {
+        expect(new Text('').attr('textAlign')).toBe('left');
+      });
+      it('returns `center` when set to `center`.', function() {
+        expect(new Text('').attr('textAlign', 'center').attr('textAlign')).toBe('center');
+      });
+      it('returns `right` when set to `right`', function() {
+        expect(new Text('').attr('textAlign', 'right').attr('textAlign')).toBe('right');
+      });
+      it('ignores unkown values', function() {
+        expect(new Text('').attr('textAlign', 4).attr('textAlign')).toBe('left');
+      });
+    });
+
     describe('TextSpan', function() {
 
       it('set text via constructor and get text', function() {

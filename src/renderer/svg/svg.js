@@ -69,7 +69,6 @@ define([
     fontSize: ['font-size'],
     fontWeight: ['font-weight'],
     fontStyle: ['font-style'],
-    textAnchor: ['text-anchor', 'start'],
     text: ['text'],
     cursor: ['cursor', 'inherit'],
     fillRule: ['fill-rule', 'inherit']
@@ -90,6 +89,12 @@ define([
     'touchmove',
     'touchstart'
   ];
+
+  var textAlignMap = {
+    left: 'start',
+    center: 'middle',
+    right: 'end'
+  };
 
   var textOriginMap = {
     top: 'hanging',
@@ -651,6 +656,7 @@ define([
     var attributes = message.attributes;
     var style = text.style;
     var textOrigin = attributes.textOrigin;
+    var textAlign = attributes.textAlign;
 
     if (attributes.selectable !== undefined) {
       if (attributes.selectable !== false) {
@@ -660,7 +666,9 @@ define([
       }
     }
 
-    setStyle(style, 'textAnchor', 'start');
+    if (textAlign != null) {
+      setStyle(style, 'textAnchor', textAlignMap[textAlign]);
+    }
 
     if (textOrigin != null) {
       setStyle(style, 'alignmentBaseline', textOriginMap[textOrigin]);

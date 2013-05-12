@@ -1,6 +1,6 @@
 v0.4.4
 -------------------
-
+* Add support for `textAlign` attribute on Text.
 
 v0.4.3 / 2013-03-06
 -------------------
