@@ -378,7 +378,7 @@ define([
       }
     } else if (typeof segments == 'string') {
       // expecting a list of string arguments
-      segments = arguments;
+      segments = Array.prototype.slice.call(arguments);
     } else {
       throw new TypeError('Invalid parameter: ' + segments);
     }
@@ -408,7 +408,7 @@ define([
           return segment.slice(-2);
       }).filter(Boolean); // filter out segments without point
     }
-    param = isArray(param) ? param : arguments;
+    param = isArray(param) ? param : Array.prototype.slice.call(arguments);
     for (var i = 0, x, y, len = param.length; i < len; i += 2) {
       x = param[i];
       y = param[i + 1];

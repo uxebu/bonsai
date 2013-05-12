@@ -4,8 +4,8 @@ define([
   'bonsai/runner/path/circle',
   'bonsai/runner/gradient',
   'bonsai/runner/bitmap',
-  'bonsai/runner/matrix'
-], function(Path, Rect, Circle, gradient, Bitmap, Matrix) {
+  'bonsai/color'
+], function(Path, Rect, Circle, gradient, Bitmap, color) {
 
   var precision = new Number(12);
   precision.PRECISION = +precision;
