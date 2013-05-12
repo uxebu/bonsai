@@ -37,7 +37,7 @@ module.exports = function(grunt) {
           compilation_level: 'SIMPLE_OPTIMIZATIONS',
           //create_source_map: '%outname%.map',
           //source_map_format: 'V3',
-          output_wrapper: '"(function __bonsaiRunnerCode__(){%output%}());"' // '\n//@ sourceMappingURL=bonsai.js.map"'
+          output_wrapper: '(function __bonsaiRunnerCode__(){%output%}());' // '\n//@ sourceMappingURL=bonsai.js.map"'
         }
       },
       'release-min': {
