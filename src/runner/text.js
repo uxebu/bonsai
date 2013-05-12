@@ -82,7 +82,7 @@ define([
     return this._textAlign;
   }
   function setTextAlign(textAlign) {
-    if (/^(left|center|right)$/.test(textAlign)) {
+    if (textAlign === 'left' || textAlign === 'center' || textAlign === 'right') {
       this._textAlign = textAlign;
     }
   }
