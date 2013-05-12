@@ -113,7 +113,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-saucelabs');
 
-  grunt.registerTask('default', ['jshint', 'test']);
+  grunt.registerTask('default', ['test']);
   grunt.registerTask('release', ['clean', 'closure-compiler']);
   grunt.registerTask('run-server', ['connect', 'jasmine:test:build', 'watch']);
   grunt.registerTask('test', ['connect:test', 'jasmine:test']);
