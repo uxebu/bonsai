@@ -46,7 +46,7 @@
     };
 
     var queryObject = (function(queryString, defaultValues) {
-      var m, result = defaultValues, pattern = /([^&=]+)=([^&]*)/g;
+      var m, result = defaultValues, pattern = /([^&=]+)=([^&\/]*)/g;
       while (m = pattern.exec(queryString)) {
         result[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
       }
