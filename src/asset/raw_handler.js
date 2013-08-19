@@ -12,6 +12,10 @@ define(['./asset_handler'], function(AssetHandler) {
 
   RawHandler.prototype.loadResource = function(resource, doDone, doError) {
 
+    if (/^data:/.test(resource.src)) {
+      return doDone('');
+    }
+
     var xhr = new XMLHttpRequest();
     var isErrorFired = false;
     xhr.open('GET', resource.src, true);
