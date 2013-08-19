@@ -72,11 +72,6 @@ function(AssetHandler, RawHandler, tools) {
     var me = this,
         src = resource.src;
 
-    if (/^data:/.test(src)) {
-      doDone(src);
-      return;
-    }
-
     new RawHandler(src)
       .on('load', function(data) {
         var format;
