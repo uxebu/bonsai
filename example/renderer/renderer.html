@@ -1,0 +1,43 @@
+<!doctype html>
+<head>
+  <title>Bonsai Movie Library</title>
+  <meta name=viewport content=width=device-width,initial-scale=1>
+  <script type="text/javascript" src="/example/renderer/caat.js"></script>
+  <script src=../../lib/requirejs/require.js></script>
+  <style type="text/css">
+    body, html { margin: 0; font-family: sans-serif; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div id="bs"></div>
+  <script type="text/javascript">
+
+    var envList = {
+      'worker': 'bonsai/bootstrapper/_dev/worker',
+      'iframe': 'bonsai/bootstrapper/_dev/iframe'
+    };
+
+    var currentEnv = 'iframe';
+
+    require.config({
+      baseUrl: '../../src',
+      paths: {
+        bonsai: '.'
+      },
+      urlArgs: +new Date
+    });
+
+    require([envList[currentEnv]], function(player) {
+
+      player.setup({
+        noCache: true
+      }).run(document.getElementById('bs'), {
+        url: 'renderer.js',
+        width: document.width,
+        height: document.height - 50,
+        framerate: 60
+      });
+    });
+
+  </script>
+</body>
