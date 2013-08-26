@@ -4,8 +4,9 @@
 define([
   '../../segment_helper',
   '../../event_emitter',
-  '../../tools'
-], function(segmentHelper, EventEmitter, tools) {
+  '../../tools',
+  './caat'
+], function(segmentHelper, EventEmitter, tools, caat) {
   'use strict';
 
   var exportToPath = segmentHelper.exportToPath;
