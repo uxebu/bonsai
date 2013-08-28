@@ -29,7 +29,8 @@
     require([envList[currentEnv]], function(player) {
 
       player.setup({
-        noCache: true
+        noCache: true,
+        renderer: 'canvas'
       }).run(document.getElementById('bs'), {
         url: 'renderer.js',
         width: document.width,
