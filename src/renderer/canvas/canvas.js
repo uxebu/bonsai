@@ -67,6 +67,7 @@ define([
 
       if (this[drawName = 'draw' + type]) {
           actor = this[drawName](actor, message);
+          actor.setId(id);
           this.drawAll(actor, message);
       }
     }
@@ -160,6 +161,9 @@ define([
     return actor;
   };
 
+
+  // TODO:
+  // style & position actor here
   proto.drawText = function(actor, text) {
     var canvas = this.canvas,
         scene = canvas.scene;
@@ -168,11 +172,28 @@ define([
       actor = new CAAT.Foundation.UI.TextActor();
       scene.addChild(actor);
     }
-    actor.setText(text);
+    // test style
+    actor.setFillStyle('black');
+
+    return actor;
   };
 
   proto.drawTextSpan = function(actor, message) {
-    console.log(message);
+    var canvas = this.canvas,
+        scene = canvas.scene,
+        parent = message.parent;
+
+    actor = scene.findActorById(parent);
+
+
+    if (!actor) {
+      actor = new CAAT.Foundation.UI.TextActor();
+      actor.setId(message.id);
+      scene.addChild(actor);
+    }
+    actor.setText(message.attributes.text);
+
+    return actor;
   };
 
   proto.destroy = function() {
