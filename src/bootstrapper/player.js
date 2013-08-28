@@ -1,12 +1,14 @@
 define([
   '../event_emitter',
   '../renderer/renderer_controller',
+  '../renderer/canvas/canvas',
+  '../renderer/svg/svg',
   '../asset/asset_controller',
   '../tools',
   '../uri',
   '../version'
 ],
-function(EventEmitter, RendererController, AssetController, tools, URI, version) {
+function(EventEmitter, RendererController, CanvasRenderer, SvgRenderer, AssetController, tools, URI, version) {
   'use strict';
 
   var player = {
@@ -14,6 +16,10 @@ function(EventEmitter, RendererController, AssetController, tools, URI, version)
 
     AssetController: AssetController,
     EventEmitter: EventEmitter,
+    renderers: {
+      'canvas': CanvasRenderer,
+      'svg': SvgRenderer
+    },
     RendererController: RendererController,
     tools: tools,
 
@@ -124,6 +130,9 @@ function(EventEmitter, RendererController, AssetController, tools, URI, version)
         this._baseUrl = URI.parse(options.baseUrl);
       }
       if ('renderer' in options) {
+        if (typeof options.renderer === 'string') {
+          options.renderer = this.renderers[options.renderer] || SvgRenderer;
+        }
         this.Renderer = options.renderer;
       }
       return this;

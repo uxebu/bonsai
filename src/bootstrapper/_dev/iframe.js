@@ -38,13 +38,12 @@ if (window.parent !== window && window.isBonsaiMovie) {
     '../../tools',
     '../context/iframe/context',
     '../../renderer/svg/svg',
-    '../../renderer/canvas/canvas',
     '../../require_config',
     'module'
-  ], function(player, tools, IFrameRunnerContext, SvgRenderer, CanvasRenderer, requireConfig, module) {
+  ], function(player, tools, IFrameRunnerContext, SvgRenderer, requireConfig, module) {
     'use strict';
 
-    player.Renderer = CanvasRenderer;
+    player.Renderer = SvgRenderer;
     player.setup({
       baseUrl: tools.baseUri(document),
       runnerContext: IFrameRunnerContext,

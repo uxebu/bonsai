@@ -49,15 +49,14 @@ if (typeof importScripts !== 'undefined') {
     '../context/worker/context',
     '../../uri',
     '../../renderer/svg/svg',
-    '../../renderer/canvas/canvas',
     '../../require_config',
     'module'
-  ], function(player, tools, WorkerContext, URI, SvgRenderer, CanvasRenderer, requireConfig, module) {
+  ], function(player, tools, WorkerContext, URI, SvgRenderer, requireConfig, module) {
 
     var runnerUrl = URI.parse(module.uri);
     var baseUrl = URI.parse(tools.baseUri(document));
 
-    player.Renderer = CanvasRenderer;
+    player.Renderer = SvgRenderer;
     player.setup({
       baseUrl: baseUrl.toString(),
       runnerContext: WorkerContext,
