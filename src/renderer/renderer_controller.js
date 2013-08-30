@@ -73,7 +73,7 @@ function(tools, EventEmitter, URI) {
       });
     });
 
-    this.renderer.on('canRender', tools.hitch(this, this.postAsync, 'canRender'));
+    this.renderer.on('canRender', hitch(this, this.postAsync, 'canRender'));
 
     runnerContext.init(options);
 
@@ -299,7 +299,7 @@ function(tools, EventEmitter, URI) {
 
       if (!this._isEnvSenderSetup) {
         if (typeof window !== 'undefined') {
-          var listener = tools.hitch(this, this._sendEnvData);
+          var listener = hitch(this, this._sendEnvData);
           window.addEventListener('resize', listener, false);
           window.addEventListener('scroll', listener, false);
         }

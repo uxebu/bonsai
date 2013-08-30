@@ -57,7 +57,8 @@ define([
       it('returns an Environment instance for a new subMovie', function() {
         var subMovie = {};
         var subMovieUrl = 'test/123.js';
-        var env = makeStage().getSubMovieEnvironment(subMovie, subMovieUrl);
+        var assetUrl = 'arbitrary/assets'
+        var env = makeStage().getSubMovieEnvironment(subMovie, subMovieUrl, assetUrl);
         expect(env instanceof Environment).toBe(true);
         expect(env.exports.stage).toBe(subMovie);
       });
