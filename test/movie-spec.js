@@ -8,7 +8,7 @@ define([
   describe('Movie', function() {
 
     testDisplayList(function(displayList) {
-      return new Movie({}, null, null, displayList);
+      return new Movie({}, displayList, null, null, null);
     });
 
     it('Sets its root to first argument [usually bound by environment.js]', function() {
@@ -23,8 +23,8 @@ define([
       };
       var url = 'http://abc.def/pa/t/h.js';
       var callback = function() {};
-      var m = new Movie(root, url, callback);
-      expect(root.loadSubMovie).toHaveBeenCalled();
+      var m = new Movie(root, null, url, callback);
+      expect(root.loadSubMovie.mostRecentCall.args[0]).toBe(url);
     });
 
     testLifeCycle(function() { return new Movie({}); });

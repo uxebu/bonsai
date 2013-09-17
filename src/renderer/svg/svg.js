@@ -69,27 +69,32 @@ define([
     fontSize: ['font-size'],
     fontWeight: ['font-weight'],
     fontStyle: ['font-style'],
-    textAnchor: ['text-anchor', 'start'],
     text: ['text'],
     cursor: ['cursor', 'inherit'],
     fillRule: ['fill-rule', 'inherit']
   };
 
   var eventTypes = [
-    'dblclick',
     'click',
+    'dblclick',
+    'mousedown',
     'mouseenter',
     'mouseleave',
-    'mouseover',
-    'mouseout',
-    'mouseup',
-    'mousedown',
-    'touchstart',
-    'touchend',
     'mousemove',
+    'mouseout',
+    'mouseover',
+    'mouseup',
+    'touchcancel',
+    'touchend',
     'touchmove',
-    'mousewheel'
+    'touchstart'
   ];
+
+  var textAlignMap = {
+    left: 'start',
+    center: 'middle',
+    right: 'end'
+  };
 
   var textOriginMap = {
     top: 'hanging',
@@ -252,6 +257,7 @@ define([
     this.width = width;
     this.height = height;
     this.allowEventDefaults = !!options.allowEventDefaults;
+    this.objectsUnderPointer = !!options.objectsUnderPointer;
 
     var svg = this.svg = new Svg(node, width, height);
 
@@ -658,6 +664,7 @@ define([
     var attributes = message.attributes;
     var style = text.style;
     var textOrigin = attributes.textOrigin;
+    var textAlign = attributes.textAlign;
 
     if (attributes.selectable !== undefined) {
       if (attributes.selectable !== false) {
@@ -667,7 +674,9 @@ define([
       }
     }
 
-    setStyle(style, 'textAnchor', 'start');
+    if (textAlign != null) {
+      setStyle(style, 'textAnchor', textAlignMap[textAlign]);
+    }
 
     if (textOrigin != null) {
       setStyle(style, 'alignmentBaseline', textOriginMap[textOrigin]);
