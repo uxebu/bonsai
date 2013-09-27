@@ -26,6 +26,7 @@ define([
       var worker = this._worker = new Worker(runnerUrl);
       var runnerContext = this;
       worker.onmessage = function(event) {
+        console.timeStamp('onmessage', msg);
         var msg = event.data;
         runnerContext.emit('message', msg);
         if (msg.command === 'scriptLoaded') {

@@ -288,6 +288,7 @@ function(tools, EventEmitter, URI) {
      * @returns {this}
      */
     postAsync: function(command, data) {
+      console.timeStamp('postAsync');
       this.runnerContext.notifyRunnerAsync({command: command, data: data});
       return this;
     },
