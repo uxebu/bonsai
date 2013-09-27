@@ -68,6 +68,20 @@ require([
         });
       });
 
+      describe('notify', function() {
+        it('returns the current instance', function() {
+          var mediaDisplayObject = new MediaDisplayObject();
+          expect(mediaDisplayObject.notify()).toBe(mediaDisplayObject);
+        });
+        it('emits "end" on type=end', function() {
+          var mediaDisplayObject = new MediaDisplayObject();
+          var endSpy = jasmine.createSpy('end');
+          mediaDisplayObject.on('end', endSpy);
+          mediaDisplayObject.notify('end');
+          expect(endSpy).toHaveBeenCalledWith(mediaDisplayObject);
+        });
+      });
+
     });
 
   });

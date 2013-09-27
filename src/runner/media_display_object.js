@@ -110,7 +110,11 @@ define([
       case 'error':
         // We trigger the event asynchronously so as to ensure that any events
         // bound after instantiation are still triggered:
-        this.emitAsync('error', Error(data.error));
+        this.emitAsync('error', new Error(data.error));
+        break;
+      case 'end':
+        this.emit('end', this);
+        break;
     }
 
     return this;
