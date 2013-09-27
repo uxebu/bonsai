@@ -20,50 +20,54 @@ require([
       });
     });
 
-    it('Can play()', function() {
-      var a = new MediaDisplayObject();
-      expect(a.attr('playing')).toBe(false);
-      a.play();
-      expect(a.attr('playing')).toBe(true);
-      expect(a.play()).toBe(a);
-    });
+    describe('methods', function() {
 
-    it('play(time) sends `time` to the renderer', function() {
-      var a = new MediaDisplayObject();
-      var time = 2; // cannot be 0, that's the initial value
-      a.play(time);
-      expect(a.composeRenderMessage().attributes.time).toBe(time);
-    });
+      describe('play', function() {
+        it('can play()', function() {
+          var a = new MediaDisplayObject();
+          expect(a.attr('playing')).toBe(false);
+          a.play();
+          expect(a.attr('playing')).toBe(true);
+          expect(a.play()).toBe(a);
+        });
+        it('play(time) sends `time` to the renderer', function() {
+          var a = new MediaDisplayObject();
+          var time = 2; // cannot be 0, that's the initial value
+          a.play(time);
+          expect(a.composeRenderMessage().attributes.time).toBe(time);
+        });
+        it('play(undefined) does not send `time` to the renderer', function() {
+          var a = new MediaDisplayObject();
+          a.play();
+          expect(a.composeRenderMessage().attributes.time).not.toBeDefined();
+        });
+        it('should send `time` to the renderer for `play(0)`', function() {
+          var a = new MediaDisplayObject();
+          a.attr('time', 2); // needs to be different from 0;
 
-    it('play(undefined) does not send `time` to the renderer', function() {
-      var a = new MediaDisplayObject();
-      a.play();
-      expect(a.composeRenderMessage().attributes.time).not.toBeDefined();
-    });
+          a.play(0);
+          expect(a.composeRenderMessage().attributes.time).toBe(0);
+        });
+        it('Can play(time)', function() {
+          var a = new MediaDisplayObject();
+          expect(a.attr('playing')).toBe(false);
+          expect(a.attr('time')).toBe(0);
+          a.play(5.17);
+          expect(a.attr('playing')).toBe(true);
+          expect(a.attr('time')).toBe(5.17);
+        });
+      });
 
-    it('should send `time` to the renderer for `play(0)`', function() {
-      var a = new MediaDisplayObject();
-      a.attr('time', 2); // needs to be different from 0;
+      describe('stop', function() {
+        it('Can stop()', function() {
+          var a = new MediaDisplayObject();
+          expect(a.attr('playing')).toBe(false);
+          a.attr('playing', true);
+          a.stop();
+          expect(a.attr('playing')).toBe(false);
+        });
+      });
 
-      a.play(0);
-      expect(a.composeRenderMessage().attributes.time).toBe(0);
-    });
-
-    it('Can play(time)', function() {
-      var a = new MediaDisplayObject();
-      expect(a.attr('playing')).toBe(false);
-      expect(a.attr('time')).toBe(0);
-      a.play(5.17);
-      expect(a.attr('playing')).toBe(true);
-      expect(a.attr('time')).toBe(5.17);
-    });
-
-    it('Can stop()', function() {
-      var a = new MediaDisplayObject();
-      expect(a.attr('playing')).toBe(false);
-      a.attr('playing', true);
-      a.stop();
-      expect(a.attr('playing')).toBe(false);
     });
 
   });
