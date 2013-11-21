@@ -143,8 +143,7 @@ requirejs.requirejs([
       var stage = context.stage = new Stage(messageChannel);
 
       // expose bonsain API in vm context
-      var env = stage.env.exports;
-      tools.mixin(context, env);
+      context.bonsai = stage.env.exports;
       context.exports = {}; // for plugins
 
       context.load = function(url, cb) { return scriptLoader.load(url, cb); };

@@ -57,7 +57,7 @@ define([
     var stage = new Stage(messageChannel);
     var env = stage.env.exports;
     // Expose bonsai API in iframe window
-    tools.mixin(self, env);
+    self.bonsai = env;
     self.exports = {}; // for plugins
 
     messageChannel.on('message', function(message) {

@@ -25,7 +25,7 @@ define([
     var env = stage.env.exports;
 
     // Expose bonsai API in iframe window
-    tools.mixin(iframeWindow, env);
+    iframeWindow.bonsai = env;
     var globalExports = iframeWindow.exports = {}; // for plugins
 
     // As per the boostrap's contract, it must provide stage.loadSubMovie
@@ -94,7 +94,6 @@ define([
         // don't allow anything to overwrite the bonsai stage
         delete globalExports.stage;
         tools.mixin(env, globalExports);
-        tools.mixin(iframeWindow, globalExports);
       }
     });
 
