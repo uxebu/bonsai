@@ -85,18 +85,15 @@
       setTimeout(runMovie, 25);
     }
 
-    var players, renderers, currentMovie;
+    var environments, renderers, currentMovie;
     function runMovie() {
       var selected = viewModel.selected;
-      var player = players && players[selected.env()];
+      var withRenderer = environments && environments[selected.env()];
       var renderer = renderers && renderers[selected.renderer()];
       var movie = selected.movie();
-      if (!player || !renderer || !movie) return;
+      if (!withRenderer || !renderer || !movie) return;
 
-      currentMovie = player.setup({
-        noCache: true,
-        Renderer: renderer
-      }).run(stageNode, {
+      currentMovie = withRenderer(renderer).run(stageNode, {
         url: 'movies/' + movie + '?' + new Date().getTime(),
         width: document.width,
         height: document.height - 50,
@@ -164,15 +161,43 @@
     });
 
     require([
-      'bonsai/bootstrapper/_dev/worker',
-      'bonsai/bootstrapper/_dev/iframe',
+      'bonsai/tools',
+      'bonsai/uri',
+      'bonsai/require_config',
+      'bonsai/bootstrapper/player',
+
+      'bonsai/bootstrapper/context/worker/context',
+      'bonsai/bootstrapper/context/iframe/context',
 
       'bonsai/renderer/svg/svg',
       'bonsai/renderer/canvas/canvas_renderer'
-    ], function(workerPlayer, iframePlayer, SvgRenderer, CanvasRenderer) {
-      players = {
-        worker: workerPlayer,
-        iframe: iframePlayer
+    ], function(tools, URI, requireConfig, player, workerEnv, iframeEnv, SvgRenderer, CanvasRenderer) {
+      var baseUrl = URI.parse(tools.baseUri(document));
+      player.defaultRunnerOptions.requireUrl = baseUrl.resolveUri(requireConfig.url).toString();
+      var requireConfig = player.defaultRunnerOptions.requireConfig = requireConfig.config;
+      if (requireConfig && requireConfig.baseUrl) {
+        requireConfig.baseUrl = baseUrl.resolveUri(requireConfig.baseUrl).toString();
+      }
+      player.setup({
+        baseUrl: baseUrl.toString(),
+        noCache: true
+      });
+
+      environments = {
+        worker: function(renderer) {
+          return player.setup({
+            renderer: renderer,
+            runnerContext: workerEnv,
+            runnerUrl: require.toUrl('bonsai/bootstrapper/_dev/worker')
+          });
+        },
+        iframe: function(renderer) {
+          return player.setup({
+            renderer: renderer,
+            runnerContext: iframeEnv,
+            runnerUrl: require.toUrl('bonsai/bootstrapper/_dev/iframe')
+          });
+        }
       };
       renderers = {
         svg: SvgRenderer,
