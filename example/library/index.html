@@ -141,8 +141,7 @@
       viewModel.selected.movie(movieSelect.value);
     };
 
-    // parse initial values from url hash
-    (function(query) {
+    function parseQuery(query) {
       var values = viewModel.selected;
       var bit, key, bits = query.split('&');
       for (var i = 0, n = bits.length; i < n; i++) {
@@ -150,7 +149,13 @@
         key = decodeURIComponent(bit[0]);
         if (key in values) values[key](decodeURIComponent(bit[1]));
       }
-    }(location.hash.slice(2)));
+    }
+
+    // parse initial values from url hash
+    window.onhashchange = function() {
+      parseQuery(location.hash.slice(2));
+    };
+    window.onhashchange();
 
     require.config({
       baseUrl: '../../src',
