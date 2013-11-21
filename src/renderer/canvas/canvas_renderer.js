@@ -44,7 +44,6 @@ define([
       var matrix = attributes && attributes.matrix;
       if (matrix) {
         context.save();
-        console.log(matrix);
         context.transform(matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx, matrix.ty);
       }
 
@@ -169,6 +168,14 @@ define([
         x += op[1];
         y += op[2];
         context.lineTo(x, y);
+      } else if (type === 'lineTo') {
+        x = op[1];
+        y = op[2];
+        context.lineTo(x, y);
+      } else if (type === 'curveTo') {
+        x = op[5];
+        y = op[6];
+        context.bezierCurveTo(op[1], op[2], op[3], op[4], x, y);
       } else if (type === 'closePath') {
         context.closePath();
       } else {
