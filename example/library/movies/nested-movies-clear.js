@@ -19,7 +19,7 @@ function createMovie(name, length, parent, addStop){
       if(_movie.currentFrame === 0){
 
         // as in transwf, we clear the movie on frame 0:
-        _movie.clear();
+        _movie.removeChildren();
 
         // now setup the text:
         texts[name] = new Text('').attr({
@@ -31,7 +31,7 @@ function createMovie(name, length, parent, addStop){
       }
 
       // in all frames, update text:
-      texts[name].clear().addChild(
+      texts[name].removeChildren().addChild(
         new TextSpan(name + ': frame ' + (_movie.currentFrame + 1) + '/' + length
       ));
     });
@@ -55,7 +55,7 @@ var main = createMovie('main', 5, null);
 // now, add a submovie in frame 4:
 frames['main'][3] = function(){
  createMovie('sub1', 10, main);
- texts['main'].clear().addChild(
+ texts['main'].removeChildren().addChild(
     new TextSpan('main: frame 4/5')
   );
 }

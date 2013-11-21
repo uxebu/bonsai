@@ -221,7 +221,7 @@ define([
      * Removes all children from the object
      * @return {this}
      */
-    clear: function() {
+    removeChildren: function() {
       this.displayList.clear();
       return this;
     },

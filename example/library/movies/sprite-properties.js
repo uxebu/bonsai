@@ -59,7 +59,7 @@ function renderAndApplyProperty(props){
       position = position + posOffset;
       writeCantDo(prop[0], _x, _y+position);
       position = position + posOffset;
-      sprite.clear();
+      sprite.removeChildren();
     }
 	}
 	_x += gridDist;

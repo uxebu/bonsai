@@ -65,7 +65,7 @@ define([
   }
 
   function setText(text) {
-    this._owner.clear();
+    this._owner.removeChildren();
     this._owner.addChild(new TextSpan(text));
   }
 

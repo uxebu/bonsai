@@ -25,7 +25,7 @@ var byDepth = {};
 var frames = [
 
 function frame_0() {
-  movie.clear();
+  movie.removeChildren();
   var o = byDepth[1] = new dict[0];
   movie.addChild(o);
 }

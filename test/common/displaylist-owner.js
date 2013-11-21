@@ -78,7 +78,7 @@ define([
       });
 
       describe('called with an array of children', function() {
-        it('calls clear() and add(newChildren) on the display list in that order', function() {
+        it('calls removeChildren() and add(newChildren) on the display list in that order', function() {
           var newChildren = [
             mock.createDisplayObject(),
             mock.createDisplayObject()
@@ -102,14 +102,14 @@ define([
         });
       });
 
-      describe('clear()', function() {
+      describe('removeChildren()', function() {
         it('calls this.displayList.clear', function() {
-          owner.clear();
+          owner.removeChildren();
           expect(displayList.clear).toHaveBeenCalled();
         });
 
         it('returns the instance', function() {
-          expect(owner.clear()).toBe(owner);
+          expect(owner.removeChildren()).toBe(owner);
         });
       });
 

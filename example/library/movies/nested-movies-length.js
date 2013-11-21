@@ -17,7 +17,7 @@ function createMovie(name, length, parent, addStop){
   var _frames = [];
   for(var i=0; i<length; i++){
     _frames.push(function(){
-      _text.clear().addChild(
+      _text.removeChildren().addChild(
         new TextSpan(name + ': frame ' + (_movie.currentFrame + 1) + '/' + length
       ));
     });
