@@ -264,8 +264,7 @@ define([
       scale: 1,
       scaleX: 1,
       scaleY: 1,
-      rotation: 1,
-      filters: 1
+      rotation: 1
     };
 
     this._segments = [];
@@ -734,7 +733,7 @@ define([
    * @param {Number} radius The radius of the ellipse
    * @param {deg|rad} aStartAngle Starting angle of arc in radians
    * @param {deg|rad} aEndAngle Ending angle of arc in radians
-   * @param {Boolean} [anticlockwise] Whether you want the arc to be drawn 
+   * @param {Boolean} [anticlockwise] Whether you want the arc to be drawn
    *  anticlockwise or clockwise (Boolean)
    * @returns {Path} The current Path instance
    */
@@ -1167,7 +1166,7 @@ define([
     box.height = box.bottom - box.top;
 
     return box;
-    
+
   };
 
   return Path;

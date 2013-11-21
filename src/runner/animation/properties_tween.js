@@ -3,14 +3,13 @@ define([
   './property_tween',
   './translators/color',
   './translators/gradient',
-  './translators/filter',
   './translators/segment',
   './translators/matrix',
   './translators/corner_radius',
   './translators/stroke_dash'
 ], function(
   tools, PropertyTween,
-  colorTranslators, gradientTranslators, filterTranslators,
+  colorTranslators, gradientTranslators,
   segmentTranslators, matrixTranslators, cornerRadiusTranslators,
   strokeDashTranslators
 ) {
@@ -26,7 +25,6 @@ define([
 
   mixin(translators, colorTranslators);
   mixin(translators, gradientTranslators);
-  mixin(translators, filterTranslators);
   mixin(translators, segmentTranslators);
   mixin(translators, matrixTranslators);
   mixin(translators, cornerRadiusTranslators);

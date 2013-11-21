@@ -8,11 +8,10 @@ define([
   '../../tools',
   '../../color',
   '../../segment_helper',
-  './svg_filters',
   './svg_helper',
   './svg_event_handlers',
   '../../asset/asset_controller'
-], function(EventEmitter, tools, color, segmentHelper, svgFilters, svgHelper, eventHandlers, AssetController) {
+], function(EventEmitter, tools, color, segmentHelper, svgHelper, eventHandlers, AssetController) {
   'use strict';
 
   var elCache = {};
@@ -44,13 +43,8 @@ define([
   var cssClasses = svgHelper.cssClasses,
       matrixToString = svgHelper.matrixToString,
       gradientToSignature = svgHelper.gradientToSignature,
-      filterToSignature = svgHelper.filterToSignature,
       valueFromSignatureForType = svgHelper.valueFromSignatureForType,
       exportToPath = segmentHelper.exportToPath;
-
-  // svgFilters
-  var isFEColorMatrixEnabled = svgFilters.isFEColorMatrixEnabled,
-      filterElementsFromList = svgFilters.filterElementsFromList;
 
   // AssetController
   var fontIDs = AssetController.handlers.Font.fontIDs,
@@ -390,31 +384,6 @@ define([
           this.drawAll(type, element, message);
         }
 
-        if (!isFEColorMatrixEnabled && type === 'Group') {
-          (function applyFilterShimOnGroup(el, filterSignature) {
-
-            if (!filterSignature) {
-              return;
-            }
-            var child = el.firstChild || {};
-            do {
-              if (child instanceof SVGGElement) {
-                applyFilterShimOnGroup(child, child._filterSignature);
-              }
-              if (child._fillColorSignature) {
-                self.applyFillColor(child, child._fillColorSignature, filterSignature);
-              }
-              if (child._strokeColorSignature) {
-                self.applyStrokeColor(child, child._strokeColorSignature, filterSignature);
-              }
-              if (child._fillGradientSignature) {
-                self.applyFillGradient(child, child._fillGradientSignature, null, filterSignature);
-              }
-            } while(child = child.nextSibling);
-
-          })(element, element._filterSignature);
-        }
-
         // Make sure `attr` is called after the draw methods because
         // the draw methods might add wrappers to the elements
         // (which we retrieve via `_root`)
@@ -476,28 +445,13 @@ define([
 
   /**
    * Called along with draw[Whatever].
-   * Here we apply filters, clips etc.
+   * Here we apply clips etc.
    */
   proto.drawAll = function(type, element, message) {
 
     var attr = message.attributes;
-    var filters = attr.filters;
     var fillColor = attr.fillColor;
     var fillGradient = attr.fillGradient;
-
-    // when filter is applied, force fillColor change on UA w/o SVG Filter support
-    if (!isFEColorMatrixEnabled && !fillColor && filters && element._fillColorSignature) {
-      fillColor = element._fillColorSignature;
-    }
-
-    if (isArray(filters)) {
-      // modify filters
-      if (filters.length > 0) {
-        this.applyFilters(element, filters);
-      } else {
-        this.removeFilters(element);
-      }
-    }
 
     if (message.offStageType === 'clip') {
       // Fill element with white so it shows through (faking clip with mask)
@@ -564,11 +518,11 @@ define([
 
       // Apply stroke style(s)
       if ('strokeColor' in attr) {
-        this.applyStrokeColor(element, attr.strokeColor, '', attr.strokeWidth);
+        this.applyStrokeColor(element, attr.strokeColor, attr.strokeWidth);
       }
 
       if ('strokeGradient' in attr) {
-        this.applyStrokeGradient(element, attr.strokeGradient, '', attr.strokeWidth);
+        this.applyStrokeGradient(element, attr.strokeGradient, attr.strokeWidth);
       }
 
       if ('strokeDash' in attr) {
@@ -901,30 +855,6 @@ define([
     this.removeFilters(element);
   };
 
-  proto.removeFilters = function(element) {
-
-    // TODO: reset color in respect to filter-shim
-
-    var signature = element._filterSignature,
-        def = this.definitions[signature];
-
-    // return early when no filter was previously applied
-    if (!def) {
-      return;
-    }
-
-    if (def.n > 1) {
-      def.n--;
-    } else {
-      this.svg.defs.removeChild(def.element);
-      delete this.definitions[signature];
-    }
-
-    // remove filter-attribute and internal filter-reference
-    element.removeAttribute('filter');
-    delete element._filterSignature;
-  };
-
   proto.removeFillImage = function(element) {
     var pattern = element._pattern;
     if (pattern && pattern._fillImage) {
@@ -1007,11 +937,11 @@ define([
     );
   };
 
-  proto.applyFillColor = function(element, aColor, filterSignature) {
-    return this.applyColor('fill', element, aColor, filterSignature);
+  proto.applyFillColor = function(element, aColor) {
+    return this.applyColor('fill', element, aColor);
   };
 
-  proto.applyStrokeColor = function(element, aColor, filterSignature, strokeWidth) {
+  proto.applyStrokeColor = function(element, aColor, strokeWidth) {
 
     if (aColor != null) {
       /*
@@ -1022,9 +952,9 @@ define([
         for later usage.
        */
       if (strokeWidth > 0 || +element.getAttribute('stroke-width')) {
-        this.applyColor('stroke', element, aColor, filterSignature);
+        this.applyColor('stroke', element, aColor);
       } else {
-        this.applyColor('data-stroke', element, aColor, filterSignature);
+        this.applyColor('data-stroke', element, aColor);
       }
     } else if (aColor === null) {
       element.removeAttribute('stroke');
@@ -1042,7 +972,7 @@ define([
     }
   };
 
-  proto.applyStrokeGradient = function(element, gradient, filterSignature, strokeWidth) {
+  proto.applyStrokeGradient = function(element, gradient, strokeWidth) {
     if (gradient != null) {
       /*
        AFFECTS: Chrome 14
@@ -1052,9 +982,9 @@ define([
         for later usage.
        */
       if (strokeWidth > 0 || +element.getAttribute('stroke-width')) {
-        this.applyGradient('stroke', element, gradient, gradient.matrix, filterSignature);
+        this.applyGradient('stroke', element, gradient, gradient.matrix);
       } else {
-        this.applyGradient('data-stroke', element, gradient, gradient.matrix, filterSignature);
+        this.applyGradient('data-stroke', element, gradient, gradient.matrix);
       }
     } else if (gradient === null) {
       element.removeAttribute('stroke');
@@ -1068,35 +998,25 @@ define([
    * @param {DOMElement} element A DOM Element
    * @param {String} styleAttribute "fill" or "stroke"
    * @param {Number} aColor Color with 32-bit int repr.
-   * @param {String} [filterSignature]
    */
-  proto.applyColor = function(styleAttribute, element, aColor, filterSignature) {
+  proto.applyColor = function(styleAttribute, element, aColor) {
 
-    filterSignature = element._filterSignature || filterSignature;
     element['_' + styleAttribute + 'ColorSignature'] = aColor;
 
     var colorMatrix, rgbaInstance = color(aColor);
-
-    // apply colorMatrix shim when SVGFEColorMatrix isn't enabled and a filter is applied
-    if (!isFEColorMatrixEnabled && filterSignature) {
-      colorMatrix = valueFromSignatureForType(filterSignature, 'colorMatrix');
-      colorMatrix && rgbaInstance.setColorMatrix(colorMatrix.split(','));
-    }
 
     //element.style[styleAttribute] = rgbaInstance.rgba();
     element.setAttribute(styleAttribute, rgbaInstance.rgba());
   };
 
-  proto.applyFillGradient = function(element, gradient, matrix, filterSignature) {
-    return this.applyGradient('fill', element, gradient, matrix, filterSignature);
+  proto.applyFillGradient = function(element, gradient, matrix) {
+    return this.applyGradient('fill', element, gradient, matrix);
   };
 
   /**
    * Applies gradients (currently only linear gradients) to an element
    */
-  proto.applyGradient = function(styleAttribute, element, gradient, matrix, filterSignature) {
-
-    filterSignature = element._filterSignature || filterSignature;
+  proto.applyGradient = function(styleAttribute, element, gradient, matrix) {
 
     var colorMatrix,
         colorMatrixString,
@@ -1109,12 +1029,6 @@ define([
     var stops = gradient.stops,
         signature = gradientToSignature(gradient),
         signatureKey = '_' + styleAttribute + 'GradientSignature';
-
-    // apply colorMatrix shim when SVGFEColorMatrix isn't enabled and a filter is applied
-    if (!isFEColorMatrixEnabled && filterSignature) {
-      colorMatrixString = valueFromSignatureForType(filterSignature, 'colorMatrix');
-      colorMatrixString && (colorMatrix = colorMatrixString.split(','));
-    }
 
     // We already have an identical gradient -- use it:
     // ColorMatrix-Shim is enabled -- don't use it:
@@ -1454,58 +1368,6 @@ define([
       element.setAttribute('fill', 'url(#' + pattern.id + ')');
       defs.appendChild(pattern);
     }
-  };
-
-  proto.applyFilters = function(element, list) {
-
-    var filterDef;
-    var signature = 'filter:';
-
-    // create signature
-    signature += list.map(function(filter) {
-      return filterToSignature(filter);
-    }).join();
-
-    // compare signature with existing signatures
-    if (signature in this.definitions) {
-      // We already have an identical filter -- use it:
-      filterDef = this.definitions[signature];
-      if (element._filterSignature !== signature) {
-        filterDef.n++;
-        element._filterSignature = signature;
-        element.setAttribute('filter', 'url(#' + filterDef.element.id + ')');
-      }
-      return;
-    }
-
-    // remove already applied filters
-    this.removeFilters(element);
-
-    var filterContainer = createElement('filter');
-
-    filterContainer.id = this._genDefUID();
-
-    // Create a filter-region that is big enough to make filters visible
-    // that overflow the original bounding box.
-    filterContainer.setAttribute('x', '-100%');
-    filterContainer.setAttribute('y', '-100%');
-    filterContainer.setAttribute('width', '300%');
-    filterContainer.setAttribute('height', '300%');
-
-    // handle filter specific stuff and get an array of <filter> elements back
-    var filterElements = filterElementsFromList(list);
-    for (var i = 0, len = filterElements.length; i < len; i += 1) {
-      filterContainer.appendChild(filterElements[i]);
-    }
-
-    this.svg.defs.appendChild(filterContainer);
-    element.setAttribute('filter', 'url(#' + filterContainer.id + ')');
-    element._filterSignature = signature;
-    // Save the new gradient to this.definitions:
-    this.definitions[signature] = {
-      n: 1,
-      element: filterContainer
-    };
   };
 
   proto.applyMask = function(element, attr) {

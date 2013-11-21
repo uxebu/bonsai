@@ -26,7 +26,6 @@ define([
   './text_span',
   './audio',
   './video',
-  './filter/builtin',
   './display_list',
   './dom_element',
   '../version'
@@ -35,7 +34,7 @@ define([
   Path, SpecialAttrPath, Rect, Polygon, Star, Ellipse, Circle, Arc,
   Bitmap, DisplayObject, Group,
   Animation, KeyframeAnimation, easing, FontFamily, Matrix,
-  Sprite, color, gradient, Text, TextSpan, Audio, Video, filter,
+  Sprite, color, gradient, Text, TextSpan, Audio, Video,
   displayList, DOMElement, version
 ) {
   'use strict';
@@ -89,7 +88,6 @@ define([
       tools: tools,
       gradient: gradient,
       easing: easing,
-      filter: filter,
       stage: stage,
       version: version
     };

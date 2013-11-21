@@ -74,22 +74,6 @@ define(['bonsai/renderer/svg/svg'], function(SvgRenderer) {
       });
     });
 
-    describe('applyFilter', function() {
-      it('is a function', function() {
-        expect(typeof createSvgRenderer().applyFilters).toBe('function');
-      });
-      it('adds a `_filterSignature` attribute to the node', function() {
-        var node = createFakeDomNode();
-        createSvgRenderer().applyFilters(node, []);
-        expect(node._filterSignature).toBe('filter:');
-      });
-      it('adds a filter:colorMatrix() signature when a `colorMatrix` filter is applied', function() {
-        var node = createFakeDomNode(), filter = { type: 'colorMatrix', value: [] };
-        createSvgRenderer().applyFilters(node, [filter]);
-        expect(node._filterSignature).toBe('filter:colorMatrix()');
-      });
-    });
-
     describe('drawAudio', function() {
       it('is a function', function() {
         expect(typeof createSvgRenderer().drawAudio).toBe('function');

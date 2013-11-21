@@ -11,10 +11,6 @@ define([
 
   var helpers = {
 
-    filterToSignature: function filterToSignature(filter) {
-      return filter.type + '(' + filter.value + ')';
-    },
-
     gradientToSignature: function gradientToSignature(gradient) {
       // Create a gradient signature so we can cache the usage of gradients
       // and re-use them (signatures will be stored in `this.definitions`)

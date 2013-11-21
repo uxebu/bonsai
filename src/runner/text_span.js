@@ -134,7 +134,6 @@ define([
       fillColor: '_textFillColor',
       fillGradient: '_textFillGradient',
       fillOpacity: 'textFillOpacity',
-      filters: '_filters',
       glyphx: '_glyphx',
       glyphy: '_glyphy',
       strokeOpacity: 'textLineOpacity',

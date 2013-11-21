@@ -4,11 +4,10 @@ define([
   './matrix',
   '../point',
   './animation/animation',
-  './animation/keyframe_animation',
-  './filter/builtin'
+  './animation/keyframe_animation'
 ], function(
   EventEmitter, tools, Matrix, Point, Animation,
-  KeyframeAnimation, filter
+  KeyframeAnimation
 ) {
   'use strict';
 
@@ -206,27 +205,6 @@ define([
     }
   }
 
-  function getFilters() {
-    // Returning the originals for now, gotta see if we run into issues
-    // with this approach.
-    return this._filters.slice(0);
-  }
-
-  function setFilters(args) {
-
-    if (!args) {
-      this._filters.length = 0;
-      return;
-    }
-
-    var filters = [].concat(args);
-    filters = filters.map(function(filterArgs) {
-      return filterArgs instanceof filter.BaseFilter ? filterArgs : new filter[filterArgs]();
-    });
-
-    this._filters = filters;
-  }
-
   function setClip(clip) {
 
     // TODO: Clip cleanup (when a clip is no longer applied)
@@ -315,7 +293,6 @@ define([
    * @property {number} __supportedAttributes__.scaleY The scale applied to the y-axis.
    * @property {number} __supportedAttributes__.x Sets the matrix offset on the x-axis.
    * @property {number} __supportedAttributes__.y Sets the matrix offset on the y-axis.
-   * @property {array} __supportedAttributes__.filters The list of filters applied to the DisplayObject
    *
    */
   function DisplayObject() {
@@ -324,8 +301,6 @@ define([
       _owner: data(this),
       _matrix: data(new Matrix()),
       matrix: accessor(getMatrix, setMatrix, true),
-      _filters: data([], true),
-      filters: accessor(getFilters,setFilters, true),
       interactive: data(true, true),
       _opacity: data(1, true),
       opacity: accessor(getOpacity, setOpacity, true),
@@ -355,7 +330,6 @@ define([
 
     this._renderAttributes = {
       matrix: 'matrix',
-      filters: '_filters',
       opacity: '_opacity',
       clipId: '_clipId',
       maskId: '_maskId',
