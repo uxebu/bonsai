@@ -198,10 +198,12 @@ define([
 
   function rgba(color) {
     if (!color) return 'transparent';
+    var a = (color & 0xff) / 0xff;
+    if (a === 1) return '#' + ('00000' + (color.toString(16))).slice(-6);
+
     var r = color >>> 24 & 0xff;
     var g = color >>> 16 & 0xff;
     var b = color >>> 8 & 0xff;
-    var a = (color & 0xff) / 0xff;
 
     return 'rgba(' + [r, g, b, a].join(',') + ')';
   }
