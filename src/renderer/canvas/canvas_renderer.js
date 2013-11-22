@@ -85,7 +85,6 @@ define([
     render: function(messages) {
       var root = this.root, nodes = root.nodes, positionUpdates = [];
       var mixin = tools.mixin;
-
       for (var i = 0, n = messages.length; i < n; i++) {
         var message = messages[i], id = message.id;
         var node = root.nodes[id];
@@ -98,9 +97,9 @@ define([
             node = nodes[id] = new Tree(id, message.type);
             node.attributes = message.attributes;
           } else { // ... or update attributes
-            mixin(node.attributes, message.attributes)
+            mixin(node.attributes, message.attributes);
           }
-          node.data = message.data;
+          if (message.data) node.data = message.data;
         }
 
         if ('parent' in message) { // position has changed
