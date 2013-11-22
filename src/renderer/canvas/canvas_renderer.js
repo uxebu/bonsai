@@ -1,7 +1,8 @@
 define([
   '../../tools',
-  '../../event_emitter'
-], function(tools, EventEmitter) {
+  '../../event_emitter',
+  '../../runner/path/curved_path'
+], function(tools, EventEmitter, CurvedPath) {
   'use strict';
 
   function Tree(id, type) {
@@ -178,6 +179,12 @@ define([
         context.bezierCurveTo(op[1], op[2], op[3], op[4], x, y);
       } else if (type === 'closePath') {
         context.closePath();
+      } else if (type === 'arcTo') {
+        var segments = CurvedPath.subPathToCurves([['moveTo',x,y], op]);
+        segments.splice(0, 1, i, 1);
+        var o = data.splice.apply(data, segments);
+        n = data.length;
+        i -= 1;
       } else {
         console.log(op.join(', '));
       }
