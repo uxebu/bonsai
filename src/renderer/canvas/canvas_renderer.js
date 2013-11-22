@@ -73,7 +73,8 @@ define([
 
     this.width = canvas.width = width;
     this.height = canvas.height = height;
-    this._fpsLog(options && options.fpsLog);
+    this._fpsLog = !!(options && options.fpsLog);
+    this._times = [];
     container.appendChild(canvas);
   }
 
@@ -116,6 +117,16 @@ define([
       var context = this.context;
       context.clearRect(0, 0, this.width, this.height);
       this.root.draw(context);
+
+      if (this._fpsLog) {
+        var times = this._times;
+        var fps = 0, now = Date.now(), stop = now - 1000;
+        n = times.unshift(now);
+        for (i = 0; i < n && times[i] > stop; i++) fps++;
+        times.length = i;
+        context.font = '20px Arial';
+        context.fillText(fps + 'FPS', 5, 20);
+      }
       this.emit('canRender');
     },
 
