@@ -18,7 +18,7 @@ define([
 
       var previous;
       if (next) {
-        previous = node.previous = next.previous;
+        previous = node.previous = next.previous || this.lastChild;
         next.previous = node;
         node.next = next;
       } else {
@@ -28,8 +28,9 @@ define([
 
       if (previous) {
         previous.next = node;
+        if (this.lastChild === previous) this.lastChild = node;
       } else {
-        this.firstChild = node;
+        this.firstChild = this.lastChild = node;
       }
     },
     remove: function(node) {
@@ -70,8 +71,9 @@ define([
     var root = this.root = new Tree(0);
     root.nodes = {0: root};
 
-    canvas.width = width;
-    canvas.height = height;
+    this.width = canvas.width = width;
+    this.height = canvas.height = height;
+    this._fpsLog(options && options.fpsLog);
     container.appendChild(canvas);
   }
 
@@ -115,6 +117,7 @@ define([
       var context = this.context;
       context.clearRect(0, 0, this.width, this.height);
       this.root.draw(context);
+      this.emit('canRender');
     },
 
     destroy: function() {
