@@ -191,7 +191,7 @@ define([
                   dom.style[vendorPrefix + 'TransformOrigin'] =
                     value.tx + 'px ' + value.ty + 'px';*/
 
-                // Apply transform plus 3d translateZ to kick hardware-accel:
+                // Apply 3d transform to kick hardware-accel:
                 dom.style.transform =
                   dom.style[vendorPrefix + 'Transform'] = matrixToString(value);
               } else if (value === null) {
