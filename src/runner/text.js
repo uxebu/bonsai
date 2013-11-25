@@ -10,7 +10,8 @@ define([
   var accessor = tools.descriptorAccessor,
       data = tools.descriptorData,
       getter = tools.getter,
-      parseColor = color.parse;
+      parseColor = color.parse,
+      isArray = tools.isArray;
 
   // Getters and setters stolen from shape.js
 
@@ -77,6 +78,15 @@ define([
     return text.join('');
   }
 
+  function getTextAlign() {
+    return this._textAlign;
+  }
+  function setTextAlign(textAlign) {
+    if (textAlign === 'left' || textAlign === 'center' || textAlign === 'right') {
+      this._textAlign = textAlign;
+    }
+  }
+
   /**
    * The Text constructor
    *
@@ -111,12 +121,14 @@ define([
 
     Object.defineProperties(this._attributes, {
       fontSize: data(16, true, true),
-      fontFamily: accessor(getFontFamily, setFontFamily, true),
       _fontFamily: data('monospace', true),
+      fontFamily: accessor(getFontFamily, setFontFamily, true),
       fontStyle: data('normal', true, true),
       fontWeight: data('normal', true, true),
       _cap: data('butt', true),
       cap: accessor(getCap, setCap, true),
+      _textAlign: data('left', true),
+      textAlign: accessor(getTextAlign, setTextAlign, true),
       _textFillColor: data(0x000000ff, true), // transparent by default
       textFillColor: accessor(getTextFillColor, setTextFillColor, true),
       _textFillGradient: data(null, true),
@@ -151,6 +163,7 @@ define([
     rendererAttributes.miterLimit = '_miterLimit';
     rendererAttributes.selectable = 'selectable';
     rendererAttributes.textOrigin = 'textOrigin';
+    rendererAttributes.textAlign = '_textAlign';
 
     if (text != null) {
       this.attr('text', text);
@@ -174,7 +187,7 @@ define([
    */
   proto.addChild = function(child, index) {
     var isTextSpan =
-      tools.isArray(child) ?
+      isArray(child) ?
         child.every(function(child) {
           return child instanceof TextSpan;
         }) :

@@ -20,6 +20,22 @@ define([
   // targets webkit based browsers from version 530.0 to 534.4
   var isWebkitPatternBug = /AppleWebKit\/53([0-3]|4.([0-4]))/.test(navigator.appVersion);
 
+  /**
+   * Sets a style property on a style object. Avoids unnecessary creation of
+   * style attributes in the DOM, to ease debugging.
+   *
+   * @param {CSSStyleDeclaration} style The style object to set the property on
+   * @param {string} name The name of the property to set
+   * @param {string} value The value of the property to set.
+   */
+  function setStyle(style, name, value) {
+    if (value) {
+      style[name] = value;
+    } else if (style[name]) { // only remove if set to prevent empty style attributes in the DOM
+      style[name] = '';
+    }
+  }
+
   // Math
   var min = Math.min;
   var max = Math.max;
@@ -41,36 +57,50 @@ define([
       fontPrefix = AssetController.handlers.Font.prefix;
 
   var basicAttributeMap = {
-    cap: 'stroke-linecap',
-    join: 'stroke-linejoin',
-    miterLimit: 'stroke-miterlimit',
-    opacity: 'opacity',
-    fillOpacity: 'fill-opacity',
-    strokeOpacity: 'stroke-opacity',
-    fontSize: 'font-size',
-    fontWeight: 'font-weight',
-    fontStyle: 'font-style',
-    textAnchor: 'text-anchor',
-    text: 'text',
-    cursor: 'cursor',
-    fillRule: 'fill-rule'
+    // bonsai attribute: [svg attribute, default value]
+    cap: ['stroke-linecap', 'butt'],
+    join: ['stroke-linejoin', 'miter'],
+    miterLimit: ['stroke-miterlimit', '4'],
+    opacity: ['opacity', '1'],
+    fillOpacity: ['fill-opacity', '1'],
+    strokeOpacity: ['stroke-opacity', '1'],
+    strokeDash: ['stroke-dasharray'],
+    strokeDashOffset: ['stroke-dashoffset'],
+    fontSize: ['font-size'],
+    fontWeight: ['font-weight'],
+    fontStyle: ['font-style'],
+    text: ['text'],
+    cursor: ['cursor', 'inherit'],
+    fillRule: ['fill-rule', 'inherit']
   };
 
   var eventTypes = [
-    'dblclick',
     'click',
+    'dblclick',
+    'mousedown',
     'mouseenter',
     'mouseleave',
-    'mouseover',
-    'mouseout',
-    'mouseup',
-    'mousedown',
-    'touchstart',
-    'touchend',
     'mousemove',
+    'mouseout',
+    'mouseover',
+    'mouseup',
+    'touchcancel',
+    'touchend',
     'touchmove',
-    'mousewheel'
+    'touchstart'
   ];
+
+  var textAlignMap = {
+    left: 'start',
+    center: 'middle',
+    right: 'end'
+  };
+
+  var textOriginMap = {
+    top: 'hanging',
+    center: 'middle',
+    bottom: 'auto'
+  };
 
   // tools
   var isArray = tools.isArray;
@@ -130,15 +160,22 @@ define([
         value = attributes[i];
 
         if (i in basicAttributeMap) {
-          if (value != null) {
-            el.setAttribute(basicAttributeMap[i], value);
-          } else if (value === null) {
-            el.removeAttribute(basicAttributeMap[i]);
+          var attributeInfo = basicAttributeMap[i];
+          var attributeName = attributeInfo[0], defaultValue = attributeInfo[1];
+
+          var isInitalValue = '' + value === defaultValue;
+          if (value !== null && !isInitalValue) {
+            el.setAttribute(attributeName, value);
+          } else if (value === null || isInitalValue) {
+            el.removeAttribute(attributeName);
           }
           continue;
         }
 
         switch (i) {
+          case 'interactive':
+            setStyle(el.style, 'pointerEvents', value ? '' : 'none');
+            break;
           case 'fontFamily':
             value = fontIDs[value] || value;
             if (value != null) {
@@ -176,10 +213,14 @@ define([
             break;
           case 'matrix':
             if (value != null) {
-              el.setAttribute(
-                'transform',
-                matrixToString(value)
-              );
+              // clear transform attribute for identity matrix
+              var strMatrix = matrixToString(value);
+              if (strMatrix == 'matrix(1,0,0,1,0,0)') {
+                // this is the default
+                el.removeAttribute('transform');
+              } else {
+                el.setAttribute('transform', strMatrix);
+              }
             } else if (value === null) {
               el.removeAttribute('transform');
             }
@@ -209,6 +250,7 @@ define([
     this.width = width;
     this.height = height;
     this.allowEventDefaults = !!options.allowEventDefaults;
+    this.objectsUnderPointer = !!options.objectsUnderPointer;
 
     var svg = this.svg = new Svg(node, width, height);
 
@@ -229,6 +271,8 @@ define([
     document.addEventListener('keydown', this, false);
     document.addEventListener('keypress', this, false);
 
+    this._isLoggingFps = false;
+    this._fpsInterval = null;
     this._setupFPSLog(options.fpsLog);
     if (options.disableContextMenu) {
       this.config({
@@ -419,7 +463,9 @@ define([
       }
     }
 
-    this._logFrame();
+    if (this._isLoggingFps) {
+      this._logFrame();
+    }
 
     this.emit('canRender');
   };
@@ -490,7 +536,7 @@ define([
     }
 
     if (attr.visible != null) {
-      element.style.visibility = attr.visible ? '' : 'hidden';
+      setStyle(element.style, 'visibility', attr.visible ? '' : 'hidden');
     }
 
     if (type === 'Path' || type === 'Text' || type === 'TextSpan') {
@@ -524,6 +570,11 @@ define([
       if ('strokeGradient' in attr) {
         this.applyStrokeGradient(element, attr.strokeGradient, '', attr.strokeWidth);
       }
+
+      if ('strokeDash' in attr) {
+        this.applyStrokeDashArray(element, attr.strokeDash, attr.strokeDashOffset);
+      }
+
     }
   };
 
@@ -603,6 +654,9 @@ define([
   proto.drawText = function(text, message) {
 
     var attributes = message.attributes;
+    var style = text.style;
+    var textOrigin = attributes.textOrigin;
+    var textAlign = attributes.textAlign;
 
     if (attributes.selectable !== undefined) {
       if (attributes.selectable !== false) {
@@ -612,17 +666,15 @@ define([
       }
     }
 
-    text.setAttributeNS(xlink, 'text-anchor', 'start');
-
-    if (attributes.textOrigin != null) {
-      text.setAttribute(
-        'alignment-baseline',
-        attributes.textOrigin === 'top' ? 'hanging' : ''
-      );
+    if (textAlign != null) {
+      setStyle(style, 'textAnchor', textAlignMap[textAlign]);
     }
 
-    var style = text.style;
-    style.textAnchor = 'start';
+    if (textOrigin != null) {
+      setStyle(style, 'alignmentBaseline', textOriginMap[textOrigin]);
+      setStyle(style, 'dominantBaseline', textOriginMap[textOrigin]);
+    }
+
   };
 
   proto.drawVideo = function(foreignObject, message) {
@@ -792,9 +844,6 @@ define([
       }
     }
 
-    // Mark the element as one with a corresponding BS DOMElement object
-    element._isBSDOMElement = true;
-
     for (var i in attributes) {
       if (/^dom_/.test(i)) {
         if (i === 'dom_innerHTML') {
@@ -823,6 +872,8 @@ define([
     }
 
   };
+
+  proto.getTime = Date.now || function() { return new Date().getTime() };
 
   proto.removeObject = function(element) {
 
@@ -978,6 +1029,16 @@ define([
     } else if (aColor === null) {
       element.removeAttribute('stroke');
       element.removeAttribute('data-stroke');
+    }
+  };
+
+  proto.applyStrokeDashArray = function(element, strokeDashArray, strokeOffset) {
+    if (strokeDashArray) {
+      element.setAttribute('stroke-dasharray', strokeDashArray);
+      element.setAttribute('stroke-dashoffset', strokeOffset || 0);
+    } else {
+      element.removeAttribute('stroke-dasharray');
+      element.removeAttribute('stroke-dashoffset');
     }
   };
 
@@ -1485,11 +1546,14 @@ define([
 
   proto._setupFPSLog = function(fpsLog) {
     var isFunction = typeof fpsLog === 'function';
-    if (fpsLog !== true || isFunction) {
+    var hasLog = fpsLog === true || isFunction;
+    this._isLoggingFps = hasLog;
+    clearInterval(this._fpsInterval);
+    if (!hasLog) {
       return;
     }
 
-    if (!isFunction) {
+    if (fpsLog === true) { // draw a fps counter on the stage
       this.render([
         {
           parent:0,
@@ -1532,14 +1596,14 @@ define([
   };
 
   proto._logFrame = function() {
-    (this._frameTimes || (this._frameTimes = [])).push(+new Date);
+    (this._frameTimes || (this._frameTimes = [])).push(this.getTime());
   };
 
   proto.getFPS = function() {
 
     var frames = this._frameTimes,
         fps = 0,
-        time = +new Date - 1000;
+        time = this.getTime() - 1000;
 
     for (var l = frames.length; l--;) {
       if (frames[l] < time) break;

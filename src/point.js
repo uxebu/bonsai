@@ -58,7 +58,6 @@ define(function() {
    * @returns {Point} The current Point instance
    */
   proto.normalize = function(length) {
-    var curlen = sqrt(this.x * this.x + this.y * this.y);
     var fact = length / this.length;
     this.x = this.x * fact;
     this.y = this.y * fact;
@@ -158,6 +157,17 @@ define(function() {
     var hside = this.x - toPoint.x;
     var vside = this.y - toPoint.y;
     return sqrt(hside * hside + vside * vside);
+  };
+
+
+  /**
+   * Returns the angle in radians of the slope between pt1 and pt2
+   *
+   * @param {Point} toPoint
+   * @returns {Number} angle
+   */
+  proto.angle = function(toPoint) {
+    return Math.atan2(this.y - toPoint.y, this.x - toPoint.x);
   };
 
   // static methods

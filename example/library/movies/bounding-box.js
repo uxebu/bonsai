@@ -3,7 +3,6 @@
  */
 
 var box = new Arc(400, 400, 150, 1, 3, 1).addTo(stage).stroke('red',2).getBoundingBox();
-console.log(box);
 new Rect(box.left+400, box.top+400, box.width, box.height).stroke('green', 2).addTo(stage);
 
 function Tracker(path) {

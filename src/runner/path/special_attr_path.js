@@ -1,4 +1,5 @@
 define(['./path', '../../tools'], function(Path, tools) {
+  var hasOwnProperty = Object.prototype.hasOwnProperty;
 
   function makeAccessor(attrName, defaultValue) {
     var value = defaultValue;
@@ -36,6 +37,7 @@ define(['./path', '../../tools'], function(Path, tools) {
     Path.call(this);
 
     this._isProcessingPathAttribute = false;
+    this._specialNames = Object.keys(specialAttributes);
 
     for (var attrName in specialAttributes) {
       Object.defineProperty(
@@ -67,8 +69,10 @@ define(['./path', '../../tools'], function(Path, tools) {
       // going through the entire map of attributes:
       this._isProcessingPathAttribute = true;
       attrMethod.call(this, attr);
-      this.clear();
-      this._make();
+      if (this._specialNames.some(hasOwnProperty, this._mutatedAttributes)) {
+        this.clear();
+        this._make();
+      }
       this._isProcessingPathAttribute = false;
       return this;
     }

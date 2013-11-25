@@ -64,7 +64,7 @@ movieList = {
     'content-creation.js',
     'business-card.js',
     'blobs-by-manfred.js',
-    'svg-lion.js'
+    'svg-tiger.js'
   ],
   'Events': [
     'event-click.js',
@@ -73,6 +73,7 @@ movieList = {
     'event-multi-touch.js',
     'event-multi-touch2.js',
     'event-mouse-button.js',
+    'event-mouse-over-out.js',
     'key-events.js'
   ],
   'Filter': [
@@ -141,6 +142,7 @@ movieList = {
     'shape-getPointAtLength.js',
     'shape-center-of-arc.js',
     'shape-fill-rule.js',
+    'shape-dashedstrokes.js',
     'overlapping-paths.js',
     'bounding-box.js'
   ],

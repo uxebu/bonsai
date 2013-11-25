@@ -82,6 +82,7 @@ define([
       Arc: Arc,
 
       DisplayList: displayList.DisplayList,
+      EventEmitter: EventEmitter,
 
       Point: Point,
       color: color,
@@ -99,7 +100,7 @@ define([
     exports.KeyframeAnimation = bindConstructorToParameters(KeyframeAnimation, [stage]);
     exports.Bitmap = bindConstructorToParameters(Bitmap, [assetLoader]);
     exports.FontFamily = bindConstructorToParameters(FontFamily, [assetLoader]);
-    exports.Movie = bindConstructorToParameters(Movie, [stage]);
+    exports.Movie = bindConstructorToParameters(Movie, [stage, null]);
     exports.Sprite = bindConstructorToParameters(Sprite, [assetLoader]);
     exports.Video = bindConstructorToParameters(Video, [assetLoader]);
     exports.Audio = bindConstructorToParameters(Audio, [assetLoader]);

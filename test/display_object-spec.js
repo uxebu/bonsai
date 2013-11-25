@@ -1,11 +1,13 @@
 define([
   'bonsai/runner/display_object',
+  'bonsai/runner/group',
   'bonsai/event_emitter',
   'bonsai/runner/matrix',
   'bonsai/tools',
+  'bonsai/point',
   'common/mock',
   'common/displayobject-lifecycle'
-], function(DisplayObject, EventEmitter, Matrix, tools, mock, testLifeCycle) {
+], function(DisplayObject, Group, EventEmitter, Matrix, tools, Point, mock, testLifeCycle) {
   describe('DisplayObject', function() {
     testLifeCycle(function() {
       return new DisplayObject();
@@ -123,6 +125,60 @@ define([
           expect(m.ty).toBe(-100);
         });
 
+        it('should set the scale properties when a matrix is updated', function () {
+          var d, m;
+          d = new DisplayObject();
+          m = new Matrix(2, 0, 0, 2, 0, 0);
+          d.attr('matrix', m);
+          expect(d.attr('scaleX')).toBe(2);
+          expect(d.attr('scaleY')).toBe(2);
+          expect(d.attr('scale')).toBe(2);
+
+          // reset
+          d.attr('scaleX', 1);
+          d.attr('scaleY', 1);
+          expect(d.attr('scaleX')).toBe(1);
+          expect(d.attr('scaleY')).toBe(1);
+          expect(d.attr('scale')).toBe(1);
+        });
+
+        it('should allow the matrix to be updated after setting a scale', function () {
+          var d, m;
+          d = new DisplayObject();
+          m = new Matrix(2, 0, 0, 3, 0, 0);
+
+          // scale up, then set the matrix
+          d.attr('scaleX', 1.5);
+          d.attr('scaleY', 2);
+          d.attr('matrix', m);
+
+          expect(d.attr('scaleX')).toBe(2);
+          expect(d.attr('scaleY')).toBe(3);
+
+          expect(d.attr('scale')).toBe((2 + 3) / 2);
+        });
+
+        it('should return the an equivalent matrix when setting the matrix attribute', function() {
+          var scaleX = 2;
+          var scaleY = 3;
+          var tx = 123, ty = 654;
+          var d = new DisplayObject(), m = new Matrix(scaleX, 0, 0, scaleY, tx, ty);
+
+          // scale up, then set the matrix
+          d.attr('scaleX', 1.5);
+          d.attr('scaleY', 2);
+          d.attr('matrix', m);
+
+          expect(d.attr('matrix')).toEqual(new Matrix(scaleX, 0, 0, scaleY, tx, ty));
+        });
+      });
+
+      it('should mark the object for update when the matrix is updated', function() {
+        var d = new DisplayObject();
+        d.stage = {registry: {needsDraw: {}}};
+
+        d.attr('matrix', new Matrix());
+        expect(d.stage.registry.needsDraw).toHaveOwnProperties(d.id);
       });
 
       it('should use the origin attribute for rotation', function() {
@@ -136,7 +192,7 @@ define([
         d.attr('rotation', rotation);
         m = d.attr('matrix');
 
-        m2 = m.clone().identify().rotate(rotation);
+        m2 = m.clone().identity().rotate(rotation);
         p = m2.transformPoint(origin);
 
         expect(m.a).toBe(m2.a);
@@ -168,10 +224,24 @@ define([
         }
 
         m = d.attr('matrix');
-        m2 = m.clone().identify().rotate(rotation).scale(scale, scale);
+        m2 = m.clone().identity().rotate(rotation).scale(scale, scale);
         ['a', 'b', 'c', 'd', 'tx', 'ty'].forEach(function(p) {
           expect(m[p]).toBeCloseTo(m2[p], 10);
         });
+      });
+    });
+
+    describe('interactive', function() {
+      it('should be set to true by default', function() {
+        var d = new DisplayObject();
+        expect(d.attr('interactive')).toBe(true);
+      });
+      it('should be settable/gettable', function() {
+        var d = new DisplayObject();
+        d.attr('interactive', true);
+        expect(d.attr('interactive')).toBe(true);
+        d.attr('interactive', false);
+        expect(d.attr('interactive')).toBe(false);
       });
     });
 
@@ -206,6 +276,44 @@ define([
           expect(
             new DisplayObject().getBoundingBox()
           ).toEqual({top: 0, right: 0, bottom: 0, left: 0, width: 0, height: 0});
+        });
+      });
+
+      describe('getAbsoluteBoundingBox', function() {
+        it('Gets absolute bbox relative to top-most ancestor', function() {
+          var a = new Group().attr('scaleX', 2);
+          var b = new Group().attr('scaleY', 1.5).attr('scaleX', 2).attr('x', 20);
+          var obj = new DisplayObject();
+          b.addTo(a);
+          obj.addTo(b);
+          obj.attr({
+            x: 100,
+            y: 100
+          });
+          expect(obj.getAbsoluteBoundingBox()).toEqual({
+            top: 150,
+            left: 440,
+            bottom: 150,
+            right: 440,
+            width: 0,
+            height: 0
+          });
+        });
+      });
+
+      describe('getAbsoluteMatrix', function() {
+        it('Gets the matrix of the DisplayObject concat\'d with all ancestors\' matrices', function() {
+          var a = new Group().attr('scaleX', 2);
+          var b = new Group().attr('scaleY', 1.5).attr('scaleX', 2).attr('x', 20);
+          var obj = new DisplayObject();
+          b.addTo(a);
+          obj.addTo(b);
+          obj.attr({
+            x: 100,
+            y: 100
+          });
+          var m = obj.getAbsoluteMatrix();
+          expect(m).toEqual(new Matrix(4, 0, 0, 1.5, 440, 150));
         });
       });
 
@@ -273,6 +381,151 @@ define([
         var index = 20;
         displayObject.addTo(parent, index);
         expect(parent.addChild).toHaveBeenCalledWith(displayObject, index);
+      });
+    });
+
+    describe('destroy', function(){
+      var displayObject, parent;
+      beforeEach(function() {
+        parent = new Group();
+        displayObject = new DisplayObject().addTo(parent);
+      });
+
+      it('removes the displayobject from its parent', function(){
+        displayObject.destroy();
+        expect(displayObject.parent).toEqual(void 0); // allows for null as well
+      });
+
+      it('removes the displayobject from its parent', function(){
+        displayObject.destroy();
+        expect(parent.children()).not.toContain(displayObject);
+      });
+
+      it('emits a "destroy" event when being destroyed', function(){
+        var spy = jasmine.createSpy();
+        displayObject.on('destroy', this, spy);
+        displayObject.destroy();
+        expect(spy).toHaveBeenCalled();
+        //TOFIX: freezes the test runner
+        //expect(spy.mostRecentCall.object).toBe(displayObject);
+      });
+    });
+
+    describe('Coordinate space conversion', function() {
+      beforeEach(function() {
+        this.addMatchers({
+          toMatchPoint: function(x, y) {
+            var round = Math.round;
+            var precision = 1 << 24;
+            var point = this.actual;
+            return round(x * precision) === round(point.x * precision) &&
+              round(y * precision) === round(point.y * precision);
+          }
+        })
+      });
+
+      describe('globalToLocal', function() {
+        it('should apply a rotation transformation as expected', function() {
+          var displayObject = new DisplayObject();
+          var transform = new Matrix().rotate(Math.PI / 4);
+          displayObject.attr('matrix', transform);
+
+          expect(displayObject.globalToLocal(new Point(Math.sqrt(8), 0))).toMatchPoint(2, -2);
+        });
+
+        it('should apply a translation as expected', function() {
+          var displayObject = new DisplayObject();
+          var tx = 100;
+          var ty = 200;
+          var transform = new Matrix().translate(tx, ty);
+          displayObject.attr('matrix', transform);
+
+          var x = 10;
+          var y = 20;
+          expect(displayObject.globalToLocal(new Point(x, y))).toMatchPoint(x - tx, y - ty);
+        });
+
+        it('should apply the transform of an display object to a point', function() {
+          var point = new Point(-102, 23.75);
+          var matrix = new Matrix(1.0625, 0.3125, -1.25, -1.09375, 26.5, -34);
+          var displayObject = new DisplayObject().attr('matrix', matrix);
+
+          expect(displayObject.globalToLocal(point))
+            .toEqual(matrix.invert().transformPoint(point));
+        });
+
+        it('should apply the inverted computed transform of the display object and each of its parents', function() {
+          var point = new Point(-102, 23.75);
+          var matrix = new Matrix(1.375, -0.75, 1.328125, -0.15625, 41.75, -34.25);
+          var displayObject = new DisplayObject().attr('matrix', matrix);
+
+          var parent = new Group();
+          parent.addChild(displayObject);
+          var parentMatrix = new Matrix(1.9375, -1.609375, -1.609375, -0.078125, -15.5, -7);
+          parent.attr('matrix', parentMatrix);
+
+          var root = new Group();
+          root.addChild(parent);
+          var rootMatrix = new Matrix(-0.0625, 1.6875, -1.5, -1.421875, -14.5, 36.75);
+          root.attr('matrix', rootMatrix);
+
+          var absoluteMatrix = matrix.concat(parentMatrix).concat(rootMatrix);
+
+          expect(displayObject.globalToLocal(point))
+            .toEqual(absoluteMatrix.invert().transformPoint(point));
+        });
+      });
+
+      describe('localToGlobal', function() {
+        it('should apply a rotation transformation as expected', function() {
+          var displayObject = new DisplayObject();
+          var transform = new Matrix().rotate(Math.PI / 4);
+          displayObject.attr('matrix', transform);
+
+          expect(displayObject.localToGlobal(new Point(2, 2))).toMatchPoint(0, Math.sqrt(8));
+        });
+
+        it('should apply a translation as expected', function() {
+          var displayObject = new DisplayObject();
+          var tx = 100;
+          var ty = 200;
+          var transform = new Matrix().translate(tx, ty);
+          displayObject.attr('matrix', transform);
+
+          var x = 10;
+          var y = 20;
+          expect(displayObject.localToGlobal(new Point(x, y))).toMatchPoint(x + tx, y + ty);
+        });
+
+        it('should apply the inversed transform of an display object to a point', function() {
+          var point = new Point(-102, 23.75);
+          var matrix = new Matrix(1.0625, 0.3125, -1.25, -1.09375, 26.5, -34);
+          var displayObject = new DisplayObject().attr('matrix', matrix);
+
+          expect(displayObject.localToGlobal(point))
+            .toEqual(matrix.transformPoint(point));
+        });
+
+        it('should apply the computed transform of the display object and each of its parents', function() {
+          var point = new Point(-102, 23.75);
+          var matrix = new Matrix(1.375, -0.75, 1.328125, -0.15625, 41.75, -34.25);
+          var displayObject = new DisplayObject().attr('matrix', matrix);
+
+          var parent = new Group();
+          parent.addChild(displayObject);
+          var parentMatrix = new Matrix(1.9375, -1.609375, -1.609375, -0.078125, -15.5, -7);
+          parent.attr('matrix', parentMatrix);
+
+          var root = new Group();
+          root.addChild(parent);
+          var rootMatrix = new Matrix(-0.0625, 1.6875, -1.5, -1.421875, -14.5, 36.75);
+          root.attr('matrix', rootMatrix);
+
+          var absoluteMatrix = matrix.concat(parentMatrix).concat(rootMatrix);
+
+          expect(displayObject.localToGlobal(point))
+            .toEqual(absoluteMatrix.transformPoint(point));
+        });
       });
     });
   });

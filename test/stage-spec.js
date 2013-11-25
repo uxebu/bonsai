@@ -31,6 +31,12 @@ define([
         expect(stage.framerate).toBe(40);
       });
 
+      it('should allow fractional numbers as framerate', function() {
+        var desiredFramerate = 1.23456;
+        stage.setFramerate(desiredFramerate);
+        expect(stage.framerate).toBe(desiredFramerate);
+      });
+
     });
 
     describe('setRendering', function() {
@@ -51,7 +57,8 @@ define([
       it('returns an Environment instance for a new subMovie', function() {
         var subMovie = {};
         var subMovieUrl = 'test/123.js';
-        var env = makeStage().getSubMovieEnvironment(subMovie, subMovieUrl);
+        var assetUrl = 'arbitrary/assets'
+        var env = makeStage().getSubMovieEnvironment(subMovie, subMovieUrl, assetUrl);
         expect(env instanceof Environment).toBe(true);
         expect(env.exports.stage).toBe(subMovie);
       });
@@ -105,14 +112,15 @@ define([
             dParent = new DisplayObject,
             dChild = new DisplayObject;
 
-        dParent.id = 1;
-        dChild.id = 2;
         dChild.parent = dParent;
+        var registry = stage.registry.displayObjects = {};
+        registry[dParent.id] = dParent;
+        registry[dChild.id] = dChild;
 
-        stage.registry.displayObjects = {
-          1: dParent,
-          2: dChild
-        };
+        afterEach(function() {
+          dChild.removeAllListeners();
+          dParent.removeAllListeners();
+        });
 
         it('Triggers correct event on child and parent [bubbles]', function() {
 
@@ -128,7 +136,7 @@ define([
           proxy.runMessageListener({
             command: 'userevent',
             data: {
-              targetId: 2,
+              targetId: dChild.id,
               event: eventObject
             }
           });
@@ -152,7 +160,7 @@ define([
           proxy.runMessageListener({
             command: 'userevent',
             data: {
-              targetId: 2,
+              targetId: dChild.id,
               event: eventObject
             }
           });
@@ -162,6 +170,25 @@ define([
 
         });
 
+        it('should add the correct `relatedTarget` property to the event ' +
+          'object if a related target id is passed', function() {
+
+          var event, eventType = 'arbitrary';
+          dChild.on(eventType, function(event_) {
+            event = event_;
+          });
+
+          stage.handleEvent({
+            command: 'userevent',
+            data: {
+              event: {type: eventType},
+              targetId: dChild.id,
+              relatedTargetId: dParent.id
+            }
+          });
+
+          expect(event.relatedTarget).toBe(dParent);
+        });
       });
 
       describe('sendMessage', function() {

@@ -1,6 +1,38 @@
-v0.4.2
+v0.4.4 / 2013-10-06
+-------------------
+* Add support for `textAlign` attribute on Text.
+
+v0.4.3 / 2013-03-06
+-------------------
+* Add support for `strokeDash` and `strokeDashOffset` attributes on all Paths.
+* Add `DisplayObject#globalToLocal()` and `DisplayObject#localToGlobal()`
+* Consistent delivery of diffX/Y and deltaX/Y offsets for move and drag events
+* Added a basic implementation of charCode to return for
+  keydown events, as long as they are broken in DOM
+* Add experimental renderer feature: get all elements under the pointer
+
+v0.4.2 / 2013-01-14
 -------------------
 
+* Add support for an `interactive` attribute on all DisplayObjects which allows
+  pointer-events to be received (true) or to pass through (false)
+* Setting an attribute to the actual value won't trigger a render message.
+* Added support for getAbsoluteBoundingBox and getAbsoluteMatrix on
+  DisplayObject
+* Added an destroy event for DisplayObjects, which is fired on a
+  DisplayObject when destroy is called on it.
+* Updated KeyframeAnimation.js documentation
+* Fixed an issue with KeyframeAnimation where it would trip over
+  certain undefined values
+* Fixed a bug in KeyframeAnimation#_fillInProperties where it would
+  refer to the wrong instance property easingFn (-> easing)
+* Sending of user messages to runner contexts is deferred until context startup
+* Allow for an ID string to be passed to as the first argument to `run`
+* Fix a memory leak with frame rate logging
+* Fix matrix attribute setter to update scale values correctly
+* Add tools.parseAngle to accept angle units as strings.
+  http://www.w3.org/TR/css3-values/#angles
+* Add relatedTarget event properties for mouseout / mouseover.
 
 v0.4.1 / 2012-10-26
 -------------------
@@ -14,7 +46,7 @@ v0.4.1 / 2012-10-26
 * Fixed examples to be in line with the documentation.
 * Fix out-of-range hsl color values
 * Fix out-of-range alpha values when parsing rgba() strings
-* Add additional method signature for new Matrix([a, b, c, d, tx, ty]) 
+* Add additional method signature for new Matrix([a, b, c, d, tx, ty])
 * Add Matrix.fromString() method to create new Matrix instance from a string.
 * Rename DisplayObject#getComputed to DisplayObject#getBoundingBox and improve
   implementation for calculating the bounding box of paths

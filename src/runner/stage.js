@@ -136,10 +136,25 @@ define([
           this.assetLoader.handleEvent('error', data.id, data.loadData);
           break;
         case 'userevent':
-          var target = data.targetId ? this.registry.displayObjects[data.targetId] : this;
+          var displayObjectsRegistry = this.registry.displayObjects;
+          var targetId = data.targetId;
+          var target = targetId ? displayObjectsRegistry[targetId] : this;
           if (target) { // target might have been removed already
             var event = data.event;
             event.target = target;
+            var relatedTargetId = data.relatedTargetId;
+            if (relatedTargetId === 0 || relatedTargetId > 0) {
+              event.relatedTarget = displayObjectsRegistry[relatedTargetId] || this;
+            }
+
+            var objectsUnderPointerIds = data.objectsUnderPointerIds;
+            if (objectsUnderPointerIds) {
+              var objectsUnderPointer = event.underPointer = [];
+              for (var i = 0, elementId; (elementId = objectsUnderPointerIds[i]); i += 1) {
+                objectsUnderPointer[i] = displayObjectsRegistry[elementId];
+              }
+            }
+
             uiEvent(event).emitOn(target);
           }
           break;
@@ -214,14 +229,13 @@ define([
      * @private
      * @returns {Environment} The Submovie Environment
      */
-    getSubMovieEnvironment: function(subMovie, subMovieUrl) {
+    getSubMovieEnvironment: function(subMovie, subMovieUrl, assetUrl) {
       subMovieUrl = this.assetBaseUrl.resolveUri(subMovieUrl);
       subMovie.url = subMovieUrl.toString();
-      var assetBase = subMovieUrl.scheme === 'data' ? null : subMovieUrl;
       return new Environment(
         subMovie,
         new AssetLoader(this.registry.pendingAssets)
-          .on('request', hitch(this, this.loadAsset, assetBase))
+          .on('request', hitch(this, this.loadAsset, assetUrl.scheme === 'data' ? null : assetUrl))
       );
     },
 
@@ -240,7 +254,6 @@ define([
       var movieRegistry = registry.movies;
 
       var movies = tools.removeValueFromArray(movieRegistry.movies);
-      var moviesToIncrement = [this];
 
       /*
         The `movies` array may contain gaps (if elements are removed from the
@@ -254,18 +267,22 @@ define([
         movie = movies[i];
         if (movie) {
           movie.emitFrame();
-          moviesToIncrement.push(movie);
         }
 
         i += 1;
       }
 
+
       // Emit an event to mark the fact that we've emitted all submovies' frames:
       this.emit('subMoviesAdvanced');
 
+      var moviesToIncrement = [this].concat(movies);
       // Go through all movies and increment their respective frames:
       for (i = 0, len = moviesToIncrement.length; i < len; ++i) {
-        moviesToIncrement[i].incrementFrame();
+        movie = moviesToIncrement[i];
+        if (movie && movie.isPlaying) {
+          movie.incrementFrame();
+        }
       }
 
       var message;
@@ -384,7 +401,7 @@ define([
 
       var wasFrozen = this._isFrozen;
       this.freeze();
-      this.framerate = Math.abs(framerate | 0);
+      this.framerate = Math.abs(framerate);
       if (!wasFrozen) {
         this.unfreeze();
       }

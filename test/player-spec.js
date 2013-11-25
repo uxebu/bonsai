@@ -1,7 +1,9 @@
 define([
   'bonsai/bootstrapper/player',
+  'bonsai/event_emitter',
+  'bonsai/tools',
   'bonsai/uri'
-], function (player, URI) {
+], function (player, EventEmitter, tools, URI) {
   'use strict';
 
   var MockAssetControllerConstructor,
@@ -56,6 +58,14 @@ define([
 
     it('has a defaultRunnerOptions property which is an object', function() {
       expect(player.defaultRunnerOptions).toBeInstanceOf(Object);
+    });
+
+    it('exposes the EventEmiiter', function() {
+      expect(player.EventEmitter).toBe(EventEmitter);
+    });
+
+    it('exposes tools', function() {
+      expect(player.tools).toBe(tools);
     });
 
     describe('.baseUrl()', function () {
@@ -124,12 +134,13 @@ define([
           expect(funcSetup(createMockNode())).toBeInstanceOf(player.RendererController);
         });
 
-        it('passes node, width, height, allowEventDefaults and fpsLog arguments to the renderer', function () {
-          var node = createMockNode(), width = 162, height = 100, options = {allowEventDefaults: true, fpsLog: true};
+        it('passes node, width, height, allowEventDefaults, objectsUnderPointer, and fpsLog arguments to the renderer', function () {
+          var node = createMockNode(), width = 162, height = 100, options = {allowEventDefaults: true, objectsUnderPointer: true, fpsLog: true};
           funcSetup(node, width, height, options);
 
           expect(MockRendererConstructor).toHaveBeenCalledWith(node, width, height, {
             allowEventDefaults: options.allowEventDefaults,
+            objectsUnderPointer: true,
             fpsLog: options.fpsLog
           });
         });
@@ -156,6 +167,7 @@ define([
           expect(args[3]).toBeInstanceOf(Object /* these are the options */);
           expect(args[3]).toHaveProperties('baseUrl');
         });
+
 
         describe('defaultRunnerOptions', function() {
           var originalOptions;
@@ -260,6 +272,21 @@ define([
 
         return player.run(node, options);
       })();
+
+
+      it('passes a node when given a DOM id to the renderer', function () {
+        var el = document.createElement('div'), node = 'node', width = 100, height = 100, options = { width: width, height: height };
+
+        // create fixture
+        el.setAttribute('id', node);
+        document.body.appendChild(el);
+
+        player.run(node, options);
+
+        expect(MockRendererConstructor).toHaveBeenCalledWith(el, width, height, {});
+        // cleanup
+        document.body.removeChild(el);
+      });
 
     });
 
