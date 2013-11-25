@@ -184,28 +184,16 @@ define([
             }
             break;
           case 'matrix':
-            if (type === 'Group' || type === 'Movie') {
+            if (true || type === 'Group' || type === 'Movie') {
               if (value != null) {
-                var matrix = tools.mixin({}, value);
-
                 // Apply origin of @ top-left of the group/movie:
                 /*dom.style.transformOrigin =
-                  dom.style[vendorPrefix + 'TransformOrigin'] = 
+                  dom.style[vendorPrefix + 'TransformOrigin'] =
                     value.tx + 'px ' + value.ty + 'px';*/
-
-                // Make matrix properties accurate to 7 decimal places.
-                // This is to avoid numbers being so small that they use 
-                // scientific E notation (e.g. -6.938893903907228e-18)
-                // (CSS `transform` property doesn't seem to support this)
-                matrix.a = Math.round(matrix.a * 1e7) / 1e7;
-                matrix.b = Math.round(matrix.b * 1e7) / 1e7;
-                matrix.c = Math.round(matrix.c * 1e7) / 1e7;
-                matrix.d = Math.round(matrix.d * 1e7) / 1e7;
 
                 // Apply transform plus 3d translateZ to kick hardware-accel:
                 dom.style.transform =
-                  dom.style[vendorPrefix + 'Transform'] = 
-                    matrixToString(matrix) + ' translateZ(0)';
+                  dom.style[vendorPrefix + 'Transform'] = matrixToString(value);
               } else if (value === null) {
                 dom.style.transform =
                   dom.style[vendorPrefix + 'Transform'] = '';
@@ -300,7 +288,7 @@ define([
     }
   };
 
-  proto.render = function(messages) { 
+  proto.render = function(messages) {
 
     var drawName,
       element,
@@ -439,7 +427,7 @@ define([
             if (nextEl.dom.parentNode.firstChild !== nextEl.dom) {
               // If the nextEl Element (to be next sibling of el element) is NOT
               // the first in its DisplayLayer then we need to split the contents of
-              // the layer, the new one with the nextEl and every element after 
+              // the layer, the new one with the nextEl and every element after
               // nextEl.
               var nextLayer = nextEl.parentDisplayGroup.addLayerAfter(
                 isNextDOM ? 'dom' : 'svg',
@@ -458,7 +446,7 @@ define([
               // move the whole layer
               el.parentDisplayGroup.dom.insertBefore(el.parentDisplayLayer.dom, nextLayer.dom);
             } else {
-              
+
               if (el instanceof DisplayGroup) {
                 parent.dom.insertBefore(el.dom, nextLayer.dom);
               } else {

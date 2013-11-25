@@ -45,9 +45,16 @@ define([
     },
 
     matrixToString: function matrixToString(matrix) {
-      return matrix ? 'matrix(' + [
-        matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx, matrix.ty
-      ].join(',') + ')' : '';
+      // Make matrix properties accurate to 7 decimal places.
+      // This is to avoid numbers being so small that they use
+      // scientific E notation (e.g. -6.938893903907228e-18)
+      // (CSS `transform` property doesn't seem to support this)
+      return matrix ? 'matrix3d(' + [
+        matrix.a.toFixed(7), matrix.b.toFixed(7), 0, 0,
+        matrix.c.toFixed(7), matrix.d.toFixed(7), 0, 0,
+        0, 0, 1, 0,
+        matrix.tx.toFixed(7), matrix.ty.toFixed(7), 0, 1
+      ] + ')' : '';
     },
 
     /**
