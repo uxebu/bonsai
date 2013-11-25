@@ -37,7 +37,7 @@ if (window.parent !== window && window.isBonsaiMovie) {
     '../player',
     '../../tools',
     '../context/iframe/context',
-    '../../renderer/svg/svg',
+    '../../renderer/svg_with_layers/renderer',
     '../../require_config',
     'module'
   ], function(player, tools, IFrameRunnerContext, SvgRenderer, requireConfig, module) {
