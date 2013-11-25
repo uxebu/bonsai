@@ -77,7 +77,6 @@ define([
     this._times = [];
     container.appendChild(canvas);
   }
-
   tools.mixin(CanvasRenderer.prototype, EventEmitter, {
     getOffset: function() {
       return this.canvas.getBoundingClientRect();
@@ -101,10 +100,9 @@ define([
             mixin(node.attributes, message.attributes);
           }
           if (message.data) node.data = message.data;
-        }
-
-        if ('parent' in message) { // position has changed
-          positionUpdates.push(node, message.parent, message.next);
+          if ('parent' in message) { // position has changed
+            positionUpdates.push(node, message.parent, message.next);
+          }
         }
       }
 
