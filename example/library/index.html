@@ -2,14 +2,16 @@
 <head>
   <title>Bonsai Movie Library</title>
   <meta name=viewport content=width=device-width,initial-scale=1>
+  <script src="../knockout-3.0.0.js"></script>
   <script src=../../lib/requirejs/require.js></script>
   <!--<script src="http://localhost:8080/socket.io/socket.io.js"></script>-->
+
   <style type="text/css">
     body, html { margin: 0; font-family: sans-serif; font-size: 14px; }
     #head {
       background: #2e3949;
       padding: 10px;
-      width:100%;
+      width: 100%;
       position:fixed;
       left:0;
       top:0;
@@ -17,57 +19,143 @@
     #bs {
       margin: 45px 0 0 0;
     }
-    button, option {
-      background-color:#cbd0d5;
-      color: #545b66;
-      border:0;
-    }
   </style>
 </head>
 <body>
   <div id="head">
-    <span id="movieList"></span>
+    <select id="movies" data-bind="foreach: movies, value: selected.movie">
+      <optgroup data-bind="attr: {label: label}, foreach: options">
+        <option data-bind="option: $data, text: $data"></option>
+      </optgroup>
+    </select>
+
     <button id="next">Next</button>
-    <span id="envList"></span>
+    <select data-bind="options: environments, value: selected.env"></select>
+    <select data-bind="options: renderers, value: selected.renderer"></select>
   </div>
   <div id="bs"></div>
   <script type="text/javascript">
+    // from http://stackoverflow.com/a/11190148
+    ko.bindingHandlers.option = {
+      update: function(element, valueAccessor) {
+        var value = ko.utils.unwrapObservable(valueAccessor());
+        ko.selectExtensions.writeValue(element, value);
+      }
+    };
+
+    function optGroups(groups) {
+      var optGroups = [];
+      for (var label in groups) {
+        optGroups.push({label: label, options: groups[label]});
+      }
+      return optGroups;
+    }
+
+    function first(options) {
+      var first = options[0], subOptions = first.options;
+      return subOptions ? subOptions[0] : first;
+    }
 
     var movieList = (function() {
       var xhr = new XMLHttpRequest();
       xhr.open('GET', 'movies/movie_list.json', false);
       xhr.send(null);
-      return eval('(' + xhr.responseText + ')');
+      return optGroups(eval('(' + xhr.responseText + ')'));
     })();
 
-    var envList = {
-      'worker': 'bonsai/bootstrapper/_dev/worker',
-      'iframe': 'bonsai/bootstrapper/_dev/iframe'
-    };
-
-    var queryObject = (function(queryString, defaultValues) {
-      var m, result = defaultValues, pattern = /([^&=]+)=([^&]*)/g;
-      while (m = pattern.exec(queryString)) {
-        result[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+    function selectedToQuery() {
+      var selected = viewModel.selected, params = [];
+      for (var key in selected) {
+        params.push(encodeURIComponent(key) + '=' + encodeURIComponent(selected[key]()));
       }
-      result.toString = function(ownQueryObject) {
-        var string = '';
-        for (var key in this) {
-          if (this.hasOwnProperty(key) && key !== 'toString') {
-            if (key in ownQueryObject) {
-              string += '&' + key + '=' + ownQueryObject[key];
-            } else {
-              string += '&' + key + '=' + result[key];
+      return params.join('&');
+    }
+
+    var runTimeout;
+    var stageNode = document.getElementById('bs');
+    function onParameterChange() {
+      location.hash = '#?' + selectedToQuery();
+
+      if (currentMovie) {
+        currentMovie.destroy();
+        currentMovie = null;
+        stageNode.innerHTML = '';
+      }
+      clearTimeout(runTimeout);
+      setTimeout(runMovie, 25);
+    }
+
+    var environments, renderers, currentMovie;
+    function runMovie() {
+      var selected = viewModel.selected;
+      var withRenderer = environments && environments[selected.env()];
+      var renderer = renderers && renderers[selected.renderer()];
+      var movie = selected.movie();
+      if (!withRenderer || !renderer || !movie) return;
+
+      currentMovie = withRenderer(renderer).run(stageNode, {
+        url: 'movies/' + movie + '?' + new Date().getTime(),
+        width: document.width,
+        height: document.height - 50,
+        framerate: 60,
+        fpsLog: /animation/.test(movie) // only show FPS log on animations
+      });
+    }
+
+    function urlParam(validValues) {
+      var observable = ko.observable(first(validValues));
+      var computed = ko.computed({
+        read: observable,
+        write: function(value) {
+          for (var i = 0, n = validValues.length; i < n; i++) {
+            var reference = validValues[i];
+            var options = reference.options;
+            if (value === reference || options && options.indexOf(value) !== -1) {
+              observable(value);
+              return;
             }
           }
         }
-        return string.substr(1);
-      };
-      return result;
-    })(location.search.substr(1), {
-      movie: movieList[Object.keys(movieList)[0]][0],
-      env: Object.keys(envList)[0]
-    });
+      });
+      computed.subscribe(onParameterChange);
+      return computed;
+    }
+
+    var validEnvironments = ['worker', 'iframe'];
+    var validRenderers = ['svg'];
+    var viewModel = {
+      movies: movieList,
+      environments: validEnvironments,
+      renderers: validRenderers,
+      selected: {
+        movie: urlParam(movieList),
+        env: urlParam(validEnvironments),
+        renderer: urlParam(validRenderers)
+      }
+    };
+
+    ko.applyBindings(viewModel, document.getElementById('head'));
+    var movieSelect = document.getElementById('movies');
+    document.getElementById('next').onclick = function() {
+      movieSelect.selectedIndex += 1;
+      viewModel.selected.movie(movieSelect.value);
+    };
+
+    function parseQuery(query) {
+      var values = viewModel.selected;
+      var bit, key, bits = query.split('&');
+      for (var i = 0, n = bits.length; i < n; i++) {
+        bit = bits[i].split('=');
+        key = decodeURIComponent(bit[0]);
+        if (key in values) values[key](decodeURIComponent(bit[1]));
+      }
+    }
+
+    // parse initial values from url hash
+    window.onhashchange = function() {
+      parseQuery(location.hash.slice(2));
+    };
+    window.onhashchange();
 
     require.config({
       baseUrl: '../../src',
@@ -77,69 +165,48 @@
       urlArgs: +new Date
     });
 
-    require([envList[queryObject.env]], function(player) {
+    require([
+      'bonsai/tools',
+      'bonsai/uri',
+      'bonsai/require_config',
+      'bonsai/bootstrapper/player',
 
-      // movies
-      var moviesDropdown = '<select name="movie">' +
-        '<option disabled>Choose a movie &#x2026;</option>';
-      for (var groupName in movieList) {
-        var group = movieList[groupName];
-        moviesDropdown += '<optgroup label="' + groupName + '">';
-        group.forEach(function(fileName) {
-          moviesDropdown += '<option>' + fileName + '</option>'
-        });
-        moviesDropdown += '</optgroup>';
+      'bonsai/bootstrapper/context/worker/context',
+      'bonsai/bootstrapper/context/iframe/context',
+
+      'bonsai/renderer/svg/svg'
+    ], function(tools, URI, requireConfig, player, workerEnv, iframeEnv, SvgRenderer) {
+      var baseUrl = URI.parse(tools.baseUri(document));
+      player.defaultRunnerOptions.requireUrl = baseUrl.resolveUri(requireConfig.url).toString();
+      var requireConfig = player.defaultRunnerOptions.requireConfig = requireConfig.config;
+      if (requireConfig && requireConfig.baseUrl) {
+        requireConfig.baseUrl = baseUrl.resolveUri(requireConfig.baseUrl).toString();
       }
-      moviesDropdown += '</select>';
-      document.getElementById('movieList').innerHTML = moviesDropdown;
-
-      // envs
-      var envsDropdown = '<select name="env">' +
-        '<option disabled>Choose a environment &#x2026;</option>';
-      Object.keys(envList).forEach(function(envKey) {
-        envsDropdown += '<option>' + envKey + '</option>';
-      });
-      envsDropdown += '</select>';
-      document.getElementById('envList').innerHTML = envsDropdown;
-
-      var selectNodes = [].slice.call(document.getElementsByTagName('select'));
-
-      [].slice.call(selectNodes[0]).forEach(function(option, index) {
-        if (option.value === queryObject.movie) {
-          selectNodes[0].selectedIndex = index;
-        }
-      });
-
-      [].slice.call(selectNodes[1]).forEach(function(option, index) {
-        if (option.value === queryObject.env) {
-          selectNodes[1].selectedIndex = index;
-        }
-      });
-
-      selectNodes.forEach(function(selectNode) {
-        selectNode.onchange = function(obj) {
-          obj = {}, obj[this.name] = this.value;
-          location.search = '?' + queryObject.toString(obj)
-        };
-      });
-
-      var stageNode = document.getElementById('bs');
-      var nextNode = document.getElementById('next');
-
-      nextNode.onclick = function() {
-        selectNodes[0].selectedIndex = selectNodes[0].selectedIndex + 1;
-        selectNodes[0].onchange();
-      };
-
       player.setup({
+        baseUrl: baseUrl.toString(),
         noCache: true
-      }).run(stageNode, {
-        url: 'movies/' + queryObject.movie + '?' + new Date().getTime(),
-        width: document.width,
-        height: document.height - 50,
-        framerate: 60,
-        fpsLog: /animation/.test(queryObject.movie) // only show FPS log on animations
       });
+
+      environments = {
+        worker: function(renderer) {
+          return player.setup({
+            renderer: renderer,
+            runnerContext: workerEnv,
+            runnerUrl: require.toUrl('bonsai/bootstrapper/_dev/worker')
+          });
+        },
+        iframe: function(renderer) {
+          return player.setup({
+            renderer: renderer,
+            runnerContext: iframeEnv,
+            runnerUrl: require.toUrl('bonsai/bootstrapper/_dev/iframe')
+          });
+        }
+      };
+      renderers = {
+        svg: SvgRenderer
+      };
+      runMovie();
     });
 
   </script>
