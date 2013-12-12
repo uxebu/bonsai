@@ -10,10 +10,14 @@
     "type": "git",
     "url": "git@github.com:uxebu/bonsai.git"
   },
-  "dependencies": {
-    "requirejs": "~2.0"
+  "dependencies": {},
+  "devDependencies": {
+    "chai": "~1.8.1",
+    "grunt": "~0.4.2",
+    "mocha": "~1.15.1",
+    "requirejs": "~2.1.9",
+    "sinon-chai": "~2.4.0"
   },
-  "devDependencies": {},
   "engine": {},
   "contributors": [
     "Jens Arps <arps@uxebu.com>",
