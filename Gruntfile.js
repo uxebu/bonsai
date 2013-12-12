@@ -48,6 +48,14 @@ module.exports = function(grunt) {
     define('bdd', bdd);
     mocha.suite.emit('pre-require', bdd, null, mocha);
 
+    // auto cleanup sinon spies
+    bdd.beforeEach(function() {
+      this.sinon = sinon.sandbox.create();
+    });
+    bdd.afterEach(function() {
+      this.sinon.restore();
+    });
+
     requirejs(testModules, function() {
       mocha.run(function() {
         done();
