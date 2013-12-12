@@ -7,6 +7,7 @@ module.exports = function(grunt) {
     var requirejs = require('requirejs');
     var chai = require('chai');
     var sinonChai = require("sinon-chai");
+    var sinon = require('sinon');
 
     // mocha configuration
     var mocha = new Mocha({
@@ -32,12 +33,20 @@ module.exports = function(grunt) {
         bonsai: 'src'
       }
     });
+    var define = requirejs.define;
 
-    //HACK: force BDD globals to be registered
-    mocha.suite.emit('pre-require', global, null, mocha);
+    // expose chai.expect as module
+    define('expect', function() {
+      return chai.expect;
+    });
 
-    // expose global expect function
-    global.expect = chai.expect;
+    // expose sinon as module
+    define('sinon', sinon);
+
+    //HACK: force BDD functions to be registered in a BDD module
+    var bdd = {};
+    define('bdd', bdd);
+    mocha.suite.emit('pre-require', bdd, null, mocha);
 
     requirejs(testModules, function() {
       mocha.run(function() {
