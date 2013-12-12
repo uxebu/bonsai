@@ -21,7 +21,7 @@ module.exports = function(grunt) {
     chai.use(sinonChai);
     chai.Assertion.includeStack = true;
 
-    var testModules = grunt.file.expand('test/**/*-test.js').map(function(name) {
+    var testModules = grunt.file.expand('test/unit/**/*.js').map(function(name) {
       return name.slice(0, -3);
     });
 
