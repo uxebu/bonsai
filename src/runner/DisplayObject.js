@@ -15,12 +15,7 @@ define(function() {
         var copy = {};
         for (key in attributes) {
           if (startsWith(key, 'set_')) continue; // skip over setters
-          if (startsWith(key, 'get_')) {
-            key = key.slice(4);
-            if (key in attributes) continue; // only invoke getters if no attribute is found
-          }
-
-          copy[key] = getAttribute(attributes, key, this);
+          copy[key] = attributes[key];
         }
 
         return copy;
@@ -39,7 +34,7 @@ define(function() {
         return this;
       }
 
-      return getAttribute(attributes, name, this);
+      return attributes[name];
     }
   };
 
@@ -55,12 +50,6 @@ define(function() {
     if (name in attributes) {
       attributes[name] = value;
     }
-  }
-
-  function getAttribute(attributes, name, owner) {
-    var getterName = 'get_' + name;
-    return getterName in attributes ?
-      attributes[getterName](attributes[name], owner) : attributes[name];
   }
 
   return DisplayObject;
