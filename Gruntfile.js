@@ -57,8 +57,8 @@ module.exports = function(grunt) {
     });
 
     requirejs(testModules, function() {
-      mocha.run(function() {
-        done();
+      mocha.run(function(numFailures) {
+        done(numFailures === 0);
       });
     });
   });
