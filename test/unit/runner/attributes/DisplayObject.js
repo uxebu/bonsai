@@ -192,13 +192,13 @@ define([
     });
 
     describe('translation', function() {
-      it('should default to `null`', function() {
+      it('defaults to `null`', function() {
 
         expect(attributes.translation)
           .to.equal(null);
       });
 
-      xit('should set the x-axis translation on the transform', function() {
+      xit('sets the x-axis translation on the transform', function() {
         var x = 123;
         attributes.set_x(x);
         expect(attributes.transform).to.deep.equal([1, 0, 0, 1, x, 0]);
