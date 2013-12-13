@@ -14,8 +14,7 @@ module.exports = function(grunt) {
       reporter: 'dot',
       slow: 20, // tests are considered slow after 20ms
       timeout: 200, // async tests time out after 200ms
-      ui: 'bdd',
-      useInlineDiffs: true
+      ui: 'bdd'
     });
 
     // chai assertion configuration
