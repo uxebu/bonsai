@@ -42,11 +42,11 @@ define([
       var rotation = this.rotation = a > b ? a : b;
       rotate(transform, rotation);
 
-      var scale = this.scale || (this.scale = Array(2));
+      var scale = getScale(this);
       scale[0] = transform[0];
       scale[1] = transform[3];
 
-      var translation = this.translation || (this.translation = Array(2));
+      var translation = getTranslation(this);
       translation[0] = transform[4];
       translation[1] = transform[5];
 
@@ -59,7 +59,11 @@ define([
   }
 
   function getScale(attributes) {
-    return attributes.scale || (attributes.scale = Array(2));
+    return attributes.scale || (attributes.scale = [1, 1]);
+  }
+
+  function getTranslation(attributes) {
+    return attributes.translation || (attributes.translation = [0, 0]);
   }
 
   function rotate(transform, angle) {
