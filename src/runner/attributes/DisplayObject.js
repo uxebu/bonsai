@@ -40,7 +40,6 @@ define([
       var a = Math.atan2(transform[1], transform[0]);
       var b = -Math.atan2(transform[3], transform[4]);
       var rotation = this.rotation = a > b ? a : b;
-      rotate(transform, rotation);
 
       var scale = getScale(this);
       scale[0] = transform[0];
