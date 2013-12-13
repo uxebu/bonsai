@@ -198,10 +198,53 @@ define([
           .to.equal(null);
       });
 
-      xit('sets the x-axis translation on the transform', function() {
+      it('setter copies the value if uninitialized', function() {
+        var translation = [123, 456];
+        var out = attributes.set_translation(translation);
+
+        expect(out)
+          .to.deep.equal(translation);
+        expect(out)
+          .not.to.equal(translation);
+      });
+
+      it('setter updates an existing attribute', function() {
+        var translation = attributes.translation = [1, 2];
+
+        expect(attributes.set_translation([123, 456]))
+          .to.equal(translation);
+      });
+
+      it('setter sets translation on transform', function() {
+        var x = 123, y = 456;
+        attributes.set_translation([x, y]);
+
+        expect(attributes.transform)
+          .to.deep.equal([1, 0, 0, 1, x, y]);
+      });
+
+      it('x setter sets the x-axis translation on the transform', function() {
         var x = 123;
         attributes.set_x(x);
         expect(attributes.transform).to.deep.equal([1, 0, 0, 1, x, 0]);
+      });
+
+      it('x setter sets the x-axis of the translation', function() {
+        var x = 123;
+        attributes.set_x(x);
+        expect(attributes.translation).to.deep.equal([x, 0]);
+      });
+
+      it('y setter sets the x-axis translation on the transform', function() {
+        var y = 123;
+        attributes.set_y(y);
+        expect(attributes.transform).to.deep.equal([1, 0, 0, 1, 0, y]);
+      });
+
+      it('x setter sets the y-axis of the translation', function() {
+        var y = 123;
+        attributes.set_y(y);
+        expect(attributes.translation).to.deep.equal([0, y]);
       });
     });
   });

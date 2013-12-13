@@ -51,6 +51,24 @@ define([
       translation[1] = transform[5];
 
       return mat2d.copy(getTransform(this), transform);
+    },
+
+    set_translation: function(translation) {
+      var transform = getTransform(this);
+      transform[4] = translation[0];
+      transform[5] = translation[1];
+
+      return vec2.copy(getTranslation(this), translation);
+    },
+
+    set_x: function(x) {
+      getTransform(this)[4] = x;
+      getTranslation(this)[0] = x;
+    },
+
+    set_y: function(y) {
+      getTransform(this)[5] = y;
+      getTranslation(this)[1] = y;
     }
   };
 
