@@ -318,7 +318,7 @@ define([
 
           var expected = [1, skewY, 0, 1, 0, 0];
           mat2d.scale(expected, expected, [scaleX, scaleY]);
-          mat2d.rotate(expected, expected, rotation);
+          rotateMatrix(expected, rotation);
           mat2d.translate(expected, expected, [x, y]);
 
           testTransform(displayObject.attr('transform'), expected);
