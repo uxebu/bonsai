@@ -1,16 +1,21 @@
 define([
-  '../../vendor/glmatrix/mat2d',
-  '../../vendor/glmatrix/vec2'
-], function(mat2d, vec2) {
+  '../../vendor/glmatrix/mat2d'
+], function(mat2d) {
   'use strict';
-    var PI_2 = 2 * Math.PI;
+
+  var PI_2 = 6.283185307179586;
+  var SKEW_X = 0, SKEW_Y = 1, SCALE_X = 2, SCALE_Y = 3, ROTATION = 4, X = 5, Y = 6;
 
   function DisplayObjectAttributes() {
-    this.opacity = 1;
-    this.rotation = 0;
-    this.scale = null;
+    this.opacity =
+      this.scaleX =
+      this.scaleY = 1;
+    this.rotation =
+      this.skewX =
+      this.skewY =
+      this.x =
+      this.y = 0;
     this.transform = null;
-    this.translation = null;
   }
 
   DisplayObjectAttributes.prototype = {
@@ -18,69 +23,74 @@ define([
       return value < 0 ? 0 : value > 1 ? 1 : value;
     },
 
-    set_rotation: function(angle) {
-      angle %= PI_2;
-      if (angle < 0) angle += PI_2;
-
-      var transform = getTransform(this);
-      rotate(transform, angle);
-
-      return angle;
+    set_skewX: function(value) {
+      this.skewX = value;
+      calculateTransform(this);
+      return value;
     },
 
-    set_scale: function(scale) {
-      var transform = getTransform(this);
-      transform[0] = scale[0];
-      transform[3] = scale[1];
-
-      return vec2.copy(getScale(this), scale);
+    set_skewY: function(value) {
+      this.skewY = value;
+      calculateTransform(this);
+      return value;
     },
 
-    set_transform: function(transform) {
-      var a = Math.atan2(transform[1], transform[0]);
-      var b = -Math.atan2(transform[3], transform[4]);
-      var rotation = this.rotation = a > b ? a : b;
-
-      var scale = getScale(this);
-      scale[0] = transform[0];
-      scale[1] = transform[3];
-
-      var translation = getTranslation(this);
-      translation[0] = transform[4];
-      translation[1] = transform[5];
-
-      return mat2d.copy(getTransform(this), transform);
+    set_scaleX: function(value) {
+      this.scaleX = value;
+      calculateTransform(this);
+      return value;
     },
 
-    set_translation: function(translation) {
-      var transform = getTransform(this);
-      transform[4] = translation[0];
-      transform[5] = translation[1];
-
-      return vec2.copy(getTranslation(this), translation);
+    set_scaleY: function(value) {
+      this.scaleY = value;
+      calculateTransform(this);
+      return value;
     },
 
-    set_x: function(x) {
-      getTransform(this)[4] = x;
-      getTranslation(this)[0] = x;
+    set_rotation: function(value) {
+      if (value == 3/4*Math.PI)debugger;
+      value %= PI_2;
+      if (value < 0) value += PI_2;
+
+      this.rotation = value;
+      calculateTransform(this);
+      return value;
     },
 
-    set_y: function(y) {
-      getTransform(this)[5] = y;
-      getTranslation(this)[1] = y;
+    set_x: function(value) {
+      this.x = value;
+      calculateTransform(this);
+      return value;
+    },
+
+    set_y: function(value) {
+      this.y = value;
+      calculateTransform(this);
+      return value;
+    },
+
+    set_transform: function(value) {
+      return mat2d.copy(getTransform(this), value);
     }
   };
 
+  function calculateTransform(attributes) {
+    var transform = attributes.transform = [
+      1,
+      attributes.skewY,
+      attributes.skewX,
+      1,
+      0,
+      0
+    ];
+    mat2d.scale(transform, transform, [attributes.scaleX, attributes.scaleY]);
+    rotate(transform, attributes.rotation);
+    transform[4] = attributes.x;
+    transform[5] = attributes.y;
+  }
+
   function getTransform(attributes) {
     return attributes.transform || (attributes.transform = [1, 0, 0, 1, 0, 0]);
-  }
-
-  function getScale(attributes) {
-    return attributes.scale || (attributes.scale = [1, 1]);
-  }
-
-  function getTranslation(attributes) {
-    return attributes.translation || (attributes.translation = [0, 0]);
   }
 
   function rotate(transform, angle) {

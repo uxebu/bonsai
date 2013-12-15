@@ -1,8 +1,10 @@
-define(function() {
+define([
+  './attributes/DisplayObject'
+], function(DisplayObjectAttributes) {
   'use strict';
 
-  function DisplayObject() {
-    this._attributes = {};
+  function DisplayObject(attributes) {
+    this._attributes = attributes || new DisplayObjectAttributes();
   }
 
   DisplayObject.prototype = {
