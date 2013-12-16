@@ -156,30 +156,25 @@ define([
       });
 
       describe('skew:', function() {
-        it('defaults to 0 for both axes', function() {
-          testSkew(0 ,0);
+        it('defaults to 0', function() {
+          expect(displayObject.attr('skew'))
+            .to.equal(0);
         });
 
         it('can be set', function() {
-          var skewX = 1.23, skewY = 4.56;
-          displayObject.attr({skewX: skewX, skewY: skewY});
+          var skew = 1.23;
+          displayObject.attr('skew', skew);
 
-          testSkew(skewX, skewY);
+          expect(displayObject.attr('skew'))
+            .to.equal(skew);
         });
 
         it('is reflected by the `transform` attribute', function() {
-          var skewX = 1.23, skewY = 4.56;
-          displayObject.attr({skewX: skewX, skewY: skewY});
+          var skew = 1.23;
+          displayObject.attr('skew', skew);
           expect(displayObject.attr('transform')).
-            to.deep.equal([1, skewY, skewX, 1, 0, 0]);
+            to.deep.equal([1, 0, skew, 1, 0, 0]);
         });
-
-        function testSkew(x, y) {
-          expect(displayObject.attr('skewX'))
-            .to.equal(x);
-          expect(displayObject.attr('skewY'))
-            .to.equal(y);
-        }
       });
 
       describe('scale:', function() {
@@ -317,16 +312,16 @@ define([
 
         it('is computed applying skew, scale, rotation and translation in this order', function() {
           // only set one skew value, otherwise rotation is affected
-          var skewY = 0.5;
+          var skew = 0.5;
           var rotation = 2, x = -200, y = 123, scaleX = 4, scaleY = -0.5;
 
           // intentionally apply in different order
           displayObject.attr('rotation', rotation);
           displayObject.attr({x: x, y: y});
           displayObject.attr({scaleX: scaleX, scaleY: scaleY});
-          displayObject.attr('skewY', skewY);
+          displayObject.attr('skew', skew);
 
-          var expected = [1, skewY, 0, 1, 0, 0];
+          var expected = [1, 0, skew, 1, 0, 0];
           mat2d.scale(expected, expected, [scaleX, scaleY]);
           rotateMatrix(expected, rotation);
           mat2d.translate(expected, expected, [x, y]);

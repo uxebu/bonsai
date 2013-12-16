@@ -11,8 +11,7 @@ define([
       this.scaleX =
       this.scaleY = 1;
     this.rotation =
-      this.skewX =
-      this.skewY =
+      this.skew =
       this.x =
       this.y = 0;
     this.transform = null;
@@ -23,14 +22,8 @@ define([
       return value < 0 ? 0 : value > 1 ? 1 : value;
     },
 
-    set_skewX: function(value) {
-      this.skewX = value;
-      calculateTransform(this);
-      return value;
-    },
-
-    set_skewY: function(value) {
-      this.skewY = value;
+    set_skew: function(value) {
+      this.skew = value;
       calculateTransform(this);
       return value;
     },
@@ -75,14 +68,7 @@ define([
   };
 
   function calculateTransform(attributes) {
-    var transform = attributes.transform = [
-      1,
-      attributes.skewY,
-      attributes.skewX,
-      1,
-      0,
-      0
-    ];
+    var transform = attributes.transform = [1, 0, attributes.skew, 1, 0, 0];
     mat2d.scale(transform, transform, [attributes.scaleX, attributes.scaleY]);
     rotate(transform, attributes.rotation);
     transform[4] = attributes.x;
