@@ -39,6 +39,14 @@ define([
         expect(displayObject.attr('arbitrary')).to.equal(undefined);
       });
 
+      it('returns the value of existing getters', function() {
+        setAttributes({
+          arbitrary: 1234,
+          get_arbitrary: function() { return 5678; }
+        });
+        expect(displayObject.attr('arbitrary')).to.equal(5678);
+      });
+
       it('uses the return value of existing setters to set the value of the attribute', function() {
         setAttributes({
           arbitrary: undefined,
@@ -61,6 +69,17 @@ define([
         expect(displayObject.attr('arbitrary')).to.equal(undefined);
       });
 
+      it('passes the current value and the display object to getters', function() {
+        var getArbitrary = sinon.spy();
+        setAttributes({
+          arbitrary: 1234,
+          get_arbitrary: getArbitrary
+        });
+
+        displayObject.attr('arbitrary');
+        expect(getArbitrary).to.have.been.calledWith(1234, displayObject);
+      });
+
       it('passes the new value, the old value, and the display object to setters', function() {
         var setArbitrary = sinon.spy();
         setAttributes({
@@ -75,8 +94,9 @@ define([
       it('returns an object containing all attributes when called without arguments', function() {
         setAttributes({
           foo: 1,
-          bar: 4,
-          baz: 3
+          bar: 2,
+          get_bar: function(value) { return value + 2; },
+          get_baz: function() { return 3; }
         });
 
         expect(displayObject.attr()).to.deep.equal({
