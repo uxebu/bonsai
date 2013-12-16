@@ -106,11 +106,16 @@ define([
           bazoong: 3
         });
 
-        expect(displayObject.attr()).to.deep.equal({
+        var expected = {
           foo: 1,
           bar: 4,
           baz: 3
-        });
+        };
+
+        for (var key in expected) {
+          expect(displayObject.attr(key))
+            .to.equal(expected[key]);
+        }
       });
     });
 
