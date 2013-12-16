@@ -91,21 +91,6 @@ define([
         expect(setArbitrary).to.have.been.calledWith(5678, 1234, displayObject);
       });
 
-      it('returns an object containing all attributes when called without arguments', function() {
-        setAttributes({
-          foo: 1,
-          bar: 2,
-          get_bar: function(value) { return value + 2; },
-          get_baz: function() { return 3; }
-        });
-
-        expect(displayObject.attr()).to.deep.equal({
-          foo: 1,
-          bar: 4,
-          baz: 3
-        });
-      });
-
       it('updates attributes from a passed-in object as single parameter', function() {
         setAttributes({
           foo: undefined,

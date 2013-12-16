@@ -13,21 +13,6 @@ define([
       var attributes = this._attributes;
       var numArguments = arguments.length;
 
-      if (numArguments === 0) { // return an object with all values
-        var copy = {};
-        for (key in attributes) {
-          if (startsWith(key, 'set_')) continue; // skip over setters
-          if (startsWith(key, 'get_')) {
-            key = key.slice(4);
-            if (key in attributes) continue; // only invoke getters if no attribute is found
-          }
-
-          copy[key] = getAttribute(attributes, key, this);
-        }
-
-        return copy;
-      }
-
       if (numArguments === 1 && typeof name === 'object') { // update attributes from object
         var values = name;
         for (key in values) {
@@ -44,10 +29,6 @@ define([
       return getAttribute(attributes, name, this);
     }
   };
-
-  function startsWith(string, prefix) {
-    return string.lastIndexOf(prefix, 0) === 0;
-  }
 
   function setAttribute(attributes, name, value, owner) {
     var setterName = 'set_' + name;
