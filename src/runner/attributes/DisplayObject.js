@@ -4,7 +4,7 @@ define([
   'use strict';
 
   var PI_2 = 6.283185307179586;
-  var SKEW_X = 0, SKEW_Y = 1, SCALE_X = 2, SCALE_Y = 3, ROTATION = 4, X = 5, Y = 6;
+  var atan2 = Math.atan2;
 
   function DisplayObjectAttributes() {
     this.opacity =
@@ -15,6 +15,8 @@ define([
       this.x =
       this.y = 0;
     this.transform = null;
+
+    this._isTransformDirty = false;
   }
 
   DisplayObjectAttributes.prototype = {
@@ -23,56 +25,82 @@ define([
     },
 
     set_skew: function(value) {
-      this.skew = value;
-      calculateTransform(this);
+      this._isTransformDirty = value !== this.skew;
       return value;
     },
 
     set_scaleX: function(value) {
-      this.scaleX = value;
-      calculateTransform(this);
+      this._isTransformDirty = value !== this.scaleX;
       return value;
     },
 
     set_scaleY: function(value) {
-      this.scaleY = value;
-      calculateTransform(this);
+      this._isTransformDirty = value !== this.scaleY;
       return value;
     },
 
     set_rotation: function(value) {
-      if (value == 3/4*Math.PI)debugger;
-      value %= PI_2;
-      if (value < 0) value += PI_2;
-
-      this.rotation = value;
-      calculateTransform(this);
-      return value;
+      this._isTransformDirty = this.rotation !== value;
+      return limitRotation(value);
     },
 
     set_x: function(value) {
-      this.x = value;
-      calculateTransform(this);
+      this._isTransformDirty = value !== this.x;
       return value;
     },
 
     set_y: function(value) {
-      this.y = value;
-      calculateTransform(this);
+      this._isTransformDirty = value !== this.y;
       return value;
     },
 
+    get_transform: function() {
+      if (!this._isTransformDirty) {
+        return this.transform;
+      }
+
+      var transform = getTransform(this);
+      transform[0] = this.scaleX;
+      transform[2] = this.skew * this.scaleX;
+      transform[3] = this.scaleY;
+      transform[1] = transform[4] = transform[5] = 0;
+      if (this.rotation) {
+        rotate(transform, this.rotation);
+      }
+      transform[4] = this.x;
+      transform[5] = this.y;
+
+      this._isTransformDirty = false;
+      return transform;
+    },
+
     set_transform: function(value) {
+      // don't operate on the passed in transform to avoid side-effects
+      var transform = mat2d.copy(tmpTransform, value);
+
+      this.x = transform[4];
+      this.y = transform[5];
+      transform[4] = transform[5] = 0;
+
+      var a = atan2(transform[1], transform[0]);
+      var b = -atan2(transform[2], transform[3]);
+      var angle = this.rotation = limitRotation(a > b ? a : b);
+      rotate(transform, -angle);
+
+      var scaleX = this.scaleX = transform[0];
+      this.scaleY = transform[3];
+      this.skew = transform[2] / scaleX;
+
+      this._isTransformDirty = false;
       return mat2d.copy(getTransform(this), value);
     }
   };
 
-  function calculateTransform(attributes) {
-    var transform = attributes.transform = [1, 0, attributes.skew, 1, 0, 0];
-    mat2d.scale(transform, transform, [attributes.scaleX, attributes.scaleY]);
-    rotate(transform, attributes.rotation);
-    transform[4] = attributes.x;
-    transform[5] = attributes.y;
+  // avoid array allocations when setting transforms
+  var tmpTransform = [];
+
+  function limitRotation(angle) {
+    return angle < 0 ? angle % PI_2 + PI_2 : angle % PI_2;
   }
 
   function getTransform(attributes) {

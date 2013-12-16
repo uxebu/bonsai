@@ -328,6 +328,31 @@ define([
 
           testTransform(displayObject.attr('transform'), expected);
         });
+
+        it('extracts translation, rotation, scale and skew correctly', function() {
+          var scaleX = 1.5, scaleY = 3.45, skew = .777;
+          var rotation = Math.PI * 1.23, x = 98, y = -67;
+
+          var transform = [1, 0, skew, 1, 0, 0];
+          mat2d.scale(transform, transform, [scaleX, scaleY]);
+          rotateMatrix(transform, rotation);
+          mat2d.translate(transform, transform, [x, y]);
+
+          displayObject.attr('transform', transform);
+
+          expect(displayObject.attr('scaleX'))
+            .to.be.closeTo(scaleX, 1e-12);
+          expect(displayObject.attr('scaleY'))
+            .to.be.closeTo(scaleY, 1e-12);
+          expect(displayObject.attr('skew'))
+            .to.be.closeTo(skew, 1e-12);
+          expect(displayObject.attr('rotation'))
+            .to.be.closeTo(rotation, 1e-12);
+          expect(displayObject.attr('x'))
+            .to.be.closeTo(x, 1e-12);
+          expect(displayObject.attr('y'))
+            .to.be.closeTo(y, 1e-12);
+        });
       });
 
       function testTransform(transform, expected) {
