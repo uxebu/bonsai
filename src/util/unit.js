@@ -9,24 +9,13 @@ define({
   parseAngle: function(angle) {
     if (typeof angle === 'number') return angle;
 
-    var bits = angle.split(/(?=\D)/, 2);
-    console.log(bits);
+    var radians;
+    var amount = parseFloat(angle), unit = angle.slice(angle.search(/[^\d.-]/));
 
-    var radians,
-      unit = '',
-      amount = parseFloat(angle);
-
-    switch (unit) {
-      case '': // default
-      case 'rad':
-        radians = amount; break;
-      case 'deg':
-        radians = amount * PI / 180; break;
-      case 'grad':
-        radians = amount * PI / 200; break;
-      case 'turn':
-        radians = amount * 2 * PI; break;
-    }
+    if (unit === 'deg') radians = amount / 180 * Math.PI;
+    else if (unit === 'turn') radians = amount * 2 * Math.PI;
+    else if (unit === 'rad') radians = amount;
+    else if (unit === 'grad') radians = amount / 200 * Math.PI;
 
     return radians;
   }

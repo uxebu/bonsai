@@ -28,7 +28,7 @@ define([
 
     it('calculates radians for radians (string)', function () {
       var angle = -0.5026548245743669;
-      expect(angle + 'rad')
+      expect(parseAngle(angle + 'rad'))
         .to.be.closeTo(angle, 1e-12);
     });
 

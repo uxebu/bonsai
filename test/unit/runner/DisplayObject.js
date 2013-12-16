@@ -241,6 +241,21 @@ define([
           testTransform(displayObject.attr('transform'), rotateMatrix(identityMatrix(), angle));
         });
 
+        it('can parse degrees', function() {
+          testRotation('45deg', Math.PI / 4);
+        });
+
+        it('can parse turns', function() {
+          testRotation('1.25turn', Math.PI * .5);
+        });
+
+        it('can parse radians', function() {
+          testRotation('-.5rad', 2 * Math.PI - 0.5);
+        });
+
+        it('can parse gradians', function() {
+          testRotation('-200grad', Math.PI);
+        });
 
         function testRotation(angle, expected) {
           displayObject.attr('rotation', angle);

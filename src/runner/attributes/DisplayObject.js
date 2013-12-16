@@ -1,6 +1,7 @@
 define([
+  '../../util/unit',
   '../../vendor/glmatrix/mat2d'
-], function(mat2d) {
+], function(unit, mat2d) {
   'use strict';
 
   var PI_2 = 6.283185307179586;
@@ -40,6 +41,7 @@ define([
     },
 
     set_rotation: function(value) {
+      if (typeof value === 'string') value = unit.parseAngle(value);
       this._isTransformDirty = this.rotation !== value;
       return limitRotation(value);
     },
