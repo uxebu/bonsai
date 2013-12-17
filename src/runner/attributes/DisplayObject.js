@@ -7,12 +7,16 @@ define([
   var PI_2 = 6.283185307179586;
   var atan2 = Math.atan2;
 
+  var copyMatrix = mat2d.copy;
+
   function DisplayObjectAttributes() {
     this.opacity =
       this.scaleX =
       this.scaleY = 1;
     this.rotation =
       this.skew =
+      this.transformOriginX =
+      this.transformOriginY =
       this.x =
       this.y = 0;
     this.transform = null;
@@ -71,16 +75,21 @@ define([
         return this.transform;
       }
 
+      var originX = this.transformOriginX, originY = this.transformOriginY;
+      var scaleX = this.scaleX, scaleY = this.scaleY;
+
       var transform = getTransform(this);
-      transform[0] = this.scaleX;
-      transform[2] = this.skew * this.scaleX;
-      transform[3] = this.scaleY;
-      transform[1] = transform[4] = transform[5] = 0;
+      transform[0] = scaleX;
+      transform[1] = 0;
+      transform[2] = this.skew * scaleX;
+      transform[3] = scaleY;
+      transform[4] = -originX * scaleX;
+      transform[5] = -originY * scaleY;
       if (this.rotation) {
         rotate(transform, this.rotation);
       }
-      transform[4] = this.x;
-      transform[5] = this.y;
+      transform[4] += this.x + originX;
+      transform[5] += this.y + originY;
 
       this._isTransformDirty = false;
       return transform;
@@ -88,7 +97,8 @@ define([
 
     set_transform: function(value) {
       // don't operate on the passed in transform to avoid side-effects
-      var transform = mat2d.copy(tmpTransform, value);
+      var transform = copyMatrix(tmpTransform, value);
+
 
       this.x = transform[4];
       this.y = transform[5];
@@ -104,7 +114,24 @@ define([
       this.skew = transform[2] / scaleX;
 
       this._isTransformDirty = false;
-      return mat2d.copy(getTransform(this), value);
+      return copyMatrix(getTransform(this), value);
+    },
+
+    set_transformOriginX: function(value, previousValue) {
+      this._isTransformDirty = value !== previousValue;
+      return value;
+    },
+
+    set_transformOriginY: function(value, previousValue) {
+      this._isTransformDirty = value !== previousValue;
+      return value;
+    },
+
+    set_transformOrigin: function(value) {
+      var x = value[0], y = value[1];
+      this._isTransformDirty = x !== this.transformOriginX || y !== this.transformOriginY;
+      this.transformOriginX = x;
+      this.transformOriginY = y;
     }
   };
 

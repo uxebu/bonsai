@@ -6,6 +6,7 @@ define([
   'bonsai/runner/DisplayObject'
 ], function(bdd, expect, sinon, mat2d, DisplayObject) {
   var beforeEach = bdd.beforeEach, describe = bdd.describe, it = bdd.it;
+  var xit = bdd.xit;
 
   describe('DisplayObject', function() {
     var displayObject;
@@ -364,12 +365,14 @@ define([
           displayObject.attr({scaleX: scaleX, scaleY: scaleY});
           displayObject.attr('skew', skew);
 
-          var expected = [1, 0, skew, 1, 0, 0];
-          scaleMatrix(expected, scaleX, scaleY);
-          rotateMatrix(expected, rotation);
-          translateMatrix(expected, x, y);
-
-          testTransform(displayObject.attr('transform'), expected);
+          testTransform(displayObject.attr('transform'), expectedTransform({
+            skew: skew,
+            rotation: rotation,
+            scaleX: scaleX,
+            scaleY: scaleY,
+            x: x,
+            y: y
+          }));
         });
 
         it('extracts translation, rotation, scale and skew correctly', function() {
@@ -395,6 +398,109 @@ define([
             .to.be.closeTo(x, 1e-12);
           expect(displayObject.attr('y'))
             .to.be.closeTo(y, 1e-12);
+        });
+
+        describe('transform origin:', function() {
+          it('has a `transformOriginX` attribute with 0 as default value', function() {
+            expect(displayObject.attr('transformOriginX'))
+              .to.equal(0);
+          });
+
+          it('has a `transformOriginY` attribute with 0 as default value', function() {
+            expect(displayObject.attr('transformOriginY'))
+              .to.equal(0);
+          });
+
+          it('can set both transform origin axes via `transformOrigin`', function() {
+            displayObject.attr('transformOrigin', [20, -40]);
+
+            expect(displayObject.attr('transformOriginX'))
+              .to.equal(20);
+            expect(displayObject.attr('transformOriginY'))
+              .to.equal(-40);
+          });
+
+          it('should reflect the transform origin in the `transform` attribute', function() {
+            var originX = 30, originY = -40, angle = Math.PI;
+            displayObject.attr('rotation', angle);
+            displayObject.attr('transform'); // make sure transform is calculated here
+
+            displayObject.attr({
+              transformOriginX: originX,
+              transformOriginY: originY
+            });
+
+            testTransform(displayObject.attr('transform'), expectedTransform({
+              originX: originX,
+              originY: originY,
+              rotation: angle
+            }));
+          });
+
+          it('should reflect the transform origin in the `transform` attribute when set with `transformOrigin`', function() {
+            var originX = 30, originY = -40, angle = Math.PI;
+            displayObject.attr('rotation', angle);
+            displayObject.attr('transform'); // make sure transform is calculated here
+
+            displayObject.attr('transformOrigin', [originX, originY]);
+
+            testTransform(displayObject.attr('transform'), expectedTransform({
+              originX: originX,
+              originY: originY,
+              rotation: angle
+            }));
+          });
+
+          it('uses the transform origin correctly in a complex transformation', function() {
+            var skew = 0.5, rotation = 2, x = -200, y = 123, scaleX = 4, scaleY = -0.5;
+            var originX = -12.3, originY = 98;
+
+            // intentionally apply in different order
+            displayObject.attr('rotation', rotation);
+            displayObject.attr({x: x, y: y});
+            displayObject.attr({transformOriginX: originX, transformOriginY: originY});
+            displayObject.attr({scaleX: scaleX, scaleY: scaleY});
+            displayObject.attr('skew', skew);
+
+            testTransform(displayObject.attr('transform'), expectedTransform({
+              skew: skew,
+              rotation: rotation,
+              scaleX: scaleX,
+              scaleY: scaleY,
+              originX: originX,
+              originY: originY,
+              x: x,
+              y: y
+            }));
+          });
+
+          xit('extracts translation, rotation, scale and skew using the transform origin', function() {
+            var skew = 0.5, rotation = 2, x = -200, y = 123, scaleX = 4, scaleY = -0.5;
+            var originX = -12.3, originY = 98;
+
+            displayObject.attr('transformOrigin', [originX, originY]);
+            displayObject.attr('transform', [
+              -1.6645873461885696,
+              3.637189707302727,
+              -0.37764495968144396,
+              2.0266682719249345,
+              -277.3299982725778,
+              245.34623840901355
+            ]);
+
+            expect(displayObject.attr('scaleX'))
+              .to.be.closeTo(scaleX, 1e-12);
+            expect(displayObject.attr('scaleY'))
+              .to.be.closeTo(scaleY, 1e-12);
+            expect(displayObject.attr('skew'))
+              .to.be.closeTo(skew, 1e-12);
+            expect(displayObject.attr('rotation'))
+              .to.be.closeTo(rotation, 1e-12);
+            expect(displayObject.attr('x'))
+              .to.be.closeTo(x, 1e-12);
+            expect(displayObject.attr('y'))
+              .to.be.closeTo(y, 1e-12);
+          });
         });
       });
 
@@ -426,6 +532,20 @@ define([
 
       function scaleMatrix(matrix, x, y) {
         return mat2d.scale(matrix, matrix, [x, y]);
+      }
+
+      function expectedTransform(options) {
+        function v(name, fallback) {
+          return options[name] || fallback || 0;
+        }
+
+        var transform = identityMatrix();
+        transform[2] = v('skew');
+        translateMatrix(transform, -v('originX'), -v('originY'));
+        scaleMatrix(transform, v('scaleX', 1), v('scaleY', 1));
+        rotateMatrix(transform, v('rotation'));
+        translateMatrix(transform, v('x') + v('originX'), v('y') + v('originY'));
+        return transform;
       }
     });
   });
