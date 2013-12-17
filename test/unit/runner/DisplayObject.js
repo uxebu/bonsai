@@ -196,6 +196,36 @@ define([
             to.deep.equal([scaleX, 0, 0, scaleY, 0, 0]);
         });
 
+        it('can set both scales with the `scale` setter', function() {
+          var scale = 54.3;
+          displayObject.attr('scale', scale);
+
+          testScale(scale, scale);
+        });
+
+        it('can get both scales', function() {
+          var scale = 1.23;
+          displayObject.attr('scale', scale);
+
+          expect(displayObject.attr('scale'))
+            .to.equal(scale);
+        });
+
+        it('returns `undefined` for `scale` when x and y scales are different', function() {
+          displayObject.attr({scaleX: 2, scaleY: 3});
+
+          expect(displayObject.attr('scale'))
+            .to.equal(undefined);
+        });
+
+        it('reflects `scale` in the `transform` attribute', function() {
+          var scale = 1.23;
+          displayObject.attr('scale', scale);
+
+          expect(displayObject.attr('transform')).
+            to.deep.equal([scale, 0, 0, scale, 0, 0]);
+        });
+
         function testScale(x, y) {
           expect(displayObject.attr('scaleX'))
             .to.equal(x);

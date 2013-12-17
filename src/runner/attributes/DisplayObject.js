@@ -30,6 +30,16 @@ define([
       return value;
     },
 
+    get_scale: function() {
+      var scale = this.scaleX;
+      return scale === this.scaleY ? scale : undefined;
+    },
+
+    set_scale: function(value) {
+      this._isTransformDirty = value !== this.scaleX || value !== this.scaleY;
+      this.scaleX = this.scaleY = value;
+    },
+
     set_scaleX: function(value) {
       this._isTransformDirty = value !== this.scaleX;
       return value;
