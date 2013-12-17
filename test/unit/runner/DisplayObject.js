@@ -356,9 +356,7 @@ define([
         });
 
         it('is computed applying skew, scale, rotation and translation in this order', function() {
-          // only set one skew value, otherwise rotation is affected
-          var skew = 0.5;
-          var rotation = 2, x = -200, y = 123, scaleX = 4, scaleY = -0.5;
+          var skew = 0.5, rotation = 2, x = -200, y = 123, scaleX = 4, scaleY = -0.5;
 
           // intentionally apply in different order
           displayObject.attr('rotation', rotation);
