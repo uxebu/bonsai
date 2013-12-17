@@ -45,9 +45,9 @@ define([
 
     set_scaleY: setTransformComponent,
 
-    set_rotation: function(value) {
+    set_rotation: function(value, previousValue) {
       if (typeof value === 'string') value = unit.parseAngle(value);
-      this._isTransformDirty = this.rotation !== value;
+      this._isTransformDirty = previousValue !== value;
       return limitRotation(value);
     },
 
