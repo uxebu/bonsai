@@ -84,10 +84,8 @@ define([
       // don't operate on the passed in transform to avoid side-effects
       var transform = copyMatrix(tmpTransform, value);
 
-
       this.x = transform[4];
       this.y = transform[5];
-      transform[4] = transform[5] = 0;
 
       var a = atan2(transform[1], transform[0]);
       var b = -atan2(transform[2], transform[3]);
@@ -95,8 +93,18 @@ define([
       rotate(transform, -angle);
 
       var scaleX = this.scaleX = transform[0];
-      this.scaleY = transform[3];
+      var scaleY = this.scaleY = transform[3];
       this.skew = transform[2] / scaleX;
+
+      var originX = this.transformOriginX, originY = this.transformOriginY;
+      if (originX !== 0 || originY !== 0) {
+        transform[0] = transform[3] = 1;
+        transform[4] = -originX * scaleX;
+        transform[5] = -originY * scaleY;
+        rotate(transform, angle);
+        this.x -= originX + transform[4];
+        this.y -= originY + transform[5];
+      }
 
       this._isTransformDirty = false;
       return copyMatrix(getTransform(this), value);
@@ -122,6 +130,7 @@ define([
   }
 
   function getTransform(attributes) {
+    return attributes.transform || (attributes.transform = [1, 0, 0, 1, 0, 0]);
     return attributes.transform || (attributes.transform = [1, 0, 0, 1, 0, 0]);
   }
 

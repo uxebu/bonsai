@@ -474,7 +474,7 @@ define([
             }));
           });
 
-          xit('extracts translation, rotation, scale and skew using the transform origin', function() {
+          it('extracts translation, rotation, scale and skew using the transform origin', function() {
             var skew = 0.5, rotation = 2, x = -200, y = 123, scaleX = 4, scaleY = -0.5;
             var originX = -12.3, originY = 98;
 
