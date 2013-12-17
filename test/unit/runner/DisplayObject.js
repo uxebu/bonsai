@@ -5,11 +5,13 @@ define([
   'bonsai/vendor/glmatrix/mat2d',
   'bonsai/runner/DisplayObject'
 ], function(bdd, expect, sinon, mat2d, DisplayObject) {
+  'use strict';
+
   var beforeEach = bdd.beforeEach, describe = bdd.describe, it = bdd.it;
   var xit = bdd.xit;
 
   describe('DisplayObject', function() {
-    var displayObject;
+    var displayObject, attributeCache;
     beforeEach(function() {
       displayObject = new DisplayObject();
     });
@@ -70,7 +72,7 @@ define([
         expect(displayObject.attr('arbitrary')).to.equal(undefined);
       });
 
-      it('passes the current value and the display object to getters', function() {
+      it('passes the current value and an attribute cache to getters', function() {
         var getArbitrary = sinon.spy();
         setAttributes({
           arbitrary: 1234,
@@ -78,10 +80,10 @@ define([
         });
 
         displayObject.attr('arbitrary');
-        expect(getArbitrary).to.have.been.calledWith(1234, displayObject);
+        expect(getArbitrary).to.have.been.calledWith(1234, {});
       });
 
-      it('passes the new value, the old value, and the display object to setters', function() {
+      it('passes the new value, the old value, and an attribute cache to setters', function() {
         var setArbitrary = sinon.spy();
         setAttributes({
           arbitrary: 1234,
@@ -89,7 +91,36 @@ define([
         });
 
         displayObject.attr('arbitrary', 5678);
-        expect(setArbitrary).to.have.been.calledWith(5678, 1234, displayObject);
+        expect(setArbitrary).to.have.been.calledWith(5678, 1234, {});
+      });
+
+      it('calls all setters and getters with the same attribute cache', function() {
+        var cacheObjects = [];
+        setAttributes({
+          get_foo: function(_, cache) {
+            cache.get_foo = true;
+            cacheObjects.push(cache);
+          },
+
+          get_bar: function(_, cache) {
+            cache.get_bar = true;
+            cacheObjects.push(cache);
+          },
+
+          set_bar: function(_, __, cache) {
+            cache.set_bar = true;
+            cacheObjects.push(cache);
+          }
+        });
+
+        displayObject.attr('foo');
+        displayObject.attr('bar');
+        displayObject.attr('bar', 'arbitrary');
+
+        expect(cacheObjects[1])
+          .to.equal(cacheObjects[0]);
+        expect(cacheObjects[2])
+          .to.equal(cacheObjects[0]);
       });
 
       it('updates attributes from a passed-in object as single parameter', function() {

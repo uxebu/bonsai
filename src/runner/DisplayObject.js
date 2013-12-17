@@ -5,6 +5,7 @@ define([
 
   function DisplayObject(attributes) {
     this._attributes = attributes || new DisplayObjectAttributes();
+    this._attributeCache = null;
   }
 
   DisplayObject.prototype = {
@@ -33,7 +34,7 @@ define([
   function setAttribute(attributes, name, value, owner) {
     var setterName = 'set_' + name;
     if (setterName in attributes) {
-      value = attributes[setterName](value, attributes[name], owner);
+      value = attributes[setterName](value, attributes[name], getAttributeCache(owner));
     }
     if (name in attributes) {
       attributes[name] = value;
@@ -43,7 +44,11 @@ define([
   function getAttribute(attributes, name, owner) {
     var getterName = 'get_' + name;
     return getterName in attributes ?
-      attributes[getterName](attributes[name], owner) : attributes[name];
+      attributes[getterName](attributes[name], getAttributeCache(owner)) : attributes[name];
+  }
+
+  function getAttributeCache(displayObject) {
+    return displayObject._attributeCache || (displayObject._attributeCache = {});
   }
 
   return DisplayObject;
