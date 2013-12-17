@@ -325,7 +325,7 @@ define([
         }
       });
 
-      describe('transform', function() {
+      describe('transform:', function() {
         it('defaults to `null`', function() {
           expect(displayObject.attr('transform'))
             .to.equal(null);
@@ -401,16 +401,17 @@ define([
       });
 
       function testTransform(transform, expected) {
-        // this fixes the fixation of chai.js that +0 !== -0
-        [transform, expected].forEach(function(matrix) {
-          matrix.forEach(function(value, i, matrix) {
-            if (value === 0) {
-              matrix[i] = 0; // ensure we have no negative zero
-            }
-          });
-        });
+        normalizeTransform(transform);
+        normalizeTransform(expected);
 
         expect(transform).to.deep.equal(expected);
+      }
+
+      function normalizeTransform(matrix) {
+        // this fixes the fixation of chai.js that +0 !== -0
+        matrix.forEach(function(value, i, matrix) {
+          if (value === -0) matrix[i] = 0; // ensure we have no negative zero
+        });
       }
 
       function identityMatrix() {
