@@ -20,8 +20,6 @@ define([
       this.x =
       this.y = 0;
     this.transform = null;
-
-    this._isTransformDirty = false;
   }
 
   DisplayObjectAttributes.prototype = {
@@ -36,8 +34,10 @@ define([
       return scale === this.scaleY ? scale : undefined;
     },
 
-    set_scale: function(value) {
-      this._isTransformDirty = value !== this.scaleX || value !== this.scaleY;
+    set_scale: function(value, _, cache) {
+      if (value !== this.scaleX || value !== this.scaleY) {
+        invalidateTransform(cache);
+      }
       this.scaleX = this.scaleY = value;
     },
 
@@ -45,9 +45,9 @@ define([
 
     set_scaleY: setTransformComponent,
 
-    set_rotation: function(value, previousValue) {
+    set_rotation: function(value, previousValue, cache) {
       if (typeof value === 'string') value = unit.parseAngle(value);
-      this._isTransformDirty = previousValue !== value;
+      if (previousValue !== value) invalidateTransform(cache);
       return limitRotation(value);
     },
 
@@ -55,32 +55,40 @@ define([
 
     set_y: setTransformComponent,
 
-    get_transform: function() {
-      if (!this._isTransformDirty) {
-        return this.transform;
+    get_transform: function(transform, cache) {
+      var cached = cache.transform;
+      // not cached means transform needs to be re-computed
+      if (cached !== undefined) {
+        return cached;
       }
 
       var originX = this.transformOriginX, originY = this.transformOriginY;
       var scaleX = this.scaleX, scaleY = this.scaleY;
+      var skew = this.skew, rotation = this.rotation;
+      var x = this.x, y = this.y;
+      var hasScale = scaleX !== 1 || scaleY !== 1;
+      var hasTranslation = x || y;
 
-      var transform = getTransform(this);
-      transform[0] = scaleX;
-      transform[1] = 0;
-      transform[2] = this.skew * scaleX;
-      transform[3] = scaleY;
-      transform[4] = -originX * scaleX;
-      transform[5] = -originY * scaleY;
-      if (this.rotation) {
-        rotate(transform, this.rotation);
+      if (transform || hasTranslation || rotation || hasScale || skew) {
+        transform = getTransform(transform);
+        transform[0] = scaleX;
+        transform[1] = 0;
+        transform[2] = skew * scaleX;
+        transform[3] = scaleY;
+        transform[4] = -originX * scaleX;
+        transform[5] = -originY * scaleY;
+        if (rotation) {
+          rotate(transform, rotation);
+        }
+        transform[4] += x + originX;
+        transform[5] += y + originY;
       }
-      transform[4] += this.x + originX;
-      transform[5] += this.y + originY;
 
-      this._isTransformDirty = false;
+      cache.transform = transform;
       return transform;
     },
 
-    set_transform: function(value) {
+    set_transform: function(value, currentTransform, cache) {
       // don't operate on the passed in transform to avoid side-effects
       var transform = copyMatrix(tmpTransform, value);
 
@@ -106,17 +114,19 @@ define([
         this.y -= originY + transform[5];
       }
 
-      this._isTransformDirty = false;
-      return copyMatrix(getTransform(this), value);
+      currentTransform = cache.transform = getTransform(currentTransform);
+      return copyMatrix(currentTransform, value);
     },
 
     set_transformOriginX: setTransformComponent,
 
     set_transformOriginY: setTransformComponent,
 
-    set_transformOrigin: function(value) {
+    set_transformOrigin: function(value, _, cache) {
       var x = value[0], y = value[1];
-      this._isTransformDirty = x !== this.transformOriginX || y !== this.transformOriginY;
+      if (x !== this.transformOriginX || y !== this.transformOriginY) {
+        invalidateTransform(cache);
+      }
       this.transformOriginX = x;
       this.transformOriginY = y;
     }
@@ -129,18 +139,21 @@ define([
     return angle < 0 ? angle % PI_2 + PI_2 : angle % PI_2;
   }
 
-  function getTransform(attributes) {
-    return attributes.transform || (attributes.transform = [1, 0, 0, 1, 0, 0]);
-    return attributes.transform || (attributes.transform = [1, 0, 0, 1, 0, 0]);
+  function getTransform(transform) {
+    return transform || Array(6);
   }
 
   function rotate(transform, angle) {
     mat2d.rotate(transform, transform, -angle); // glmatrix rotates counter-clockwise
   }
 
-  function setTransformComponent(value, previousValue) {
-    this._isTransformDirty = value !== previousValue;
+  function setTransformComponent(value, previousValue, cache) {
+    if (value !== previousValue) invalidateTransform(cache);
     return value;
+  }
+
+  function invalidateTransform(cache) {
+    cache.transform = undefined;
   }
 
   return DisplayObjectAttributes;
