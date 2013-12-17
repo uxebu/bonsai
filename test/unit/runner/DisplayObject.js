@@ -367,9 +367,9 @@ define([
           displayObject.attr('skew', skew);
 
           var expected = [1, 0, skew, 1, 0, 0];
-          mat2d.scale(expected, expected, [scaleX, scaleY]);
+          scaleMatrix(expected, scaleX, scaleY);
           rotateMatrix(expected, rotation);
-          mat2d.translate(expected, expected, [x, y]);
+          translateMatrix(expected, x, y);
 
           testTransform(displayObject.attr('transform'), expected);
         });
@@ -379,9 +379,9 @@ define([
           var rotation = Math.PI * 1.23, x = 98, y = -67;
 
           var transform = [1, 0, skew, 1, 0, 0];
-          mat2d.scale(transform, transform, [scaleX, scaleY]);
+          scaleMatrix(transform, scaleX, scaleY);
           rotateMatrix(transform, rotation);
-          mat2d.translate(transform, transform, [x, y]);
+          translateMatrix(transform, x, y);
 
           displayObject.attr('transform', transform);
 
@@ -420,6 +420,14 @@ define([
 
       function rotateMatrix(matrix, angle) {
         return mat2d.rotate(matrix, matrix, -angle); // mat2d rotates counter-clockwisde;
+      }
+
+      function translateMatrix(matrix, x, y) {
+        return mat2d.translate(matrix, matrix, [x, y]);
+      }
+
+      function scaleMatrix(matrix, x, y) {
+        return mat2d.scale(matrix, matrix, [x, y]);
       }
     });
   });
