@@ -29,10 +29,7 @@ define([
       return value < 0 ? 0 : value > 1 ? 1 : value;
     },
 
-    set_skew: function(value) {
-      this._isTransformDirty = value !== this.skew;
-      return value;
-    },
+    set_skew: setTransformComponent,
 
     get_scale: function() {
       var scale = this.scaleX;
@@ -44,15 +41,9 @@ define([
       this.scaleX = this.scaleY = value;
     },
 
-    set_scaleX: function(value) {
-      this._isTransformDirty = value !== this.scaleX;
-      return value;
-    },
+    set_scaleX: setTransformComponent,
 
-    set_scaleY: function(value) {
-      this._isTransformDirty = value !== this.scaleY;
-      return value;
-    },
+    set_scaleY: setTransformComponent,
 
     set_rotation: function(value) {
       if (typeof value === 'string') value = unit.parseAngle(value);
@@ -60,15 +51,9 @@ define([
       return limitRotation(value);
     },
 
-    set_x: function(value) {
-      this._isTransformDirty = value !== this.x;
-      return value;
-    },
+    set_x: setTransformComponent,
 
-    set_y: function(value) {
-      this._isTransformDirty = value !== this.y;
-      return value;
-    },
+    set_y: setTransformComponent,
 
     get_transform: function() {
       if (!this._isTransformDirty) {
@@ -117,15 +102,9 @@ define([
       return copyMatrix(getTransform(this), value);
     },
 
-    set_transformOriginX: function(value, previousValue) {
-      this._isTransformDirty = value !== previousValue;
-      return value;
-    },
+    set_transformOriginX: setTransformComponent,
 
-    set_transformOriginY: function(value, previousValue) {
-      this._isTransformDirty = value !== previousValue;
-      return value;
-    },
+    set_transformOriginY: setTransformComponent,
 
     set_transformOrigin: function(value) {
       var x = value[0], y = value[1];
@@ -148,6 +127,11 @@ define([
 
   function rotate(transform, angle) {
     mat2d.rotate(transform, transform, -angle); // glmatrix rotates counter-clockwise
+  }
+
+  function setTransformComponent(value, previousValue) {
+    this._isTransformDirty = value !== previousValue;
+    return value;
   }
 
   return DisplayObjectAttributes;
