@@ -160,7 +160,6 @@ requirejs.requirejs([
     },
 
     startMovie: function(stage) {
-      stage.unfreeze();
       this.messageChannel.notifyRenderer({command: 'isReady'});
     },
 

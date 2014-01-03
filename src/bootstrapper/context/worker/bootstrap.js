@@ -126,7 +126,6 @@ define([
 
     };
 
-    stage.unfreeze();
-    messageChannel.notifyRenderer({command:"isReady"});
+    messageChannel.notifyRenderer({command: 'isReady'});
   };
 });

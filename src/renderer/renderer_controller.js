@@ -11,23 +11,8 @@ define([
 function(tools, EventEmitter, URI) {
   'use strict';
 
-  function onContextLoad(rendererController) {
-    var pendingMessages = rendererController._pendingMessages;
-
-    // set to null first, so that further calls to sendMessage are not queued
-    rendererController._pendingMessages = null;
-
-    // send all queued messages again
-    var sendMessage = rendererController.sendMessage;
-    tools.forEach(pendingMessages, function(messageArguments) {
-      sendMessage.apply(rendererController, messageArguments);
-    });
-
-    // emit load event
-    rendererController.emit('load');
-  }
-
   var hitch = tools.hitch;
+  var forEach = tools.forEach;
 
   /**
    * Encapsulates Renderer [resides in same script context as Bootstrapper]
@@ -37,23 +22,27 @@ function(tools, EventEmitter, URI) {
    * @param {Renderer} renderer The renderer to use.
    * @param {AssetController} assetController The RunnerContext controller to use.
    * @param {RunnerContext} runnerContext The runner-context to use.
+   * @param {AnimationFrame} animationFrame The clock that is used for animations.
    * @param {URI} baseUrl The base URL to use to resolve resource paths.
    */
-  function RendererController(renderer, assetController, runnerContext, options) {
+  function RendererController(renderer, assetController, runnerContext, animationFrame, options) {
 
     this.renderer = renderer;
     this.assetController = assetController;
     this.runnerContext = runnerContext;
-    this._movieOptions = this._cleanOptions(options);
+    this._movieOptions = this._cleanOptionsRef(options || {});
     this.baseUrl = URI.parse(options.baseUrl);
-
-    /*
-      All user messages sent via `sendMessage()` are queued until the runner has
-      loaded completely. This ensures that a listener can be registered in time.
-     */
+    this._animationFrame = animationFrame;
+    this.isReady = false;
+    this.isRunnerReady = false;
+    this.areRunnerDependenciesLoaded = false;
+    this._drawingInstructions = [];
     this._pendingMessages = [];
+    this._runnerFrameMessage = this._cleanRunnerFrameMessageRef({
+      userevents: []
+    });
 
-    runnerContext.on('message', this, this.handleEvent);
+    animationFrame.setFrameCallback(hitch(this, this._handleFrame));
 
     // Bind to assetController, tunnel assetLoaded event through to RunnerContext:
     assetController.on('assetLoadSuccess', this, function(data) {
@@ -63,25 +52,31 @@ function(tools, EventEmitter, URI) {
       this.post('assetLoadError', data);
     });
 
-    // Bind to renderer, tunnel user events through to RunnerContext:
-    this.renderer.on('userevent', this, function(event, targetId, relatedTargetId, underPointerIds) {
-      this.post('userevent', {
+    if (renderer.isReady) {
+      this._setupLoadedAndEmitStart();
+    } else {
+      renderer.on('ready', this, function() {
+        this._setupLoadedAndEmitStart();
+      });
+    }
+    renderer.on('userevent', this, function onUserevent(event, targetId, relatedTargetId, underPointerIds) {
+      this._runnerFrameMessage.userevents.push({
         event: event,
         targetId: targetId,
         relatedTargetId: relatedTargetId,
         objectsUnderPointerIds: underPointerIds
       });
+      animationFrame.request();
     });
 
-    this.renderer.on('canRender', hitch(this, this.postAsync, 'canRender'));
-
     runnerContext.init(options);
+    runnerContext.on('message', this, this.handleEvent);
 
   }
 
   var proto = RendererController.prototype = {
 
-    _onRunnerContextReady: function() {
+    _loadRunnerDependencies: function() {
 
       var options = this._movieOptions,
           rendererController = this,
@@ -103,7 +98,7 @@ function(tools, EventEmitter, URI) {
               if (options.code) {
                 runnerContext.run(options.code);
               }
-              onContextLoad(rendererController);
+              rendererController._onRunnerDependenciesLoaded();
             });
           } else {
             if (options.code) {
@@ -116,11 +111,11 @@ function(tools, EventEmitter, URI) {
           if (options.code) {
             runnerContext.run(options.code);
           }
-          onContextLoad(rendererController);
+          rendererController._onRunnerDependenciesLoaded();
         });
       } else if (options.code) {
         runnerContext.run(options.code);
-        onContextLoad(rendererController);
+        rendererController._onRunnerDependenciesLoaded();
       }
 
       function loadAll(urls, cb) {
@@ -131,14 +126,14 @@ function(tools, EventEmitter, URI) {
             cb();
           }
         });
-        tools.forEach(urls, function(url) {
+        forEach(urls, function(url) {
           runnerContext.load(rendererController.baseUrl.resolveUri(url).toString());
         });
       }
     },
 
     initRenderer: function() {
-      this._sendOptions();
+      this._postOptions();
       return this;
     },
 
@@ -152,8 +147,7 @@ function(tools, EventEmitter, URI) {
      * @param {number} [options.framerate] The desired frame rate.
      * @returns {Object}
      */
-    _cleanOptions: function(options) {
-      options || (options = {});
+    _cleanOptionsRef: function(options) {
       var renderer = this.renderer;
       options.framerate = +options.framerate || void 0;
       options.width = renderer.width;
@@ -161,6 +155,27 @@ function(tools, EventEmitter, URI) {
       return options;
     },
 
+    _cleanRunnerFrameMessageRef: function(runnerFrameMessage) {
+      runnerFrameMessage.userevents.length = 0;
+      return runnerFrameMessage;
+    },
+
+    _onRunnerDependenciesLoaded: function() {
+      this.areRunnerDependenciesLoaded = true;
+      this._setupLoadedAndEmitStart();
+      // emit load event
+      this.emit('load');
+    },
+
+    _handleFrame: function(time) {
+      // 1. Render current frame
+      if (this._drawingInstructions.length)
+        this.renderer.render(this._drawingInstructions);
+      // 2. Request for new computed frame instructions from Runner
+      this.post('requestFrameInstructions', this._runnerFrameMessage);
+      // 2. Cleanup frame based messages
+      this._cleanRunnerFrameMessageRef(this._runnerFrameMessage);
+    },
 
     /**
      * Terminates RunnerContext and renderer.
@@ -169,6 +184,7 @@ function(tools, EventEmitter, URI) {
      * RunnerContext will not be terminated and the rendering is not removed.
      */
     destroy: function() {
+      this._animationFrame.cancel();
       this.renderer.destroy();
       delete this.renderer;
       this.runnerContext.destroy();
@@ -191,7 +207,8 @@ function(tools, EventEmitter, URI) {
      * @returns {this} The instance.
      */
     freeze: function() {
-      return this.post('freeze');
+      this._animationFrame.cancel();
+      return this;
     },
 
     /**
@@ -205,7 +222,8 @@ function(tools, EventEmitter, URI) {
       switch (message.command) {
         case 'render':
           this.currentFrame = message.frame;
-          this.renderer.render(messageData);
+          this._drawingInstructions = messageData;
+          this._animationFrame.request();
           break;
         case 'renderConfig':
           this.renderer.config(messageData);
@@ -233,20 +251,15 @@ function(tools, EventEmitter, URI) {
           }
           break;
         case 'isReady':
-          this.isRunnerListening = true;
-          this._sendOptions();
-          this._onRunnerContextReady();
-          this.emit('start');
+          this.isRunnerReady = true;
+          this._postOptions();
+          this._loadRunnerDependencies();
           break;
       }
     },
 
-    _sendOptions: function() {
-      if (this.isRunnerListening) {
-        if (!this.isReady) {
-          this._sendEnvData();
-          this.isReady = true;
-        }
+    _postOptions: function() {
+      if (this.isRunnerReady) {
         var options = tools.mixin({}, this._movieOptions);
         // Make sure we transport an already-toString'd version of the URI instance
         options.baseUrl = options.baseUrl && options.baseUrl.toString();
@@ -258,13 +271,36 @@ function(tools, EventEmitter, URI) {
     },
 
     /**
+     * All necessary dependencies are loaded and setup is finished. Both,
+     * Renderer and Runner are ready to go. Let's start the Movie.
+     * @return {undefined}
+     */
+    _setupLoadedAndEmitStart: function() {
+      var renderer = this.renderer;
+      var animationFrame = this._animationFrame;
+
+      if (!renderer.isReady() || !this.areRunnerDependenciesLoaded)
+        return;
+
+      this.isReady = true;
+
+      this._sendEnvData();
+
+      // First time requesting a frame from Renderer
+      animationFrame.request();
+
+      this.emit('start');
+    },
+
+    /**
      * Continues playback. If frame is passed, jump to that frame before.
      *
      * @param {number|string} [frame] A frame number or time expression.
      * @returns {this}
      */
     play: function(frame) {
-      return this.post('play', frame);
+      this.unfreeze();
+      return this;
     },
 
     /**
@@ -276,7 +312,6 @@ function(tools, EventEmitter, URI) {
      */
     post: function(command, data) {
       this.runnerContext.notifyRunner({command: command, data: data});
-
       return this;
     },
 
@@ -366,7 +401,8 @@ function(tools, EventEmitter, URI) {
      * @returns {this}
      */
     stop: function(frame) {
-      return this.post('stop', frame);
+      this.freeze();
+      return this;
     },
 
     /**
@@ -375,7 +411,9 @@ function(tools, EventEmitter, URI) {
      * @returns {this} The instance.
      */
     unfreeze: function() {
-      return this.post('unfreeze');
+      if (this.isReady)
+        this._animationFrame.request();
+      return this;
     }
   };
 

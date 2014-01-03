@@ -295,6 +295,10 @@ define([
     Mask: 'mask'
   };
 
+  proto.isReady = function() {
+    return true;
+  };
+
   proto.config = function(data) {
 
     var item = data.item,
@@ -467,7 +471,6 @@ define([
       this._logFrame();
     }
 
-    this.emit('canRender');
   };
 
   /* Presence of these methods required to ensure drawAll is called */

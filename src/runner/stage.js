@@ -41,7 +41,8 @@ define([
   }
 
   /**
-   * Constructs the movie root, i.e. the global `stage`.
+   * Constructs the movie root, i.e. the global `stage`. Can also be considered
+   * as the RunnerController, the counterpart of the RendererController.
    *
    * @classdesc A Stage instance is the root of your movie. There should never
    *  be a need to instantiate a new Stage from within a movie.
@@ -69,7 +70,6 @@ define([
 
     this.env = new Environment(this, assetLoader);
     this.stage = this.root = this;
-    this._canRender = true;
 
     Object.defineProperties(this, {
       id: {value: 0}
@@ -96,16 +96,6 @@ define([
      * @returns {this} The instance
      */
     destroy: function() {
-      clearInterval(this._interval);
-      return this;
-    },
-
-    /**
-     * Freeze/destroy the loop
-     */
-    freeze: function() {
-      clearInterval(this._interval);
-      this._isFrozen = true;
       return this;
     },
 
@@ -123,40 +113,11 @@ define([
         case 'options':
           this.setOptions(data);
           break;
-        case 'play':
-        case 'stop':
-        case 'freeze':
-        case 'unfreeze':
-          this[command](data);
-          break;
         case 'assetLoadSuccess':
           this.assetLoader.handleEvent('load', data.id, data.loadData);
           break;
         case 'assetLoadError':
           this.assetLoader.handleEvent('error', data.id, data.loadData);
-          break;
-        case 'userevent':
-          var displayObjectsRegistry = this.registry.displayObjects;
-          var targetId = data.targetId;
-          var target = targetId ? displayObjectsRegistry[targetId] : this;
-          if (target) { // target might have been removed already
-            var event = data.event;
-            event.target = target;
-            var relatedTargetId = data.relatedTargetId;
-            if (relatedTargetId === 0 || relatedTargetId > 0) {
-              event.relatedTarget = displayObjectsRegistry[relatedTargetId] || this;
-            }
-
-            var objectsUnderPointerIds = data.objectsUnderPointerIds;
-            if (objectsUnderPointerIds) {
-              var objectsUnderPointer = event.underPointer = [];
-              for (var i = 0, elementId; (elementId = objectsUnderPointerIds[i]); i += 1) {
-                objectsUnderPointer[i] = displayObjectsRegistry[elementId];
-              }
-            }
-
-            uiEvent(event).emitOn(target);
-          }
           break;
         case 'env':
           // Change environment vars
@@ -170,10 +131,42 @@ define([
             this.emit('message', data);
           }
           break;
-        case 'canRender':
-          this._canRender = true;
+        case 'requestFrameInstructions':
+          // 1. send current frame
           this.postFrames();
+          // 2. handle user events (like "click")
+          var usereventsLen = data.userevents.length;
+          if (usereventsLen) {
+            for (var i = 0; i < usereventsLen; i++) {
+              this._handleUserEvents(data.userevents[i]);
+            }
+          }
+          // 3. compute next frame
+          this.loop();
           break;
+      }
+    },
+
+    _handleUserEvents: function(userevent) {
+      var displayObjectsRegistry = this.registry.displayObjects;
+      var targetId = userevent.targetId;
+      var target = targetId ? displayObjectsRegistry[targetId] : this;
+      if (target) { // target might have been removed already
+        var event = userevent.event;
+        event.target = target;
+        var relatedTargetId = userevent.relatedTargetId;
+        if (relatedTargetId === 0 || relatedTargetId > 0) {
+          event.relatedTarget = displayObjectsRegistry[relatedTargetId] || this;
+        }
+        var objectsUnderPointerIds = userevent.objectsUnderPointerIds;
+        if (objectsUnderPointerIds) {
+          var objectsUnderPointer = event.underPointer = [];
+          for (var i = 0, elementId; (elementId = objectsUnderPointerIds[i]); i += 1) {
+            objectsUnderPointer[i] = displayObjectsRegistry[elementId];
+          }
+        }
+
+        uiEvent(event).emitOn(target);
       }
     },
 
@@ -336,8 +329,6 @@ define([
       }
 
       this.emit('exitFrame');
-
-      this.postFrames();
     },
 
     /**
@@ -353,18 +344,13 @@ define([
 
     postFrames: function() {
       var queuedFrames = this._queuedFrames;
-
-      if (this._canRender && queuedFrames.length) {
-        this._canRender = false;
-        this._queuedFramesById = {};
-        this._queuedFrames = [];
-        this.post({
-          command: 'render',
-          data: queuedFrames,
-          frame: this.currentFrame
-        });
-
-      }
+      this._queuedFramesById = {};
+      this._queuedFrames = [];
+      this.messageChannel.notifyRenderer({
+        command: 'render',
+        data: queuedFrames,
+        frame: this.currentFrame
+      });
     },
 
     /**
@@ -399,12 +385,7 @@ define([
         return;
       }
 
-      var wasFrozen = this._isFrozen;
-      this.freeze();
       this.framerate = Math.abs(framerate);
-      if (!wasFrozen) {
-        this.unfreeze();
-      }
     },
     /**
      * Sets options on the stage
@@ -458,16 +439,6 @@ define([
           value: color.parse(value)
         }
       });
-    },
-
-    /**
-     * Unfreeze/initiate the loop
-     */
-    unfreeze: function() {
-      if (this._isFrozen) {
-        this._interval = setInterval(hitch(this, this.loop), 1000 / this.framerate);
-        this._isFrozen = false;
-      }
     }
   };
 

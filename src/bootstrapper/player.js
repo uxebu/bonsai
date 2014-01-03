@@ -2,11 +2,12 @@ define([
   '../event_emitter',
   '../renderer/renderer_controller',
   '../asset/asset_controller',
+  '../renderer/animation_frame',
   '../tools',
   '../uri',
   '../version'
 ],
-function(EventEmitter, RendererController, AssetController, tools, URI, version) {
+function(EventEmitter, RendererController, AssetController, AnimationFrame, tools, URI, version) {
   'use strict';
 
   var player = {
@@ -59,7 +60,7 @@ function(EventEmitter, RendererController, AssetController, tools, URI, version)
       }
 
       var doc = typeof document === 'undefined' ? null : document;
-      var context = new this.RunnerContext(this.runnerUrl, doc, options.baseUrl);
+      var runnerContext = new this.RunnerContext(this.runnerUrl, doc, options.baseUrl);
       var renderer = new this.Renderer(node, width, height, {
         allowEventDefaults: options.allowEventDefaults,
         objectsUnderPointer: options.objectsUnderPointer,
@@ -68,7 +69,7 @@ function(EventEmitter, RendererController, AssetController, tools, URI, version)
       });
       var assetController = new this.AssetController();
 
-      return new this.RendererController(renderer, assetController, context, options);
+      return new this.RendererController(renderer, assetController, runnerContext, new AnimationFrame(), options);
     },
 
     /**
@@ -97,8 +98,7 @@ function(EventEmitter, RendererController, AssetController, tools, URI, version)
       }
 
       var size = this._getSize(node, options.width, options.height),
-          rendererController = this.createRenderer(node, size.width, size.height, options),
-          runnerContext = rendererController.runnerContext;
+          rendererController = this.createRenderer(node, size.width, size.height, options);
 
       rendererController.initRenderer();
 

@@ -98,7 +98,6 @@ define([
       }
     });
 
-    stage.unfreeze();
     messageChannel.notifyRenderer({command:"isReady"});
   };
 });
