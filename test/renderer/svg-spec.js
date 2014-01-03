@@ -62,15 +62,9 @@ define(['bonsai/renderer/svg/svg'], function(SvgRenderer) {
       });
     });
 
-    describe('#render', function() {
-      it('should emit a "canRender" event after rendering', function() {
-        var onCanRender = jasmine.createSpy('onCanRender');
-        var renderer = createSvgRenderer();
-        renderer.on('canRender', onCanRender);
-
-        renderer.render([]);
-
-        expect(onCanRender).toHaveBeenCalled();
+    describe('isReady', function() {
+      it('returns true', function() {
+        expect(createSvgRenderer().isReady()).toBe(true);
       });
     });
 
