@@ -1,3 +1,5 @@
+v0.4.5 / 2014-02-06
+-------------------
 * Prevent special paths from being constantly redrawn
 * Improve example library
 
