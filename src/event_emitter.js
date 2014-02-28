@@ -4,8 +4,7 @@ define([
 
   'use strict';
 
-  var slice = [].slice,
-      split = ''.split;
+  var split = ''.split;
 
   function Listener(context, listener, times) {
     this.context = context;
@@ -150,15 +149,16 @@ define([
         context = listener.context;
         listenerFunc = listener.listener;
 
-        if (typeof listenerFunc === 'string') {
-          listenerFunc = context[listenerFunc];
-        }
-        listenerFunc.apply(context || this, args);
-
         listenerTimes = listener.times -= 1;
         if (listenerTimes <= 0) {
           this.removeListener(type, context, listener.listener);
         }
+
+        if (typeof listenerFunc === 'string') {
+          listenerFunc = context[listenerFunc];
+        }
+
+        listenerFunc.apply(context || this, args);
       }
 
       return this;

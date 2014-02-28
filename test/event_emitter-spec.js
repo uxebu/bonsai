@@ -264,6 +264,19 @@ define([
           expect(remove).not.toHaveBeenCalled();
         }
       );
+
+      it('should not invoke a listener within its own callback added through `once`', function() {
+        var e = emitter;
+        var callCount = 0;
+
+        e.once('foo', function() {
+          callCount++;
+          e.emit('foo');
+        });
+        e.emit('foo');
+
+        expect(callCount).toBe(1);
+      });
     });
 
     describe('removeListener', function() {
