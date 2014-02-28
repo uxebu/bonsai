@@ -4,8 +4,7 @@ define([
 
   'use strict';
 
-  var slice = [].slice,
-      split = ''.split;
+  var split = ''.split;
 
   function Listener(context, listener, times) {
     this.context = context;
