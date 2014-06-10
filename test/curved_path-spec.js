@@ -258,6 +258,104 @@ define([
         expect(CurvedPath.toCurves([2])).toEqual([]);
       });
 
+      describe('parses `smoothCurveTo`', function() {
+
+        it('ignores call when previous segment does not exists', function() {
+          expect(CurvedPath.toCurves([
+            ['smoothCurveTo', 150, 100, 200, 200]
+          ])).toEqual([]);
+        });
+        it('ignores call when previous segment is a "moveTo"', function() {
+          expectEqualSegments(
+            CurvedPath.toCurves([
+              ['moveTo', 50, 50],
+              ['smoothCurveTo', 150, 100, 200, 200]
+            ]),
+            [
+              ['moveTo', 50, 50]
+            ]
+          );
+          expectEqualSegments(
+            new CurvedPath().moveTo(50, 50).smoothCurveTo(150, 100, 200, 200)._segments,
+            [
+              ['moveTo', 50, 50]
+            ]
+          );
+        });
+        it('ignores call when previous segment is a "closePath"', function() {
+          expectEqualSegments(
+            CurvedPath.toCurves([
+              ['moveTo', 50, 50],
+              ['closePath'],
+              ['smoothCurveTo', 150, 100, 200, 200]
+            ]),
+            [
+              ['moveTo', 50, 50],
+              ['closePath']
+            ]
+          );
+        });
+        it('parses when previous segment is a "curveTo"', function() {
+          expectEqualSegments(
+            CurvedPath.toCurves([
+              ['curveTo', 100, 100, 200, 200, 300, 300],
+              ['smoothCurveTo', 400, 400, 500, 500]
+            ]),
+            [
+              ['curveTo', 100, 100, 200, 200, 300, 300],
+              ['curveTo', 400, 400, 400, 400, 500, 500]
+            ]
+          );
+        });
+
+      });
+
+      describe('parses `smoothCurveBy`', function() {
+
+        it('ignores call when previous segment does not exists', function() {
+          expect(CurvedPath.toCurves([
+            ['smoothCurveBy', 150, 100, 200, 200]
+          ])).toEqual([]);
+        });
+        it('ignores call when previous segment is a "moveTo"', function() {
+          expectEqualSegments(
+            CurvedPath.toCurves([
+              ['moveTo', 50, 50],
+              ['smoothCurveBy', 150, 100, 200, 200]
+            ]),
+            [
+              ['moveTo', 50, 50]
+            ]
+          );
+        });
+        it('ignores call when previous segment is a "closePath"', function() {
+          expectEqualSegments(
+            CurvedPath.toCurves([
+              ['moveTo', 50, 50],
+              ['closePath'],
+              ['smoothCurveBy', 150, 100, 200, 200]
+            ]),
+            [
+              ['moveTo', 50, 50],
+              ['closePath']
+            ]
+          );
+        });
+        it('parses when previous segment is a "curveTo"', function() {
+          expectEqualSegments(
+            CurvedPath.toCurves([
+              ['curveTo', 100, 100, 200, 200, 300, 300],
+              ['smoothCurveBy', 400, 400, 500, 500]
+            ]),
+            [
+              ['curveTo', 100, 100, 200, 200, 300, 300],
+              ['curveTo', 400, 400, 700, 700, 800, 800]
+            ]
+          );
+        });
+
+      });
+
       it('Returns required amount of segments (via requiredCurves argument)', function() {
         expectEqualSegments(
           CurvedPath.toCurves([
@@ -421,6 +519,7 @@ define([
             ['curveTo', 400, 250, 400, 250, 400, 250] // nullSegment
           ]
         );
+
       });
 
     });
