@@ -27,6 +27,7 @@ define([
    */
   function CurvedPath() {
     this._segments = [];
+    this._currentSegment = null;
     this.requiredCurves = 0;
     this.currentPoint = new Point(0, 0);
     this.lastMoveTo = new Point(0, 0);
@@ -49,6 +50,7 @@ define([
     var segment = [].slice.call(arguments);
     segment.from = this.currentPoint.clone();
     segment.lastMoveTo = this.lastMoveTo.clone();
+    this._currentSegment = segment;
     this._segments.push(segment);
     return this;
   };
@@ -203,6 +205,31 @@ define([
       cpy + currentPoint.y,
       x + currentPoint.x,
       y + currentPoint.y
+    );
+  };
+
+  // Based on: http://stackoverflow.com/questions/5287559/calculating-control-points-for-a-shorthand-smooth-svg-path-bezier-curve
+  proto.smoothCurveTo = function(cpx, cpy, endX, endY) {
+    var cp1x, cp1y;
+    var currentSegment = this._currentSegment;
+
+    // Don't draw curve in case previous segment is a "moveTo" or "closePath".
+    if (currentSegment !== null && currentSegment[0] === 'curveTo') {
+      cp1x = 2 * currentSegment[5] - currentSegment[3];
+      cp1y = 2 * currentSegment[6] - currentSegment[4];
+      this._push('curveTo', cp1x, cp1y, cpx, cpy, endX, endY);
+      this.currentPoint = new Point(endX, endY);
+    }
+    return this;
+  };
+
+  proto.smoothCurveBy = function(cpx, cpy, endX, endY) {
+    var currentPoint = this.currentPoint;
+    return this.smoothCurveTo(
+      cpx + currentPoint.x,
+      cpy + currentPoint.y,
+      endX + currentPoint.x,
+      endY + currentPoint.y
     );
   };
 
