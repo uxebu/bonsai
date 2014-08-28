@@ -144,7 +144,8 @@ movieList = {
     'shape-fill-rule.js',
     'shape-dashedstrokes.js',
     'overlapping-paths.js',
-    'bounding-box.js'
+    'bounding-box.js',
+    'bounding-box-2.js'
   ],
   'Test': [
     'text.js',

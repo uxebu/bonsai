@@ -734,7 +734,7 @@ define([
    * @param {Number} radius The radius of the ellipse
    * @param {deg|rad} aStartAngle Starting angle of arc in radians
    * @param {deg|rad} aEndAngle Ending angle of arc in radians
-   * @param {Boolean} [anticlockwise] Whether you want the arc to be drawn 
+   * @param {Boolean} [anticlockwise] Whether you want the arc to be drawn
    *  anticlockwise or clockwise (Boolean)
    * @returns {Path} The current Path instance
    */
@@ -758,16 +758,6 @@ define([
 
     return this[this._segments.length ? 'lineTo' : 'moveTo'](startX, startY)
       .arcTo(radius, radius, 0, (diffAngle < PI) ? 0 : 1, 1, endX, endY);
-  };
-
-  /**
-   * Returns the bounding box of that {Path}.
-   *
-   * @returns {Object} bb An object with x, y, width, height
-   * @ignore
-   */
-  proto.boundingBox = function() {
-    throw 'Not implemented';
   };
 
   /**
@@ -1167,7 +1157,7 @@ define([
     box.height = box.bottom - box.top;
 
     return box;
-    
+
   };
 
   return Path;

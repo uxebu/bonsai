@@ -2,9 +2,6 @@
  * bounding box
  */
 
-var box = new Arc(400, 400, 150, 1, 3, 1).addTo(stage).stroke('red',2).getBoundingBox();
-new Rect(box.left+400, box.top+400, box.width, box.height).stroke('green', 2).addTo(stage);
-
 function Tracker(path) {
   this.trackee = path;
   this.group = new Group().addTo(path.parent);
@@ -24,7 +21,7 @@ Tracker.prototype = {
     this.horz1.attr('y', box.top);
     this.horz2.attr('y', box.bottom);
   }
-}
+};
 
 var star = Path.star(100, 100, 50, 5, 3);
 
@@ -51,3 +48,4 @@ function anim() {
     }
   );
 }
+

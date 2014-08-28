@@ -597,7 +597,7 @@ define([
     return curvedSegments;
   };
 
-  /** 
+  /**
    * Calculates the potential bounds of a single cubic bezier curve
    * @param {Array} p0 The starting point of the curve in the form [x, y]
    * @param {Array} curve A curveTo segment (e.g. `['curveTo',n,n,n,n,n,n]`)
@@ -615,28 +615,44 @@ define([
     bounds[0].push(p3[0]);
     bounds[1].push(p3[1]);
 
-    for (var i = 0; i < 2; ++i) {
-      var b = 6 * p0[i] - 12 * p1[i] + 6 * p2[i];
-      var a = -3 * p0[i] + 9 * p1[i] - 9 * p2[i] + 3 * p3[i];
-      var c = 3 * p1[i] - 3 * p0[i];
-      if (a == 0) {
-        if (b == 0) {
+    for (var a, b, c, t, b2ac, t1, t2, i = 0; i < 2; ++i) {
+
+      b = 6 * p0[i] - 12 * p1[i] + 6 * p2[i];
+      a = -3 * p0[i] + 9 * p1[i] - 9 * p2[i] + 3 * p3[i];
+      c = 3 * p1[i] - 3 * p0[i];
+
+      // Cast to int. This fixes floating point arithmetic issues as reported
+      // here: https://github.com/uxebu/bonsai/issues/224
+      b = b | 0;
+      a = a | 0;
+      c = c | 0;
+
+      if (a === 0) {
+
+        if (b === 0) {
           continue;
         }
-        var t = -c / b;
+
+        t = -c / b;
+
         if (0 < t && t < 1) {
           bounds[i].push(f(t));
         }
         continue;
       }
-      var b2ac = pow(b, 2) - 4 * c * a;
+
+      b2ac = pow(b, 2) - 4 * c * a;
+
       if (b2ac < 0) {
         continue;
       }
-      var t1 = (-b + sqrt(b2ac))/(2 * a);
+
+      t1 = (-b + sqrt(b2ac))/(2 * a);
       if (0 < t1 && t1 < 1) bounds[i].push(f(t1));
-      var t2 = (-b - sqrt(b2ac))/(2 * a);
+
+      t2 = (-b - sqrt(b2ac))/(2 * a);
       if (0 < t2 && t2 < 1) bounds[i].push(f(t2));
+
     }
 
     // Return bounds in the form `[ xBoundsArray, yBoundsArray ]`
@@ -648,8 +664,8 @@ define([
     };
 
     function f(t) {
-      return pow(1-t, 3) * p0[i] 
-        + 3 * pow(1-t, 2) * t * p1[i] 
+      return pow(1-t, 3) * p0[i]
+        + 3 * pow(1-t, 2) * t * p1[i]
         + 3 * (1-t) * pow(t, 2) * p2[i]
         + pow(t, 3) * p3[i];
     }

@@ -947,6 +947,22 @@ define([
           bottom: 342.8039531991939
         });
       });
+      it('Returns bounds of cubic bezier where control-points trigger "floating point overflow" issues', function() {
+        expect(
+          CurvedPath.getBoundsOfCurve(
+            185.3, 162.5,
+            30.900000000000002, 228.29999999999998,
+            49.36666666666666, 211.66666666666666,
+            240.7, 112.6
+          )
+        ).toEqual({
+          // Verified visually
+          top: 112.6,
+          left: 81.87046483579125,
+          right: 240.7,
+          bottom: 201.89216959792813
+        });
+      });
     });
 
   });
