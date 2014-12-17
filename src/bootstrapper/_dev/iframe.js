@@ -38,9 +38,10 @@ if (window.parent !== window && window.isBonsaiMovie) {
     '../../tools',
     '../context/iframe/context',
     '../../renderer/svg/svg',
+    '../../renderer/canvas/pixi',
     '../../require_config',
     'module'
-  ], function(player, tools, IFrameRunnerContext, SvgRenderer, requireConfig, module) {
+  ], function(player, tools, IFrameRunnerContext, SvgRenderer, CanvasPixiRenderer, requireConfig, module) {
     'use strict';
 
     player.Renderer = SvgRenderer;

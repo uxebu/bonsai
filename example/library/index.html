@@ -122,7 +122,7 @@
     }
 
     var validEnvironments = ['worker', 'iframe'];
-    var validRenderers = ['svg'];
+    var validRenderers = ['svg', 'pixi'];
     var viewModel = {
       movies: movieList,
       environments: validEnvironments,
@@ -174,8 +174,9 @@
       'bonsai/bootstrapper/context/worker/context',
       'bonsai/bootstrapper/context/iframe/context',
 
-      'bonsai/renderer/svg/svg'
-    ], function(tools, URI, requireConfig, player, workerEnv, iframeEnv, SvgRenderer) {
+      'bonsai/renderer/svg/svg',
+      'bonsai/renderer/canvas/pixi'
+    ], function(tools, URI, requireConfig, player, workerEnv, iframeEnv, SvgRenderer, CanvasPixiRenderer) {
       var baseUrl = URI.parse(tools.baseUri(document));
       player.defaultRunnerOptions.requireUrl = baseUrl.resolveUri(requireConfig.url).toString();
       var requireConfig = player.defaultRunnerOptions.requireConfig = requireConfig.config;
@@ -204,7 +205,8 @@
         }
       };
       renderers = {
-        svg: SvgRenderer
+        svg: SvgRenderer,
+        pixi: CanvasPixiRenderer
       };
       runMovie();
     });
