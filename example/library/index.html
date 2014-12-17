@@ -160,9 +160,14 @@
     require.config({
       baseUrl: '../../src',
       paths: {
-        bonsai: '.'
+        bonsai: '.',
+        pixi: '../lib/pixijs/pixi'
       },
-      urlArgs: +new Date
+      shim: {
+        pixi: {
+          exports: 'PIXI'
+        }
+      }
     });
 
     require([

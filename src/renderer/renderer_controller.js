@@ -251,6 +251,7 @@ function(tools, EventEmitter, URI) {
         // Make sure we transport an already-toString'd version of the URI instance
         options.baseUrl = options.baseUrl && options.baseUrl.toString();
         options.assetBaseUrl = options.assetBaseUrl && options.assetBaseUrl.toString();
+        delete options.requireConfig.shim.pixi.exports;
         this.post('options', options);
       }
 

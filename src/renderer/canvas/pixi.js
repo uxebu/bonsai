@@ -11,10 +11,12 @@ define([
   './svg_filters',
   './svg_helper',
   './svg_event_handlers',
-  '../../../lib/pixijs/pixi.dev',
+  'pixi',
   '../../asset/asset_controller'
-], function(EventEmitter, tools, color, segmentHelper, svgFilters, svgHelper, eventHandlers, Pixi, AssetController) {
+], function(EventEmitter, tools, color, segmentHelper, svgFilters, svgHelper, eventHandlers, pixi, AssetController) {
   'use strict';
+
+  console.log(pixi);
 
   var elCache = {};
   // this decides if a svg-pattern-bugfix is applied
