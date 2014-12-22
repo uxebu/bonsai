@@ -50,7 +50,9 @@ define([
 
   CanvasPixiRenderer.prototype = tools.mixin({
 
-    destroy: function() {},
+    destroy: function() {
+      this.subRenderer.destroy();
+    },
 
     getOffset: function() {
       return {left: 0, top: 0};
