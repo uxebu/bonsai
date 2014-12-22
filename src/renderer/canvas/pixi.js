@@ -7,13 +7,47 @@ define([
   '../../event_emitter',
   '../../tools',
   '../../color',
-  '../../segment_helper',
+  '../../runner/path/curved_path',
   'pixi',
   '../../asset/asset_controller'
-], function(EventEmitter, tools, color, segmentHelper, pixi, AssetController) {
+], function(EventEmitter, tools, color, curvedPath, pixi, AssetController) {
   'use strict';
 
   console.log(pixi);
+
+  var pathGraphicsMap = {
+    'moveTo': 'moveTo',
+    'curveTo': 'bezierCurveTo'
+  };
+
+  function _mapPathToPixiGraphicsCalls(paths, graphics) {
+    var curvedPaths = curvedPath.toCurves(paths);
+    var i, path;
+    for (i = 0; (path = curvedPaths[i++]);) {
+      if (path[0] !== 'closePath') {
+        graphics[pathGraphicsMap[path[0]]].apply(graphics, path.splice(1));
+      }
+    }
+  }
+
+  function _renderPathMessage(message, renderObjects, stage) {
+    var graphics = new pixi.Graphics();
+    graphics.beginFill(0x00FF00);
+    _mapPathToPixiGraphicsCalls(message.data, graphics);
+    // end the fill
+    graphics.endFill();
+    stage.addChild(graphics);
+    return graphics;
+  }
+
+  function _applyGeometry(matrix, renderObject) {
+    renderObject.worldTransform.a = matrix.a;
+    renderObject.worldTransform.b = matrix.b;
+    renderObject.worldTransform.c = matrix.c;
+    renderObject.worldTransform.d = matrix.d;
+    renderObject.worldTransform.tx = matrix.tx;
+    renderObject.worldTransform.ty = matrix.ty;
+  }
 
   /**
    * The CanvasPixiRenderer constructor
@@ -33,12 +67,10 @@ define([
   function CanvasPixiRenderer(node, width, height, options) {
 
     // create an new instance of a pixi stage
-    this.stage = new pixi.Stage(0xFFFFFF);
+    this.stage = new pixi.Stage(0xdddddd);
 
     // create a renderer instance.
     this.subRenderer = pixi.autoDetectRenderer(width, height);
-
-    //var target = new pixi.Point();
 
     // add the renderer view element to the DOM
     node.appendChild(this.subRenderer.view);
@@ -78,19 +110,18 @@ define([
     },
 
     render: function(messages) {
-      var i, message, id, type;
-      // Go through messages to identify deleted and changed objects, and then
-      // draw the object using the draw[ObjectType] method:
+      var i, message, attributes, renderObject, renderObjects = {};
+
       for (i = 0; (message = messages[i++]);) {
-        id = message.id;
-        type = message.type;
-
-        if (type === 'bitmap_hidden') {
-          continue;
-        }
-
+        attributes = message.attributes;
+        renderObject = _renderPathMessage(message, renderObjects, this.stage);
+        attributes && _applyGeometry(attributes.matrix, renderObject);
       }
 
+      // draw on every frame by default for now
+      this.subRenderer.render(this.stage);
+
+      // we're okay to accept new drawing instructions
       this.emit('canRender');
     }
 
