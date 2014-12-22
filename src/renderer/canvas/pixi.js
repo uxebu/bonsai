@@ -13,7 +13,13 @@ define([
 ], function(EventEmitter, tools, color, curvedPath, pixi, AssetController) {
   'use strict';
 
-  console.log(pixi);
+  var renderMessageTypeMap = {
+    'Path': _renderPathMessage
+  };
+
+  var removeMessageTypeMap = {
+    'Path': _removePathMessage
+  };
 
   var pathGraphicsMap = {
     'moveTo': 'moveTo',
@@ -31,13 +37,20 @@ define([
   }
 
   function _renderPathMessage(message, renderObjects, stage) {
-    var graphics = new pixi.Graphics();
+    var graphics, renderObject;
+    renderObject = renderObjects[message.id] || (renderObjects[message.id] = {});
+    renderObject.type = message.type;
+    graphics = renderObject.pixiObject = new pixi.Graphics();
     graphics.beginFill(0x00FF00);
     _mapPathToPixiGraphicsCalls(message.data, graphics);
     // end the fill
     graphics.endFill();
     stage.addChild(graphics);
     return graphics;
+  }
+
+  function _removePathMessage(renderObject, stage) {
+    stage.removeChild(renderObject.pixiObject);
   }
 
   function _applyGeometry(matrix, renderObject) {
@@ -65,6 +78,9 @@ define([
    *    with the framerate.
    */
   function CanvasPixiRenderer(node, width, height, options) {
+
+    // rendered objects
+    this._renderObjects = {};
 
     // create an new instance of a pixi stage
     this.stage = new pixi.Stage(0xdddddd);
@@ -110,12 +126,16 @@ define([
     },
 
     render: function(messages) {
-      var i, message, attributes, renderObject, renderObjects = {};
+      var i, message, attributes, renderObject;
 
       for (i = 0; (message = messages[i++]);) {
-        attributes = message.attributes;
-        renderObject = _renderPathMessage(message, renderObjects, this.stage);
-        attributes && _applyGeometry(attributes.matrix, renderObject);
+        if (message.detach) {
+          removeMessageTypeMap[this._renderObjects[message.id].type](this._renderObjects[message.id], this.stage);
+        } else {
+          attributes = message.attributes;
+          renderObject = renderMessageTypeMap[message.type](message, this._renderObjects, this.stage);
+          attributes && _applyGeometry(attributes.matrix, renderObject);
+        }
       }
 
       // draw on every frame by default for now
