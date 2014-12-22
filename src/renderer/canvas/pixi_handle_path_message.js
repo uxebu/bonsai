@@ -25,8 +25,30 @@ define([
       return new pixi.Graphics();
     },
     update: function(message, renderObjects) {
+      var colorObject;
       var graphics = renderObjects[message.id].pixiObject;
-      graphics.beginFill(0x00FF00);
+      var fillColor = message.attributes.fillColor;
+      var strokeColor = message.attributes.strokeColor;
+
+      if (!('data' in message)) {
+        return;
+      }
+
+      //graphics.clear();
+
+      if (fillColor) {
+        colorObject = color(fillColor);
+        graphics.beginFill(colorObject.toString().slice(0, 8), colorObject.a());
+      }
+
+      if (strokeColor) {
+        colorObject = color(strokeColor);
+        graphics.lineStyle(message.attributes.strokeWidth, colorObject.toString().slice(0, 8), colorObject.a());
+      }
+
+      if (message.attributes.opacity) {
+        graphics.alpha = message.attributes.opacity;
+      }
       _mapPathToPixiGraphicsCalls(message.data, graphics);
       // end the fill
       graphics.endFill();
