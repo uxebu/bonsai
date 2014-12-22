@@ -56,6 +56,25 @@ define([
       return {left: 0, top: 0};
     },
 
+    config: function(data) {
+
+      var item = data.item,
+          value = data.value;
+
+      switch (item) {
+        case 'crispEdges':
+          break;
+        case 'backgroundColor':
+          // Extract alpha value because PIXI does not support it
+          this.stage.setBackgroundColor(color(value).toString().substr(0, 8));
+          this.subRenderer.render(this.stage);
+          break;
+        case 'disableContextMenu':
+          break;
+      }
+
+    },
+
     render: function(messages) {
       var i, message, id, type;
       // Go through messages to identify deleted and changed objects, and then
