@@ -7,51 +7,17 @@ define([
   '../../event_emitter',
   '../../tools',
   '../../color',
-  '../../runner/path/curved_path',
-  'pixi',
-  '../../asset/asset_controller'
-], function(EventEmitter, tools, color, curvedPath, pixi, AssetController) {
+  './pixi_handle_path_message',
+  './pixi_handle_group_message',
+  'pixi'
+], function(EventEmitter, tools, color, pixiHandlePathMessage,
+  pixiHandleGroupMessage, pixi) {
   'use strict';
 
-  var renderMessageTypeMap = {
-    'Path': _renderPathMessage
+  var _messageHandler = {
+    handlePath: pixiHandlePathMessage,
+    handleGroup: pixiHandleGroupMessage
   };
-
-  var removeMessageTypeMap = {
-    'Path': _removePathMessage
-  };
-
-  var pathGraphicsMap = {
-    'moveTo': 'moveTo',
-    'curveTo': 'bezierCurveTo'
-  };
-
-  function _mapPathToPixiGraphicsCalls(paths, graphics) {
-    var curvedPaths = curvedPath.toCurves(paths);
-    var i, path;
-    for (i = 0; (path = curvedPaths[i++]);) {
-      if (path[0] !== 'closePath') {
-        graphics[pathGraphicsMap[path[0]]].apply(graphics, path.splice(1));
-      }
-    }
-  }
-
-  function _renderPathMessage(message, renderObjects, stage) {
-    var graphics, renderObject;
-    renderObject = renderObjects[message.id] || (renderObjects[message.id] = {});
-    renderObject.type = message.type;
-    graphics = renderObject.pixiObject = new pixi.Graphics();
-    graphics.beginFill(0x00FF00);
-    _mapPathToPixiGraphicsCalls(message.data, graphics);
-    // end the fill
-    graphics.endFill();
-    stage.addChild(graphics);
-    return graphics;
-  }
-
-  function _removePathMessage(renderObject, stage) {
-    stage.removeChild(renderObject.pixiObject);
-  }
 
   function _applyGeometry(matrix, renderObject) {
     renderObject.worldTransform.a = matrix.a;
@@ -83,23 +49,23 @@ define([
     this._renderObjects = {};
 
     // create an new instance of a pixi stage
-    this.stage = new pixi.Stage(0xdddddd);
+    this._stage = new pixi.Stage(0xdddddd);
 
     // create a renderer instance.
-    this.subRenderer = pixi.autoDetectRenderer(width, height);
+    this._subRenderer = pixi.autoDetectRenderer(width, height);
 
     // add the renderer view element to the DOM
-    node.appendChild(this.subRenderer.view);
+    node.appendChild(this._subRenderer.view);
 
     // render stage
-    this.subRenderer.render(this.stage);
+    this._subRenderer.render(this._stage);
 
   }
 
   CanvasPixiRenderer.prototype = tools.mixin({
 
     destroy: function() {
-      this.subRenderer.destroy();
+      this._subRenderer.destroy();
     },
 
     getOffset: function() {
@@ -116,8 +82,8 @@ define([
           break;
         case 'backgroundColor':
           // Extract alpha value because PIXI does not support it
-          this.stage.setBackgroundColor(color(value).toString().substr(0, 8));
-          this.subRenderer.render(this.stage);
+          this._stage.setBackgroundColor(color(value).toString().substr(0, 8));
+          this._subRenderer.render(this._stage);
           break;
         case 'disableContextMenu':
           break;
@@ -126,20 +92,30 @@ define([
     },
 
     render: function(messages) {
-      var i, message, attributes, renderObject;
+      var i, message, type, renderObject, messageHandler;
+      var renderObjects = this._renderObjects;
+      var stage = this._stage;
 
       for (i = 0; (message = messages[i++]);) {
+        type = message.type || renderObjects[message.id].type;
+        messageHandler = _messageHandler['handle' + type];
         if (message.detach) {
-          removeMessageTypeMap[this._renderObjects[message.id].type](this._renderObjects[message.id], this.stage);
+          messageHandler.remove(renderObjects[message.id], stage);
+        } else if (renderObjects[message.id]) {
+          messageHandler.update(message, renderObjects, stage);
+          _applyGeometry(message.attributes.matrix, renderObjects[message.id].pixiObject);
         } else {
-          attributes = message.attributes;
-          renderObject = renderMessageTypeMap[message.type](message, this._renderObjects, this.stage);
-          attributes && _applyGeometry(attributes.matrix, renderObject);
+          renderObject = renderObjects[message.id] = {};
+          renderObject.type = message.type;
+          renderObject.pixiObject = messageHandler.createPixiObject();
+          messageHandler.update(message, renderObjects, stage);
+          _applyGeometry(message.attributes.matrix, renderObject.pixiObject);
+          stage.addChild(renderObject.pixiObject);
         }
       }
 
       // draw on every frame by default for now
-      this.subRenderer.render(this.stage);
+      this._subRenderer.render(stage);
 
       // we're okay to accept new drawing instructions
       this.emit('canRender');
