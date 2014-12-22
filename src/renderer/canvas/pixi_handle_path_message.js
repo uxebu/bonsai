@@ -49,12 +49,16 @@ define([
       if (message.attributes.opacity) {
         graphics.alpha = message.attributes.opacity;
       }
+
       _mapPathToPixiGraphicsCalls(message.data, graphics);
-      // end the fill
+
       graphics.endFill();
     },
     remove: function(renderObject, stage) {
       stage.removeChild(renderObject.pixiObject);
+    },
+    addChild: function(renderObject, parent) {
+      parent.pixiObject.addChild(renderObject.pixiObject);
     }
   };
 

@@ -45,11 +45,16 @@ define([
    */
   function CanvasPixiRenderer(node, width, height, options) {
 
-    // rendered objects
-    this._renderObjects = {};
-
     // create an new instance of a pixi stage
     this._stage = new pixi.Stage(0xdddddd);
+
+    // rendered objects
+    this._renderObjects = {
+      0: {
+        type: 'Group',
+        pixiObject: this._stage
+      }
+    };
 
     // create a renderer instance.
     this._subRenderer = pixi.autoDetectRenderer(width, height);
@@ -102,15 +107,16 @@ define([
         if (message.detach) {
           messageHandler.remove(renderObjects[message.id], stage);
         } else if (renderObjects[message.id]) {
-          messageHandler.update(message, renderObjects, stage);
+          messageHandler.update(message, renderObjects);
           _applyGeometry(message.attributes.matrix, renderObjects[message.id].pixiObject);
         } else {
           renderObject = renderObjects[message.id] = {};
           renderObject.type = message.type;
+          renderObject.parent = message.parent;
           renderObject.pixiObject = messageHandler.createPixiObject();
-          messageHandler.update(message, renderObjects, stage);
+          messageHandler.update(message, renderObjects);
           _applyGeometry(message.attributes.matrix, renderObject.pixiObject);
-          stage.addChild(renderObject.pixiObject);
+          messageHandler.addChild(renderObject, renderObjects[message.parent]);
         }
       }
 
