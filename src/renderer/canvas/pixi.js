@@ -21,16 +21,6 @@ define([
     handleGroup: handleMessageGroup
   };
 
-  function _applyGeometry(matrix, renderObject) {
-    var pixiObject = renderObject.pixiObject;
-    pixiObject.worldTransform.a = matrix.a;
-    pixiObject.worldTransform.b = matrix.b;
-    pixiObject.worldTransform.c = matrix.c;
-    pixiObject.worldTransform.d = matrix.d;
-    pixiObject.worldTransform.tx = matrix.tx;
-    pixiObject.worldTransform.ty = matrix.ty;
-  }
-
   /**
    * The CanvasPixiRenderer constructor
    *
@@ -107,12 +97,12 @@ define([
           messageHandler.remove(renderObjects[message.id], stage);
         } else if (renderObjects[message.id]) {
           messageHandler.updateAttributes(message, renderObjects);
+          messageHandler.updateGeometry(message, renderObjects);
           messageHandler.updateParent(message, renderObjects);
-          _applyGeometry(message.attributes.matrix, renderObjects[message.id]);
         } else {
           renderObject = renderObjects[message.id] = messageHandler.createRenderObject(message);
           messageHandler.updateAttributes(message, renderObjects);
-          _applyGeometry(message.attributes.matrix, renderObject);
+          messageHandler.updateGeometry(message, renderObjects);
           messageHandler.updateParent(message, renderObjects);
           messageHandler.processToDoList(message, renderObjects);
         }

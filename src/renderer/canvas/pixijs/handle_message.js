@@ -29,6 +29,17 @@ define(function() {
         renderParentObject.pixiObject.addChild(renderObject.pixiObject);
       }
     },
+    updateGeometry: function(message, renderObjects) {
+      var matrix = message.attributes.matrix;
+      if (matrix == null) return;
+      var pixiObject = renderObjects[message.id].pixiObject;
+      pixiObject.worldTransform.a = matrix.a;
+      pixiObject.worldTransform.b = matrix.b;
+      pixiObject.worldTransform.c = matrix.c;
+      pixiObject.worldTransform.d = matrix.d;
+      pixiObject.worldTransform.tx = matrix.tx;
+      pixiObject.worldTransform.ty = matrix.ty;
+    },
     processToDoList: function(message) {
       if (message.id in this._toDoList) {
         this._toDoList[message.id]();
