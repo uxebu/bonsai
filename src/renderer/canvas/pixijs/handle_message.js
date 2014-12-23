@@ -2,9 +2,13 @@ define(function() {
   'use strict';
 
   return {
+
     _toDoList: {},
+
     createPixiObject: function() {},
+
     updateAttributes: function() {},
+
     createRenderObject: function(message) {
       return {
         id: message.id,
@@ -13,9 +17,11 @@ define(function() {
         pixiObject: this.createPixiObject()
       };
     },
+
     remove: function(renderObject, stage) {
       stage.removeChild(renderObject.pixiObject);
     },
+
     updateParent: function(message, renderObjects) {
       if (message.parent == null) return;
       var renderObject = renderObjects[message.id];
@@ -29,6 +35,7 @@ define(function() {
         renderParentObject.pixiObject.addChild(renderObject.pixiObject);
       }
     },
+
     updateGeometry: function(message, renderObjects) {
       var matrix = message.attributes.matrix;
       if (matrix == null) return;
@@ -40,12 +47,14 @@ define(function() {
       pixiObject.worldTransform.tx = matrix.tx;
       pixiObject.worldTransform.ty = matrix.ty;
     },
+
     processToDoList: function(message) {
       if (message.id in this._toDoList) {
         this._toDoList[message.id]();
         delete this._toDoList[message.id];
       }
     }
+
   };
 
 });

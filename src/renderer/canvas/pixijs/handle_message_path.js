@@ -23,9 +23,11 @@ define([
   }
 
   return tools.mixin({}, handleMessage, {
+
     createPixiObject: function() {
       return new pixi.Graphics();
     },
+
     updateAttributes: function(message, renderObjects) {
       var colorObject;
       var graphics = renderObjects[message.id].pixiObject;
@@ -54,6 +56,7 @@ define([
 
       graphics.endFill();
     }
+
   });
 
 });

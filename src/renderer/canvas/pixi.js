@@ -21,21 +21,6 @@ define([
     handleGroup: handleMessageGroup
   };
 
-  /**
-   * The CanvasPixiRenderer constructor
-   *
-   * @constructor
-   * @param {HTMLElement} node The element to append the pixi root node to.
-   * @param {number} width The width to apply to the root node.
-   *    Falsy means 'no width applied'.
-   * @param {number} height The height to apply to the root node.
-   *    Falsy means 'no height applied'.
-   * @param {boolean} [allowEventDefaults=false] Whether not to preventDefault()
-   *    browser events;
-   * @param {Function|boolean} [fpsLog=false] Whether to log the frame rate.
-   *    true displays the frame rate in the rendering, a function will be called
-   *    with the framerate.
-   */
   function CanvasPixiRenderer(node, width, height, options) {
 
     // rendered objects
@@ -86,26 +71,36 @@ define([
     },
 
     render: function(messages) {
+
       var i, message, type, renderObject, messageHandler;
       var renderObjects = this._renderObjects;
       var stage = renderObjects[0].pixiObject;
 
       for (i = 0; (message = messages[i++]);) {
+
         type = message.type || renderObjects[message.id].type;
         messageHandler = _messageHandler['handle' + type];
+
         if (message.detach) {
+
           messageHandler.remove(renderObjects[message.id], stage);
+
         } else if (renderObjects[message.id]) {
+
           messageHandler.updateAttributes(message, renderObjects);
           messageHandler.updateGeometry(message, renderObjects);
           messageHandler.updateParent(message, renderObjects);
+
         } else {
+
           renderObject = renderObjects[message.id] = messageHandler.createRenderObject(message);
           messageHandler.updateAttributes(message, renderObjects);
           messageHandler.updateGeometry(message, renderObjects);
           messageHandler.updateParent(message, renderObjects);
           messageHandler.processToDoList(message, renderObjects);
+
         }
+
       }
 
       // draw on every frame by default for now
@@ -113,6 +108,7 @@ define([
 
       // we're okay to accept new drawing instructions
       this.emit('canRender');
+
     }
 
   }, EventEmitter);
