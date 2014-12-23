@@ -1,8 +1,10 @@
 define([
+  '../../../tools',
   '../../../color',
   '../../../runner/path/curved_path',
+  './handle_message',
   'pixi',
-], function(color, curvedPath, pixi) {
+], function(tools, color, curvedPath, handleMessage, pixi) {
   'use strict';
 
   var pathGraphicsMap = {
@@ -20,7 +22,7 @@ define([
     }
   }
 
-  return {
+  return tools.mixin({}, handleMessage, {
     createPixiObject: function() {
       return new pixi.Graphics();
     },
@@ -53,13 +55,7 @@ define([
       _mapPathToPixiGraphicsCalls(message.data, graphics);
 
       graphics.endFill();
-    },
-    remove: function(renderObject, stage) {
-      stage.removeChild(renderObject.pixiObject);
-    },
-    addChild: function(renderObject, parent) {
-      parent.pixiObject.addChild(renderObject.pixiObject);
     }
-  };
+  });
 
 });

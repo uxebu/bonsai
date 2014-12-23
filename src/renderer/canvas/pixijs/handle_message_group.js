@@ -1,17 +1,13 @@
-define(['pixi'], function(pixi) {
+define([
+  '../../../tools',
+  './handle_message',
+  'pixi',
+], function(tools, handleMessage, pixi) {
   'use strict';
-
-  return {
+  return tools.mixin({}, handleMessage, {
     createPixiObject: function() {
       return new pixi.DisplayObjectContainer();
-    },
-    update: function() {},
-    remove: function(renderObject, stage) {
-      stage.removeChild(renderObject.pixiObject);
-    },
-    addChild: function(renderObject, parent) {
-      parent.pixiObject.addChild(renderObject.pixiObject);
     }
-  };
+  });
 
 });
