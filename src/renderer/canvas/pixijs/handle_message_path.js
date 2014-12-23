@@ -1,6 +1,6 @@
 define([
-  '../../color',
-  '../../runner/path/curved_path',
+  '../../../color',
+  '../../../runner/path/curved_path',
   'pixi',
 ], function(color, curvedPath, pixi) {
   'use strict';

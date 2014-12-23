@@ -7,16 +7,16 @@ define([
   '../../event_emitter',
   '../../tools',
   '../../color',
-  './pixi_handle_path_message',
-  './pixi_handle_group_message',
+  './pixijs/handle_message_path',
+  './pixijs/handle_message_group',
   'pixi'
-], function(EventEmitter, tools, color, pixiHandlePathMessage,
-  pixiHandleGroupMessage, pixi) {
+], function(EventEmitter, tools, color, handleMessagePath,
+  handleMessageGroup, pixi) {
   'use strict';
 
   var _messageHandler = {
-    handlePath: pixiHandlePathMessage,
-    handleGroup: pixiHandleGroupMessage
+    handlePath: handleMessagePath,
+    handleGroup: handleMessageGroup
   };
 
   function _applyGeometry(matrix, renderObject) {
