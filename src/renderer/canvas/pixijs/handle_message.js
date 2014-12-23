@@ -42,12 +42,12 @@ define(function() {
       var matrix = message.attributes.matrix;
       if (matrix == null) return;
       var pixiObject = renderObjects[message.id].pixiObject;
-      pixiObject.worldTransform.a = matrix.a;
-      pixiObject.worldTransform.b = matrix.b;
-      pixiObject.worldTransform.c = matrix.c;
-      pixiObject.worldTransform.d = matrix.d;
-      pixiObject.worldTransform.tx = matrix.tx;
-      pixiObject.worldTransform.ty = matrix.ty;
+      pixiObject.transformMatrix.a = matrix.a;
+      pixiObject.transformMatrix.b = matrix.b;
+      pixiObject.transformMatrix.c = matrix.c;
+      pixiObject.transformMatrix.d = matrix.d;
+      pixiObject.transformMatrix.tx = matrix.tx;
+      pixiObject.transformMatrix.ty = matrix.ty;
     },
 
     processToDoList: function(message) {
