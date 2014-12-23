@@ -107,12 +107,14 @@ define([
           messageHandler.remove(renderObjects[message.id], stage);
         } else if (renderObjects[message.id]) {
           messageHandler.updateAttributes(message, renderObjects);
+          messageHandler.updateParent(message, renderObjects);
           _applyGeometry(message.attributes.matrix, renderObjects[message.id]);
         } else {
           renderObject = renderObjects[message.id] = messageHandler.createRenderObject(message);
           messageHandler.updateAttributes(message, renderObjects);
           _applyGeometry(message.attributes.matrix, renderObject);
-          messageHandler.addChild(renderObject, renderObjects[message.parent]);
+          messageHandler.updateParent(message, renderObjects);
+          messageHandler.processToDoList(message, renderObjects);
         }
       }
 
