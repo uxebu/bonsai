@@ -29,7 +29,9 @@ define([
     };
 
     // create a renderer instance.
-    this._subRenderer = pixi.autoDetectRenderer(width, height);
+    this._subRenderer = pixi.autoDetectRenderer(width, height, {
+      antialias: true
+    });
 
     // add the renderer view element to the DOM
     node.appendChild(this._subRenderer.view);
