@@ -26,7 +26,7 @@ define([
     createPixiObject: function() {
       return new pixi.Graphics();
     },
-    update: function(message, renderObjects) {
+    updateAttributes: function(message, renderObjects) {
       var colorObject;
       var graphics = renderObjects[message.id].pixiObject;
       var fillColor = message.attributes.fillColor;

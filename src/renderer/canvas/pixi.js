@@ -106,11 +106,11 @@ define([
         if (message.detach) {
           messageHandler.remove(renderObjects[message.id], stage);
         } else if (renderObjects[message.id]) {
-          messageHandler.update(message, renderObjects);
+          messageHandler.updateAttributes(message, renderObjects);
           _applyGeometry(message.attributes.matrix, renderObjects[message.id]);
         } else {
           renderObject = renderObjects[message.id] = messageHandler.createRenderObject(message);
-          messageHandler.update(message, renderObjects);
+          messageHandler.updateAttributes(message, renderObjects);
           _applyGeometry(message.attributes.matrix, renderObject);
           messageHandler.addChild(renderObject, renderObjects[message.parent]);
         }

@@ -3,7 +3,7 @@ define(function() {
 
   return {
     createPixiObject: function() {},
-    update: function() {},
+    updateAttributes: function() {},
     createRenderObject: function(message) {
       return {
         id: message.id,
