@@ -85,6 +85,8 @@ define([
         type = message.type || renderObjects[message.id].type;
         messageHandler = _messageHandler['handle' + type];
 
+        if (messageHandler == null) console.warn('Type "%s" is not supported yet', type);
+
         if (message.detach) {
 
           messageHandler.detach(message, renderObjects);
