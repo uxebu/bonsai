@@ -36,8 +36,6 @@ define([
         return;
       }
 
-      //graphics.clear();
-
       if (fillColor) {
         colorObject = color(fillColor);
         graphics.beginFill(colorObject.toString().slice(0, 8), colorObject.a());
