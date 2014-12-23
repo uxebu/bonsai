@@ -8,17 +8,19 @@ define([
   '../../tools',
   '../../color',
   './pixijs/handle_message_stage',
-  './pixijs/handle_message_path',
   './pixijs/handle_message_group',
+  './pixijs/handle_message_path',
+  './pixijs/handle_message_bitmap',
   'pixi'
-], function(EventEmitter, tools, color, handleMessageStage, handleMessagePath,
-  handleMessageGroup, pixi) {
+], function(EventEmitter, tools, color, handleMessageStage, handleMessageGroup,
+  handleMessagePath, handleMessageBitmap, pixi) {
   'use strict';
 
   var _messageHandler = {
     handleStage: handleMessageStage,
+    handleGroup: handleMessageGroup,
     handlePath: handleMessagePath,
-    handleGroup: handleMessageGroup
+    handleBitmap: handleMessageBitmap
   };
 
   function CanvasPixiRenderer(node, width, height, options) {

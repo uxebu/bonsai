@@ -14,7 +14,7 @@ define(function() {
         id: message.id,
         type: message.type,
         parent: message.parent,
-        pixiObject: this.createPixiObject()
+        pixiObject: this.createPixiObject(message)
       };
     },
 
