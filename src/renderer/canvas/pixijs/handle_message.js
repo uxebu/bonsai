@@ -4,6 +4,14 @@ define(function() {
   return {
     createPixiObject: function() {},
     update: function() {},
+    createRenderObject: function(message) {
+      return {
+        id: message.id,
+        type: message.type,
+        parent: message.parent,
+        pixiObject: this.createPixiObject()
+      };
+    },
     remove: function(renderObject, stage) {
       stage.removeChild(renderObject.pixiObject);
     },

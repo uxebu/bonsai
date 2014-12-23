@@ -7,14 +7,16 @@ define([
   '../../event_emitter',
   '../../tools',
   '../../color',
+  './pixijs/handle_message_stage',
   './pixijs/handle_message_path',
   './pixijs/handle_message_group',
   'pixi'
-], function(EventEmitter, tools, color, handleMessagePath,
+], function(EventEmitter, tools, color, handleMessageStage, handleMessagePath,
   handleMessageGroup, pixi) {
   'use strict';
 
   var _messageHandler = {
+    handleStage: handleMessageStage,
     handlePath: handleMessagePath,
     handleGroup: handleMessageGroup
   };
@@ -46,15 +48,9 @@ define([
    */
   function CanvasPixiRenderer(node, width, height, options) {
 
-    // create an new instance of a pixi stage
-    this._stage = new pixi.Stage(0xdddddd);
-
     // rendered objects
     this._renderObjects = {
-      0: {
-        type: 'Group',
-        pixiObject: this._stage
-      }
+      0: _messageHandler.handleStage.createRenderObject({type: 'Stage', id: 0})
     };
 
     // create a renderer instance.
@@ -64,7 +60,7 @@ define([
     node.appendChild(this._subRenderer.view);
 
     // render stage
-    this._subRenderer.render(this._stage);
+    this._subRenderer.render(this._renderObjects[0].pixiObject);
 
   }
 
@@ -80,16 +76,18 @@ define([
 
     config: function(data) {
 
-      var item = data.item,
-          value = data.value;
+      var stage;
+      var item = data.item;
+      var value = data.value;
 
       switch (item) {
         case 'crispEdges':
           break;
         case 'backgroundColor':
+          stage = this._renderObjects[0].pixiObject;
           // Extract alpha value because PIXI does not support it
-          this._stage.setBackgroundColor(color(value).toString().substr(0, 8));
-          this._subRenderer.render(this._stage);
+          stage.setBackgroundColor(color(value).toString().substr(0, 8));
+          this._subRenderer.render(stage);
           break;
         case 'disableContextMenu':
           break;
@@ -100,7 +98,7 @@ define([
     render: function(messages) {
       var i, message, type, renderObject, messageHandler;
       var renderObjects = this._renderObjects;
-      var stage = this._stage;
+      var stage = renderObjects[0].pixiObject;
 
       for (i = 0; (message = messages[i++]);) {
         type = message.type || renderObjects[message.id].type;
@@ -111,10 +109,7 @@ define([
           messageHandler.update(message, renderObjects);
           _applyGeometry(message.attributes.matrix, renderObjects[message.id]);
         } else {
-          renderObject = renderObjects[message.id] = {};
-          renderObject.type = message.type;
-          renderObject.parent = message.parent;
-          renderObject.pixiObject = messageHandler.createPixiObject();
+          renderObject = renderObjects[message.id] = messageHandler.createRenderObject(message);
           messageHandler.update(message, renderObjects);
           _applyGeometry(message.attributes.matrix, renderObject);
           messageHandler.addChild(renderObject, renderObjects[message.parent]);
