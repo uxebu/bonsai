@@ -92,6 +92,7 @@ define([
         } else if (renderObjects[message.id]) {
 
           messageHandler.updateAttributes(message, renderObjects);
+          messageHandler.updateFilter(message, renderObjects);
           messageHandler.updateGeometry(message, renderObjects);
           messageHandler.updateParent(message, renderObjects);
 
@@ -99,6 +100,7 @@ define([
 
           renderObject = renderObjects[message.id] = messageHandler.createRenderObject(message);
           messageHandler.updateAttributes(message, renderObjects);
+          messageHandler.updateFilter(message, renderObjects);
           messageHandler.updateGeometry(message, renderObjects);
           messageHandler.updateParent(message, renderObjects);
           messageHandler.processToDoList(message, renderObjects);

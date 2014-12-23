@@ -1,4 +1,6 @@
-define(function() {
+define([
+  './handle_attributes_filters',
+], function(handleAttributesFilters) {
   'use strict';
 
   return {
@@ -37,6 +39,8 @@ define(function() {
         renderParentObject.pixiObject.addChild(renderObject.pixiObject);
       }
     },
+
+    updateFilter: handleAttributesFilters,
 
     updateGeometry: function(message, renderObjects) {
       var matrix = message.attributes.matrix;
