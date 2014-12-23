@@ -83,7 +83,7 @@ define([
 
         if (message.detach) {
 
-          messageHandler.remove(renderObjects[message.id], stage);
+          messageHandler.detach(message, renderObjects);
 
         } else if (renderObjects[message.id]) {
 

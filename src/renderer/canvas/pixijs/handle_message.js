@@ -18,8 +18,10 @@ define(function() {
       };
     },
 
-    remove: function(renderObject, stage) {
-      stage.removeChild(renderObject.pixiObject);
+    detach: function(message, renderObjects) {
+      var renderObject = renderObjects[message.id];
+      var renderParentObject = renderObjects[renderObject.parent];
+      renderParentObject.pixiObject.removeChild(renderObject.pixiObject);
     },
 
     updateParent: function(message, renderObjects) {
