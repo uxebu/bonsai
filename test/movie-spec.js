@@ -36,20 +36,6 @@ define([
         movie = new Movie(stage);
         movie.parent = mock.createDisplayObject();
       });
-      describe('_activate()', function() {
-        it('should add the movie to the movie registry', function() {
-          movie._activate(stage);
-          expect(registry.movies.add).toHaveBeenCalledWith(movie);
-        });
-      });
-      describe('_deactivate()', function() {
-        it('should remove the movie from the movie registry', function() {
-          movie._activate(stage);
-
-          movie._deactivate();
-          expect(registry.movies.remove).toHaveBeenCalled();
-        });
-      });
     });
 
   });

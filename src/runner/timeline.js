@@ -6,6 +6,10 @@ define([
 
   var round = Math.round;
 
+  function isTimeline(displayObject) {
+    return typeof displayObject.emitFrame === 'function';
+  }
+
   /**
    * The Timeline mixin. It contains timeline functionality (controls a series
    * of frames).
@@ -28,41 +32,66 @@ define([
     isPlaying: true,
 
     /**
-     * Increments the frame
-     */
-    incrementFrame: function() {
-      // If length if not defined, we we assume an infinite length.
-      var length = this._length == null ? Infinity : this._length;
-      this.currentFrame = (this.currentFrame + 1) % length || 0;
-      return this;
-    },
-
-    /**
      * Emits events for the current frame
+     *
+     * @param {Timeline[]} [advancedTimelines] Advanced timelines are pushed
+     *    onto this array.
+     * @return {Timeline[]} An array of advanced timelines. This is the
+     *    advancedTimelines argument, if provided.
      */
-    emitFrame: function() {
+    emitFrame: function(advancedTimelines) {
+      if (!advancedTimelines) {
+        advancedTimelines = [];
+      }
 
       var currentFrame = this.currentFrame,
           skipFrame = this.skipFrame;
 
       this.emit('tick', this, currentFrame);
+      if (this.isPlaying) {
+        // If skipFrame is null/undefined then we can emit, but if the currentFrame
+        // is marked to be skipped (skipFrame==currentFrame) then we don't emit.
+        if (null == this.skipFrame || this.skipFrame != currentFrame) {
+          advancedTimelines.push(this);
+          this.emit(String(currentFrame), this, currentFrame);
+          this.emit('advance', this, currentFrame);
+        }
 
-      if (!this.isPlaying) {
-        return;
+        if (this.skipFrame === skipFrame) {
+          // Frame [event] emission has not affected skipFrame, NULL it:
+          this.skipFrame = null;
+        }
       }
 
-      // If skipFrame is null/undefined then we can emit, but if the currentFrame
-      // is marked to be skipped (skipFrame==currentFrame) then we don't emit.
-      if (null == this.skipFrame || this.skipFrame != currentFrame) {
-        this.emit(String(currentFrame), this, currentFrame);
-        this.emit('advance', this, currentFrame);
+      var displayList = this.displayList;
+      var children = displayList && displayList.children;
+      var child = children && children[0];
+      while (child) {
+        if (isTimeline(child)) {
+          child.emitFrame(advancedTimelines);
+        }
+        child = child.next;
       }
 
-      if (this.skipFrame === skipFrame) {
-        // Frame [event] emission has not affected skipFrame, NULL it:
-        this.skipFrame = null;
-      }
+      this.emit('tickEnd', this, currentFrame);
 
+      return advancedTimelines;
+    },
+
+    /**
+     * Emits events for the current frame recursively and advances the
+     * current frame of all advanced timelines.
+     *
+     * @return {Timeline} The instance
+     */
+    playFrame: function() {
+      var advancedTimelines = this.emitFrame([]);
+      for (var i = 0, timeline; (timeline = advancedTimelines[i]); i += 1) {
+        // If length if not defined, we we assume an infinite length.
+        var length = timeline.length() || Infinity;
+        timeline.currentFrame = (timeline.currentFrame + 1) % length;
+      }
+      return this;
     },
 
     /**

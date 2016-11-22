@@ -390,11 +390,6 @@ define([
     stage.registry.needsInsertion[obj.id] = obj;
     stage.registry.displayObjects[obj.id] = obj;
 
-    // Add submovie to movies registry so that it is "advanced" with all
-    // other sub-movies in stage#loop
-    if (obj.type === 'Movie') {
-      stage.registry.movies.add(obj);
-    }
     // Note: Current impl. of clip/mask relies on this (e.g. sub-clip applied to off-stage mask)
 
     if (!isChild) {

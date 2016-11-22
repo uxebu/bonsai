@@ -47,10 +47,6 @@ define(function() {
       return {
         registry: {
           displayObjects: {},
-          movies: {
-            add: jasmine.createSpy('add'),
-            remove: jasmine.createSpy('remove')
-          },
           needsDraw: {},
           needsInsertion: {}
         }

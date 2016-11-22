@@ -3,8 +3,9 @@ define([
   'bonsai/runner/timeline'
 ], function(tools, Timeline) {
 
-  function makeTimeline() {
-    return tools.mixin({}, Timeline);
+  function makeTimeline(currentFrame) {
+    currentFrame = currentFrame || 0;
+    return tools.mixin({}, Timeline, {currentFrame: currentFrame});
   }
 
   describe('timeline', function() {
@@ -16,7 +17,6 @@ define([
     });
 
     it('Plays frames in the correct order', function() {
-
       var calls = 0;
 
       timeline.frames([
@@ -26,11 +26,8 @@ define([
       ]);
 
       timeline.emitFrame();
-      timeline.incrementFrame();
       timeline.emitFrame();
-      timeline.incrementFrame();
       timeline.emitFrame();
-      timeline.incrementFrame();
 
       expect(calls).toBe(3);
     });
@@ -157,5 +154,228 @@ define([
 
       });
     });
+
+    describe('emitFrame', function() {
+      testFrameEmission('emitFrame');
+
+      it('should return an array', function() {
+        expect(makeTimeline().emitFrame()).toBeArray();
+      });
+
+      it('should return the passed-in array', function() {
+        var array = [];
+        expect(makeTimeline().emitFrame(array)).toBe(array);
+      });
+    });
+
+    describe('#playFrame()', function() {
+      it('should return the instance', function() {
+        var timeline = makeTimeline();
+        expect(timeline.playFrame()).toBe(timeline);
+      });
+
+      testFrameEmission('playFrame');
+
+
+      it('should increment the current frame of itself after advancing all children', function() {
+        var timeline = makeTimeline();
+        timeline.length(123);
+        var frameAtStart = timeline.currentFrame;
+        var frameAtChildAdvance;
+        var child = {
+          emitFrame: function() { frameAtChildAdvance = timeline.currentFrame; }
+        };
+        timeline.displayList = { children: [child] };
+
+        timeline.playFrame();
+        expect(frameAtChildAdvance).toBe(frameAtStart);
+        expect(timeline.currentFrame).toBe(frameAtStart + 1);
+      });
+
+      it('should increment all playing child timelines after all advance events, if no parameter is passed', function() {
+        function addNext(child, i, children) {
+          child.next = children[i + 1];
+          return child;
+        }
+
+        function group(currentFrame) {
+          var group = makeTimeline(currentFrame);
+          var children = [].slice.call(arguments, 1);
+          children.forEach(addNext);
+          group.displayList = {
+            children: children
+          };
+          return group;
+        }
+
+        function children(node) {
+          return node.displayList && node.displayList.children || [];
+        }
+
+        var concat = Array.prototype.concat;
+        function flattenTree(node) {
+          return concat.apply([node], children(node).map(flattenTree));
+        }
+
+        function currentFrames(node) {
+          return flattenTree(node).map(function(node) {
+            return node.currentFrame;
+          });
+        }
+
+        function expectedNextFrames(node) {
+          return flattenTree(node).map(function(node) {
+            return node.currentFrame + (node.isPlaying ? 1 : 0);
+          });
+        }
+
+        var stoppedChild = makeTimeline(123).stop();
+        var stoppedChild2 = group(67,
+          makeTimeline(20),
+          makeTimeline(21),
+          group(2,
+            makeTimeline(0)),
+          makeTimeline(3))
+          .stop();
+        var lastChild = makeTimeline();
+
+        var timeline =
+          group(2,
+            group(0,
+              makeTimeline(3)),
+            group(5,
+              makeTimeline(10),
+              group(0,
+                stoppedChild,
+                makeTimeline(7))),
+            makeTimeline(8),
+            stoppedChild2,
+            lastChild);
+
+        var framesAtStart = currentFrames(timeline);
+        var expectedFrames = expectedNextFrames(timeline);
+        var framesAtAdvance;
+
+        lastChild.on('advance', function() {
+          framesAtAdvance = currentFrames(timeline);
+        });
+        timeline.playFrame();
+
+        expect(framesAtAdvance).toEqual(framesAtStart);
+        expect(currentFrames(timeline)).toEqual(expectedFrames);
+      });
+
+      it('should not advance timelines beyond the last frame, but jump back to frame 0', function() {
+        var timelineLength = 10;
+        timeline
+          .length(timelineLength)
+          .currentFrame = timelineLength - 1;
+
+        var childTimelineLength = 5;
+        var childTimeline = makeTimeline(childTimelineLength - 1)
+          .length(childTimelineLength);
+
+        timeline.displayList = {children: [childTimeline]};
+
+        timeline.playFrame();
+        expect(timeline.currentFrame).toBe(0);
+        expect(childTimeline.currentFrame).toBe(0);
+      });
+    });
   });
+
+  function testFrameEmission(methodName) {
+    var timeline;
+    beforeEach(function() {
+      timeline = makeTimeline();
+    });
+
+    it('should emit a "tick" event with the timeline and the current frame', function() {
+      var frameAtStart = timeline.currentFrame;
+      var listener = jasmine.createSpy('tick listener');
+
+      timeline.on('tick', listener)[methodName]();
+
+      expect(listener).toHaveBeenCalledWith(timeline, frameAtStart);
+    });
+
+    it('should emit the current-frame-number and "advance" events in order, if the timeline is playing', function() {
+      timeline.play();
+      var frameAtStart = timeline.currentFrame;
+
+      var calls = [];
+      timeline
+        .on(timeline.currentFrame, function(timeline, frame) {
+          calls.push(['frame', timeline, frame]);
+        })
+        .on('advance', function(timeline, frame) {
+          calls.push(['advance', timeline, frame]);
+        })
+        [methodName]();
+
+      expect(calls).toEqual([
+        ['frame', timeline, frameAtStart],
+        ['advance', timeline, frameAtStart]
+      ]);
+    });
+
+
+    it('should not emit the current-frame-number and "advance" events, if the timeline is not playing', function() {
+      timeline.stop();
+
+      var calls = [];
+      timeline
+        .on(timeline.currentFrame, function(timeline, frame) {
+          calls.push(['frame', timeline, frame]);
+        })
+        .on('advance', function(timeline, frame) {
+          calls.push(['advance', timeline, frame]);
+        })
+        [methodName]();
+
+      expect(calls).toEqual([]);
+    });
+
+    it('should call the `emitFrame` method of every child that is a timeline after emitting the advance event', function() {
+      var calls = [];
+      var child2 = {emitFrame: function() { calls.push(2); }};
+      var child1 = {next: child2, emitFrame: function() { calls.push(1); }};
+      var child0 = {next: child1, emitFrame: function() { calls.push(0); }};
+      timeline.displayList = {
+        children: [
+          child0,
+          {},
+          child1,
+          child2
+        ]
+      };
+
+      timeline.on('advance', function() { calls.push('advance'); });
+      timeline[methodName]();
+      expect(calls).toEqual(['advance', 0, 1, 2]);
+    });
+
+    it('should emit an "tickEnd" event after calling the emitFrame() of the last child', function() {
+      var lastChildPassed = false;
+      var emittedAfterPassingLastChild;
+      var currentFrame = timeline.currentFrame;
+
+      timeline.displayList = {
+        children: [
+          { emitFrame: function() { lastChildPassed = true; } }
+        ]
+      };
+
+      var onTickEnd = jasmine.createSpy().andCallFake(function() {
+        emittedAfterPassingLastChild = lastChildPassed === true;
+      });
+      timeline
+        .on('tickEnd', onTickEnd)
+        .emitFrame();
+
+      expect(emittedAfterPassingLastChild).toBe(true);
+      expect(onTickEnd).toHaveBeenCalledWith(timeline, currentFrame);
+
+    });
+  }
 });

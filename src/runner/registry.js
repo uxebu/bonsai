@@ -5,20 +5,6 @@
 define(function() {
   'use strict';
 
-  function MovieRegistry() {
-    var movies = this.movies = [];
-
-    this.add = function(movie) {
-      if (movies.indexOf(movie) === -1) {
-        movies.push(movie);
-      }
-    };
-    this.remove = function(movie) {
-      var index = movies.indexOf(movie);
-      delete movies[index];
-    };
-  }
-
   /**
    * @constructor
    * @private
@@ -48,17 +34,6 @@ define(function() {
        * @type {object}
        */
       loadingDisplayObjects: Object.create(null),
-
-      /**
-       * Registry for Movie instances (sub-movies) within a bonsai movie.
-       *
-       * This map is used to advance every (currently playing) timeline when a
-       * frame is entered.
-       *
-       * @private
-       * @type {object}
-       */
-      movies: new MovieRegistry(),
 
       /**
        * Global Registry for display objects that need to be updated by renderer

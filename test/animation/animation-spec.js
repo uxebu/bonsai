@@ -33,7 +33,6 @@ define([
       this.interval = setInterval(
         tools.hitch(this, function() {
           this.emitFrame();
-          this.incrementFrame();
         }),
         this.framerate / 1000
       );

@@ -21,7 +21,7 @@ define([
    *
    * @extends AssetDisplayObject
    * @mixes Timeline
-   * @mixes displayList.timelineMethods
+   * @mixes displayList.methods
    */
   function Movie(root, displayList, url, assetUrl, callback) {
 
@@ -54,7 +54,7 @@ define([
   }
 
   var proto = Movie.prototype =
-    tools.mixin(Object.create(AssetDisplayObject.prototype), Timeline, displayList.timelineMethods);
+    tools.mixin(Object.create(AssetDisplayObject.prototype), Timeline, displayList.methods);
 
   proto.loadSubMovie = function() {
     return this.root.loadSubMovie.apply(this.root, arguments);

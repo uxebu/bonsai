@@ -277,6 +277,15 @@ define([
 
     });
 
+    describe('stage#loop()', function() {
+      it('should call the playFrame method of the stage', function() {
+        var stage = makeStage();
+        spyOn(stage, 'playFrame');
+        stage.loop();
+        expect(stage.playFrame).toHaveBeenCalled();
+      });
+    });
+
   });
 
 });
