@@ -4,7 +4,7 @@ PhantomJasmineRunner = (function() {
 
   function PhantomJasmineRunner(page, exit_func) {
     this.page = page;
-    this.exit_func = exit_func != null ? exit_func : phantom.exit;
+    this.exit_func = exit_func != null ? exit_func : function() { phantom.exit(); };
     this.tries = 0;
     this.max_tries = 10;
   }
