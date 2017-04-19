@@ -30,7 +30,10 @@ PhantomJasmineRunner = (function() {
 
 })();
 
-if (phantom.args.length === 0) {
+var system = require('system');
+var args = system.args;
+
+if (args.length === 0) {
   console.log("Need a url as the argument");
   phantom.exit(1);
 }
@@ -46,7 +49,7 @@ page.onConsoleMessage = function(msg) {
   }
 };
 
-address = phantom.args[0];
+address = args[0];
 
 page.open(address, function(status) {
   if (status !== "success") {
