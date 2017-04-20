@@ -7,7 +7,9 @@
   "homepage": "https://github.com/uxebu/bonsai/",
   "maintainers": [],
   "scripts": {
-    "_test:build": "phantomjs test/phantom-runner-jasmine.js test/runner-build.html"
+    "_test:build": "phantomjs test/phantom-runner-jasmine.js test/runner-build.html",
+    "_test": "phantomjs test/phantom-runner-jasmine.js test/runner.html",
+    "test": "npm run _test:build && npm run _test"
   },
   "repository": {
     "type": "git",
