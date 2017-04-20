@@ -49,7 +49,7 @@ page.onConsoleMessage = function(msg) {
   }
 };
 
-address = args[0];
+address = args[1];
 
 page.open(address, function(status) {
   if (status !== "success") {
