@@ -4,7 +4,7 @@ PhantomJasmineRunner = (function() {
 
   function PhantomJasmineRunner(page, exit_func) {
     this.page = page;
-    this.exit_func = exit_func != null ? exit_func : phantom.exit;
+    this.exit_func = exit_func != null ? exit_func : function() { phantom.exit(); };
     this.tries = 0;
     this.max_tries = 10;
   }
@@ -30,7 +30,10 @@ PhantomJasmineRunner = (function() {
 
 })();
 
-if (phantom.args.length === 0) {
+var system = require('system');
+var args = system.args;
+
+if (args.length === 0) {
   console.log("Need a url as the argument");
   phantom.exit(1);
 }
@@ -46,7 +49,7 @@ page.onConsoleMessage = function(msg) {
   }
 };
 
-address = phantom.args[0];
+address = args[1];
 
 page.open(address, function(status) {
   if (status !== "success") {

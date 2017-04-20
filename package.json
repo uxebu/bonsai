@@ -6,11 +6,18 @@
   "version": "0.4.5",
   "homepage": "https://github.com/uxebu/bonsai/",
   "maintainers": [],
+  "scripts": {
+    "_test:build": "phantomjs test/phantom-runner-jasmine.js test/runner-build.html",
+    "_test": "phantomjs test/phantom-runner-jasmine.js test/runner.html",
+    "test": "npm run _test:build && npm run _test"
+  },
   "repository": {
     "type": "git",
     "url": "git@github.com:uxebu/bonsai.git"
   },
   "dependencies": {
+    "jasmine": "^2.5.3",
+    "phantomjs": "^2.1.7",
     "requirejs": "~2.0"
   },
   "devDependencies": {},
